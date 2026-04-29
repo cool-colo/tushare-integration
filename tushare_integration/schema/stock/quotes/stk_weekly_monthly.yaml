@@ -21,6 +21,11 @@ columns:
     length: 0
     default: "1970-01-01"
     comment: 交易日期
+  - name: end_date
+    data_type: date
+    length: 0
+    default: "1970-01-01"
+    comment: 周/月线结束日期
   - name: freq
     data_type: str
     length: 255

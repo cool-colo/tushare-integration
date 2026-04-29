@@ -7,7 +7,6 @@ dependencies:
 primary_key:
 - ts_code
 - ann_date
-- update_flag
 indexes: []
 columns:
 - name: ts_code
@@ -55,13 +54,3 @@ columns:
   length: 0
   default: '0.0'
   comment: 回购最低价
-- name: repo_goal
-  data_type: str
-  length: 255
-  default: ''
-  comment: 回购目的
-- name: update_flag
-  data_type: str
-  length: 255
-  default: ''
-  comment: 更新标识

@@ -11,8 +11,8 @@ class StockBasicSpider(TushareSpider):
     api_name = "stock_basic"
 
     def start_requests(self):
-        exchanges = ["SSE", "SZSE"]
-        list_statuses = ["L", "D", "P"]
+        exchanges = ["SSE", "SZSE", "BSE"]
+        list_statuses = ["L", "D", "P", "G"]
 
         for exchange in exchanges:
             for list_status in list_statuses:
@@ -81,7 +81,7 @@ class StockCompanySpider(TushareSpider):
     api_name = "stock_company"
 
     def start_requests(self):
-        for exchange in ["SSE", "SZSE"]:
+        for exchange in ["SSE", "SZSE", "BSE"]:
             params = {"exchange": exchange}
             yield self.get_scrapy_request(params)
 

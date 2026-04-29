@@ -24,11 +24,6 @@ columns:
   length: 255
   default: ''
   comment: 股东名称
-- name: holder_type
-  data_type: str
-  length: 255
-  default: ''
-  comment: 股东类型
 - name: pledge_amount
   data_type: float
   length: 0
@@ -84,8 +79,3 @@ columns:
   length: 255
   default: ''
   comment: 是否回购
-- name: desc
-  data_type: str
-  length: 255
-  default: ''
-  comment: 备注

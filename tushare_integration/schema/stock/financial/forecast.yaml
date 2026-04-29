@@ -55,11 +55,6 @@ columns:
   length: 0
   default: '0.0'
   comment: 上年同期归属母公司净利润
-- name: notice_times
-  data_type: int
-  length: 0
-  default: '0'
-  comment: 公布次数
 - name: first_ann_date
   data_type: date
   length: 0
@@ -75,8 +70,3 @@ columns:
   length: 255
   default: ''
   comment: 业绩变动原因
-- name: update_flag
-  data_type: str
-  length: 255
-  default: ''
-  comment: 更新标志

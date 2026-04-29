@@ -100,8 +100,3 @@ columns:
     length: 0
     default: "0.0"
     comment: 流通市值
-  - name: limit_status
-    data_type: int
-    length: 0
-    default: "0"
-    comment: 涨跌停状态

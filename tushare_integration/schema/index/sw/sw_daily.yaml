@@ -83,8 +83,3 @@ columns:
   length: 0
   default: '0.0'
   comment: 总市值（万元）
-- name: weight
-  data_type: float
-  length: 0
-  default: '0.0'
-  comment: 权重

@@ -78,13 +78,3 @@ columns:
     length: 0
     default: "0.0"
     comment: 流通市值
-  - name: pe_ttm
-    data_type: float
-    length: 0
-    default: "0.0"
-    comment: PE TTM
-  - name: pb_mrq
-    data_type: float
-    length: 0
-    default: "0.0"
-    comment: PB MRQ

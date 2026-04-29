@@ -66,7 +66,7 @@ columns:
   data_type: str
   length: 255
   default: ''
-  comment: 上市状态 L上市 D退市 P暂停上市
+  comment: 上市状态 L上市 D退市 P暂停上市 G过会未交易
 - name: list_date
   data_type: date
   length: 0

@@ -39,11 +39,6 @@ columns:
   length: 0
   default: '0.0'
   comment: 涨跌幅
-- name: swing
-  data_type: float
-  length: 0
-  default: '0.0'
-  comment: 振幅
 - name: amount
   data_type: float
   length: 0

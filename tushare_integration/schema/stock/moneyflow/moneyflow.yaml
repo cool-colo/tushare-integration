@@ -110,8 +110,3 @@ columns:
     length: 0
     default: "0.0"
     comment: 净流入额（万元）
-  - name: trade_count
-    data_type: int
-    length: 0
-    default: "0"
-    comment: 交易笔数

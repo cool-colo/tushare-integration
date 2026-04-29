@@ -175,9 +175,12 @@ database:
 
 reporters: [ ]
 #  - "tushare_integration.reporters.FeishuWebHookReporter"
+#  - "tushare_integration.reporters.DingTalkWebHookReporter"
 
 # 飞书Webhook配置
 feishu_webhook: ""
+# 钉钉Webhook配置
+dingtalk_webhook: ""
 
 # Scrapy配置
 bot_name: tushare_integration

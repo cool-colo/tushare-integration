@@ -7,7 +7,6 @@ dependencies:
 primary_key:
 - ts_code
 - end_date
-- update_flag
 indexes: []
 columns:
 - name: ts_code
@@ -45,8 +44,3 @@ columns:
   length: 0
   default: '0.0'
   comment: 质押比例
-- name: update_flag
-  data_type: str
-  length: 255
-  default: ''
-  comment: 更新标识

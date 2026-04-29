@@ -10,3 +10,5 @@ class TushareIntegrationItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     data = scrapy.Field()
+    raw_data = scrapy.Field()
+    latest_data = scrapy.Field()

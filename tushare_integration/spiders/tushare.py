@@ -10,12 +10,20 @@ import yaml
 from tushare_integration.db_engine import DatabaseEngineFactory, DBEngine
 from tushare_integration.items import TushareIntegrationItem
 from tushare_integration.settings import TushareIntegrationSettings
+from tushare_integration.storage import (
+    build_latest_schema,
+    build_raw_schema,
+    get_latest_table_name,
+    get_raw_table_name,
+)
 
 
 class TushareSpider(scrapy.Spider):
     name: str
     api_name: str
     schema: dict = {}
+    latest_schema: dict = {}
+    raw_schema: dict = {}
     spider_settings: TushareIntegrationSettings  # 不能直接叫settings，会覆盖掉scrapy的settings
     db_engine: DBEngine
 
@@ -24,6 +32,8 @@ class TushareSpider(scrapy.Spider):
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
         self.schema = self.get_schema()
+        self.latest_schema = build_latest_schema(self.schema)
+        self.raw_schema = build_raw_schema(self.schema)
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -35,10 +45,11 @@ class TushareSpider(scrapy.Spider):
         return spider
 
     def create_table(self):
-        logging.info(f"quest {self.name}: create table {self.get_table_name()}")
+        logging.info(f"quest {self.name}: create table {self.get_latest_table_name()} and {self.get_raw_table_name()}")
 
         self.db_engine = DatabaseEngineFactory.create(self.spider_settings)
-        self.db_engine.create_table(self.get_table_name(), self.schema)
+        self.db_engine.create_table(self.get_latest_table_name(), self.latest_schema)
+        self.db_engine.create_table(self.get_raw_table_name(), self.raw_schema)
 
     def get_schema(self):
         with open(f"tushare_integration/schema/{self.get_schema_name()}.yaml", "r", encoding="utf-8") as f:
@@ -126,10 +137,25 @@ class TushareSpider(scrapy.Spider):
             return self.api_name
         return self.name.split("/")[-1]
 
-    def get_table_name(self) -> str:
+    def get_source_name(self) -> str:
+        return "tushare"
+
+    def get_latest_schema(self) -> dict:
+        return self.latest_schema
+
+    def get_raw_schema(self) -> dict:
+        return self.raw_schema
+
+    def get_latest_table_name(self) -> str:
         if self.custom_settings and self.custom_settings.get("TABLE_NAME"):
-            return self.custom_settings.get("TABLE_NAME", '')
-        return self.name.split("/")[-1]
+            return get_latest_table_name(self.custom_settings.get("TABLE_NAME", ""))
+        return get_latest_table_name(self.name.split("/")[-1])
+
+    def get_raw_table_name(self) -> str:
+        return get_raw_table_name(self.get_latest_table_name())
+
+    def get_table_name(self) -> str:
+        return self.get_latest_table_name()
 
 
 class DailySpider(TushareSpider):

@@ -1,7 +1,8 @@
 # TUSHARE相关配置
 tushare_url: https://api.tushare.pro
-tushare_point: 2000
-tushare_token: ""
+tushare_point: 10000
+tushare_token: "[REDACTED]"
+tushare_max_concurrent_requests: 100
 
 database:
   # 数据库配置
@@ -13,11 +14,14 @@ database:
   db_name: "default"
   template_params: {}
 
-reporters: []
+reporters: 
 #  - "tushare_integration.reporters.FeishuWebHookReporter"
+  - "tushare_integration.reporters.DingTalkWebHookReporter"
 
 # 飞书Webhook配置
 feishu_webhook: ""
+# 钉钉Webhook配置
+dingtalk_webhook: "https://oapi.dingtalk.com/robot/send?access_token=803c03d7a3dbb27478554734ffa83ace1055fe11aa42826dc0ae51563c537f15"
 
 # Scrapy配置
 bot_name: tushare_integration

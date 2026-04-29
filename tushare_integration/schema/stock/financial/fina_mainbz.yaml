@@ -25,11 +25,6 @@ columns:
   length: 255
   default: ''
   comment: 主营业务项目
-- name: bz_code
-  data_type: str
-  length: 255
-  default: ''
-  comment: 项目代码
 - name: bz_sales
   data_type: float
   length: 0

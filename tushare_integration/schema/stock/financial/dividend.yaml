@@ -9,7 +9,6 @@ primary_key:
 - end_date
 - ann_date
 - div_proc
-- update_flag
 indexes: []
 columns:
 - name: ts_code
@@ -92,8 +91,3 @@ columns:
   length: 0
   default: '0.0'
   comment: 实施基准股本（万）
-- name: update_flag
-  data_type: str
-  length: 255
-  default: ''
-  comment: 是否变更过（1表示变更）

@@ -17,7 +17,7 @@ columns:
     data_type: str
     length: 255
     default: ""
-    comment: 交易所代码SSE上交所 SZSE深交所 HKEX港交所
+    comment: 交易所代码 SSE上交所 SZSE深交所 BSE北交所
   - name: chairman
     data_type: str
     length: 255
@@ -83,11 +83,6 @@ columns:
     length: 255
     default: ""
     comment: 办公室
-  - name: ann_date
-    data_type: date
-    length: 0
-    default: "1970-01-01"
-    comment: 公告日期
   - name: business_scope
     data_type: str
     length: 255

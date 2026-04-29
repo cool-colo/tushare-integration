@@ -170,8 +170,3 @@ columns:
   length: 255
   default: ''
   comment: 备注
-- name: update_flag
-  data_type: str
-  length: 255
-  default: ''
-  comment: 更新标志

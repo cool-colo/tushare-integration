@@ -65,11 +65,13 @@ cronjob:
 reporters可选值
 
 - ` tushare_integration.reporters.FeishuWebHookReporter` 飞书WebHook
+- ` tushare_integration.reporters.DingTalkWebHookReporter` 钉钉WebHook
 
 | 配置项           | 环境变量         | 类型        | 默认值 | 说明            |
 | ---------------- | ---------------- | ----------- | ------ | --------------- |
 | `reporters`      |                  | `list[str]` | []     | Reporter清单    |
 | `feishu_webhook` | `FEISHU_WEBHOOK` | `str`       | ""     | 飞书WebHook地址 |
+| `dingtalk_webhook` | `DINGTALK_WEBHOOK` | `str`    | ""     | 钉钉WebHook地址 |
 
 #### Scrapy配置
 
@@ -81,4 +83,3 @@ reporters可选值
 | `retry_enabled`       |          | `bool` | true                  | 是否开启请求失败重试   |
 | `retry_delay`         |          | `int`  | 10                    | 重试延迟时间(秒)       |
 | `retry_times`         |          | `int`  | 6                     | 最大重试次数           |
-

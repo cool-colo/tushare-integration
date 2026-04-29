@@ -46,6 +46,32 @@ class FeishuWebHookReporter(Reporter):
         return cls(webhook=settings.get('FEISHU_WEBHOOK'))
 
 
+class DingTalkWebHookReporter(Reporter):
+    def __init__(self, webhook: str, *args, **kwargs):
+        self.webhook = webhook
+        super(DingTalkWebHookReporter, self).__init__(*args, **kwargs)
+
+    def send_report(self, subject: str, content: str, *args, **kwargs):
+        if not self.webhook:
+            logging.info('No dingtalk webhook, skip send report')
+            return
+
+        body = {
+            "msgtype": "markdown",
+            "markdown": {
+                "title": "牛 " + subject,
+                "text": f"### {subject}\n\n{content}",
+            },
+        }
+
+        resp = requests.post(self.webhook, json=body)
+        logging.info(f'Send report to dingtalk webhook, status code: {resp.status_code}, response: {resp.text}')
+
+    @classmethod
+    def from_settings(cls, settings):
+        return cls(webhook=settings.get('DINGTALK_WEBHOOK'))
+
+
 class ReporterLoader(object):
     def __init__(self, settings: dict):
         self.settings = settings

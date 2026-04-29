@@ -46,16 +46,6 @@ columns:
     length: 0
     default: "0.0"
     comment: 当前价格
-  - name: hot
-    data_type: float
-    length: 0
-    default: "0.0"
-    comment: 热度
-  - name: concept
-    data_type: str
-    length: 255
-    default: ""
-    comment: 标签
   - name: rank_time
     data_type: str
     length: 255

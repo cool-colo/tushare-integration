@@ -29,7 +29,9 @@
 {%- endmacro %}
 
 {%- macro parse_type(column) -%}
-    {%- if column.data_type == 'json' -%}
+    {%- if column.nullable -%}
+        {{ type_(column) }} NULL DEFAULT NULL
+    {%- elif column.data_type == 'json' -%}
         {{ type_(column) }} NOT NULL
     {%- else -%}
         {{ type_(column) }} NOT NULL DEFAULT {{ default_value(column) }}

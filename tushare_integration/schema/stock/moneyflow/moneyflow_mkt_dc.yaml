@@ -19,7 +19,7 @@ columns:
     length: 0
     default: "0.0"
     comment: 上证收盘价（元）
-  - name: ptc_change_sh
+  - name: pct_change_sh
     data_type: float
     length: 0
     default: "0.0"
