@@ -1,4 +1,5 @@
 import itertools
+import json
 import logging
 import re
 import signal
@@ -12,6 +13,12 @@ from scrapy.signalmanager import dispatcher
 from tushare_integration.db_engine import DatabaseEngineFactory
 from tushare_integration.reporters import ReporterLoader
 from tushare_integration.settings import TushareIntegrationSettings
+
+
+TUSHARE_RATE_LIMIT_MESSAGE_FRAGMENTS = (
+    "频率超限",
+    "rate limit",
+)
 
 
 class CrawlManager(object):
@@ -80,6 +87,24 @@ class CrawlManager(object):
         if failure_message:
             parts.append(f"error={failure_message}")
         return " ".join(parts)
+
+    @classmethod
+    def is_rate_limit_signal(cls, scrapy_signal) -> bool:
+        failure_message = cls.get_failure_message(scrapy_signal.get("failure"))
+        if any(fragment in failure_message for fragment in TUSHARE_RATE_LIMIT_MESSAGE_FRAGMENTS):
+            return True
+
+        response = scrapy_signal.get("response")
+        response_text = getattr(response, "text", None)
+        if not response_text:
+            return False
+
+        try:
+            payload = json.loads(response_text)
+            code = int(payload.get("code", 0))
+        except (json.JSONDecodeError, TypeError, ValueError):
+            return False
+        return code // 100 == 402
 
     def append_signal(self, signal, sender=None, item=None, response=None, spider=None, failure=None, **kwargs):
         if not any(
@@ -173,9 +198,13 @@ class CrawlManager(object):
         return all_spiders
 
     def raise_for_signal(self):
-        if self.signals:
-            signal_details = "\n".join([self.describe_signal(scrapy_signal) for scrapy_signal in self.signals])
+        fatal_signals = [scrapy_signal for scrapy_signal in self.signals if not self.is_rate_limit_signal(scrapy_signal)]
+        if fatal_signals:
+            signal_details = "\n".join([self.describe_signal(scrapy_signal) for scrapy_signal in fatal_signals])
             raise RuntimeError(f"Scrapy signals captured:\n{signal_details}")
+
+        for scrapy_signal in self.signals:
+            logging.warning("Non-fatal Scrapy signal captured: %s", self.describe_signal(scrapy_signal))
 
     def get_report_content(self):
         content = f"批次ID：{self.batch_id}\n"

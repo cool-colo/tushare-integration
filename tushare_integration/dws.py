@@ -13,6 +13,7 @@ from tushare_integration.settings import TushareIntegrationSettings
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DWS_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema" / "dws"
+DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT = 1200
 
 STOCK_FACTOR_WIDE_SOURCES = [
     "dwd_stock_eod_price",
@@ -39,7 +40,15 @@ class DWSManager:
 
     def get_db_engine(self):
         if self.db_engine is None:
-            self.db_engine = DatabaseEngineFactory.create(self.settings)
+            clickhouse_timeout = (
+                DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT
+                if self.settings.database.db_type == "clickhouse"
+                else None
+            )
+            self.db_engine = DatabaseEngineFactory.create(
+                self.settings,
+                clickhouse_send_receive_timeout=clickhouse_timeout,
+            )
         return self.db_engine
 
     def list_tables(self) -> list[str]:
@@ -81,9 +90,47 @@ quote_metrics AS (
     WHERE sys_to = {FAR_FUTURE_TS_SQL}
 ),
 financial_indicator AS (
-    SELECT *
-    FROM {db_name}.dwd_stock_financial_indicator
-    WHERE sys_to = {FAR_FUTURE_TS_SQL}
+    SELECT
+        instrument_id,
+        event_date,
+        available_trade_date,
+        source_batch_id,
+        source_record_hash,
+        roe,
+        roa,
+        roic,
+        grossprofit_margin,
+        netprofit_margin,
+        or_yoy,
+        netprofit_yoy,
+        op_yoy,
+        basic_eps_yoy,
+        q_roe,
+        q_gsprofit_margin,
+        q_netprofit_yoy,
+        q_sales_yoy,
+        ocf_to_or,
+        ocf_to_profit,
+        debt_to_assets,
+        current_ratio,
+        eps,
+        bps,
+        ocfps,
+        rd_exp
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY src.instrument_id, src.available_trade_date
+                ORDER BY
+                    src.event_date DESC,
+                    src.sys_from DESC,
+                    src.source_record_hash DESC
+            ) AS financial_rank
+        FROM {db_name}.dwd_stock_financial_indicator src
+        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
+    ) src
+    WHERE financial_rank = 1
 ),
 northbound_holding AS (
     SELECT *
@@ -200,39 +247,26 @@ wide_candidates AS (
             '|', coalesce(northbound_holding.source_record_hash, ''),
             '|', coalesce(margin_trading.source_record_hash, ''),
             '|', coalesce(chip_distribution.source_record_hash, '')
-        )))) AS source_record_hash,
-        row_number() OVER (
-            PARTITION BY price.instrument_id, price.event_date
-            ORDER BY
-                financial_indicator.available_trade_date DESC,
-                financial_indicator.event_date DESC,
-                financial_indicator.sys_from DESC,
-                financial_indicator.source_record_hash DESC
-        ) AS financial_rank
+        )))) AS source_record_hash
     FROM price
     LEFT JOIN daily_basic
         ON daily_basic.instrument_id = price.instrument_id
        AND daily_basic.event_date = price.event_date
-       AND daily_basic.available_trade_date <= price.available_trade_date
     LEFT JOIN quote_metrics
         ON quote_metrics.instrument_id = price.instrument_id
        AND quote_metrics.event_date = price.event_date
-       AND quote_metrics.available_trade_date <= price.available_trade_date
-    LEFT JOIN financial_indicator
-        ON financial_indicator.instrument_id = price.instrument_id
-       AND financial_indicator.available_trade_date <= price.available_trade_date
+    ASOF LEFT JOIN financial_indicator
+        ON price.instrument_id = financial_indicator.instrument_id
+       AND price.available_trade_date >= financial_indicator.available_trade_date
     LEFT JOIN northbound_holding
         ON northbound_holding.instrument_id = price.instrument_id
        AND northbound_holding.event_date = price.event_date
-       AND northbound_holding.available_trade_date <= price.available_trade_date
     LEFT JOIN margin_trading
         ON margin_trading.instrument_id = price.instrument_id
        AND margin_trading.event_date = price.event_date
-       AND margin_trading.available_trade_date <= price.available_trade_date
     LEFT JOIN chip_distribution
         ON chip_distribution.instrument_id = price.instrument_id
        AND chip_distribution.event_date = price.event_date
-       AND chip_distribution.available_trade_date <= price.available_trade_date
 )
 SELECT
     instrument_id,
@@ -311,7 +345,6 @@ SELECT
     source_batch_id,
     source_record_hash
 FROM wide_candidates
-WHERE financial_rank = 1
 """
 
     def render_sync_sql(self, table_name: str, target_table_name: str | None = None) -> str:

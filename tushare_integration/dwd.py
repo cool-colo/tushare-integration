@@ -266,13 +266,13 @@ security_union AS (
 
     UNION ALL
 
-    SELECT
-        concat('index:', src.ts_code) AS instrument_id,
-        'index' AS instrument_type,
-        arrayElement(splitByChar('.', src.ts_code), 2) AS exchange,
-        src.ts_code AS source_code,
-        CAST(NULL, 'Nullable(String)') AS symbol,
-        src.name AS instrument_name,
+        SELECT
+            concat('index:', src.ts_code) AS instrument_id,
+            'index' AS instrument_type,
+            arrayElement(splitByChar('.', assumeNotNull(src.ts_code)), 2) AS exchange,
+            src.ts_code AS source_code,
+            CAST(NULL, 'Nullable(String)') AS symbol,
+            src.name AS instrument_name,
         src.fullname AS full_name,
         CAST(NULL, 'Nullable(String)') AS english_name,
         src.market AS market,

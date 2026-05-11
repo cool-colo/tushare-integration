@@ -72,6 +72,7 @@ class IndexWeeklySpider(StockWeeklySpider):
 
 class IndexWeightSpider(DailySpider):
     name = "index/quotes/index_weight"
+    page_limit = 3000
     custom_settings = {
         "TABLE_NAME": "index_weight",
         "BASIC_TABLE": "index_basic",
@@ -100,32 +101,40 @@ class IndexWeightSpider(DailySpider):
             return
 
         for cal_date in cal_dates["cal_date"]:
-            request = self.get_scrapy_request(
-                params={'trade_date': cal_date.strftime("%Y%m%d"), 'offset': 0, 'limit': 3000}
+            trade_date = cal_date.strftime("%Y%m%d")
+            yield self.get_scrapy_request(
+                params={'trade_date': trade_date, 'offset': 0, 'limit': self.page_limit},
+                meta={'trade_date': trade_date, 'offset': 0, 'limit': self.page_limit, 'index_weight_pages': []},
             )
-            request.meta['trade_date'] = cal_date.strftime("%Y%m%d")
-            yield request
 
     def parse(self, response, **kwargs):
-        first_page = self.parse_response(response, **kwargs)
-        if first_page["data"].empty:
-            return None
+        page = self.parse_response(response, **kwargs)
+        pages = response.meta.get('index_weight_pages', [])
 
-        all_data = [first_page["data"]]
+        if page["data"].empty:
+            if pages:
+                yield TushareIntegrationItem(data=pd.concat(pages, ignore_index=True))
+            return
+
+        pages.append(page["data"])
         trade_date = response.meta['trade_date']
-        offset = 3000
-        limit = 3000
+        offset = response.meta.get('offset', 0)
+        limit = response.meta.get('limit', self.page_limit)
 
-        while True:
-            parsed_data = self.request_with_requests(
-                params={'trade_date': trade_date, 'offset': offset, 'limit': limit}
-            )
-            if parsed_data["data"].empty:
-                break
-            all_data.append(parsed_data["data"])
-            offset += limit
+        if len(page["data"]) < limit:
+            yield TushareIntegrationItem(data=pd.concat(pages, ignore_index=True))
+            return
 
-        return TushareIntegrationItem(data=pd.concat(all_data, ignore_index=True))
+        next_offset = offset + limit
+        yield self.get_scrapy_request(
+            params={'trade_date': trade_date, 'offset': next_offset, 'limit': limit},
+            meta={
+                'trade_date': trade_date,
+                'offset': next_offset,
+                'limit': limit,
+                'index_weight_pages': pages,
+            },
+        )
 
 
 class SzDailyInfoSpider(DailySpider):

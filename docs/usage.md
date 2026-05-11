@@ -162,6 +162,7 @@ cronjob:
 tushare_url: https://api.tushare.pro
 tushare_point: 2000
 tushare_token: ''
+tushare_rate_limit_ratio: 0.9
 
 database:
   # 数据库配置

@@ -1,5 +1,7 @@
 import datetime
 
+import pandas as pd
+
 from tushare_integration.spiders.tushare import DailySpider, TSCodeSpider, TushareSpider
 
 
@@ -19,25 +21,65 @@ class CyqPerfSpider(DailySpider):
 class CyqChipsSpider(TushareSpider):
     name = "stock/special/cyq_chips"
     api_name = "cyq_chips"
-    custom_settings = {"TABLE_NAME": "cyq_chips", "BASIC_TABLE": "stock_basic", "MIN_CAL_DATE": "2018-01-02"}
+    custom_settings = {
+        "TABLE_NAME": "cyq_chips",
+        "BASIC_TABLE": "stock_basic",
+        "MIN_CAL_DATE": "2018-01-02",
+        "BACKFILL_GAPS": False,
+    }
+
+    @staticmethod
+    def _format_trade_date(value):
+        if value is None or pd.isna(value):
+            return None
+        if hasattr(value, "strftime"):
+            return value.strftime("%Y-%m-%d")
+        return str(value)
+
+    def get_latest_trade_date(self, conn, ts_code: str):
+        latest_trade_date = conn.query_df(
+            f"""
+                SELECT max(trade_date) AS latest_trade_date
+                FROM {self.spider_settings.database.db_name}.{self.get_table_name()}
+                WHERE ts_code = '{ts_code}'
+            """
+        )
+        if latest_trade_date.empty:
+            return None
+        return self._format_trade_date(latest_trade_date["latest_trade_date"].iloc[0])
+
+    def get_missing_trade_dates(self, conn, ts_code: str):
+        db_name = self.spider_settings.database.db_name
+        min_cal_date = self.custom_settings.get("MIN_CAL_DATE")
+
+        if self.custom_settings.get("BACKFILL_GAPS", False):
+            incremental_condition = f"""
+                AND trade_date NOT IN (
+                    SELECT DISTINCT trade_date FROM {db_name}.{self.get_table_name()}
+                    WHERE ts_code = '{ts_code}'
+                )
+            """
+        else:
+            latest_trade_date = self.get_latest_trade_date(conn, ts_code)
+            incremental_condition = f"AND trade_date > '{latest_trade_date}'" if latest_trade_date else ""
+
+        return conn.query_df(
+            f"""
+                SELECT DISTINCT trade_date
+                FROM {db_name}.daily
+                WHERE ts_code = '{ts_code}'
+                AND trade_date >= '{min_cal_date}'
+                {incremental_condition}
+                ORDER BY trade_date
+            """
+        )
 
     def start_requests(self):
         conn = self.get_db_engine()
         for ts_code in conn.query_df(
             f""" SELECT ts_code FROM {self.spider_settings.database.db_name}.{self.custom_settings.get("BASIC_TABLE")}"""
         )['ts_code']:
-            # 查询在daily中出现，但是在cyq_chips中没有的trade_date
-            trade_dates = conn.query_df(
-                f"""
-                    SELECT DISTINCT trade_date 
-                    FROM {self.spider_settings.database.db_name}.daily
-                    WHERE ts_code = '{ts_code}' 
-                    AND trade_date >= '{self.custom_settings.get("MIN_CAL_DATE")}'
-                    AND trade_date NOT IN (
-                        SELECT DISTINCT trade_date FROM {self.spider_settings.database.db_name}.{self.get_table_name()}
-                        WHERE ts_code = '{ts_code}'
-                    )"""
-            )
+            trade_dates = self.get_missing_trade_dates(conn, ts_code)
 
             if trade_dates.empty:
                 continue

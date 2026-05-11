@@ -8,6 +8,7 @@ dependencies:
 primary_key:
 - ts_code
 - trade_date
+- price
 indexes: []
 columns:
 - name: ts_code

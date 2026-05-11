@@ -7,6 +7,7 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import os
+from math import floor
 from typing import Annotated, Any, Literal
 
 import yaml
@@ -73,6 +74,12 @@ class TushareIntegrationSettings(BaseSettings):
     tushare_max_concurrent_requests: int | None = Field(
         None, description='Tushare最大每分钟请求数,可手工指定，不指定会自动按积分计算'
     )
+    tushare_rate_limit_ratio: Annotated[float, env_variable('TUSHARE_RATE_LIMIT_RATIO')] = Field(
+        default=0.9,
+        gt=0,
+        le=1,
+        description='自动计算Tushare频次时使用的安全系数，避免贴近官方分钟频次上限',
+    )
 
     database: DatabaseConfig = Field(..., description='数据库配置')
 
@@ -138,17 +145,31 @@ class TushareIntegrationSettings(BaseSettings):
     def get_frequency(self):
         frequency = 0
         for freq in point_frequency:
-            if self.tushare_point > freq['point']:
+            if self.tushare_point >= freq['point']:
                 frequency = freq['frequency']
 
         return frequency
 
-    def get_settings(self):
+    def get_max_request_frequency(self):
+        if self.tushare_max_concurrent_requests:
+            return self.tushare_max_concurrent_requests
+        return self.get_frequency()
+
+    def get_effective_request_frequency(self):
+        frequency = self.get_max_request_frequency()
         if not self.tushare_max_concurrent_requests:
-            self.tushare_max_concurrent_requests = self.get_frequency()
+            frequency = floor(frequency * self.tushare_rate_limit_ratio)
+        return max(1, frequency)
+
+    def get_download_delay(self):
+        return 60 / self.get_effective_request_frequency()
+
+    def get_settings(self):
         # 将所有key转为大写
         settings = {k.upper(): v for k, v in self.model_dump().items()}
-        settings['DOWNLOAD_DELAY'] = 60 / settings["TUSHARE_MAX_CONCURRENT_REQUESTS"]
+        settings["TUSHARE_MAX_CONCURRENT_REQUESTS"] = self.get_max_request_frequency()
+        settings["TUSHARE_EFFECTIVE_MAX_CONCURRENT_REQUESTS"] = self.get_effective_request_frequency()
+        settings['DOWNLOAD_DELAY'] = self.get_download_delay()
         return settings
 
     @classmethod

@@ -1,6 +1,8 @@
 import datetime
 import json
 import logging
+import threading
+import time
 
 import pandas as pd
 import requests
@@ -26,6 +28,24 @@ TUSHARE_EMPTY_DATA_MESSAGE_FRAGMENTS = (
     "暂无数据",
     "无数据",
 )
+
+
+class TushareRequestRateLimiter:
+    _lock = threading.Lock()
+    _last_request_at = 0.0
+
+    @classmethod
+    def wait(cls, min_interval: float):
+        if min_interval <= 0:
+            return
+
+        with cls._lock:
+            now = time.monotonic()
+            sleep_seconds = cls._last_request_at + min_interval - now
+            if sleep_seconds > 0:
+                time.sleep(sleep_seconds)
+                now = time.monotonic()
+            cls._last_request_at = now
 
 
 class TushareSpider(scrapy.Spider):
@@ -138,23 +158,56 @@ class TushareSpider(scrapy.Spider):
             | meta,
         )
 
+    def wait_for_rate_limit(self):
+        spider_settings = getattr(self, "spider_settings", None)
+        get_download_delay = getattr(spider_settings, "get_download_delay", None)
+        if get_download_delay:
+            TushareRequestRateLimiter.wait(get_download_delay())
+
+    @staticmethod
+    def is_rate_limit_response(response) -> bool:
+        try:
+            payload = json.loads(response.text)
+        except json.JSONDecodeError:
+            return False
+
+        try:
+            code = int(payload.get("code", 0))
+        except (TypeError, ValueError):
+            return False
+        return code // 100 == 402
+
     # 搞个函数，直接使用requests发起请求
     def request_with_requests(self, params: dict | None = None, meta: dict | None = None) -> TushareIntegrationItem:
-        logging.info(f"Requesting {self.get_api_name()} with params: {params}")
-        response = requests.post(
-            url=self.spider_settings.tushare_url,
-            json={
-                "api_name": self.get_api_name(),
-                "token": self.spider_settings.tushare_token,
-                "params": params,
-                "fields": self.load_fields(),
-            },
-            headers={
-                "Content-Type": "application/json",
-            },
-        )
+        retry_times = getattr(self.spider_settings, "retry_times", 0)
+        retry_delay = max(60, getattr(self.spider_settings, "retry_delay", 60))
 
-        return self.parse_response(response)
+        for retry_count in range(retry_times + 1):
+            logging.info(f"Requesting {self.get_api_name()} with params: {params}")
+            self.wait_for_rate_limit()
+            response = requests.post(
+                url=self.spider_settings.tushare_url,
+                json={
+                    "api_name": self.get_api_name(),
+                    "token": self.spider_settings.tushare_token,
+                    "params": params,
+                    "fields": self.load_fields(),
+                },
+                headers={
+                    "Content-Type": "application/json",
+                },
+            )
+
+            if self.is_rate_limit_response(response) and retry_count < retry_times:
+                logging.warning(
+                    f"Request {self.get_api_name()} hit rate limit, retrying after {retry_delay} seconds: {params}"
+                )
+                time.sleep(retry_delay)
+                continue
+
+            return self.parse_response(response)
+
+        raise RuntimeError(f"Request {self.get_api_name()} failed before receiving a response")
 
     def load_fields(self):
         return ",".join([column["name"] for column in self.schema["columns"]])

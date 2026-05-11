@@ -110,6 +110,7 @@ class TushareRetryDownloaderMiddleware(RetryMiddleware):
     def __init__(self, settings):
         super().__init__(settings)
         self.retry_delay = settings.getfloat("RETRY_DELAY")
+        self.rate_limit_retry_delay = max(60, self.retry_delay)
 
     def process_response(self, request, response, spider):
         if response.status in self.retry_http_codes:
@@ -117,10 +118,20 @@ class TushareRetryDownloaderMiddleware(RetryMiddleware):
             reason = response_status_message(response.status)
             return self._retry(request, reason, spider) or response
 
-        if json.loads(response.text)["code"] != 0:
+        try:
+            payload = json.loads(response.text)
+        except json.JSONDecodeError:
+            return response
+
+        try:
+            code = int(payload.get("code", 0))
+        except (TypeError, ValueError):
+            return response
+
+        if code != 0:
             # 如果是402XX，说明是限流
-            if json.loads(response.text)["code"] // 100 == 402:
-                time.sleep(self.retry_delay)
+            if code // 100 == 402:
+                time.sleep(self.rate_limit_retry_delay)
                 reason = "rate limit"
                 return self._retry(request, reason, spider) or response
 
