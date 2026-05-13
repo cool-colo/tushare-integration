@@ -20,12 +20,26 @@ cronjob:
     cron_expr: '0 8 * * 1-5'   # 非K8S部署下该参数不生效
     spiders:
       - name: "stock/basic/stock_basic"  # Spider名称
+        update_type: full                # 可选：full 表示全量任务
       - name: "stock/basic/stock_company"
+        update_type: full
   - name: daily_open
     cron_expr: '40 9 * * 1-5'
     spiders:
-      - name: "stock/quotes/adj_factor"
+      - name: "stock/quotes/adj_factor" # 未配置 update_type 时默认为 incremental
       - name: "stock/special/.*"    # 支持使用正则表达式匹配（全文匹配）
+```
+
+`update_type` 用于在业务分组之外增加“增量/全量”维度：
+
+- `incremental`：日常增量任务，未显式配置时默认使用该类型，也可用别名 `daily`
+- `full`：全量任务，适合按周或按月运行，也可用别名 `fully`
+
+运行示例：
+
+```shell
+python main.py run job stock/quotes --update-type incremental
+python main.py run job stock/quotes --update-type full
 ```
 
 ### config.yaml

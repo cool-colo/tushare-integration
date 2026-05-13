@@ -3,6 +3,7 @@ cronjob:
     name: future/basic
     spiders:
       - name: future/basic/fut_basic
+        update_type: full
   - cron_expr: UnSupported
     name: future/quotes
     spiders:
@@ -16,10 +17,12 @@ cronjob:
     name: index/basic
     spiders:
       - name: index/basic/index_basic
+        update_type: full
   - cron_expr: UnSupported
     name: index/quotes
     spiders:
       - name: index/quotes/index_daily
+        update_type: full
       - name: index/quotes/daily_info
       - name: index/quotes/index_dailybasic
       - name: index/quotes/index_global
@@ -31,13 +34,17 @@ cronjob:
     name: index/sw
     spiders:
       - name: index/sw/index_classify
+        update_type: full
       - name: index/sw/index_member
+        update_type: full
   - cron_expr: UnSupported
     name: index/ths
     spiders:
       - name: index/ths/ths_daily
       - name: index/ths/ths_index
+        update_type: full
       - name: index/ths/ths_member
+        update_type: full
   - cron_expr: UnSupported
     name: index/zx
     spiders:
@@ -46,32 +53,52 @@ cronjob:
     name: stock/basic
     spiders:
       - name: stock/basic/stock_basic
+        update_type: full
       - name: stock/basic/namechange
+        update_type: full
       - name: stock/basic/hs_const
+        update_type: full
       - name: stock/basic/stock_st
       - name: stock/basic/st
+        update_type: full
       - name: stock/basic/stock_hsgt
       - name: stock/basic/trade_cal
+        update_type: full
       - name: stock/basic/stock_company
+        update_type: full
       - name: stock/basic/stk_managers
+        update_type: full
       - name: stock/basic/stk_rewards
+        update_type: full
       - name: stock/basic/bse_mapping
+        update_type: full
       - name: stock/basic/new_share
+        update_type: full
     #- name: stock/basic/stk_premarket
       - name: stock/basic/bak_basic
   - cron_expr: UnSupported
     name: stock/financial
     spiders:
       - name: stock/financial/balancesheet
+        update_type: full
       - name: stock/financial/cashflow
+        update_type: full
       - name: stock/financial/income
+        update_type: full
       - name: stock/financial/express
+        update_type: full
       - name: stock/financial/forecast
+        update_type: full
       - name: stock/financial/dividend
+        update_type: full
       - name: stock/financial/fina_indicator
+        update_type: full
       - name: stock/financial/fina_audit
+        update_type: full
       - name: stock/financial/fina_mainbz
+        update_type: full
       - name: stock/financial/disclosure_date
+        update_type: full
   - cron_expr: UnSupported
     name: stock/margin
     spiders:
@@ -79,6 +106,7 @@ cronjob:
       - name: stock/margin/margin_detail
       - name: stock/margin/slb_len_mm
       - name: stock/margin/slb_len
+        update_type: full
       - name: stock/margin/slb_sec_detail
       - name: stock/margin/slb_sec
   - cron_expr: UnSupported
@@ -97,15 +125,23 @@ cronjob:
     spiders:
       - name: stock/market/margin_secs
       - name: stock/market/top10_holders
+        update_type: full
       - name: stock/market/top10_floatholders
+        update_type: full
       - name: stock/market/top_list
       - name: stock/market/top_inst
       - name: stock/market/pledge_stat
+        update_type: full
       - name: stock/market/pledge_detail
+        update_type: full
       - name: stock/market/repurchase
+        update_type: full
       - name: stock/market/share_float
+        update_type: full
       - name: stock/market/concept
+        update_type: full
       - name: stock/market/concept_detail
+        update_type: full
       - name: stock/market/block_trade
       - name: stock/market/stk_holdernumber
       - name: stock/market/stk_holdertrade
@@ -113,7 +149,9 @@ cronjob:
       - name: stock/market/stk_high_shock
       - name: stock/market/stk_alert
       - name: stock/market/stk_account
+        update_type: full
       - name: stock/market/stk_account_old
+        update_type: full
       - name: stock/market/dc_index
       - name: stock/market/dc_member
       - name: stock/market/dc_daily
@@ -137,10 +175,12 @@ cronjob:
       - name: stock/quotes/ggt_top10
       - name: stock/quotes/ggt_daily
       - name: stock/quotes/ggt_monthly
+        update_type: full
       - name: stock/quotes/bak_daily
       - name: stock/quotes/stk_auction_o
       - name: stock/quotes/stk_auction_c
       - name: stock/quotes/stk_nineturn
+        update_type: full
       - name: stock/quotes/stk_ah_comparison
       - name: stock/quotes/stk_auction
     #- name: stock/quotes/stk_mins
@@ -148,6 +188,7 @@ cronjob:
     name: stock/special
     spiders:
       - name: stock/special/report_rc
+        update_type: full
       - name: stock/special/cyq_perf
       - name: stock/special/cyq_chips
       - name: stock/special/stk_factor
@@ -156,6 +197,10 @@ cronjob:
       - name: stock/special/hk_hold
       - name: stock/special/limit_list_d
       - name: stock/special/stk_surv
+        update_type: full
       - name: stock/special/broker_recommend
+        update_type: full
       - name: stock/special/hm_list
+        update_type: full
       - name: stock/special/hm_detail
+        update_type: full

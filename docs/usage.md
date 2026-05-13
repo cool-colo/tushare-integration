@@ -156,6 +156,19 @@ cronjob:
 
 ```
 
+`jobs.yaml` 中的 spider 可以增加 `update_type: full` 标记全量任务；未标记时默认作为 `incremental` 日常增量任务。运行时可以按维度过滤：
+
+```shell
+python main.py run job stock/quotes --update-type incremental
+python main.py run job stock/quotes --update-type full
+```
+
+仓库中的 `scripts/run_daily_stock_jobs.sh` 默认运行 `UPDATE_TYPE=incremental`，可在 crontab 中每天执行；周度或月度全量任务可使用：
+
+```shell
+UPDATE_TYPE=full scripts/run_daily_stock_jobs.sh
+```
+
 ```yaml
 # config.yaml
 # TUSHARE相关配置

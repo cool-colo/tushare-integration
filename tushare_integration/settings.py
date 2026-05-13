@@ -11,7 +11,7 @@ from math import floor
 from typing import Annotated, Any, Literal
 
 import yaml
-from pydantic import BeforeValidator, Field
+from pydantic import BaseModel, BeforeValidator, Field
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 
 point_frequency = [
@@ -65,6 +65,36 @@ class DatabaseConfig(BaseSettings):
     model_config = SettingsConfigDict(extra='ignore')
 
 
+class QualityConfig(BaseModel):
+    mode: Literal["strict", "warn_only", "skip"] = Field(
+        default="warn_only", description="Default data validation mode"
+    )
+    ods_mode: Literal["strict", "warn_only", "skip"] | None = Field(
+        default=None, description="ODS validation mode override"
+    )
+    dwd_mode: Literal["strict", "warn_only", "skip"] | None = Field(
+        default=None, description="DWD validation mode override"
+    )
+    dws_mode: Literal["strict", "warn_only", "skip"] | None = Field(
+        default=None, description="DWS validation mode override"
+    )
+    daily_monitor_mode: Literal["strict", "warn_only", "skip"] | None = Field(
+        default=None, description="Daily monitoring validation mode override"
+    )
+    table_modes: dict[str, Literal["strict", "warn_only", "skip"]] = Field(
+        default_factory=dict, description="Per-table validation mode overrides"
+    )
+    skip_until: str | None = Field(
+        default=None, description="Optional expiry timestamp for skip mode"
+    )
+    max_samples: int = Field(default=20, ge=0, description="Maximum failed-row samples per rule")
+    create_result_tables: bool = Field(
+        default=True, description="Create validation result tables before recording runs"
+    )
+
+    model_config = SettingsConfigDict(extra='ignore')
+
+
 # 使用pydantic定义数据模型
 class TushareIntegrationSettings(BaseSettings):
     # Tushare相关的配置项
@@ -82,6 +112,7 @@ class TushareIntegrationSettings(BaseSettings):
     )
 
     database: DatabaseConfig = Field(..., description='数据库配置')
+    quality: QualityConfig = Field(default_factory=QualityConfig, description='数据质量校验配置')
 
     reporters: list[str] = Field([], description='报告模块')
     feishu_webhook: Annotated[str, env_variable('FEISHU_WEBHOOK')] = Field(..., description='飞书webhook')

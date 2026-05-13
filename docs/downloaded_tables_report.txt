@@ -1,723 +1,311 @@
 已下载数据表清单（非 RAW 表）
 ============================================================
-生成时间：2026-05-07 19:29:15
+生成时间：2026-05-12 15:19:21
 数据库：clickhouse://127.0.0.1:8123/default
 统计范围：数据库中实际存在、表名不以 _raw 结尾、排除内部日志表、排除 0 行空表的数据表
-表数量：69 张
-总数据量：254,010,074 行
+表数量：102 张
+总数据量：430,548,047 行
 
 一、表清单总览
 ------------------------------------------------------------
-01. adj_factor｜复权因子｜18,547,643 行
-02. bak_basic｜备用列表｜10,225,159 行
-03. bak_daily｜备用行情｜9,624,742 行
-04. balancesheet｜资产负债表｜2,009,083 行
-05. block_trade｜大宗交易｜186,575 行
-06. broker_recommend｜券商每月荐股｜17,006 行
-07. cashflow｜现金流量表｜3,579,392 行
-08. ccass_hold｜中央结算系统持股汇总｜3,340,419 行
-09. ccass_hold_detail｜中央结算系统持股明细｜3,277,909 行
-10. concept｜概念股分类｜879 行
-11. concept_detail｜概念股列表｜34,509 行
-12. cyq_chips｜每日筹码分布｜6,027 行
-13. cyq_perf｜每日筹码及胜率｜9,154,596 行
-14. daily｜日线行情｜17,721,758 行
-15. daily_basic｜每日指标｜17,630,279 行
-16. disclosure_date｜财报披露计划｜614,646 行
-17. dividend｜分红送股｜328,505 行
-18. dwd_stock_adj_factor｜股票复权因子标准层｜18,547,643 行
-19. dwd_stock_balance_sheet｜股票资产负债表标准层｜1,027,683 行
-20. dwd_stock_cashflow｜股票现金流量表标准层｜1,865,759 行
-21. dwd_stock_daily_basic｜股票每日指标标准层｜17,630,279 行
-22. dwd_stock_eod_price｜股票日线行情标准层｜17,721,758 行
-23. dws_stock_factor_wide｜股票因子计算宽表汇总层｜待同步
-24. dwd_stock_financial_indicator｜股票财务指标标准层｜664,113 行
-25. dwd_stock_income｜股票利润表标准层｜2,144,627 行
-26. dwd_trade_calendar｜交易日历标准层｜72,609 行
-27. express｜业绩快报｜41,322 行
-28. fina_audit｜财务审计意见｜191,828 行
-29. fina_indicator｜财务指标数据｜1,325,575 行
-30. fina_mainbz｜主营业务构成｜217,013 行
-31. forecast｜业绩预告｜235,789 行
-32. ggt_daily｜港股通每日成交统计｜2,612 行
-33. ggt_top10｜港股通十大成交股｜35,361 行
-34. hk_hold｜沪深股通持股明细｜5,657,350 行
-35. hs_const｜沪深股通成份股｜823 行
-36. hsgt_top10｜沪深股通十大成交股｜48,390 行
-37. income｜利润表｜2,465,878 行
-38. margin｜融资融券交易汇总｜3,907 行
-39. margin_detail｜融资融券交易明细｜6,425,779 行
-40. margin_secs｜融资融券标的（新）｜7,600,427 行
-41. monthly｜月线行情｜894,626 行
-42. namechange｜股票曾用名｜38,674 行
-43. new_share｜IPO新股列表｜4,268 行
-44. pledge_detail｜股权质押明细｜152,287 行
-45. pledge_stat｜股权质押统计数据｜4,277,935 行
-46. report_rc｜卖方盈利预测数据｜1,801,084 行
-47. repurchase｜股票回购｜109,146 行
-48. share_float｜限售股解禁｜50,509 行
-49. slb_len｜转融资交易汇总｜2,811 行
-50. slb_len_mm｜做市借券交易汇总｜55,214 行
-51. slb_sec｜转融券交易汇总｜2,287,159 行
-52. slb_sec_detail｜转融券交易明细｜850,244 行
-53. stk_factor｜股票技术因子｜17,976,629 行
-54. stk_holdernumber｜股东户数｜392,737 行
-55. stk_holdertrade｜股东增减持｜65,466 行
-56. stk_limit｜每日涨跌停价格｜17,434,325 行
-57. stk_managers｜上市公司管理层｜1,201,385 行
-58. stk_mins｜分钟线行情｜13,255 行
-59. stk_rewards｜管理层薪酬和持股｜3,359,014 行
-60. stk_surv｜机构调研表｜74,139 行
-61. stock_basic｜基础信息｜5,842 行
-62. stock_company｜上市公司基本信息｜12,544 行
-63. suspend_d｜每日停复牌信息｜640,368 行
-64. top10_floatholders｜前十大流通股东｜75,002 行
-65. top10_holders｜前十大股东｜147,260 行
-66. top_inst｜龙虎榜机构明细｜185,529 行
-67. top_list｜龙虎榜每日明细｜222,196 行
-68. trade_cal｜交易日历｜72,609 行
-69. weekly｜周线行情｜3,752,973 行
+01. dws_stock_factor_wide｜未在本地 schema 中匹配到表说明｜17,732,742 行
+02. dwd_future_eod_price｜期货日线行情标准层｜2,884,185 行
+03. dwd_index_eod_price｜指数日线行情标准层｜13,936,784 行
+04. dwd_security_master｜统一证券主数据标准层｜29,461 行
+05. dwd_stock_adj_factor｜股票复权因子标准层｜18,553,162 行
+06. dwd_stock_balance_sheet｜股票资产负债表标准层｜1,028,155 行
+07. dwd_stock_cashflow｜股票现金流量表标准层｜1,905,628 行
+08. dwd_stock_chip_distribution｜股票筹码分布表现标准层｜9,165,580 行
+09. dwd_stock_daily_basic｜股票每日指标标准层｜17,641,263 行
+10. dwd_stock_eod_price｜股票日线行情标准层｜17,732,742 行
+11. dwd_stock_eod_quote_metrics｜股票日频扩展行情指标标准层｜9,635,784 行
+12. dwd_stock_factor_bar｜未在本地 schema 中匹配到表说明｜17,629,192 行
+13. dwd_stock_financial_indicator｜股票财务指标标准层｜664,540 行
+14. dwd_stock_income｜股票利润表标准层｜2,144,979 行
+15. dwd_stock_margin_trading｜股票融资融券交易明细标准层｜6,432,110 行
+16. dwd_stock_northbound_holding｜股票北向持股标准层｜5,659,399 行
+17. dwd_stock_st｜股票ST状态标准层｜320,268 行
+18. dwd_trade_calendar｜交易日历标准层｜72,609 行
+19. adj_factor｜复权因子｜18,553,162 行
+20. bak_basic｜备用列表｜10,241,723 行
+21. bak_daily｜备用行情｜9,635,784 行
+22. balancesheet｜资产负债表｜4,053,625 行
+23. block_trade｜大宗交易｜186,788 行
+24. broker_recommend｜券商每月荐股｜17,006 行
+25. cashflow｜现金流量表｜3,934,336 行
+26. ccass_hold｜中央结算系统持股汇总｜3,342,277 行
+27. ccass_hold_detail｜中央结算系统持股明细｜3,279,755 行
+28. concept｜概念股分类｜879 行
+29. concept_detail｜概念股列表｜34,509 行
+30. cyq_chips｜每日筹码分布｜46,437,149 行
+31. cyq_chips_backup_before_price_key｜未在本地 schema 中匹配到表说明｜284,140 行
+32. cyq_perf｜每日筹码及胜率｜9,165,580 行
+33. daily｜日线行情｜17,732,742 行
+34. daily_basic｜每日指标｜17,641,263 行
+35. daily_info｜市场交易统计｜129,916 行
+36. dc_concept｜题材数据（东方财富）｜8,337 行
+37. dc_index｜东方财富概念板块｜196,141 行
+38. disclosure_date｜财报披露计划｜622,283 行
+39. dividend｜分红送股｜232,909 行
+40. express｜业绩快报｜35,614 行
+41. fina_audit｜财务审计意见｜174,926 行
+42. fina_indicator｜财务指标数据｜1,734,530 行
+43. fina_mainbz｜主营业务构成｜255,850 行
+44. forecast｜业绩预告｜342,630 行
+45. fut_basic｜期货合约信息表｜10,897 行
+46. fut_daily｜期货日线行情｜2,884,185 行
+47. fut_holding｜每日成交持仓排名｜24,060,250 行
+48. fut_mapping｜期货主力与连续合约｜543,669 行
+49. fut_settle｜结算参数｜843,999 行
+50. fut_wsr｜仓单日报｜139,130 行
+51. ggt_daily｜港股通每日成交统计｜2,614 行
+52. ggt_top10｜港股通十大成交股｜35,385 行
+53. hk_hold｜沪深股通持股明细｜5,659,208 行
+54. hs_const｜沪深股通成份股｜823 行
+55. hsgt_top10｜沪深股通十大成交股｜48,430 行
+56. income｜利润表｜8,812,962 行
+57. index_basic｜指数基本信息｜15,694 行
+58. index_daily｜指数日线行情｜13,936,784 行
+59. index_dailybasic｜大盘指数每日指标｜57,556 行
+60. index_global｜国际指数｜158,507 行
+61. index_monthly｜指数月线行情｜206,781 行
+62. index_weekly｜指数周线行情｜877,266 行
+63. index_weight｜指数成分和权重｜8,051,563 行
+64. margin｜融资融券交易汇总｜3,909 行
+65. margin_detail｜融资融券交易明细｜6,432,110 行
+66. margin_secs｜融资融券标的（新）｜7,609,177 行
+67. monthly｜月线行情｜894,626 行
+68. namechange｜股票曾用名｜12,910 行
+69. new_share｜IPO新股列表｜4,269 行
+70. pledge_detail｜股权质押明细｜244,214 行
+71. pledge_stat｜股权质押统计数据｜5,016,401 行
+72. report_rc｜卖方盈利预测数据｜1,987,993 行
+73. repurchase｜股票回购｜113,836 行
+74. share_float｜限售股解禁｜45,786 行
+75. slb_len｜转融资交易汇总｜2,811 行
+76. slb_len_mm｜做市借券交易汇总｜55,214 行
+77. slb_sec｜转融券交易汇总｜2,287,159 行
+78. slb_sec_detail｜转融券交易明细｜850,244 行
+79. stk_alert｜交易所重点提示证券｜67 行
+80. stk_factor｜股票技术因子｜17,987,612 行
+81. stk_high_shock｜个股严重异常波动｜22 行
+82. stk_holdernumber｜股东户数｜393,514 行
+83. stk_holdertrade｜股东增减持｜65,526 行
+84. stk_limit｜每日涨跌停价格｜17,441,905 行
+85. stk_managers｜上市公司管理层｜725,840 行
+86. stk_mins｜分钟线行情｜13,255 行
+87. stk_rewards｜管理层薪酬和持股｜4,038,219 行
+88. stk_shock｜个股异常波动｜500 行
+89. stk_surv｜机构调研表｜110,178 行
+90. stock_basic｜基础信息｜5,844 行
+91. stock_company｜上市公司基本信息｜12,544 行
+92. stock_hsgt｜沪深港通股票列表｜713,663 行
+93. stock_st｜ST股票列表｜320,268 行
+94. suspend_d｜每日停复牌信息｜640,395 行
+95. sz_daily_info｜深圳市场每日交易概况｜67,937 行
+96. tdx_index｜通达信板块信息｜150,635 行
+97. top10_floatholders｜前十大流通股东｜60,300 行
+98. top10_holders｜前十大股东｜126,590 行
+99. top_inst｜龙虎榜机构明细｜185,823 行
+100. top_list｜龙虎榜每日明细｜222,490 行
+101. trade_cal｜交易日历｜157,576 行
+102. weekly｜周线行情｜3,758,545 行
 
 二、字段明细
 ============================================================
 
 ------------------------------------------------------------
-01. adj_factor
-表说明：复权因子
-数据量：18,547,643 行
-字段数量：8 个
-结构来源：stock/quotes/adj_factor.yaml
+01. dws_stock_factor_wide
+表说明：未在本地 schema 中匹配到表说明
+数据量：17,732,742 行
+字段数量：75 个
+结构来源：database metadata
 字段清单：
-    01. ts_code：股票代码
-    02. trade_date：交易日期
-    03. adj_factor：复权因子
-    04. _source：数据来源
-    05. _api_name：源接口名称
-    06. _batch_id：采集批次ID
-    07. _ingest_time：入库时间
-    08. _record_hash：记录哈希
-
-------------------------------------------------------------
-02. bak_basic
-表说明：备用列表
-数据量：10,225,159 行
-字段数量：29 个
-结构来源：stock/basic/bak_basic.yaml
-字段清单：
-    01. trade_date：交易日期
-    02. ts_code：TS股票代码
-    03. name：股票名称
-    04. industry：行业
-    05. area：地域
-    06. pe：市盈率（动）
-    07. float_share：流通股本（万）
-    08. total_share：总股本（万）
-    09. total_assets：总资产（万）
-    10. liquid_assets：流动资产（万）
-    11. fixed_assets：固定资产（万）
-    12. reserved：公积金
-    13. reserved_pershare：每股公积金
-    14. eps：每股收益
-    15. bvps：每股净资产
-    16. pb：市净率
-    17. list_date：上市日期
-    18. undp：未分配利润
-    19. per_undp：每股未分配利润
-    20. rev_yoy：收入同比（%）
-    21. profit_yoy：利润同比（%）
-    22. gpr：毛利率（%）
-    23. npr：净利润率（%）
-    24. holder_num：股东人数
-    25. _source：数据来源
-    26. _api_name：源接口名称
-    27. _batch_id：采集批次ID
-    28. _ingest_time：入库时间
-    29. _record_hash：记录哈希
-
-------------------------------------------------------------
-03. bak_daily
-表说明：备用行情
-数据量：9,624,742 行
-字段数量：36 个
-结构来源：stock/quotes/bak_daily.yaml
-字段清单：
-    01. ts_code：股票代码
-    02. trade_date：交易日期
-    03. name：股票名称
-    04. pct_change：涨跌幅
-    05. close：收盘价
-    06. change：涨跌额
-    07. open：开盘价
-    08. high：最高价
-    09. low：最低价
-    10. pre_close：昨收价
-    11. vol_ratio：量比
-    12. turn_over：换手率
-    13. swing：振幅
+    01. instrument_id：统一证券ID
+    02. instrument_type：证券类型
+    03. exchange：交易所
+    04. source_code：源侧证券代码
+    05. event_date：业务归属日期
+    06. trade_date：交易日期
+    07. available_trade_date：最早可用交易日
+    08. open：开盘价
+    09. high：最高价
+    10. low：最低价
+    11. close：收盘价
+    12. pre_close：昨收价
+    13. pct_chg：涨跌幅
     14. vol：成交量
     15. amount：成交额
-    16. selling：外盘
-    17. buying：内盘
-    18. total_share：总股本(万)
-    19. float_share：流通股本(万)
-    20. pe：市盈(动)
-    21. industry：所属行业
-    22. area：所属地域
-    23. float_mv：流通市值
-    24. total_mv：总市值
-    25. avg_price：平均价
-    26. strength：强弱度(%)
-    27. activity：活跃度(%)
-    28. avg_turnover：笔换手
-    29. attack：攻击波(%)
-    30. interval_3：近3月涨幅
-    31. interval_6：近6月涨幅
-    32. _source：数据来源
-    33. _api_name：源接口名称
-    34. _batch_id：采集批次ID
-    35. _ingest_time：入库时间
-    36. _record_hash：记录哈希
+    16. buying：外盘
+    17. selling：内盘
+    18. vol_ratio：量比
+    19. turn_over：换手率
+    20. swing：振幅
+    21. avg_price：均价
+    22. strength：强弱度
+    23. activity：活跃度
+    24. avg_turnover：笔换手
+    25. attack：攻击波
+    26. pe_ttm：市盈率TTM
+    27. pb：市净率
+    28. ps_ttm：市销率TTM
+    29. dv_ttm：股息率TTM
+    30. turnover_rate_f：自由流通股换手率
+    31. volume_ratio_db：量比每日指标
+    32. circ_mv：流通市值
+    33. total_mv：总市值
+    34. total_share：总股本
+    35. float_share：流通股本
+    36. free_share：自由流通股本
+    37. roe：净资产收益率
+    38. roa：总资产报酬率
+    39. roic：投入资本回报率
+    40. grossprofit_margin：销售毛利率
+    41. netprofit_margin：销售净利率
+    42. or_yoy：营业收入同比增长率
+    43. netprofit_yoy：归母净利润同比增长率
+    44. op_yoy：营业利润同比增长率
+    45. basic_eps_yoy：基本每股收益同比增长率
+    46. q_roe：单季度净资产收益率
+    47. q_gsprofit_margin：单季度销售毛利率
+    48. q_netprofit_yoy：单季度归母净利润同比增长率
+    49. q_sales_yoy：单季度营业收入同比增长率
+    50. ocf_to_or：经营现金流营业收入比
+    51. ocf_to_profit：经营现金流营业利润比
+    52. debt_to_assets：资产负债率
+    53. current_ratio：流动比率
+    54. eps：基本每股收益
+    55. bps：每股净资产
+    56. ocfps：每股经营现金流
+    57. rd_exp：研发费用
+    58. hk_hold_vol：北向持股数量
+    59. hk_hold_ratio：北向持股占比
+    60. rzye：融资余额
+    61. rzmre：融资买入额
+    62. rzche：融资偿还额
+    63. rqye：融券余额
+    64. rqyl：融券余量
+    65. rqmcl：融券卖出量
+    66. winner_rate：获利比例
+    67. cost_5pct：5分位成本
+    68. cost_50pct：50分位成本
+    69. cost_95pct：95分位成本
+    70. weight_avg_cost：加权平均成本
+    71. build_time：汇总构建时间
+    72. source：来源系统
+    73. source_table：来源表
+    74. source_batch_id：来源批次ID
+    75. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-04. balancesheet
-表说明：资产负债表
-数据量：2,009,083 行
-字段数量：163 个
-结构来源：stock/financial/balancesheet.yaml
-字段清单：
-    01. ts_code：TS股票代码
-    02. ann_date：公告日期
-    03. f_ann_date：实际公告日期
-    04. end_date：报告期
-    05. report_type：报表类型
-    06. comp_type：公司类型(1一般工商业2银行3保险4证券)
-    07. end_type：报告期类型
-    08. total_share：期末总股本
-    09. cap_rese：资本公积金
-    10. undistr_porfit：未分配利润
-    11. surplus_rese：盈余公积金
-    12. special_rese：专项储备
-    13. money_cap：货币资金
-    14. trad_asset：交易性金融资产
-    15. notes_receiv：应收票据
-    16. accounts_receiv：应收账款
-    17. oth_receiv：其他应收款
-    18. prepayment：预付款项
-    19. div_receiv：应收股利
-    20. int_receiv：应收利息
-    21. inventories：存货
-    22. amor_exp：长期待摊费用
-    23. nca_within_1y：一年内到期的非流动资产
-    24. sett_rsrv：结算备付金
-    25. loanto_oth_bank_fi：拆出资金
-    26. premium_receiv：应收保费
-    27. reinsur_receiv：应收分保账款
-    28. reinsur_res_receiv：应收分保合同准备金
-    29. pur_resale_fa：买入返售金融资产
-    30. oth_cur_assets：其他流动资产
-    31. total_cur_assets：流动资产合计
-    32. fa_avail_for_sale：可供出售金融资产
-    33. htm_invest：持有至到期投资
-    34. lt_eqt_invest：长期股权投资
-    35. invest_real_estate：投资性房地产
-    36. time_deposits：定期存款
-    37. oth_assets：其他资产
-    38. lt_rec：长期应收款
-    39. fix_assets：固定资产
-    40. cip：在建工程
-    41. const_materials：工程物资
-    42. fixed_assets_disp：固定资产清理
-    43. produc_bio_assets：生产性生物资产
-    44. oil_and_gas_assets：油气资产
-    45. intan_assets：无形资产
-    46. r_and_d：研发支出
-    47. goodwill：商誉
-    48. lt_amor_exp：长期待摊费用
-    49. defer_tax_assets：递延所得税资产
-    50. decr_in_disbur：发放贷款及垫款
-    51. oth_nca：其他非流动资产
-    52. total_nca：非流动资产合计
-    53. cash_reser_cb：现金及存放中央银行款项
-    54. depos_in_oth_bfi：存放同业和其它金融机构款项
-    55. prec_metals：贵金属
-    56. deriv_assets：衍生金融资产
-    57. rr_reins_une_prem：应收分保未到期责任准备金
-    58. rr_reins_outstd_cla：应收分保未决赔款准备金
-    59. rr_reins_lins_liab：应收分保寿险责任准备金
-    60. rr_reins_lthins_liab：应收分保长期健康险责任准备金
-    61. refund_depos：存出保证金
-    62. ph_pledge_loans：保户质押贷款
-    63. refund_cap_depos：存出资本保证金
-    64. indep_acct_assets：独立账户资产
-    65. client_depos：其中：客户资金存款
-    66. client_prov：其中：客户备付金
-    67. transac_seat_fee：其中:交易席位费
-    68. invest_as_receiv：应收款项类投资
-    69. total_assets：资产总计
-    70. lt_borr：长期借款
-    71. st_borr：短期借款
-    72. cb_borr：向中央银行借款
-    73. depos_ib_deposits：吸收存款及同业存放
-    74. loan_oth_bank：拆入资金
-    75. trading_fl：交易性金融负债
-    76. notes_payable：应付票据
-    77. acct_payable：应付账款
-    78. adv_receipts：预收款项
-    79. sold_for_repur_fa：卖出回购金融资产款
-    80. comm_payable：应付手续费及佣金
-    81. payroll_payable：应付职工薪酬
-    82. taxes_payable：应交税费
-    83. int_payable：应付利息
-    84. div_payable：应付股利
-    85. oth_payable：其他应付款
-    86. acc_exp：预提费用
-    87. deferred_inc：递延收益
-    88. st_bonds_payable：应付短期债券
-    89. payable_to_reinsurer：应付分保账款
-    90. rsrv_insur_cont：保险合同准备金
-    91. acting_trading_sec：代理买卖证券款
-    92. acting_uw_sec：代理承销证券款
-    93. non_cur_liab_due_1y：一年内到期的非流动负债
-    94. oth_cur_liab：其他流动负债
-    95. total_cur_liab：流动负债合计
-    96. bond_payable：应付债券
-    97. lt_payable：长期应付款
-    98. specific_payables：专项应付款
-    99. estimated_liab：预计负债
-    100. defer_tax_liab：递延所得税负债
-    101. defer_inc_non_cur_liab：递延收益-非流动负债
-    102. oth_ncl：其他非流动负债
-    103. total_ncl：非流动负债合计
-    104. depos_oth_bfi：同业和其它金融机构存放款项
-    105. deriv_liab：衍生金融负债
-    106. depos：吸收存款
-    107. agency_bus_liab：代理业务负债
-    108. oth_liab：其他负债
-    109. prem_receiv_adva：预收保费
-    110. depos_received：存入保证金
-    111. ph_invest：保户储金及投资款
-    112. reser_une_prem：未到期责任准备金
-    113. reser_outstd_claims：未决赔款准备金
-    114. reser_lins_liab：寿险责任准备金
-    115. reser_lthins_liab：长期健康险责任准备金
-    116. indept_acc_liab：独立账户负债
-    117. pledge_borr：其中:质押借款
-    118. indem_payable：应付赔付款
-    119. policy_div_payable：应付保单红利
-    120. total_liab：负债合计
-    121. treasury_share：减:库存股
-    122. ordin_risk_reser：一般风险准备
-    123. forex_differ：外币报表折算差额
-    124. invest_loss_unconf：未确认的投资损失
-    125. minority_int：少数股东权益
-    126. total_hldr_eqy_exc_min_int：股东权益合计(不含少数股东权益)
-    127. total_hldr_eqy_inc_min_int：股东权益合计(含少数股东权益)
-    128. total_liab_hldr_eqy：负债及股东权益总计
-    129. lt_payroll_payable：长期应付职工薪酬
-    130. oth_comp_income：其他综合收益
-    131. oth_eqt_tools：其他权益工具
-    132. oth_eqt_tools_p_shr：其他权益工具(优先股)
-    133. lending_funds：融出资金
-    134. acc_receivable：应收款项
-    135. st_fin_payable：应付短期融资款
-    136. payables：应付款项
-    137. hfs_assets：持有待售的资产
-    138. hfs_sales：持有待售的负债
-    139. cost_fin_assets：以摊余成本计量的金融资产
-    140. fair_value_fin_assets：以公允价值计量且其变动计入其他综合收益的金融资产
-    141. contract_assets：合同资产
-    142. contract_liab：合同负债
-    143. accounts_receiv_bill：应收票据及应收账款
-    144. accounts_pay：应付票据及应付账款
-    145. oth_rcv_total：其他应收款(合计)（元）
-    146. fix_assets_total：固定资产(合计)(元)
-    147. cip_total：在建工程(合计)(元)
-    148. oth_pay_total：其他应付款(合计)(元)
-    149. long_pay_total：长期应付款(合计)(元)
-    150. debt_invest：债权投资(元)
-    151. oth_debt_invest：其他债权投资(元)
-    152. oth_eq_invest：其他权益工具投资(元)
-    153. oth_illiq_fin_assets：其他非流动金融资产(元)
-    154. oth_eq_ppbond：其他权益工具:永续债(元)
-    155. receiv_financing：应收款项融资
-    156. use_right_assets：使用权资产
-    157. lease_liab：租赁负债
-    158. update_flag：更新标识
-    159. _source：数据来源
-    160. _api_name：源接口名称
-    161. _batch_id：采集批次ID
-    162. _ingest_time：入库时间
-    163. _record_hash：记录哈希
-
-------------------------------------------------------------
-05. block_trade
-表说明：大宗交易
-数据量：186,575 行
-字段数量：12 个
-结构来源：stock/market/block_trade.yaml
+02. dwd_future_eod_price
+表说明：期货日线行情标准层
+数据量：2,884,185 行
+字段数量：28 个
+结构来源：dwd/dwd_future_eod_price.yaml
 字段清单：
     01. ts_code：TS代码
-    02. trade_date：交易日历
-    03. price：成交价
-    04. vol：成交量（万股）
-    05. amount：成交金额
-    06. buyer：买方营业部
-    07. seller：卖房营业部
-    08. _source：数据来源
-    09. _api_name：源接口名称
-    10. _batch_id：采集批次ID
-    11. _ingest_time：入库时间
-    12. _record_hash：记录哈希
+    02. trade_date：交易代码
+    03. pre_close：昨收盘价
+    04. pre_settle：昨结算价
+    05. open：开盘价
+    06. high：最高价
+    07. low：最低价
+    08. close：收盘价
+    09. settle：结算价
+    10. change1：涨跌1,收盘价-昨结算价
+    11. change2：涨跌2,结算价-昨结算价
+    12. vol：成交量(手)
+    13. amount：成交金额(万元)
+    14. oi：持仓量(手)
+    15. oi_chg：持仓量变化
+    16. delv_settle：交割结算价
+    17. instrument_id：统一证券ID
+    18. instrument_type：证券类型
+    19. exchange：交易所
+    20. source_code：源侧证券代码
+    21. event_date：业务归属日期
+    22. available_trade_date：最早可用交易日
+    23. sys_from：版本开始时间
+    24. sys_to：版本结束时间
+    25. source：来源系统
+    26. source_table：来源表
+    27. source_batch_id：来源批次ID
+    28. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-06. broker_recommend
-表说明：券商每月荐股
-数据量：17,006 行
-字段数量：9 个
-结构来源：stock/special/broker_recommend.yaml
-字段清单：
-    01. month：月度
-    02. broker：券商
-    03. ts_code：股票代码
-    04. name：股票简称
-    05. _source：数据来源
-    06. _api_name：源接口名称
-    07. _batch_id：采集批次ID
-    08. _ingest_time：入库时间
-    09. _record_hash：记录哈希
-
-------------------------------------------------------------
-07. cashflow
-表说明：现金流量表
-数据量：3,579,392 行
-字段数量：102 个
-结构来源：stock/financial/cashflow.yaml
-字段清单：
-    01. ts_code：TS股票代码
-    02. ann_date：公告日期
-    03. f_ann_date：实际公告日期
-    04. end_date：报告期
-    05. comp_type：公司类型(1一般工商业2银行3保险4证券)
-    06. report_type：报表类型
-    07. end_type：报告期类型
-    08. net_profit：净利润
-    09. finan_exp：财务费用
-    10. c_fr_sale_sg：销售商品、提供劳务收到的现金
-    11. recp_tax_rends：收到的税费返还
-    12. n_depos_incr_fi：客户存款和同业存放款项净增加额
-    13. n_incr_loans_cb：向中央银行借款净增加额
-    14. n_inc_borr_oth_fi：向其他金融机构拆入资金净增加额
-    15. prem_fr_orig_contr：收到原保险合同保费取得的现金
-    16. n_incr_insured_dep：保户储金净增加额
-    17. n_reinsur_prem：收到再保业务现金净额
-    18. n_incr_disp_tfa：处置交易性金融资产净增加额
-    19. ifc_cash_incr：收取利息和手续费净增加额
-    20. n_incr_disp_faas：处置可供出售金融资产净增加额
-    21. n_incr_loans_oth_bank：拆入资金净增加额
-    22. n_cap_incr_repur：回购业务资金净增加额
-    23. c_fr_oth_operate_a：收到其他与经营活动有关的现金
-    24. c_inf_fr_operate_a：经营活动现金流入小计
-    25. c_paid_goods_s：购买商品、接受劳务支付的现金
-    26. c_paid_to_for_empl：支付给职工以及为职工支付的现金
-    27. c_paid_for_taxes：支付的各项税费
-    28. n_incr_clt_loan_adv：客户贷款及垫款净增加额
-    29. n_incr_dep_cbob：存放央行和同业款项净增加额
-    30. c_pay_claims_orig_inco：支付原保险合同赔付款项的现金
-    31. pay_handling_chrg：支付手续费的现金
-    32. pay_comm_insur_plcy：支付保单红利的现金
-    33. oth_cash_pay_oper_act：支付其他与经营活动有关的现金
-    34. st_cash_out_act：经营活动现金流出小计
-    35. n_cashflow_act：经营活动产生的现金流量净额
-    36. oth_recp_ral_inv_act：收到其他与投资活动有关的现金
-    37. c_disp_withdrwl_invest：收回投资收到的现金
-    38. c_recp_return_invest：取得投资收益收到的现金
-    39. n_recp_disp_fiolta：处置固定资产、无形资产和其他长期资产收回的现金净额
-    40. n_recp_disp_sobu：处置子公司及其他营业单位收到的现金净额
-    41. stot_inflows_inv_act：投资活动现金流入小计
-    42. c_pay_acq_const_fiolta：购建固定资产、无形资产和其他长期资产支付的现金
-    43. c_paid_invest：投资支付的现金
-    44. n_disp_subs_oth_biz：取得子公司及其他营业单位支付的现金净额
-    45. oth_pay_ral_inv_act：支付其他与投资活动有关的现金
-    46. n_incr_pledge_loan：质押贷款净增加额
-    47. stot_out_inv_act：投资活动现金流出小计
-    48. n_cashflow_inv_act：投资活动产生的现金流量净额
-    49. c_recp_borrow：取得借款收到的现金
-    50. proc_issue_bonds：发行债券收到的现金
-    51. oth_cash_recp_ral_fnc_act：收到其他与筹资活动有关的现金
-    52. stot_cash_in_fnc_act：筹资活动现金流入小计
-    53. free_cashflow：企业自由现金流量
-    54. c_prepay_amt_borr：偿还债务支付的现金
-    55. c_pay_dist_dpcp_int_exp：分配股利、利润或偿付利息支付的现金
-    56. incl_dvd_profit_paid_sc_ms：其中:子公司支付给少数股东的股利、利润
-    57. oth_cashpay_ral_fnc_act：支付其他与筹资活动有关的现金
-    58. stot_cashout_fnc_act：筹资活动现金流出小计
-    59. n_cash_flows_fnc_act：筹资活动产生的现金流量净额
-    60. eff_fx_flu_cash：汇率变动对现金的影响
-    61. n_incr_cash_cash_equ：现金及现金等价物净增加额
-    62. c_cash_equ_beg_period：期初现金及现金等价物余额
-    63. c_cash_equ_end_period：期末现金及现金等价物余额
-    64. c_recp_cap_contrib：吸收投资收到的现金
-    65. incl_cash_rec_saims：其中:子公司吸收少数股东投资收到的现金
-    66. uncon_invest_loss：未确认投资损失
-    67. prov_depr_assets：加:资产减值准备
-    68. depr_fa_coga_dpba：固定资产折旧、油气资产折耗、生产性生物资产折旧
-    69. amort_intang_assets：无形资产摊销
-    70. lt_amort_deferred_exp：长期待摊费用摊销
-    71. decr_deferred_exp：待摊费用减少
-    72. incr_acc_exp：预提费用增加
-    73. loss_disp_fiolta：处置固定、无形资产和其他长期资产的损失
-    74. loss_scr_fa：固定资产报废损失
-    75. loss_fv_chg：公允价值变动损失
-    76. invest_loss：投资损失
-    77. decr_def_inc_tax_assets：递延所得税资产减少
-    78. incr_def_inc_tax_liab：递延所得税负债增加
-    79. decr_inventories：存货的减少
-    80. decr_oper_payable：经营性应收项目的减少
-    81. incr_oper_payable：经营性应付项目的增加
-    82. others：其他
-    83. im_net_cashflow_oper_act：经营活动产生的现金流量净额(间接法)
-    84. conv_debt_into_cap：债务转为资本
-    85. conv_copbonds_due_within_1y：一年内到期的可转换公司债券
-    86. fa_fnc_leases：融资租入固定资产
-    87. im_n_incr_cash_equ：现金及现金等价物净增加额(间接法)
-    88. net_dism_capital_add：拆出资金净增加额
-    89. net_cash_rece_sec：代理买卖证券收到的现金净额(元)
-    90. credit_impa_loss：信用减值损失
-    91. use_right_asset_dep：使用权资产折旧
-    92. oth_loss_asset：其他资产减值损失
-    93. end_bal_cash：现金的期末余额
-    94. beg_bal_cash：减:现金的期初余额
-    95. end_bal_cash_equ：加:现金等价物的期末余额
-    96. beg_bal_cash_equ：减:现金等价物的期初余额
-    97. update_flag：更新标志
-    98. _source：数据来源
-    99. _api_name：源接口名称
-    100. _batch_id：采集批次ID
-    101. _ingest_time：入库时间
-    102. _record_hash：记录哈希
-
-------------------------------------------------------------
-08. ccass_hold
-表说明：中央结算系统持股汇总
-数据量：3,340,419 行
-字段数量：11 个
-结构来源：stock/special/ccass_hold.yaml
-字段清单：
-    01. trade_date：交易日期
-    02. ts_code：股票代号
-    03. name：股票名称
-    04. shareholding：于中央结算系统的持股量(股)
-    05. hold_nums：参与者数目（个）
-    06. hold_ratio：占于上交所/深交所上市及交易的A股总数的百分比（%）
-    07. _source：数据来源
-    08. _api_name：源接口名称
-    09. _batch_id：采集批次ID
-    10. _ingest_time：入库时间
-    11. _record_hash：记录哈希
-
-------------------------------------------------------------
-09. ccass_hold_detail
-表说明：中央结算系统持股明细
-数据量：3,277,909 行
-字段数量：12 个
-结构来源：stock/special/ccass_hold_detail.yaml
-字段清单：
-    01. trade_date：交易日期
-    02. ts_code：股票代号
-    03. name：股票名称
-    04. col_participant_id：参与者编号
-    05. col_participant_name：机构名称
-    06. col_shareholding：持股量(股)
-    07. col_shareholding_percent：占已发行股份/权证/单位百分比(%)
-    08. _source：数据来源
-    09. _api_name：源接口名称
-    10. _batch_id：采集批次ID
-    11. _ingest_time：入库时间
-    12. _record_hash：记录哈希
-
-------------------------------------------------------------
-10. concept
-表说明：概念股分类
-数据量：879 行
-字段数量：8 个
-结构来源：stock/market/concept.yaml
-字段清单：
-    01. code：概念分类ID
-    02. name：概念分类名称
-    03. src：来源
-    04. _source：数据来源
-    05. _api_name：源接口名称
-    06. _batch_id：采集批次ID
-    07. _ingest_time：入库时间
-    08. _record_hash：记录哈希
-
-------------------------------------------------------------
-11. concept_detail
-表说明：概念股列表
-数据量：34,509 行
-字段数量：11 个
-结构来源：stock/market/concept_detail.yaml
-字段清单：
-    01. id：概念代码
-    02. concept_name：概念名称
-    03. ts_code：股票代码
-    04. name：股票名称
-    05. in_date：纳入日期
-    06. out_date：剔除日期
-    07. _source：数据来源
-    08. _api_name：源接口名称
-    09. _batch_id：采集批次ID
-    10. _ingest_time：入库时间
-    11. _record_hash：记录哈希
-
-------------------------------------------------------------
-12. cyq_chips
-表说明：每日筹码分布
-数据量：6,027 行
-字段数量：9 个
-结构来源：stock/special/cyq_chips.yaml
-字段清单：
-    01. ts_code：股票代码
-    02. trade_date：交易日期
-    03. price：成本价格
-    04. percent：价格占比（%）
-    05. _source：数据来源
-    06. _api_name：源接口名称
-    07. _batch_id：采集批次ID
-    08. _ingest_time：入库时间
-    09. _record_hash：记录哈希
-
-------------------------------------------------------------
-13. cyq_perf
-表说明：每日筹码及胜率
-数据量：9,154,596 行
-字段数量：16 个
-结构来源：stock/special/cyq_perf.yaml
-字段清单：
-    01. ts_code：股票代码
-    02. trade_date：交易日期
-    03. his_low：历史最低价
-    04. his_high：历史最高价
-    05. cost_5pct：5分位成本
-    06. cost_15pct：15分位成本
-    07. cost_50pct：50分位成本
-    08. cost_85pct：85分位成本
-    09. cost_95pct：95分位成本
-    10. weight_avg：加权平均成本
-    11. winner_rate：胜率
-    12. _source：数据来源
-    13. _api_name：源接口名称
-    14. _batch_id：采集批次ID
-    15. _ingest_time：入库时间
-    16. _record_hash：记录哈希
-
-------------------------------------------------------------
-14. daily
-表说明：日线行情
-数据量：17,721,758 行
-字段数量：16 个
-结构来源：stock/quotes/daily.yaml
-字段清单：
-    01. ts_code：股票代码
-    02. trade_date：交易日期
-    03. open：开盘价
-    04. high：最高价
-    05. low：最低价
-    06. close：收盘价
-    07. pre_close：昨收价
-    08. change：涨跌额
-    09. pct_chg：涨跌幅
-    10. vol：成交量
-    11. amount：成交额
-    12. _source：数据来源
-    13. _api_name：源接口名称
-    14. _batch_id：采集批次ID
-    15. _ingest_time：入库时间
-    16. _record_hash：记录哈希
-
-------------------------------------------------------------
-15. daily_basic
-表说明：每日指标
-数据量：17,630,279 行
+03. dwd_index_eod_price
+表说明：指数日线行情标准层
+数据量：13,936,784 行
 字段数量：23 个
-结构来源：stock/quotes/daily_basic.yaml
+结构来源：dwd/dwd_index_eod_price.yaml
 字段清单：
-    01. ts_code：TS股票代码
-    02. trade_date：交易日期
-    03. close：当日收盘价
-    04. turnover_rate：换手率
-    05. turnover_rate_f：换手率(自由流通股)
-    06. volume_ratio：量比
-    07. pe：市盈率（总市值/净利润）
-    08. pe_ttm：市盈率（TTM）
-    09. pb：市净率（总市值/净资产）
-    10. ps：市销率
-    11. ps_ttm：市销率（TTM）
-    12. dv_ratio：股息率（%）
-    13. dv_ttm：股息率（TTM） （%）
-    14. total_share：总股本
-    15. float_share：流通股本
-    16. free_share：自由流通股本
-    17. total_mv：总市值
-    18. circ_mv：流通市值
-    19. _source：数据来源
-    20. _api_name：源接口名称
-    21. _batch_id：采集批次ID
-    22. _ingest_time：入库时间
-    23. _record_hash：记录哈希
+    01. ts_code：
+    02. trade_date：
+    03. close：
+    04. open：
+    05. high：
+    06. low：
+    07. pre_close：
+    08. change：
+    09. pct_chg：
+    10. vol：
+    11. amount：
+    12. instrument_id：统一证券ID
+    13. instrument_type：证券类型
+    14. exchange：交易所
+    15. source_code：源侧证券代码
+    16. event_date：业务归属日期
+    17. available_trade_date：最早可用交易日
+    18. sys_from：版本开始时间
+    19. sys_to：版本结束时间
+    20. source：来源系统
+    21. source_table：来源表
+    22. source_batch_id：来源批次ID
+    23. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-16. disclosure_date
-表说明：财报披露计划
-数据量：614,646 行
-字段数量：11 个
-结构来源：stock/financial/disclosure_date.yaml
+04. dwd_security_master
+表说明：统一证券主数据标准层
+数据量：29,461 行
+字段数量：30 个
+结构来源：dwd/dwd_security_master.yaml
 字段清单：
-    01. ts_code：TS代码
-    02. ann_date：最新披露公告日
-    03. end_date：报告期
-    04. pre_date：预计披露日期
-    05. actual_date：实际披露日期
-    06. modify_date：披露日期修正记录
-    07. _source：数据来源
-    08. _api_name：源接口名称
-    09. _batch_id：采集批次ID
-    10. _ingest_time：入库时间
-    11. _record_hash：记录哈希
+    01. instrument_id：统一证券ID
+    02. instrument_type：证券类型
+    03. exchange：交易所
+    04. source_code：源侧证券代码
+    05. symbol：交易代码
+    06. instrument_name：证券简称
+    07. full_name：全称
+    08. english_name：英文名称
+    09. market：市场类型
+    10. category：分类
+    11. publisher：发布方
+    12. currency：交易货币
+    13. list_status：上市状态
+    14. list_date：上市日期
+    15. delist_date：退市日期
+    16. area：所属地域
+    17. industry：所属行业
+    18. is_hs：沪深港通标识
+    19. underlying_code：标的代码
+    20. contract_multiplier：合约乘数
+    21. trade_unit：交易单位
+    22. quote_unit：报价单位
+    23. event_date：业务归属日期
+    24. available_trade_date：最早可用交易日
+    25. sys_from：版本开始时间
+    26. sys_to：版本结束时间
+    27. source：来源系统
+    28. source_table：来源表
+    29. source_batch_id：来源批次ID
+    30. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-17. dividend
-表说明：分红送股
-数据量：328,505 行
-字段数量：21 个
-结构来源：stock/financial/dividend.yaml
-字段清单：
-    01. ts_code：TS代码
-    02. end_date：分送年度
-    03. ann_date：预案公告日（董事会）
-    04. div_proc：实施进度
-    05. stk_div：每股送转
-    06. stk_bo_rate：每股送股比例
-    07. stk_co_rate：每股转增比例
-    08. cash_div：每股分红（税后）
-    09. cash_div_tax：每股分红（税前）
-    10. record_date：股权登记日
-    11. ex_date：除权除息日
-    12. pay_date：派息日
-    13. div_listdate：红股上市日
-    14. imp_ann_date：实施公告日
-    15. base_date：基准日
-    16. base_share：实施基准股本（万）
-    17. _source：数据来源
-    18. _api_name：源接口名称
-    19. _batch_id：采集批次ID
-    20. _ingest_time：入库时间
-    21. _record_hash：记录哈希
-
-------------------------------------------------------------
-18. dwd_stock_adj_factor
+05. dwd_stock_adj_factor
 表说明：股票复权因子标准层
-数据量：18,547,643 行
+数据量：18,553,162 行
 字段数量：15 个
 结构来源：dwd/dwd_stock_adj_factor.yaml
 字段清单：
@@ -738,9 +326,9 @@
     15. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-19. dwd_stock_balance_sheet
+06. dwd_stock_balance_sheet
 表说明：股票资产负债表标准层
-数据量：1,027,683 行
+数据量：1,028,155 行
 字段数量：170 个
 结构来源：dwd/dwd_stock_balance_sheet.yaml
 字段清单：
@@ -916,9 +504,9 @@
     170. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-20. dwd_stock_cashflow
+07. dwd_stock_cashflow
 表说明：股票现金流量表标准层
-数据量：1,865,759 行
+数据量：1,905,628 行
 字段数量：109 个
 结构来源：dwd/dwd_stock_cashflow.yaml
 字段清单：
@@ -1033,9 +621,40 @@
     109. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-21. dwd_stock_daily_basic
+08. dwd_stock_chip_distribution
+表说明：股票筹码分布表现标准层
+数据量：9,165,580 行
+字段数量：23 个
+结构来源：dwd/dwd_stock_chip_distribution.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. his_low：历史最低价
+    04. his_high：历史最高价
+    05. cost_5pct：5分位成本
+    06. cost_15pct：15分位成本
+    07. cost_50pct：50分位成本
+    08. cost_85pct：85分位成本
+    09. cost_95pct：95分位成本
+    10. weight_avg：加权平均成本
+    11. winner_rate：胜率
+    12. instrument_id：统一证券ID
+    13. instrument_type：证券类型
+    14. exchange：交易所
+    15. source_code：源侧证券代码
+    16. event_date：业务归属日期
+    17. available_trade_date：最早可用交易日
+    18. sys_from：版本开始时间
+    19. sys_to：版本结束时间
+    20. source：来源系统
+    21. source_table：来源表
+    22. source_batch_id：来源批次ID
+    23. source_record_hash：来源记录哈希
+
+------------------------------------------------------------
+09. dwd_stock_daily_basic
 表说明：股票每日指标标准层
-数据量：17,630,279 行
+数据量：17,641,263 行
 字段数量：30 个
 结构来源：dwd/dwd_stock_daily_basic.yaml
 字段清单：
@@ -1071,9 +690,9 @@
     30. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-22. dwd_stock_eod_price
+10. dwd_stock_eod_price
 表说明：股票日线行情标准层
-数据量：17,721,758 行
+数据量：17,732,742 行
 字段数量：23 个
 结构来源：dwd/dwd_stock_eod_price.yaml
 字段清单：
@@ -1102,18 +721,89 @@
     23. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-23. dws_stock_factor_wide
-表说明：股票因子计算宽表汇总层
-数据量：待同步
-字段数量：见结构文件
-结构来源：dws/dws_stock_factor_wide.yaml
+11. dwd_stock_eod_quote_metrics
+表说明：股票日频扩展行情指标标准层
+数据量：9,635,784 行
+字段数量：43 个
+结构来源：dwd/dwd_stock_eod_quote_metrics.yaml
 字段清单：
-    DWS宽表由PIT合规的DWD原子表汇总生成，重新同步后可刷新本报告。
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. name：股票名称
+    04. pct_change：涨跌幅
+    05. close：收盘价
+    06. change：涨跌额
+    07. open：开盘价
+    08. high：最高价
+    09. low：最低价
+    10. pre_close：昨收价
+    11. vol_ratio：量比
+    12. turn_over：换手率
+    13. swing：振幅
+    14. vol：成交量
+    15. amount：成交额
+    16. selling：外盘
+    17. buying：内盘
+    18. total_share：总股本(万)
+    19. float_share：流通股本(万)
+    20. pe：市盈(动)
+    21. industry：所属行业
+    22. area：所属地域
+    23. float_mv：流通市值
+    24. total_mv：总市值
+    25. avg_price：平均价
+    26. strength：强弱度(%)
+    27. activity：活跃度(%)
+    28. avg_turnover：笔换手
+    29. attack：攻击波(%)
+    30. interval_3：近3月涨幅
+    31. interval_6：近6月涨幅
+    32. instrument_id：统一证券ID
+    33. instrument_type：证券类型
+    34. exchange：交易所
+    35. source_code：源侧证券代码
+    36. event_date：业务归属日期
+    37. available_trade_date：最早可用交易日
+    38. sys_from：版本开始时间
+    39. sys_to：版本结束时间
+    40. source：来源系统
+    41. source_table：来源表
+    42. source_batch_id：来源批次ID
+    43. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-24. dwd_stock_financial_indicator
+12. dwd_stock_factor_bar
+表说明：未在本地 schema 中匹配到表说明
+数据量：17,629,192 行
+字段数量：21 个
+结构来源：database metadata
+字段清单：
+    01. instrument_id：统一证券ID
+    02. instrument_type：证券类型
+    03. exchange：交易所
+    04. source_code：源侧证券代码
+    05. event_date：业务归属日期
+    06. available_trade_date：最早可用交易日
+    07. open：开盘价
+    08. high：最高价
+    09. low：最低价
+    10. close：收盘价
+    11. volume：成交量
+    12. amount：成交额
+    13. turnover：换手率
+    14. turnover_free_float：自由流通股换手率
+    15. volume_ratio：量比
+    16. sys_from：版本开始时间
+    17. sys_to：版本结束时间
+    18. source：来源系统
+    19. source_table：来源表
+    20. source_batch_id：来源批次ID
+    21. source_record_hash：来源记录哈希
+
+------------------------------------------------------------
+13. dwd_stock_financial_indicator
 表说明：股票财务指标标准层
-数据量：664,113 行
+数据量：664,540 行
 字段数量：179 个
 结构来源：dwd/dwd_stock_financial_indicator.yaml
 字段清单：
@@ -1298,9 +988,9 @@
     179. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-25. dwd_stock_income
+14. dwd_stock_income
 表说明：股票利润表标准层
-数据量：2,144,627 行
+数据量：2,144,979 行
 字段数量：106 个
 结构来源：dwd/dwd_stock_income.yaml
 字段清单：
@@ -1412,7 +1102,90 @@
     106. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-26. dwd_trade_calendar
+15. dwd_stock_margin_trading
+表说明：股票融资融券交易明细标准层
+数据量：6,432,110 行
+字段数量：23 个
+结构来源：dwd/dwd_stock_margin_trading.yaml
+字段清单：
+    01. trade_date：交易日期
+    02. ts_code：TS股票代码
+    03. name：股票名称
+    04. rzye：融资余额(元)
+    05. rqye：融券余额(元)
+    06. rzmre：融资买入额(元)
+    07. rqyl：融券余量（手）
+    08. rzche：融资偿还额(元)
+    09. rqchl：融券偿还量(手)
+    10. rqmcl：融券卖出量(股,份,手)
+    11. rzrqye：融资融券余额(元)
+    12. instrument_id：统一证券ID
+    13. instrument_type：证券类型
+    14. exchange：交易所
+    15. source_code：源侧证券代码
+    16. event_date：业务归属日期
+    17. available_trade_date：最早可用交易日
+    18. sys_from：版本开始时间
+    19. sys_to：版本结束时间
+    20. source：来源系统
+    21. source_table：来源表
+    22. source_batch_id：来源批次ID
+    23. source_record_hash：来源记录哈希
+
+------------------------------------------------------------
+16. dwd_stock_northbound_holding
+表说明：股票北向持股标准层
+数据量：5,659,399 行
+字段数量：19 个
+结构来源：dwd/dwd_stock_northbound_holding.yaml
+字段清单：
+    01. code：原始代码
+    02. trade_date：交易日期
+    03. ts_code：TS代码
+    04. name：股票名称
+    05. vol：持股数量
+    06. ratio：持股占比
+    07. instrument_id：统一证券ID
+    08. instrument_type：证券类型
+    09. exchange：交易所
+    10. source_code：源侧证券代码
+    11. event_date：业务归属日期
+    12. available_trade_date：最早可用交易日
+    13. sys_from：版本开始时间
+    14. sys_to：版本结束时间
+    15. source：来源系统
+    16. source_table：来源表
+    17. source_batch_id：来源批次ID
+    18. source_record_hash：来源记录哈希
+    19. connect_channel：沪深股通通道
+
+------------------------------------------------------------
+17. dwd_stock_st
+表说明：股票ST状态标准层
+数据量：320,268 行
+字段数量：17 个
+结构来源：dwd/dwd_stock_st.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. name：股票名称
+    03. trade_date：交易日期
+    04. type：类型
+    05. type_name：类型名称
+    06. instrument_id：统一证券ID
+    07. instrument_type：证券类型
+    08. exchange：交易所
+    09. source_code：源侧证券代码
+    10. event_date：业务归属日期
+    11. available_trade_date：最早可用交易日
+    12. sys_from：版本开始时间
+    13. sys_to：版本结束时间
+    14. source：来源系统
+    15. source_table：来源表
+    16. source_batch_id：来源批次ID
+    17. source_record_hash：来源记录哈希
+
+------------------------------------------------------------
+18. dwd_trade_calendar
 表说明：交易日历标准层
 数据量：72,609 行
 字段数量：12 个
@@ -1432,9 +1205,737 @@
     12. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-27. express
+19. adj_factor
+表说明：复权因子
+数据量：18,553,162 行
+字段数量：8 个
+结构来源：stock/quotes/adj_factor.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. adj_factor：复权因子
+    04. _source：数据来源
+    05. _api_name：源接口名称
+    06. _batch_id：采集批次ID
+    07. _ingest_time：入库时间
+    08. _record_hash：记录哈希
+
+------------------------------------------------------------
+20. bak_basic
+表说明：备用列表
+数据量：10,241,723 行
+字段数量：29 个
+结构来源：stock/basic/bak_basic.yaml
+字段清单：
+    01. trade_date：交易日期
+    02. ts_code：TS股票代码
+    03. name：股票名称
+    04. industry：行业
+    05. area：地域
+    06. pe：市盈率（动）
+    07. float_share：流通股本（万）
+    08. total_share：总股本（万）
+    09. total_assets：总资产（万）
+    10. liquid_assets：流动资产（万）
+    11. fixed_assets：固定资产（万）
+    12. reserved：公积金
+    13. reserved_pershare：每股公积金
+    14. eps：每股收益
+    15. bvps：每股净资产
+    16. pb：市净率
+    17. list_date：上市日期
+    18. undp：未分配利润
+    19. per_undp：每股未分配利润
+    20. rev_yoy：收入同比（%）
+    21. profit_yoy：利润同比（%）
+    22. gpr：毛利率（%）
+    23. npr：净利润率（%）
+    24. holder_num：股东人数
+    25. _source：数据来源
+    26. _api_name：源接口名称
+    27. _batch_id：采集批次ID
+    28. _ingest_time：入库时间
+    29. _record_hash：记录哈希
+
+------------------------------------------------------------
+21. bak_daily
+表说明：备用行情
+数据量：9,635,784 行
+字段数量：36 个
+结构来源：stock/quotes/bak_daily.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. name：股票名称
+    04. pct_change：涨跌幅
+    05. close：收盘价
+    06. change：涨跌额
+    07. open：开盘价
+    08. high：最高价
+    09. low：最低价
+    10. pre_close：昨收价
+    11. vol_ratio：量比
+    12. turn_over：换手率
+    13. swing：振幅
+    14. vol：成交量
+    15. amount：成交额
+    16. selling：外盘
+    17. buying：内盘
+    18. total_share：总股本(万)
+    19. float_share：流通股本(万)
+    20. pe：市盈(动)
+    21. industry：所属行业
+    22. area：所属地域
+    23. float_mv：流通市值
+    24. total_mv：总市值
+    25. avg_price：平均价
+    26. strength：强弱度(%)
+    27. activity：活跃度(%)
+    28. avg_turnover：笔换手
+    29. attack：攻击波(%)
+    30. interval_3：近3月涨幅
+    31. interval_6：近6月涨幅
+    32. _source：数据来源
+    33. _api_name：源接口名称
+    34. _batch_id：采集批次ID
+    35. _ingest_time：入库时间
+    36. _record_hash：记录哈希
+
+------------------------------------------------------------
+22. balancesheet
+表说明：资产负债表
+数据量：4,053,625 行
+字段数量：163 个
+结构来源：stock/financial/balancesheet.yaml
+字段清单：
+    01. ts_code：TS股票代码
+    02. ann_date：公告日期
+    03. f_ann_date：实际公告日期
+    04. end_date：报告期
+    05. report_type：报表类型
+    06. comp_type：公司类型(1一般工商业2银行3保险4证券)
+    07. end_type：报告期类型
+    08. total_share：期末总股本
+    09. cap_rese：资本公积金
+    10. undistr_porfit：未分配利润
+    11. surplus_rese：盈余公积金
+    12. special_rese：专项储备
+    13. money_cap：货币资金
+    14. trad_asset：交易性金融资产
+    15. notes_receiv：应收票据
+    16. accounts_receiv：应收账款
+    17. oth_receiv：其他应收款
+    18. prepayment：预付款项
+    19. div_receiv：应收股利
+    20. int_receiv：应收利息
+    21. inventories：存货
+    22. amor_exp：长期待摊费用
+    23. nca_within_1y：一年内到期的非流动资产
+    24. sett_rsrv：结算备付金
+    25. loanto_oth_bank_fi：拆出资金
+    26. premium_receiv：应收保费
+    27. reinsur_receiv：应收分保账款
+    28. reinsur_res_receiv：应收分保合同准备金
+    29. pur_resale_fa：买入返售金融资产
+    30. oth_cur_assets：其他流动资产
+    31. total_cur_assets：流动资产合计
+    32. fa_avail_for_sale：可供出售金融资产
+    33. htm_invest：持有至到期投资
+    34. lt_eqt_invest：长期股权投资
+    35. invest_real_estate：投资性房地产
+    36. time_deposits：定期存款
+    37. oth_assets：其他资产
+    38. lt_rec：长期应收款
+    39. fix_assets：固定资产
+    40. cip：在建工程
+    41. const_materials：工程物资
+    42. fixed_assets_disp：固定资产清理
+    43. produc_bio_assets：生产性生物资产
+    44. oil_and_gas_assets：油气资产
+    45. intan_assets：无形资产
+    46. r_and_d：研发支出
+    47. goodwill：商誉
+    48. lt_amor_exp：长期待摊费用
+    49. defer_tax_assets：递延所得税资产
+    50. decr_in_disbur：发放贷款及垫款
+    51. oth_nca：其他非流动资产
+    52. total_nca：非流动资产合计
+    53. cash_reser_cb：现金及存放中央银行款项
+    54. depos_in_oth_bfi：存放同业和其它金融机构款项
+    55. prec_metals：贵金属
+    56. deriv_assets：衍生金融资产
+    57. rr_reins_une_prem：应收分保未到期责任准备金
+    58. rr_reins_outstd_cla：应收分保未决赔款准备金
+    59. rr_reins_lins_liab：应收分保寿险责任准备金
+    60. rr_reins_lthins_liab：应收分保长期健康险责任准备金
+    61. refund_depos：存出保证金
+    62. ph_pledge_loans：保户质押贷款
+    63. refund_cap_depos：存出资本保证金
+    64. indep_acct_assets：独立账户资产
+    65. client_depos：其中：客户资金存款
+    66. client_prov：其中：客户备付金
+    67. transac_seat_fee：其中:交易席位费
+    68. invest_as_receiv：应收款项类投资
+    69. total_assets：资产总计
+    70. lt_borr：长期借款
+    71. st_borr：短期借款
+    72. cb_borr：向中央银行借款
+    73. depos_ib_deposits：吸收存款及同业存放
+    74. loan_oth_bank：拆入资金
+    75. trading_fl：交易性金融负债
+    76. notes_payable：应付票据
+    77. acct_payable：应付账款
+    78. adv_receipts：预收款项
+    79. sold_for_repur_fa：卖出回购金融资产款
+    80. comm_payable：应付手续费及佣金
+    81. payroll_payable：应付职工薪酬
+    82. taxes_payable：应交税费
+    83. int_payable：应付利息
+    84. div_payable：应付股利
+    85. oth_payable：其他应付款
+    86. acc_exp：预提费用
+    87. deferred_inc：递延收益
+    88. st_bonds_payable：应付短期债券
+    89. payable_to_reinsurer：应付分保账款
+    90. rsrv_insur_cont：保险合同准备金
+    91. acting_trading_sec：代理买卖证券款
+    92. acting_uw_sec：代理承销证券款
+    93. non_cur_liab_due_1y：一年内到期的非流动负债
+    94. oth_cur_liab：其他流动负债
+    95. total_cur_liab：流动负债合计
+    96. bond_payable：应付债券
+    97. lt_payable：长期应付款
+    98. specific_payables：专项应付款
+    99. estimated_liab：预计负债
+    100. defer_tax_liab：递延所得税负债
+    101. defer_inc_non_cur_liab：递延收益-非流动负债
+    102. oth_ncl：其他非流动负债
+    103. total_ncl：非流动负债合计
+    104. depos_oth_bfi：同业和其它金融机构存放款项
+    105. deriv_liab：衍生金融负债
+    106. depos：吸收存款
+    107. agency_bus_liab：代理业务负债
+    108. oth_liab：其他负债
+    109. prem_receiv_adva：预收保费
+    110. depos_received：存入保证金
+    111. ph_invest：保户储金及投资款
+    112. reser_une_prem：未到期责任准备金
+    113. reser_outstd_claims：未决赔款准备金
+    114. reser_lins_liab：寿险责任准备金
+    115. reser_lthins_liab：长期健康险责任准备金
+    116. indept_acc_liab：独立账户负债
+    117. pledge_borr：其中:质押借款
+    118. indem_payable：应付赔付款
+    119. policy_div_payable：应付保单红利
+    120. total_liab：负债合计
+    121. treasury_share：减:库存股
+    122. ordin_risk_reser：一般风险准备
+    123. forex_differ：外币报表折算差额
+    124. invest_loss_unconf：未确认的投资损失
+    125. minority_int：少数股东权益
+    126. total_hldr_eqy_exc_min_int：股东权益合计(不含少数股东权益)
+    127. total_hldr_eqy_inc_min_int：股东权益合计(含少数股东权益)
+    128. total_liab_hldr_eqy：负债及股东权益总计
+    129. lt_payroll_payable：长期应付职工薪酬
+    130. oth_comp_income：其他综合收益
+    131. oth_eqt_tools：其他权益工具
+    132. oth_eqt_tools_p_shr：其他权益工具(优先股)
+    133. lending_funds：融出资金
+    134. acc_receivable：应收款项
+    135. st_fin_payable：应付短期融资款
+    136. payables：应付款项
+    137. hfs_assets：持有待售的资产
+    138. hfs_sales：持有待售的负债
+    139. cost_fin_assets：以摊余成本计量的金融资产
+    140. fair_value_fin_assets：以公允价值计量且其变动计入其他综合收益的金融资产
+    141. contract_assets：合同资产
+    142. contract_liab：合同负债
+    143. accounts_receiv_bill：应收票据及应收账款
+    144. accounts_pay：应付票据及应付账款
+    145. oth_rcv_total：其他应收款(合计)（元）
+    146. fix_assets_total：固定资产(合计)(元)
+    147. cip_total：在建工程(合计)(元)
+    148. oth_pay_total：其他应付款(合计)(元)
+    149. long_pay_total：长期应付款(合计)(元)
+    150. debt_invest：债权投资(元)
+    151. oth_debt_invest：其他债权投资(元)
+    152. oth_eq_invest：其他权益工具投资(元)
+    153. oth_illiq_fin_assets：其他非流动金融资产(元)
+    154. oth_eq_ppbond：其他权益工具:永续债(元)
+    155. receiv_financing：应收款项融资
+    156. use_right_assets：使用权资产
+    157. lease_liab：租赁负债
+    158. update_flag：更新标识
+    159. _source：数据来源
+    160. _api_name：源接口名称
+    161. _batch_id：采集批次ID
+    162. _ingest_time：入库时间
+    163. _record_hash：记录哈希
+
+------------------------------------------------------------
+23. block_trade
+表说明：大宗交易
+数据量：186,788 行
+字段数量：12 个
+结构来源：stock/market/block_trade.yaml
+字段清单：
+    01. ts_code：TS代码
+    02. trade_date：交易日历
+    03. price：成交价
+    04. vol：成交量（万股）
+    05. amount：成交金额
+    06. buyer：买方营业部
+    07. seller：卖房营业部
+    08. _source：数据来源
+    09. _api_name：源接口名称
+    10. _batch_id：采集批次ID
+    11. _ingest_time：入库时间
+    12. _record_hash：记录哈希
+
+------------------------------------------------------------
+24. broker_recommend
+表说明：券商每月荐股
+数据量：17,006 行
+字段数量：9 个
+结构来源：stock/special/broker_recommend.yaml
+字段清单：
+    01. month：月度
+    02. broker：券商
+    03. ts_code：股票代码
+    04. name：股票简称
+    05. _source：数据来源
+    06. _api_name：源接口名称
+    07. _batch_id：采集批次ID
+    08. _ingest_time：入库时间
+    09. _record_hash：记录哈希
+
+------------------------------------------------------------
+25. cashflow
+表说明：现金流量表
+数据量：3,934,336 行
+字段数量：102 个
+结构来源：stock/financial/cashflow.yaml
+字段清单：
+    01. ts_code：TS股票代码
+    02. ann_date：公告日期
+    03. f_ann_date：实际公告日期
+    04. end_date：报告期
+    05. comp_type：公司类型(1一般工商业2银行3保险4证券)
+    06. report_type：报表类型
+    07. end_type：报告期类型
+    08. net_profit：净利润
+    09. finan_exp：财务费用
+    10. c_fr_sale_sg：销售商品、提供劳务收到的现金
+    11. recp_tax_rends：收到的税费返还
+    12. n_depos_incr_fi：客户存款和同业存放款项净增加额
+    13. n_incr_loans_cb：向中央银行借款净增加额
+    14. n_inc_borr_oth_fi：向其他金融机构拆入资金净增加额
+    15. prem_fr_orig_contr：收到原保险合同保费取得的现金
+    16. n_incr_insured_dep：保户储金净增加额
+    17. n_reinsur_prem：收到再保业务现金净额
+    18. n_incr_disp_tfa：处置交易性金融资产净增加额
+    19. ifc_cash_incr：收取利息和手续费净增加额
+    20. n_incr_disp_faas：处置可供出售金融资产净增加额
+    21. n_incr_loans_oth_bank：拆入资金净增加额
+    22. n_cap_incr_repur：回购业务资金净增加额
+    23. c_fr_oth_operate_a：收到其他与经营活动有关的现金
+    24. c_inf_fr_operate_a：经营活动现金流入小计
+    25. c_paid_goods_s：购买商品、接受劳务支付的现金
+    26. c_paid_to_for_empl：支付给职工以及为职工支付的现金
+    27. c_paid_for_taxes：支付的各项税费
+    28. n_incr_clt_loan_adv：客户贷款及垫款净增加额
+    29. n_incr_dep_cbob：存放央行和同业款项净增加额
+    30. c_pay_claims_orig_inco：支付原保险合同赔付款项的现金
+    31. pay_handling_chrg：支付手续费的现金
+    32. pay_comm_insur_plcy：支付保单红利的现金
+    33. oth_cash_pay_oper_act：支付其他与经营活动有关的现金
+    34. st_cash_out_act：经营活动现金流出小计
+    35. n_cashflow_act：经营活动产生的现金流量净额
+    36. oth_recp_ral_inv_act：收到其他与投资活动有关的现金
+    37. c_disp_withdrwl_invest：收回投资收到的现金
+    38. c_recp_return_invest：取得投资收益收到的现金
+    39. n_recp_disp_fiolta：处置固定资产、无形资产和其他长期资产收回的现金净额
+    40. n_recp_disp_sobu：处置子公司及其他营业单位收到的现金净额
+    41. stot_inflows_inv_act：投资活动现金流入小计
+    42. c_pay_acq_const_fiolta：购建固定资产、无形资产和其他长期资产支付的现金
+    43. c_paid_invest：投资支付的现金
+    44. n_disp_subs_oth_biz：取得子公司及其他营业单位支付的现金净额
+    45. oth_pay_ral_inv_act：支付其他与投资活动有关的现金
+    46. n_incr_pledge_loan：质押贷款净增加额
+    47. stot_out_inv_act：投资活动现金流出小计
+    48. n_cashflow_inv_act：投资活动产生的现金流量净额
+    49. c_recp_borrow：取得借款收到的现金
+    50. proc_issue_bonds：发行债券收到的现金
+    51. oth_cash_recp_ral_fnc_act：收到其他与筹资活动有关的现金
+    52. stot_cash_in_fnc_act：筹资活动现金流入小计
+    53. free_cashflow：企业自由现金流量
+    54. c_prepay_amt_borr：偿还债务支付的现金
+    55. c_pay_dist_dpcp_int_exp：分配股利、利润或偿付利息支付的现金
+    56. incl_dvd_profit_paid_sc_ms：其中:子公司支付给少数股东的股利、利润
+    57. oth_cashpay_ral_fnc_act：支付其他与筹资活动有关的现金
+    58. stot_cashout_fnc_act：筹资活动现金流出小计
+    59. n_cash_flows_fnc_act：筹资活动产生的现金流量净额
+    60. eff_fx_flu_cash：汇率变动对现金的影响
+    61. n_incr_cash_cash_equ：现金及现金等价物净增加额
+    62. c_cash_equ_beg_period：期初现金及现金等价物余额
+    63. c_cash_equ_end_period：期末现金及现金等价物余额
+    64. c_recp_cap_contrib：吸收投资收到的现金
+    65. incl_cash_rec_saims：其中:子公司吸收少数股东投资收到的现金
+    66. uncon_invest_loss：未确认投资损失
+    67. prov_depr_assets：加:资产减值准备
+    68. depr_fa_coga_dpba：固定资产折旧、油气资产折耗、生产性生物资产折旧
+    69. amort_intang_assets：无形资产摊销
+    70. lt_amort_deferred_exp：长期待摊费用摊销
+    71. decr_deferred_exp：待摊费用减少
+    72. incr_acc_exp：预提费用增加
+    73. loss_disp_fiolta：处置固定、无形资产和其他长期资产的损失
+    74. loss_scr_fa：固定资产报废损失
+    75. loss_fv_chg：公允价值变动损失
+    76. invest_loss：投资损失
+    77. decr_def_inc_tax_assets：递延所得税资产减少
+    78. incr_def_inc_tax_liab：递延所得税负债增加
+    79. decr_inventories：存货的减少
+    80. decr_oper_payable：经营性应收项目的减少
+    81. incr_oper_payable：经营性应付项目的增加
+    82. others：其他
+    83. im_net_cashflow_oper_act：经营活动产生的现金流量净额(间接法)
+    84. conv_debt_into_cap：债务转为资本
+    85. conv_copbonds_due_within_1y：一年内到期的可转换公司债券
+    86. fa_fnc_leases：融资租入固定资产
+    87. im_n_incr_cash_equ：现金及现金等价物净增加额(间接法)
+    88. net_dism_capital_add：拆出资金净增加额
+    89. net_cash_rece_sec：代理买卖证券收到的现金净额(元)
+    90. credit_impa_loss：信用减值损失
+    91. use_right_asset_dep：使用权资产折旧
+    92. oth_loss_asset：其他资产减值损失
+    93. end_bal_cash：现金的期末余额
+    94. beg_bal_cash：减:现金的期初余额
+    95. end_bal_cash_equ：加:现金等价物的期末余额
+    96. beg_bal_cash_equ：减:现金等价物的期初余额
+    97. update_flag：更新标志
+    98. _source：数据来源
+    99. _api_name：源接口名称
+    100. _batch_id：采集批次ID
+    101. _ingest_time：入库时间
+    102. _record_hash：记录哈希
+
+------------------------------------------------------------
+26. ccass_hold
+表说明：中央结算系统持股汇总
+数据量：3,342,277 行
+字段数量：11 个
+结构来源：stock/special/ccass_hold.yaml
+字段清单：
+    01. trade_date：交易日期
+    02. ts_code：股票代号
+    03. name：股票名称
+    04. shareholding：于中央结算系统的持股量(股)
+    05. hold_nums：参与者数目（个）
+    06. hold_ratio：占于上交所/深交所上市及交易的A股总数的百分比（%）
+    07. _source：数据来源
+    08. _api_name：源接口名称
+    09. _batch_id：采集批次ID
+    10. _ingest_time：入库时间
+    11. _record_hash：记录哈希
+
+------------------------------------------------------------
+27. ccass_hold_detail
+表说明：中央结算系统持股明细
+数据量：3,279,755 行
+字段数量：12 个
+结构来源：stock/special/ccass_hold_detail.yaml
+字段清单：
+    01. trade_date：交易日期
+    02. ts_code：股票代号
+    03. name：股票名称
+    04. col_participant_id：参与者编号
+    05. col_participant_name：机构名称
+    06. col_shareholding：持股量(股)
+    07. col_shareholding_percent：占已发行股份/权证/单位百分比(%)
+    08. _source：数据来源
+    09. _api_name：源接口名称
+    10. _batch_id：采集批次ID
+    11. _ingest_time：入库时间
+    12. _record_hash：记录哈希
+
+------------------------------------------------------------
+28. concept
+表说明：概念股分类
+数据量：879 行
+字段数量：8 个
+结构来源：stock/market/concept.yaml
+字段清单：
+    01. code：概念分类ID
+    02. name：概念分类名称
+    03. src：来源
+    04. _source：数据来源
+    05. _api_name：源接口名称
+    06. _batch_id：采集批次ID
+    07. _ingest_time：入库时间
+    08. _record_hash：记录哈希
+
+------------------------------------------------------------
+29. concept_detail
+表说明：概念股列表
+数据量：34,509 行
+字段数量：11 个
+结构来源：stock/market/concept_detail.yaml
+字段清单：
+    01. id：概念代码
+    02. concept_name：概念名称
+    03. ts_code：股票代码
+    04. name：股票名称
+    05. in_date：纳入日期
+    06. out_date：剔除日期
+    07. _source：数据来源
+    08. _api_name：源接口名称
+    09. _batch_id：采集批次ID
+    10. _ingest_time：入库时间
+    11. _record_hash：记录哈希
+
+------------------------------------------------------------
+30. cyq_chips
+表说明：每日筹码分布
+数据量：46,437,149 行
+字段数量：9 个
+结构来源：stock/special/cyq_chips.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. price：成本价格
+    04. percent：价格占比（%）
+    05. _source：数据来源
+    06. _api_name：源接口名称
+    07. _batch_id：采集批次ID
+    08. _ingest_time：入库时间
+    09. _record_hash：记录哈希
+
+------------------------------------------------------------
+31. cyq_chips_backup_before_price_key
+表说明：未在本地 schema 中匹配到表说明
+数据量：284,140 行
+字段数量：9 个
+结构来源：database metadata
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. price：成本价格
+    04. percent：价格占比（%）
+    05. _source：数据来源
+    06. _api_name：源接口名称
+    07. _batch_id：采集批次ID
+    08. _ingest_time：入库时间
+    09. _record_hash：记录哈希
+
+------------------------------------------------------------
+32. cyq_perf
+表说明：每日筹码及胜率
+数据量：9,165,580 行
+字段数量：16 个
+结构来源：stock/special/cyq_perf.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. his_low：历史最低价
+    04. his_high：历史最高价
+    05. cost_5pct：5分位成本
+    06. cost_15pct：15分位成本
+    07. cost_50pct：50分位成本
+    08. cost_85pct：85分位成本
+    09. cost_95pct：95分位成本
+    10. weight_avg：加权平均成本
+    11. winner_rate：胜率
+    12. _source：数据来源
+    13. _api_name：源接口名称
+    14. _batch_id：采集批次ID
+    15. _ingest_time：入库时间
+    16. _record_hash：记录哈希
+
+------------------------------------------------------------
+33. daily
+表说明：日线行情
+数据量：17,732,742 行
+字段数量：16 个
+结构来源：stock/quotes/daily.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. open：开盘价
+    04. high：最高价
+    05. low：最低价
+    06. close：收盘价
+    07. pre_close：昨收价
+    08. change：涨跌额
+    09. pct_chg：涨跌幅
+    10. vol：成交量
+    11. amount：成交额
+    12. _source：数据来源
+    13. _api_name：源接口名称
+    14. _batch_id：采集批次ID
+    15. _ingest_time：入库时间
+    16. _record_hash：记录哈希
+
+------------------------------------------------------------
+34. daily_basic
+表说明：每日指标
+数据量：17,641,263 行
+字段数量：23 个
+结构来源：stock/quotes/daily_basic.yaml
+字段清单：
+    01. ts_code：TS股票代码
+    02. trade_date：交易日期
+    03. close：当日收盘价
+    04. turnover_rate：换手率
+    05. turnover_rate_f：换手率(自由流通股)
+    06. volume_ratio：量比
+    07. pe：市盈率（总市值/净利润）
+    08. pe_ttm：市盈率（TTM）
+    09. pb：市净率（总市值/净资产）
+    10. ps：市销率
+    11. ps_ttm：市销率（TTM）
+    12. dv_ratio：股息率（%）
+    13. dv_ttm：股息率（TTM） （%）
+    14. total_share：总股本
+    15. float_share：流通股本
+    16. free_share：自由流通股本
+    17. total_mv：总市值
+    18. circ_mv：流通市值
+    19. _source：数据来源
+    20. _api_name：源接口名称
+    21. _batch_id：采集批次ID
+    22. _ingest_time：入库时间
+    23. _record_hash：记录哈希
+
+------------------------------------------------------------
+35. daily_info
+表说明：市场交易统计
+数据量：129,916 行
+字段数量：19 个
+结构来源：index/quotes/daily_info.yaml
+字段清单：
+    01. trade_date：交易日期
+    02. ts_code：市场代码
+    03. ts_name：市场名称
+    04. com_count：挂牌数
+    05. total_share：总股本（亿股）
+    06. float_share：流通股本（亿股）
+    07. total_mv：总市值（亿元）
+    08. float_mv：流通市值（亿元）
+    09. amount：交易金额（亿元）
+    10. vol：成交量（亿股）
+    11. trans_count：成交笔数（万笔）
+    12. pe：平均市盈率
+    13. tr：换手率（％）
+    14. exchange：交易所
+    15. _source：数据来源
+    16. _api_name：源接口名称
+    17. _batch_id：采集批次ID
+    18. _ingest_time：入库时间
+    19. _record_hash：记录哈希
+
+------------------------------------------------------------
+36. dc_concept
+表说明：题材数据（东方财富）
+数据量：8,337 行
+字段数量：17 个
+结构来源：stock/market/dc_concept.yaml
+字段清单：
+    01. theme_code：题材code
+    02. trade_date：交易日期
+    03. name：名称
+    04. pct_change：涨跌幅
+    05. hot：热度
+    06. sort：排名
+    07. strength：强度
+    08. z_t_num：涨停数量
+    09. main_change：主力净流入
+    10. lead_stock：领涨股票
+    11. lead_stock_code：领涨股票code
+    12. lead_stock_pct_change：领涨股票涨跌幅
+    13. _source：数据来源
+    14. _api_name：源接口名称
+    15. _batch_id：采集批次ID
+    16. _ingest_time：入库时间
+    17. _record_hash：记录哈希
+
+------------------------------------------------------------
+37. dc_index
+表说明：东方财富概念板块
+数据量：196,141 行
+字段数量：18 个
+结构来源：stock/market/dc_index.yaml
+字段清单：
+    01. ts_code：概念代码
+    02. trade_date：交易日期
+    03. name：概念名称
+    04. leading：领涨股票名称
+    05. leading_code：领涨股票代码
+    06. pct_change：涨跌幅
+    07. leading_pct：领涨股票涨跌幅
+    08. total_mv：总市值
+    09. turnover_rate：换手率
+    10. up_num：上涨家数
+    11. down_num：下降家数
+    12. idx_type：板块类型
+    13. level：行业层级
+    14. _source：数据来源
+    15. _api_name：源接口名称
+    16. _batch_id：采集批次ID
+    17. _ingest_time：入库时间
+    18. _record_hash：记录哈希
+
+------------------------------------------------------------
+38. disclosure_date
+表说明：财报披露计划
+数据量：622,283 行
+字段数量：11 个
+结构来源：stock/financial/disclosure_date.yaml
+字段清单：
+    01. ts_code：TS代码
+    02. ann_date：最新披露公告日
+    03. end_date：报告期
+    04. pre_date：预计披露日期
+    05. actual_date：实际披露日期
+    06. modify_date：披露日期修正记录
+    07. _source：数据来源
+    08. _api_name：源接口名称
+    09. _batch_id：采集批次ID
+    10. _ingest_time：入库时间
+    11. _record_hash：记录哈希
+
+------------------------------------------------------------
+39. dividend
+表说明：分红送股
+数据量：232,909 行
+字段数量：21 个
+结构来源：stock/financial/dividend.yaml
+字段清单：
+    01. ts_code：TS代码
+    02. end_date：分送年度
+    03. ann_date：预案公告日（董事会）
+    04. div_proc：实施进度
+    05. stk_div：每股送转
+    06. stk_bo_rate：每股送股比例
+    07. stk_co_rate：每股转增比例
+    08. cash_div：每股分红（税后）
+    09. cash_div_tax：每股分红（税前）
+    10. record_date：股权登记日
+    11. ex_date：除权除息日
+    12. pay_date：派息日
+    13. div_listdate：红股上市日
+    14. imp_ann_date：实施公告日
+    15. base_date：基准日
+    16. base_share：实施基准股本（万）
+    17. _source：数据来源
+    18. _api_name：源接口名称
+    19. _batch_id：采集批次ID
+    20. _ingest_time：入库时间
+    21. _record_hash：记录哈希
+
+------------------------------------------------------------
+40. express
 表说明：业绩快报
-数据量：41,322 行
+数据量：35,614 行
 字段数量：37 个
 结构来源：stock/financial/express.yaml
 字段清单：
@@ -1477,9 +1978,9 @@
     37. _record_hash：记录哈希
 
 ------------------------------------------------------------
-28. fina_audit
+41. fina_audit
 表说明：财务审计意见
-数据量：191,828 行
+数据量：174,926 行
 字段数量：12 个
 结构来源：stock/financial/fina_audit.yaml
 字段清单：
@@ -1497,9 +1998,9 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-29. fina_indicator
+42. fina_indicator
 表说明：财务指标数据
-数据量：1,325,575 行
+数据量：1,734,530 行
 字段数量：172 个
 结构来源：stock/financial/fina_indicator.yaml
 字段清单：
@@ -1677,9 +2178,9 @@
     172. _record_hash：记录哈希
 
 ------------------------------------------------------------
-30. fina_mainbz
+43. fina_mainbz
 表说明：主营业务构成
-数据量：217,013 行
+数据量：255,850 行
 字段数量：13 个
 结构来源：stock/financial/fina_mainbz.yaml
 字段清单：
@@ -1698,9 +2199,9 @@
     13. _record_hash：记录哈希
 
 ------------------------------------------------------------
-31. forecast
+44. forecast
 表说明：业绩预告
-数据量：235,789 行
+数据量：342,630 行
 字段数量：17 个
 结构来源：stock/financial/forecast.yaml
 字段清单：
@@ -1723,9 +2224,161 @@
     17. _record_hash：记录哈希
 
 ------------------------------------------------------------
-32. ggt_daily
+45. fut_basic
+表说明：期货合约信息表
+数据量：10,897 行
+字段数量：21 个
+结构来源：future/basic/fut_basic.yaml
+字段清单：
+    01. ts_code：
+    02. symbol：交易代码
+    03. exchange：交易市场
+    04. name：中文简称
+    05. fut_code：合约产品代码
+    06. multiplier：合约乘数
+    07. trade_unit：交易计量单位
+    08. per_unit：交易单位(每手)
+    09. quote_unit：报价单位
+    10. quote_unit_desc：最小报价单位说明
+    11. d_mode_desc：交割方式说明
+    12. list_date：上市日期
+    13. delist_date：最后交易日期
+    14. d_month：交割月份
+    15. last_ddate：最后交割日
+    16. trade_time_desc：交易时间说明
+    17. _source：数据来源
+    18. _api_name：源接口名称
+    19. _batch_id：采集批次ID
+    20. _ingest_time：入库时间
+    21. _record_hash：记录哈希
+
+------------------------------------------------------------
+46. fut_daily
+表说明：期货日线行情
+数据量：2,884,185 行
+字段数量：21 个
+结构来源：future/quotes/fut_daily.yaml
+字段清单：
+    01. ts_code：TS代码
+    02. trade_date：交易代码
+    03. pre_close：昨收盘价
+    04. pre_settle：昨结算价
+    05. open：开盘价
+    06. high：最高价
+    07. low：最低价
+    08. close：收盘价
+    09. settle：结算价
+    10. change1：涨跌1,收盘价-昨结算价
+    11. change2：涨跌2,结算价-昨结算价
+    12. vol：成交量(手)
+    13. amount：成交金额(万元)
+    14. oi：持仓量(手)
+    15. oi_chg：持仓量变化
+    16. delv_settle：交割结算价
+    17. _source：数据来源
+    18. _api_name：源接口名称
+    19. _batch_id：采集批次ID
+    20. _ingest_time：入库时间
+    21. _record_hash：记录哈希
+
+------------------------------------------------------------
+47. fut_holding
+表说明：每日成交持仓排名
+数据量：24,060,250 行
+字段数量：15 个
+结构来源：future/quotes/fut_holding.yaml
+字段清单：
+    01. trade_date：交易日期
+    02. symbol：合约代码或类型
+    03. broker：期货公司会员简称
+    04. vol：成交量
+    05. vol_chg：成交量变化
+    06. long_hld：持买仓量
+    07. long_chg：持买仓量变化
+    08. short_hld：持卖仓量
+    09. short_chg：持卖仓量变化
+    10. exchange：交易所
+    11. _source：数据来源
+    12. _api_name：源接口名称
+    13. _batch_id：采集批次ID
+    14. _ingest_time：入库时间
+    15. _record_hash：记录哈希
+
+------------------------------------------------------------
+48. fut_mapping
+表说明：期货主力与连续合约
+数据量：543,669 行
+字段数量：8 个
+结构来源：future/quotes/fut_mapping.yaml
+字段清单：
+    01. ts_code：连续合约代码
+    02. trade_date：起始日期
+    03. mapping_ts_code：期货合约代码
+    04. _source：数据来源
+    05. _api_name：源接口名称
+    06. _batch_id：采集批次ID
+    07. _ingest_time：入库时间
+    08. _record_hash：记录哈希
+
+------------------------------------------------------------
+49. fut_settle
+表说明：结算参数
+数据量：843,999 行
+字段数量：17 个
+结构来源：future/quotes/fut_settle.yaml
+字段清单：
+    01. ts_code：合约代码
+    02. trade_date：交易日期
+    03. settle：结算价
+    04. trading_fee_rate：交易手续费率
+    05. trading_fee：交易手续费
+    06. delivery_fee：交割手续费
+    07. b_hedging_margin_rate：买套保交易保证金率
+    08. s_hedging_margin_rate：卖套保交易保证金率
+    09. long_margin_rate：买投机交易保证金率
+    10. short_margin_rate：卖投机交易保证金率
+    11. offset_today_fee：平今仓手续率
+    12. exchange：交易所
+    13. _source：数据来源
+    14. _api_name：源接口名称
+    15. _batch_id：采集批次ID
+    16. _ingest_time：入库时间
+    17. _record_hash：记录哈希
+
+------------------------------------------------------------
+50. fut_wsr
+表说明：仓单日报
+数据量：139,130 行
+字段数量：22 个
+结构来源：future/quotes/fut_wsr.yaml
+字段清单：
+    01. trade_date：交易日期
+    02. symbol：产品代码
+    03. fut_name：产品名称
+    04. warehouse：仓库名称
+    05. wh_id：仓库编号
+    06. pre_vol：昨日仓单量
+    07. vol：今日仓单量
+    08. vol_chg：增减量
+    09. area：地区
+    10. year：年度
+    11. grade：等级
+    12. brand：品牌
+    13. place：产地
+    14. pd：升贴水
+    15. is_ct：是否折算仓单
+    16. unit：单位
+    17. exchange：交易所
+    18. _source：数据来源
+    19. _api_name：源接口名称
+    20. _batch_id：采集批次ID
+    21. _ingest_time：入库时间
+    22. _record_hash：记录哈希
+
+------------------------------------------------------------
+51. ggt_daily
 表说明：港股通每日成交统计
-数据量：2,612 行
+数据量：2,614 行
 字段数量：10 个
 结构来源：stock/quotes/ggt_daily.yaml
 字段清单：
@@ -1741,9 +2394,9 @@
     10. _record_hash：记录哈希
 
 ------------------------------------------------------------
-33. ggt_top10
+52. ggt_top10
 表说明：港股通十大成交股
-数据量：35,361 行
+数据量：35,385 行
 字段数量：22 个
 结构来源：stock/quotes/ggt_top10.yaml
 字段清单：
@@ -1771,9 +2424,9 @@
     22. _record_hash：记录哈希
 
 ------------------------------------------------------------
-34. hk_hold
+53. hk_hold
 表说明：沪深股通持股明细
-数据量：5,657,350 行
+数据量：5,659,208 行
 字段数量：12 个
 结构来源：stock/special/hk_hold.yaml
 字段清单：
@@ -1791,7 +2444,7 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-35. hs_const
+54. hs_const
 表说明：沪深股通成份股
 数据量：823 行
 字段数量：10 个
@@ -1809,9 +2462,9 @@
     10. _record_hash：记录哈希
 
 ------------------------------------------------------------
-36. hsgt_top10
+55. hsgt_top10
 表说明：沪深股通十大成交股
-数据量：48,390 行
+数据量：48,430 行
 字段数量：16 个
 结构来源：stock/quotes/hsgt_top10.yaml
 字段清单：
@@ -1833,9 +2486,9 @@
     16. _record_hash：记录哈希
 
 ------------------------------------------------------------
-37. income
+56. income
 表说明：利润表
-数据量：2,465,878 行
+数据量：8,812,962 行
 字段数量：99 个
 结构来源：stock/financial/income.yaml
 字段清单：
@@ -1940,9 +2593,174 @@
     99. _record_hash：记录哈希
 
 ------------------------------------------------------------
-38. margin
+57. index_basic
+表说明：指数基本信息
+数据量：15,694 行
+字段数量：18 个
+结构来源：index/basic/index_basic.yaml
+字段清单：
+    01. ts_code：TS代码
+    02. name：简称
+    03. fullname：指数全称
+    04. market：市场
+    05. publisher：发布方
+    06. index_type：指数风格
+    07. category：指数类别
+    08. base_date：基期
+    09. base_point：基点
+    10. list_date：发布日期
+    11. weight_rule：加权方式
+    12. desc：描述
+    13. exp_date：终止日期
+    14. _source：数据来源
+    15. _api_name：源接口名称
+    16. _batch_id：采集批次ID
+    17. _ingest_time：入库时间
+    18. _record_hash：记录哈希
+
+------------------------------------------------------------
+58. index_daily
+表说明：指数日线行情
+数据量：13,936,784 行
+字段数量：16 个
+结构来源：index/quotes/index_daily.yaml
+字段清单：
+    01. ts_code：
+    02. trade_date：
+    03. close：
+    04. open：
+    05. high：
+    06. low：
+    07. pre_close：
+    08. change：
+    09. pct_chg：
+    10. vol：
+    11. amount：
+    12. _source：数据来源
+    13. _api_name：源接口名称
+    14. _batch_id：采集批次ID
+    15. _ingest_time：入库时间
+    16. _record_hash：记录哈希
+
+------------------------------------------------------------
+59. index_dailybasic
+表说明：大盘指数每日指标
+数据量：57,556 行
+字段数量：17 个
+结构来源：index/quotes/index_dailybasic.yaml
+字段清单：
+    01. ts_code：TS代码
+    02. trade_date：交易日期
+    03. total_mv：当日总市值
+    04. float_mv：当日流通市值
+    05. total_share：当日总股本
+    06. float_share：当日流通股本
+    07. free_share：当日自由流通股本
+    08. turnover_rate：换手率
+    09. turnover_rate_f：换手率(自由流通股本)
+    10. pe：市盈率
+    11. pe_ttm：市盈率TTM
+    12. pb：市净率
+    13. _source：数据来源
+    14. _api_name：源接口名称
+    15. _batch_id：采集批次ID
+    16. _ingest_time：入库时间
+    17. _record_hash：记录哈希
+
+------------------------------------------------------------
+60. index_global
+表说明：国际指数
+数据量：158,507 行
+字段数量：17 个
+结构来源：index/quotes/index_global.yaml
+字段清单：
+    01. ts_code：TS指数代码
+    02. trade_date：交易日
+    03. open：开盘点位
+    04. close：收盘点位
+    05. high：最高点位
+    06. low：最低点位
+    07. pre_close：昨日收盘点
+    08. change：涨跌点位
+    09. pct_chg：涨跌幅
+    10. swing：振幅
+    11. vol：成交量
+    12. amount：成交额
+    13. _source：数据来源
+    14. _api_name：源接口名称
+    15. _batch_id：采集批次ID
+    16. _ingest_time：入库时间
+    17. _record_hash：记录哈希
+
+------------------------------------------------------------
+61. index_monthly
+表说明：指数月线行情
+数据量：206,781 行
+字段数量：16 个
+结构来源：index/quotes/index_monthly.yaml
+字段清单：
+    01. ts_code：TS指数代码
+    02. trade_date：交易日
+    03. close：收盘点位
+    04. open：开盘点位
+    05. high：最高点位
+    06. low：最低点位
+    07. pre_close：昨日收盘点
+    08. change：涨跌点位
+    09. pct_chg：涨跌幅
+    10. vol：成交量
+    11. amount：成交额
+    12. _source：数据来源
+    13. _api_name：源接口名称
+    14. _batch_id：采集批次ID
+    15. _ingest_time：入库时间
+    16. _record_hash：记录哈希
+
+------------------------------------------------------------
+62. index_weekly
+表说明：指数周线行情
+数据量：877,266 行
+字段数量：16 个
+结构来源：index/quotes/index_weekly.yaml
+字段清单：
+    01. ts_code：TS指数代码
+    02. trade_date：交易日
+    03. close：收盘点位
+    04. open：开盘点位
+    05. high：最高点位
+    06. low：最低点位
+    07. pre_close：昨日收盘点
+    08. change：涨跌点位
+    09. pct_chg：涨跌幅
+    10. vol：成交量
+    11. amount：成交额
+    12. _source：数据来源
+    13. _api_name：源接口名称
+    14. _batch_id：采集批次ID
+    15. _ingest_time：入库时间
+    16. _record_hash：记录哈希
+
+------------------------------------------------------------
+63. index_weight
+表说明：指数成分和权重
+数据量：8,051,563 行
+字段数量：9 个
+结构来源：index/quotes/index_weight.yaml
+字段清单：
+    01. index_code：指数代码
+    02. con_code：成分代码
+    03. trade_date：交易日期
+    04. weight：权重
+    05. _source：数据来源
+    06. _api_name：源接口名称
+    07. _batch_id：采集批次ID
+    08. _ingest_time：入库时间
+    09. _record_hash：记录哈希
+
+------------------------------------------------------------
+64. margin
 表说明：融资融券交易汇总
-数据量：3,907 行
+数据量：3,909 行
 字段数量：14 个
 结构来源：stock/margin/margin.yaml
 字段清单：
@@ -1962,9 +2780,9 @@
     14. _record_hash：记录哈希
 
 ------------------------------------------------------------
-39. margin_detail
+65. margin_detail
 表说明：融资融券交易明细
-数据量：6,425,779 行
+数据量：6,432,110 行
 字段数量：16 个
 结构来源：stock/margin/margin_detail.yaml
 字段清单：
@@ -1986,9 +2804,9 @@
     16. _record_hash：记录哈希
 
 ------------------------------------------------------------
-40. margin_secs
+66. margin_secs
 表说明：融资融券标的（新）
-数据量：7,600,427 行
+数据量：7,609,177 行
 字段数量：9 个
 结构来源：stock/market/margin_secs.yaml
 字段清单：
@@ -2003,7 +2821,7 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-41. monthly
+67. monthly
 表说明：月线行情
 数据量：894,626 行
 字段数量：16 个
@@ -2027,9 +2845,9 @@
     16. _record_hash：记录哈希
 
 ------------------------------------------------------------
-42. namechange
+68. namechange
 表说明：股票曾用名
-数据量：38,674 行
+数据量：12,910 行
 字段数量：11 个
 结构来源：stock/basic/namechange.yaml
 字段清单：
@@ -2046,9 +2864,9 @@
     11. _record_hash：记录哈希
 
 ------------------------------------------------------------
-43. new_share
+69. new_share
 表说明：IPO新股列表
-数据量：4,268 行
+数据量：4,269 行
 字段数量：17 个
 结构来源：stock/basic/new_share.yaml
 字段清单：
@@ -2071,9 +2889,9 @@
     17. _record_hash：记录哈希
 
 ------------------------------------------------------------
-44. pledge_detail
+70. pledge_detail
 表说明：股权质押明细
-数据量：152,287 行
+数据量：244,214 行
 字段数量：19 个
 结构来源：stock/market/pledge_detail.yaml
 字段清单：
@@ -2098,9 +2916,9 @@
     19. _record_hash：记录哈希
 
 ------------------------------------------------------------
-45. pledge_stat
+71. pledge_stat
 表说明：股权质押统计数据
-数据量：4,277,935 行
+数据量：5,016,401 行
 字段数量：12 个
 结构来源：stock/market/pledge_stat.yaml
 字段清单：
@@ -2118,9 +2936,9 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-46. report_rc
+72. report_rc
 表说明：卖方盈利预测数据
-数据量：1,801,084 行
+数据量：1,987,993 行
 字段数量：28 个
 结构来源：stock/special/report_rc.yaml
 字段清单：
@@ -2154,9 +2972,9 @@
     28. _record_hash：记录哈希
 
 ------------------------------------------------------------
-47. repurchase
+73. repurchase
 表说明：股票回购
-数据量：109,146 行
+数据量：113,836 行
 字段数量：14 个
 结构来源：stock/market/repurchase.yaml
 字段清单：
@@ -2176,9 +2994,9 @@
     14. _record_hash：记录哈希
 
 ------------------------------------------------------------
-48. share_float
+74. share_float
 表说明：限售股解禁
-数据量：50,509 行
+数据量：45,786 行
 字段数量：12 个
 结构来源：stock/market/share_float.yaml
 字段清单：
@@ -2196,7 +3014,7 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-49. slb_len
+75. slb_len
 表说明：转融资交易汇总
 数据量：2,811 行
 字段数量：11 个
@@ -2215,7 +3033,7 @@
     11. _record_hash：记录哈希
 
 ------------------------------------------------------------
-50. slb_len_mm
+76. slb_len_mm
 表说明：做市借券交易汇总
 数据量：55,214 行
 字段数量：12 个
@@ -2235,7 +3053,7 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-51. slb_sec
+77. slb_sec
 表说明：转融券交易汇总
 数据量：2,287,159 行
 字段数量：12 个
@@ -2255,7 +3073,7 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-52. slb_sec_detail
+78. slb_sec_detail
 表说明：转融券交易明细
 数据量：850,244 行
 字段数量：11 个
@@ -2274,9 +3092,27 @@
     11. _record_hash：记录哈希
 
 ------------------------------------------------------------
-53. stk_factor
+79. stk_alert
+表说明：交易所重点提示证券
+数据量：67 行
+字段数量：10 个
+结构来源：stock/market/stk_alert.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. name：股票名称
+    03. start_date：交易所重点提示起始日期
+    04. end_date：交易所重点提示参考截至日期
+    05. type：提示类型
+    06. _source：数据来源
+    07. _api_name：源接口名称
+    08. _batch_id：采集批次ID
+    09. _ingest_time：入库时间
+    10. _record_hash：记录哈希
+
+------------------------------------------------------------
+80. stk_factor
 表说明：股票技术因子
-数据量：17,976,629 行
+数据量：17,987,612 行
 字段数量：40 个
 结构来源：stock/special/stk_factor.yaml
 字段清单：
@@ -2322,9 +3158,28 @@
     40. _record_hash：记录哈希
 
 ------------------------------------------------------------
-54. stk_holdernumber
+81. stk_high_shock
+表说明：个股严重异常波动
+数据量：22 行
+字段数量：11 个
+结构来源：stock/market/stk_high_shock.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：公告日期
+    03. name：股票名称
+    04. trade_market：交易所
+    05. reason：异常说明
+    06. period：异常期间
+    07. _source：数据来源
+    08. _api_name：源接口名称
+    09. _batch_id：采集批次ID
+    10. _ingest_time：入库时间
+    11. _record_hash：记录哈希
+
+------------------------------------------------------------
+82. stk_holdernumber
 表说明：股东户数
-数据量：392,737 行
+数据量：393,514 行
 字段数量：9 个
 结构来源：stock/market/stk_holdernumber.yaml
 字段清单：
@@ -2339,9 +3194,9 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-55. stk_holdertrade
+83. stk_holdertrade
 表说明：股东增减持
-数据量：65,466 行
+数据量：65,526 行
 字段数量：18 个
 结构来源：stock/market/stk_holdertrade.yaml
 字段清单：
@@ -2365,9 +3220,9 @@
     18. _record_hash：记录哈希
 
 ------------------------------------------------------------
-56. stk_limit
+84. stk_limit
 表说明：每日涨跌停价格
-数据量：17,434,325 行
+数据量：17,441,905 行
 字段数量：10 个
 结构来源：stock/quotes/stk_limit.yaml
 字段清单：
@@ -2383,9 +3238,9 @@
     10. _record_hash：记录哈希
 
 ------------------------------------------------------------
-57. stk_managers
+85. stk_managers
 表说明：上市公司管理层
-数据量：1,201,385 行
+数据量：725,840 行
 字段数量：17 个
 结构来源：stock/basic/stk_managers.yaml
 字段清单：
@@ -2408,7 +3263,7 @@
     17. _record_hash：记录哈希
 
 ------------------------------------------------------------
-58. stk_mins
+86. stk_mins
 表说明：分钟线行情
 数据量：13,255 行
 字段数量：13 个
@@ -2429,9 +3284,9 @@
     13. _record_hash：记录哈希
 
 ------------------------------------------------------------
-59. stk_rewards
+87. stk_rewards
 表说明：管理层薪酬和持股
-数据量：3,359,014 行
+数据量：4,038,219 行
 字段数量：12 个
 结构来源：stock/basic/stk_rewards.yaml
 字段清单：
@@ -2449,9 +3304,28 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-60. stk_surv
+88. stk_shock
+表说明：个股异常波动
+数据量：500 行
+字段数量：11 个
+结构来源：stock/market/stk_shock.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：公告日期
+    03. name：股票名称
+    04. trade_market：交易所
+    05. reason：异常说明
+    06. period：异常期间
+    07. _source：数据来源
+    08. _api_name：源接口名称
+    09. _batch_id：采集批次ID
+    10. _ingest_time：入库时间
+    11. _record_hash：记录哈希
+
+------------------------------------------------------------
+89. stk_surv
 表说明：机构调研表
-数据量：74,139 行
+数据量：110,178 行
 字段数量：15 个
 结构来源：stock/special/stk_surv.yaml
 字段清单：
@@ -2472,9 +3346,9 @@
     15. _record_hash：记录哈希
 
 ------------------------------------------------------------
-61. stock_basic
+90. stock_basic
 表说明：基础信息
-数据量：5,842 行
+数据量：5,844 行
 字段数量：22 个
 结构来源：stock/basic/stock_basic.yaml
 字段清单：
@@ -2502,7 +3376,7 @@
     22. _record_hash：记录哈希
 
 ------------------------------------------------------------
-62. stock_company
+91. stock_company
 表说明：上市公司基本信息
 数据量：12,544 行
 字段数量：23 个
@@ -2533,9 +3407,45 @@
     23. _record_hash：记录哈希
 
 ------------------------------------------------------------
-63. suspend_d
+92. stock_hsgt
+表说明：沪深港通股票列表
+数据量：713,663 行
+字段数量：10 个
+结构来源：stock/basic/stock_hsgt.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. type：类型
+    04. name：股票名称
+    05. type_name：类型名称
+    06. _source：数据来源
+    07. _api_name：源接口名称
+    08. _batch_id：采集批次ID
+    09. _ingest_time：入库时间
+    10. _record_hash：记录哈希
+
+------------------------------------------------------------
+93. stock_st
+表说明：ST股票列表
+数据量：320,268 行
+字段数量：10 个
+结构来源：stock/basic/stock_st.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. name：股票名称
+    03. trade_date：交易日期
+    04. type：类型
+    05. type_name：类型名称
+    06. _source：数据来源
+    07. _api_name：源接口名称
+    08. _batch_id：采集批次ID
+    09. _ingest_time：入库时间
+    10. _record_hash：记录哈希
+
+------------------------------------------------------------
+94. suspend_d
 表说明：每日停复牌信息
-数据量：640,368 行
+数据量：640,395 行
 字段数量：9 个
 结构来源：stock/quotes/suspend_d.yaml
 字段清单：
@@ -2550,9 +3460,53 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-64. top10_floatholders
+95. sz_daily_info
+表说明：深圳市场每日交易概况
+数据量：67,937 行
+字段数量：14 个
+结构来源：index/quotes/sz_daily_info.yaml
+字段清单：
+    01. trade_date：无字段说明
+    02. ts_code：市场类型
+    03. count：股票个数
+    04. amount：成交金额
+    05. vol：成交量
+    06. total_share：总股本
+    07. total_mv：总市值
+    08. float_share：流通股票
+    09. float_mv：流通市值
+    10. _source：数据来源
+    11. _api_name：源接口名称
+    12. _batch_id：采集批次ID
+    13. _ingest_time：入库时间
+    14. _record_hash：记录哈希
+
+------------------------------------------------------------
+96. tdx_index
+表说明：通达信板块信息
+数据量：150,635 行
+字段数量：14 个
+结构来源：stock/market/tdx_index.yaml
+字段清单：
+    01. ts_code：板块代码
+    02. trade_date：交易日期
+    03. name：板块名称
+    04. idx_type：板块类型
+    05. idx_count：成分个数
+    06. total_share：总股本
+    07. float_share：流通股
+    08. total_mv：总市值
+    09. float_mv：流通市值
+    10. _source：数据来源
+    11. _api_name：源接口名称
+    12. _batch_id：采集批次ID
+    13. _ingest_time：入库时间
+    14. _record_hash：记录哈希
+
+------------------------------------------------------------
+97. top10_floatholders
 表说明：前十大流通股东
-数据量：75,002 行
+数据量：60,300 行
 字段数量：14 个
 结构来源：stock/market/top10_floatholders.yaml
 字段清单：
@@ -2572,9 +3526,9 @@
     14. _record_hash：记录哈希
 
 ------------------------------------------------------------
-65. top10_holders
+98. top10_holders
 表说明：前十大股东
-数据量：147,260 行
+数据量：126,590 行
 字段数量：14 个
 结构来源：stock/market/top10_holders.yaml
 字段清单：
@@ -2594,9 +3548,9 @@
     14. _record_hash：记录哈希
 
 ------------------------------------------------------------
-66. top_inst
+99. top_inst
 表说明：龙虎榜机构明细
-数据量：185,529 行
+数据量：185,823 行
 字段数量：15 个
 结构来源：stock/market/top_inst.yaml
 字段清单：
@@ -2617,9 +3571,9 @@
     15. _record_hash：记录哈希
 
 ------------------------------------------------------------
-67. top_list
+100. top_list
 表说明：龙虎榜每日明细
-数据量：222,196 行
+数据量：222,490 行
 字段数量：20 个
 结构来源：stock/market/top_list.yaml
 字段清单：
@@ -2645,9 +3599,9 @@
     20. _record_hash：记录哈希
 
 ------------------------------------------------------------
-68. trade_cal
+101. trade_cal
 表说明：交易日历
-数据量：72,609 行
+数据量：157,576 行
 字段数量：9 个
 结构来源：stock/basic/trade_cal.yaml
 字段清单：
@@ -2662,9 +3616,9 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-69. weekly
+102. weekly
 表说明：周线行情
-数据量：3,752,973 行
+数据量：3,758,545 行
 字段数量：16 个
 结构来源：stock/quotes/weekly.yaml
 字段清单：

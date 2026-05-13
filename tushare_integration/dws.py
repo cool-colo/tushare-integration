@@ -8,6 +8,7 @@ import yaml
 
 from tushare_integration.db_engine import DatabaseEngineFactory
 from tushare_integration.dwd import FAR_FUTURE_TS_SQL
+from tushare_integration.quality import QualityManager, ValidationMode
 from tushare_integration.settings import TushareIntegrationSettings
 
 
@@ -413,7 +414,12 @@ FROM wide_candidates
         else:
             db_engine.query(f"DROP TABLE IF EXISTS {qualified_tmp}")
 
-    def sync_table(self, table_name: str) -> None:
+    def sync_table(
+        self,
+        table_name: str,
+        validation_mode: ValidationMode | None = None,
+        skip_validation: bool = False,
+    ) -> None:
         spec = self.load_spec(table_name)
         self.ensure_source_tables(spec)
         target_table = spec["name"]
@@ -428,6 +434,15 @@ FROM wide_candidates
         db_engine.create_table(tmp_table, tmp_schema)
         db_engine.query(self.render_sync_sql(table_name, target_table_name=tmp_table))
 
+        QualityManager(settings=self.settings, db_engine=db_engine).validate_publish(
+            layer="dws",
+            table_name=target_table,
+            target_table_name=tmp_table,
+            stage="pre_dws_publish",
+            mode=validation_mode,
+            skip_validation=skip_validation,
+        )
+
         if self.settings.database.db_type == "clickhouse":
             self._replace_clickhouse_table_from_tmp(target_table, tmp_table)
             return
@@ -437,6 +452,10 @@ FROM wide_candidates
         db_engine.query(f"INSERT INTO {db_name}.{target_table} SELECT * FROM {db_name}.{tmp_table}")
         db_engine.query(f"DROP TABLE IF EXISTS {db_name}.{tmp_table}")
 
-    def sync_all(self) -> None:
+    def sync_all(
+        self,
+        validation_mode: ValidationMode | None = None,
+        skip_validation: bool = False,
+    ) -> None:
         for table_name in self.list_tables():
-            self.sync_table(table_name)
+            self.sync_table(table_name, validation_mode=validation_mode, skip_validation=skip_validation)

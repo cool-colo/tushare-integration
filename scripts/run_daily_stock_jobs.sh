@@ -5,10 +5,11 @@ PROJECT_DIR="${PROJECT_DIR:-/data/flc/code/quant/tushare-integration}"
 JOBS_FILE="${JOBS_FILE:-$PROJECT_DIR/jobs.yaml}"
 CONFIG_FILE="${CONFIG_FILE:-$PROJECT_DIR/config.yaml}"
 LOG_DIR="${LOG_DIR:-$PROJECT_DIR/logs}"
-LOCK_FILE="${LOCK_FILE:-/tmp/tushare-daily-stock-jobs.lock}"
+UPDATE_TYPE="${UPDATE_TYPE:-incremental}"
+LOCK_FILE="${LOCK_FILE:-/tmp/tushare-stock-jobs.lock}"
 
-IMAGE_BASIC="${IMAGE_BASIC:-tushare-integration:0.0.1}"
 IMAGE_DEFAULT="${IMAGE_DEFAULT:-tushare-integration:0.0.4}"
+IMAGE_BASIC="${IMAGE_BASIC:-$IMAGE_DEFAULT}"
 DWD_SYNC_IMAGE="${DWD_SYNC_IMAGE:-$IMAGE_DEFAULT}"
 DWS_SYNC_IMAGE="${DWS_SYNC_IMAGE:-$DWD_SYNC_IMAGE}"
 DOCKER_BIN="${DOCKER_BIN:-docker}"
@@ -19,12 +20,12 @@ DWD_SYNC_HAD_FAILURE=0
 DWS_SYNC_HAD_FAILURE=0
 
 mkdir -p "$LOG_DIR"
-RUN_LOG="${RUN_LOG:-$LOG_DIR/daily-stock-jobs-$(date +%Y%m%d).log}"
+RUN_LOG="${RUN_LOG:-$LOG_DIR/${UPDATE_TYPE}-stock-jobs-$(date +%Y%m%d).log}"
 exec > >(tee -a "$RUN_LOG") 2>&1
 
 exec 9>"$LOCK_FILE"
 if ! flock -n 9; then
-  echo "[$(date '+%F %T')] Another daily stock job run is already active. Exiting."
+  echo "[$(date '+%F %T')] Another stock job run is already active. Exiting."
   exit 1
 fi
 
@@ -91,11 +92,17 @@ run_job() {
   local container="$1"
   local image="$2"
   local job="$3"
+  local update_type="$4"
   local container_id
   local exit_code
   local logs_pid
+  local command=(python main.py run job "$job")
 
-  echo "[$(date '+%F %T')] Starting $job with $image as $container"
+  if [[ "$update_type" != "all" ]]; then
+    command+=(--update-type "$update_type")
+  fi
+
+  echo "[$(date '+%F %T')] Starting $job update_type=$update_type with $image as $container"
   docker_cmd rm -f "$container" >/dev/null 2>&1 || true
 
   container_id="$(
@@ -105,7 +112,7 @@ run_job() {
       -v "$JOBS_FILE:/code/app/jobs.yaml:ro" \
       -v "$CONFIG_FILE:/code/app/config.yaml:ro" \
       "$image" \
-      python main.py run job "$job"
+      "${command[@]}"
   )"
   echo "[$(date '+%F %T')] Container started: $container_id"
   ACTIVE_CONTAINER="$container"
@@ -222,12 +229,12 @@ main() {
   require_file "$CONFIG_FILE"
 
   local jobs=(
-    "tushare-job-basic|$IMAGE_BASIC|stock/basic"
-    "tushare-job-financial|$IMAGE_DEFAULT|stock/financial"
-    "tushare-job-margin|$IMAGE_DEFAULT|stock/margin"
-    "tushare-job-market|$IMAGE_DEFAULT|stock/market"
-    "tushare-job-quotes|$IMAGE_DEFAULT|stock/quotes"
-    "tushare-job-special|$IMAGE_DEFAULT|stock/special"
+    "tushare-job-${UPDATE_TYPE}-basic|$IMAGE_BASIC|stock/basic"
+    "tushare-job-${UPDATE_TYPE}-financial|$IMAGE_DEFAULT|stock/financial"
+    "tushare-job-${UPDATE_TYPE}-margin|$IMAGE_DEFAULT|stock/margin"
+    "tushare-job-${UPDATE_TYPE}-market|$IMAGE_DEFAULT|stock/market"
+    "tushare-job-${UPDATE_TYPE}-quotes|$IMAGE_DEFAULT|stock/quotes"
+    "tushare-job-${UPDATE_TYPE}-special|$IMAGE_DEFAULT|stock/special"
   )
 
   # Ordered by DWD dependencies. DWD tasks stay atomic and source-normalized.
@@ -245,7 +252,7 @@ main() {
     "tushare-dws-sync-stock-factor-wide|$DWS_SYNC_IMAGE|dws_stock_factor_wide"
   )
 
-  echo "[$(date '+%F %T')] Daily stock jobs started. Log: $RUN_LOG"
+  echo "[$(date '+%F %T')] Stock jobs started. update_type=$UPDATE_TYPE Log: $RUN_LOG"
 
   local entry
   local container
@@ -253,12 +260,12 @@ main() {
   local job
   for entry in "${jobs[@]}"; do
     IFS="|" read -r container image job <<< "$entry"
-    run_job "$container" "$image" "$job"
+    run_job "$container" "$image" "$job" "$UPDATE_TYPE"
   done
 
   if [[ "$NORMAL_JOBS_HAD_FAILURE" != "0" ]]; then
     echo "[$(date '+%F %T')] Skipping DWD sync tasks because one or more normal jobs failed."
-    echo "[$(date '+%F %T')] Daily stock jobs completed with failures."
+    echo "[$(date '+%F %T')] Stock jobs completed with failures."
     return 0
   fi
 
@@ -271,7 +278,7 @@ main() {
   done
 
   if [[ "$DWD_SYNC_HAD_FAILURE" != "0" ]]; then
-    echo "[$(date '+%F %T')] Daily stock jobs completed; DWD sync tasks completed with failures."
+    echo "[$(date '+%F %T')] Stock jobs completed; DWD sync tasks completed with failures."
     return 0
   fi
 
@@ -283,11 +290,11 @@ main() {
   done
 
   if [[ "$DWS_SYNC_HAD_FAILURE" != "0" ]]; then
-    echo "[$(date '+%F %T')] Daily stock jobs completed; DWS sync tasks completed with failures."
+    echo "[$(date '+%F %T')] Stock jobs completed; DWS sync tasks completed with failures."
     return 0
   fi
 
-  echo "[$(date '+%F %T')] Daily stock jobs, DWD sync tasks, and DWS sync tasks completed."
+  echo "[$(date '+%F %T')] Stock jobs, DWD sync tasks, and DWS sync tasks completed."
 }
 
 main "$@"

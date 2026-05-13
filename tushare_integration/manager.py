@@ -1,4 +1,3 @@
-import itertools
 import json
 import logging
 import re
@@ -19,6 +18,15 @@ TUSHARE_RATE_LIMIT_MESSAGE_FRAGMENTS = (
     "频率超限",
     "rate limit",
 )
+
+DEFAULT_UPDATE_TYPE = "incremental"
+UPDATE_TYPE_ALIASES = {
+    "daily": "incremental",
+    "incremental": "incremental",
+    "full": "full",
+    "fully": "full",
+}
+VALID_UPDATE_TYPES = set(UPDATE_TYPE_ALIASES.values())
 
 
 class CrawlManager(object):
@@ -141,14 +149,51 @@ class CrawlManager(object):
             dependencies.extend(schema.get('dependencies', []))
         return list(set(dependencies))
 
-    def get_spiders_by_job(self, job_name: str) -> list[str]:
+    @staticmethod
+    def normalize_update_type(update_type: str | None) -> str | None:
+        if update_type is None:
+            return None
+
+        normalized = UPDATE_TYPE_ALIASES.get(update_type.strip().lower())
+        if normalized is None:
+            valid_values = ", ".join(sorted(VALID_UPDATE_TYPES | set(UPDATE_TYPE_ALIASES.keys())))
+            raise ValueError(f"Unsupported update_type {update_type!r}; expected one of: {valid_values}")
+        return normalized
+
+    @classmethod
+    def get_job_spider_update_types(cls, job: dict, spider: dict) -> set[str]:
+        update_types = spider.get("update_types", spider.get("update_type", job.get("update_type", DEFAULT_UPDATE_TYPE)))
+        if isinstance(update_types, str):
+            update_types = [update_types]
+
+        return {cls.normalize_update_type(update_type) for update_type in update_types}
+
+    @classmethod
+    def spider_matches_update_type(cls, job: dict, spider: dict, update_type: str | None) -> bool:
+        normalized_update_type = cls.normalize_update_type(update_type)
+        if normalized_update_type is None:
+            return True
+        return normalized_update_type in cls.get_job_spider_update_types(job, spider)
+
+    @classmethod
+    def filter_job_spiders_by_update_type(cls, job: dict, update_type: str | None) -> list[dict]:
+        return [
+            spider
+            for spider in job.get("spiders", [])
+            if cls.spider_matches_update_type(job, spider, update_type)
+        ]
+
+    def get_spiders_by_job(self, job_name: str, update_type: str | None = None) -> list[str]:
         with open("jobs.yaml", 'r', encoding='utf8') as f:
             jobs = yaml.safe_load(f.read())
         for job in jobs['cronjob']:
             if job['name'] == job_name:
-                return list(
-                    set(list(itertools.chain(*[self.list_spiders(spider['name']) for spider in job['spiders']])))
-                )
+                selected_spiders = []
+                for spider in self.filter_job_spiders_by_update_type(job, update_type):
+                    for spider_name in self.list_spiders(spider['name']):
+                        if spider_name not in selected_spiders:
+                            selected_spiders.append(spider_name)
+                return selected_spiders
         raise ValueError(f"Job {job_name} not found")
 
     def run_spiders_in_sequence(self, spiders: list[str]):
@@ -161,9 +206,13 @@ class CrawlManager(object):
         if len(spiders) > 1:
             deferred.addCallback(lambda _: self.run_spiders_in_sequence(spiders[1:]))
 
-    def run_job(self, job_name: str):
-        spiders = self.get_spiders_by_job(job_name)
+    def run_job(self, job_name: str, update_type: str | None = None):
+        spiders = self.get_spiders_by_job(job_name, update_type=update_type)
         all_spiders = self.get_all_spiders(spiders)
+
+        if len(all_spiders) == 0:
+            logging.info("No spiders matched job=%s update_type=%s; skipping crawl.", job_name, update_type)
+            return
 
         self.run_spiders_in_sequence(all_spiders)
         self.process.start()
