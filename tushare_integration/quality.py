@@ -36,6 +36,7 @@ DWD_TRADE_RELEVANT_TABLES = {
     "dwd_stock_margin_trading",
     "dwd_stock_northbound_holding",
     "dwd_stock_chip_distribution",
+    "dwd_index_weight",
     "dwd_dc_index",
     "dwd_dc_member",
     "dwd_dc_concept",
@@ -649,6 +650,8 @@ class QualityManager:
             rules.extend(self._northbound_rules(qualified, validation_filter))
         if table_name == "dwd_stock_chip_distribution":
             rules.extend(self._chip_rules(qualified, validation_filter))
+        if table_name == "dwd_index_weight":
+            rules.extend(self._index_weight_rules(qualified, validation_filter))
         if table_name == "dwd_security_master":
             rules.extend(self._security_master_rules(qualified))
         return rules
@@ -780,6 +783,30 @@ class QualityManager:
                     SELECT count() AS issue_count
                     FROM {qualified}
                     {self._where_sql("vol < 0 OR amount < 0 OR vol_ratio < 0 OR turn_over < 0", validation_filter)}
+                """,
+            ),
+        ]
+
+    def _index_weight_rules(self, qualified: str, validation_filter: str | None = None) -> list[ValidationRule]:
+        return [
+            ValidationRule(
+                rule_id="index_weight_percent_range",
+                description="Index constituent weight must be a percentage in [0, 100]",
+                severity="BLOCKER",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("weight < 0 OR weight > 100", validation_filter)}
+                """,
+            ),
+            ValidationRule(
+                rule_id="index_weight_available_not_before_event",
+                description="Index constituent weight cannot be available before event date",
+                severity="BLOCKER",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("available_trade_date < event_date", validation_filter)}
                 """,
             ),
         ]

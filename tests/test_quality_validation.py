@@ -330,6 +330,38 @@ class QualityValidationTest(unittest.TestCase):
         self.assertIn("PARTITION BY src.`trade_date`, src.`ts_code`, src.`con_code`", sql)
         self.assertIn("lagInFrame(src._record_hash)", sql)
 
+    def test_dwd_index_weight_sql_uses_index_stock_trade_key(self):
+        manager = DWDManager()
+        schema = manager.build_schema(manager.load_spec("dwd_index_weight"))
+        columns = {column["name"]: column for column in schema["columns"]}
+        sql = manager.render_sync_sql("dwd_index_weight")
+
+        self.assertNotIn("nullable", columns["index_code"])
+        self.assertNotIn("nullable", columns["con_code"])
+        self.assertNotIn("nullable", columns["trade_date"])
+        self.assertIn("FROM default.index_weight_raw src", sql)
+        self.assertIn("concat('stock:', src.con_code) AS `instrument_id`", sql)
+        self.assertIn("PARTITION BY src.`index_code`, src.`con_code`, src.`trade_date`", sql)
+        self.assertIn("src.`trade_date` >= toDate32('2010-01-01')", sql)
+        self.assertIn("coalesce(calendar_map.next_trade_date, src.trade_date)", sql)
+
+    def test_dwd_index_weight_quality_rules_include_domain_checks(self):
+        manager = QualityManager(settings=self._settings(), db_engine=DummyDB())
+
+        rules = {
+            rule.rule_id: rule
+            for rule in manager.list_rules(
+                layer="dwd",
+                table_name="dwd_index_weight",
+                target_table_name="dwd_index_weight_tmp",
+            )
+        }
+
+        self.assertIn("index_weight_percent_range", rules)
+        self.assertIn("index_weight_available_not_before_event", rules)
+        self.assertIn("weight < 0 OR weight > 100", rules["index_weight_percent_range"].issue_count_sql)
+        self.assertIn("event_date >= toDate32('2010-01-01')", rules["index_weight_percent_range"].issue_count_sql)
+
     def test_dwd_dividend_quality_rules_include_pit_and_domain_checks(self):
         manager = QualityManager(settings=self._settings(), db_engine=DummyDB())
 
