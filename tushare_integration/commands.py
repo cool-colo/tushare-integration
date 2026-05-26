@@ -8,7 +8,7 @@ import yaml
 from tushare_integration.dwd import DWDManager
 from tushare_integration.dws import DWSManager
 from tushare_integration.manager import CrawlManager
-from tushare_integration.quality import QualityManager, QualityValidationError, ValidationMode
+from tushare_integration.quality import DqcManager, DqcValidationError, QualityManager, QualityValidationError, ValidationMode
 
 try:
     from rich import print
@@ -193,6 +193,34 @@ def _quality_run_summary(manager: QualityManager, runs, include_sql: bool) -> di
     }
 
 
+def _dqc_run_summary(run) -> dict:
+    return {
+        "run_id": run.run_id,
+        "layer": run.layer,
+        "domain": run.domain,
+        "suite_name": run.suite_name,
+        "table_name": run.table_name,
+        "as_of_date": str(run.as_of_date),
+        "mode": run.mode,
+        "status": run.status,
+        "result_count": len(run.results),
+        "metric_count": len(run.metrics),
+        "consistency_count": len(run.consistencies),
+        "sample_count": len(run.samples),
+        "failed_results": [
+            {
+                "rule_id": result.rule_id,
+                "table_name": result.table_name,
+                "severity": result.severity,
+                "issue_count": result.issue_count,
+                "message": result.message,
+            }
+            for result in run.results
+            if result.status == "FAIL"
+        ],
+    }
+
+
 @query_app.command('list', help="List spiders")
 def list_spiders():
     manager = CrawlManager()
@@ -354,6 +382,33 @@ def report_quality_run(
 ):
     manager = QualityManager()
     print(manager.report_run(run_id))
+
+
+@quality_app.command('dqc', help="Run systematic DQC checks", no_args_is_help=True)
+def run_dqc(
+    layer: str = typer.Option("dws", "--layer", help="DQC layer"),
+    suite_name: str | None = typer.Option(None, "--suite", help="DQC suite name"),
+    table_name: str | None = typer.Option(None, "--table", help="Logical table name or all"),
+    all_tables: bool = typer.Option(False, "--all", help="Run the suite for all supported tables"),
+    as_of_date: str | None = typer.Option(None, "--as-of-date", help="DQC as-of date, YYYY-MM-DD"),
+    mode: str | None = typer.Option(None, "--mode", help="Override DQC mode: strict, warn_only, or skip"),
+):
+    if all_tables:
+        table_name = None
+    resolved_mode = _resolve_validation_mode(False, mode)
+    manager = DqcManager()
+    try:
+        run = manager.run(
+            layer=layer,
+            suite_name=suite_name,
+            table_name=table_name,
+            as_of_date=as_of_date,
+            mode=resolved_mode,
+        )
+    except DqcValidationError as exc:
+        print(json.dumps(_dqc_run_summary(exc.run), ensure_ascii=False, indent=2, default=str))
+        raise typer.Exit(1)
+    print(json.dumps(_dqc_run_summary(run), ensure_ascii=False, indent=2, default=str))
 
 
 @crawl_app.command('job', help="Run a job", no_args_is_help=True)

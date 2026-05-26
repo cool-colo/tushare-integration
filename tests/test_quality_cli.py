@@ -5,7 +5,7 @@ from unittest import mock
 from typer.testing import CliRunner
 
 from tushare_integration import commands
-from tushare_integration.quality import ValidationResult, ValidationRule, ValidationRun
+from tushare_integration.quality import DqcRun, ValidationResult, ValidationRule, ValidationRun
 
 
 class FakeQualityManager:
@@ -75,10 +75,35 @@ class FailedQualityManager(FakeQualityManager):
         ]
 
 
+class FakeDqcManager:
+    calls = []
+
+    def run(self, **kwargs):
+        self.calls.append(kwargs)
+        return DqcRun(
+            run_id="dqc_run",
+            layer=kwargs["layer"],
+            domain="factor",
+            suite_name=kwargs["suite_name"] or "stock_factor_panel",
+            table_name=kwargs["table_name"] or "all",
+            as_of_date=kwargs["as_of_date"] or "2026-05-26",
+            mode=kwargs["mode"] or "warn_only",
+            status="PASS",
+            started_at="2026-05-26 00:00:00",
+            finished_at="2026-05-26 00:00:01",
+            baseline_window_days=60,
+            results=[],
+            metrics=[],
+            consistencies=[],
+            samples=[],
+        )
+
+
 class QualityCliTest(unittest.TestCase):
     def setUp(self):
         FakeQualityManager.runs = []
         FakeQualityManager.calls = []
+        FakeDqcManager.calls = []
         self.runner = CliRunner()
 
     def test_quality_run_all_cli_syntax(self):
@@ -218,6 +243,46 @@ class QualityCliTest(unittest.TestCase):
         output = json.loads(result.output)
         failed_rule = output["runs"][0]["failed_rules"][0]
         self.assertNotIn("issue_count_sql", failed_rule)
+
+    def test_quality_dqc_cli_passes_generic_suite_arguments(self):
+        with mock.patch.object(commands, "DqcManager", FakeDqcManager):
+            result = self.runner.invoke(
+                commands.quality_app,
+                [
+                    "dqc",
+                    "--layer",
+                    "dws",
+                    "--suite",
+                    "stock_factor_panel",
+                    "--table",
+                    "dws_stock_factor_wide",
+                    "--as-of-date",
+                    "2026-05-26",
+                    "--mode",
+                    "warn_only",
+                ],
+            )
+
+        self.assertEqual(result.exit_code, 0)
+        output = json.loads(result.output)
+        self.assertEqual(output["run_id"], "dqc_run")
+        self.assertEqual(
+            FakeDqcManager.calls[0],
+            {
+                "layer": "dws",
+                "suite_name": "stock_factor_panel",
+                "table_name": "dws_stock_factor_wide",
+                "as_of_date": "2026-05-26",
+                "mode": "warn_only",
+            },
+        )
+
+    def test_quality_dqc_all_clears_table_name(self):
+        with mock.patch.object(commands, "DqcManager", FakeDqcManager):
+            result = self.runner.invoke(commands.quality_app, ["dqc", "--layer", "dws", "--all"])
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertIsNone(FakeDqcManager.calls[0]["table_name"])
 
 
 if __name__ == "__main__":

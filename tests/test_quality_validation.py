@@ -4,7 +4,7 @@ from unittest import mock
 import pandas as pd
 
 from tushare_integration.dwd import DWDManager
-from tushare_integration.quality import QualityManager, QualityValidationError, ValidationResult
+from tushare_integration.quality import DqcManager, QualityManager, QualityValidationError, ValidationResult
 from tushare_integration.settings import TushareIntegrationSettings
 
 
@@ -21,6 +21,45 @@ class DummyDB:
 
     def query_df(self, sql):
         return pd.DataFrame({"issue_count": [0]})
+
+    def query(self, sql):
+        return None
+
+
+class DqcSqlDB(DummyDB):
+    def __init__(self):
+        super().__init__()
+        self.queries = []
+
+    def query_df(self, sql):
+        self.queries.append(sql)
+        return pd.DataFrame(
+            {
+                "issue_count": [0],
+                "checked_count": [100],
+                "observed_value": [100.0],
+            }
+        )
+
+
+class DqcMetricDB(DummyDB):
+    def __init__(self):
+        super().__init__()
+        self.queries = []
+
+    def query_df(self, sql):
+        self.queries.append(sql)
+        if "uniqExact(instrument_id)" in sql:
+            return pd.DataFrame(
+                {
+                    "trade_date": [pd.Timestamp("2026-05-25").date()],
+                    "row_count": [100],
+                    "instrument_count": [100],
+                    "max_available_trade_date_day": [20000.0],
+                    "max_build_time_ts": [1770000000.0],
+                }
+            )
+        return pd.DataFrame()
 
 
 class QualityValidationTest(unittest.TestCase):
@@ -258,6 +297,173 @@ class QualityValidationTest(unittest.TestCase):
 
         self.assertIn("src.`trade_date` >= toDate32('2010-01-01')", price_sql)
         self.assertNotIn("src.`trade_date` >= toDate32('2010-01-01')", income_sql)
+
+    def test_dqc_metadata_uses_generic_result_tables(self):
+        manager = DqcManager(settings=self._settings(), db_engine=DummyDB())
+
+        schemas = manager._metadata_table_schemas()
+
+        self.assertIn("dq_dqc_run", schemas)
+        self.assertIn("dq_dqc_metric", schemas)
+        self.assertIn("layer", [column["name"] for column in schemas["dq_dqc_run"]["columns"]])
+        self.assertIn("suite_name", [column["name"] for column in schemas["dq_dqc_result"]["columns"]])
+        self.assertIn("issue_rate", [column["name"] for column in schemas["dq_dqc_result"]["columns"]])
+
+    def test_dqc_suite_resolution_is_generic(self):
+        manager = DqcManager(settings=self._settings(), db_engine=DummyDB())
+
+        self.assertEqual(manager.resolve_suite("dws", None), "stock_factor_panel")
+        self.assertEqual(
+            manager.resolve_tables("dws", "stock_factor_panel"),
+            ["dws_stock_factor_wide", "dws_stock_factor_wide_matrix"],
+        )
+
+    def test_dqc_skip_records_bypass_without_running_suite(self):
+        db = DummyDB()
+        manager = DqcManager(
+            settings=self._settings({"dqc_mode": "skip", "dqc_create_result_tables": False}),
+            db_engine=db,
+        )
+
+        run = manager.run(layer="dws", suite_name="stock_factor_panel", table_name="dws_stock_factor_wide")
+
+        self.assertEqual(run.status, "SKIPPED")
+        self.assertEqual(db.inserts[0][0], "dq_dqc_run")
+
+    def test_dqc_result_insert_includes_run_id(self):
+        db = DummyDB()
+        manager = DqcManager(settings=self._settings({"dqc_create_result_tables": False}), db_engine=db)
+
+        with mock.patch.object(
+            manager,
+            "_run_dws_stock_factor_panel",
+            return_value=(
+                [
+                    manager._dqc_result(
+                        domain="factor",
+                        suite_name="stock_factor_panel",
+                        table_name="dws_stock_factor_wide",
+                        rule_id="demo_rule",
+                        check_layer="semantic",
+                        check_type="demo",
+                        severity="BLOCKER",
+                        issue_count=0,
+                        checked_count=100,
+                    )
+                ],
+                [],
+                [],
+                [],
+            ),
+        ):
+            run = manager.run(layer="dws", suite_name="stock_factor_panel", table_name="dws_stock_factor_wide")
+
+        result_insert = next(data for table_name, data in db.inserts if table_name == "dq_dqc_result")
+        self.assertEqual(result_insert["run_id"].iloc[0], run.run_id)
+        self.assertEqual(result_insert["issue_rate"].iloc[0], 0.0)
+
+    def test_dqc_result_computes_issue_rate(self):
+        manager = DqcManager(settings=self._settings(), db_engine=DummyDB())
+
+        result = manager._dqc_result(
+            domain="factor",
+            suite_name="stock_factor_panel",
+            table_name="dws_stock_factor_wide",
+            rule_id="demo_rule",
+            check_layer="semantic",
+            check_type="demo",
+            severity="WARN",
+            issue_count=5,
+            checked_count=100,
+        )
+        zero_checked_result = manager._dqc_result(
+            domain="factor",
+            suite_name="stock_factor_panel",
+            table_name="dws_stock_factor_wide",
+            rule_id="demo_rule_zero",
+            check_layer="semantic",
+            check_type="demo",
+            severity="WARN",
+            issue_count=0,
+            checked_count=0,
+        )
+
+        self.assertEqual(result.issue_rate, 0.05)
+        self.assertIsNone(zero_checked_result.issue_rate)
+
+    def test_dqc_wide_semantic_sql_contains_expected_rules(self):
+        db = DqcSqlDB()
+        manager = DqcManager(settings=self._settings(), db_engine=db)
+
+        manager._dws_table_results(
+            domain="factor",
+            suite_name="stock_factor_panel",
+            table_name="dws_stock_factor_wide",
+            as_of_date=pd.Timestamp("2026-05-26").date(),
+        )
+        rendered_sql = "\n".join(db.queries)
+
+        self.assertIn("dwd_trade_calendar", rendered_sql)
+        self.assertIn("high < low OR high < open OR high < close", rendered_sql)
+        self.assertIn("countIf(available_trade_date < trade_date) AS issue_count", rendered_sql)
+        self.assertIn("count() AS checked_count", rendered_sql)
+        self.assertIn("available_trade_date < trade_date", rendered_sql)
+
+    def test_dqc_matrix_semantic_sql_contains_factor_checks(self):
+        db = DqcSqlDB()
+        manager = DqcManager(settings=self._settings(), db_engine=db)
+
+        manager._dws_table_results(
+            domain="factor",
+            suite_name="stock_factor_panel",
+            table_name="dws_stock_factor_wide_matrix",
+            as_of_date=pd.Timestamp("2026-05-26").date(),
+        )
+        rendered_sql = "\n".join(db.queries)
+
+        self.assertIn("factor_count !=", rendered_sql)
+        self.assertIn("countIf(factor_count !=", rendered_sql)
+        self.assertIn("qb_rsi_14 < 0 OR qb_rsi_14 > 100", rendered_sql)
+        self.assertIn("source_table != 'dws_stock_factor_wide'", rendered_sql)
+        self.assertIn("JSONExtractKeys", rendered_sql)
+        self.assertIn("ifNull(JSONExtractRaw(ifNull(factor_errors_json, '{}'), 'errors'), '{}')", rendered_sql)
+        self.assertNotIn("factor_errors_json NOT IN", rendered_sql)
+
+    def test_dqc_numeric_finite_check_batches_wide_tables(self):
+        db = DqcSqlDB()
+        manager = DqcManager(settings=self._settings(), db_engine=db)
+
+        manager._dws_numeric_finite_result(
+            domain="factor",
+            suite_name="stock_factor_panel",
+            table_name="dws_stock_factor_wide_matrix",
+            qualified="default.dws_stock_factor_wide_matrix",
+            target_trade_date_sql="toDate32('2026-05-25')",
+            numeric_columns=[f"factor_{index}" for index in range(181)],
+        )
+
+        self.assertEqual(len(db.queries), 3)
+        self.assertLessEqual(max(query.count("countIf(") for query in db.queries), 80)
+
+    def test_dqc_column_stats_batches_wide_tables(self):
+        db = DqcMetricDB()
+        manager = DqcManager(settings=self._settings(), db_engine=db)
+
+        with mock.patch.object(
+            manager,
+            "_dws_numeric_columns",
+            return_value=[f"factor_{index}" for index in range(95)],
+        ):
+            manager._dws_table_metrics(
+                domain="factor",
+                suite_name="stock_factor_panel",
+                table_name="dws_stock_factor_wide_matrix",
+                as_of_date=pd.Timestamp("2026-05-25").date(),
+            )
+
+        stats_queries = [query for query in db.queries if "UNION ALL" in query]
+        self.assertEqual(len(stats_queries), 3)
+        self.assertLessEqual(max(query.count("UNION ALL") for query in stats_queries), 39)
 
     def test_dwd_dividend_sql_uses_source_key_and_announcement_visibility(self):
         sql = DWDManager().render_sync_sql("dwd_stock_dividend")

@@ -91,6 +91,21 @@ class QualityConfig(BaseModel):
     create_result_tables: bool = Field(
         default=True, description="Create validation result tables before recording runs"
     )
+    dqc_mode: Literal["strict", "warn_only", "skip"] = Field(
+        default="warn_only", description="Default systematic DQC mode"
+    )
+    dqc_baseline_window_days: int = Field(
+        default=60, ge=1, description="Rolling DQC baseline window in calendar days"
+    )
+    dqc_min_baseline_days: int = Field(
+        default=20, ge=1, description="Minimum historical DQC days before drift rules can fail"
+    )
+    dqc_spot_check_samples: int = Field(
+        default=50, ge=0, description="Deterministic DQC spot-check sample count"
+    )
+    dqc_create_result_tables: bool = Field(
+        default=True, description="Create systematic DQC result tables before recording runs"
+    )
 
     model_config = SettingsConfigDict(extra='ignore')
 

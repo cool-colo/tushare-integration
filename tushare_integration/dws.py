@@ -10,7 +10,7 @@ import yaml
 
 from tushare_integration.db_engine import DatabaseEngineFactory
 from tushare_integration.dwd import FAR_FUTURE_TS_SQL, MIN_LAYER_TRADE_DATE_SQL
-from tushare_integration.quality import QualityManager, ValidationMode
+from tushare_integration.quality import DqcManager, QualityManager, ValidationMode
 from tushare_integration.settings import TushareIntegrationSettings
 
 
@@ -609,12 +609,14 @@ FROM factor_rows
 
         if self.settings.database.db_type == "clickhouse":
             self._replace_clickhouse_table_from_tmp(target_table, tmp_table)
+            self._run_post_publish_dqc(target_table, db_engine)
             return
 
         db_engine.create_table(target_table, schema)
         db_engine.query(f"TRUNCATE TABLE {db_name}.{target_table}")
         db_engine.query(f"INSERT INTO {db_name}.{target_table} SELECT * FROM {db_name}.{tmp_table}")
         db_engine.query(f"DROP TABLE IF EXISTS {db_name}.{tmp_table}")
+        self._run_post_publish_dqc(target_table, db_engine)
 
     def sync_all(
         self,
@@ -623,3 +625,11 @@ FROM factor_rows
     ) -> None:
         for table_name in self.list_tables():
             self.sync_table(table_name, validation_mode=validation_mode, skip_validation=skip_validation)
+
+    def _run_post_publish_dqc(self, table_name: str, db_engine) -> None:
+        dqc_table_name = None if table_name == "dws_stock_factor_wide_matrix" else table_name
+        DqcManager(settings=self.settings, db_engine=db_engine).run(
+            layer="dws",
+            suite_name="stock_factor_panel",
+            table_name=dqc_table_name,
+        )
