@@ -7,20 +7,24 @@ CONFIG_FILE="${CONFIG_FILE:-$PROJECT_DIR/config.yaml}"
 LOG_DIR="${LOG_DIR:-$PROJECT_DIR/logs}"
 UPDATE_TYPE="${UPDATE_TYPE:-incremental}"
 LOCK_FILE="${LOCK_FILE:-/tmp/tushare-market-jobs.lock}"
+SCRIPT_START_DATE="$(date +%F)"
 
 IMAGE_DEFAULT="${IMAGE_DEFAULT:-tushare-integration:0.0.6}"
 IMAGE_BASIC="${IMAGE_BASIC:-$IMAGE_DEFAULT}"
 DWD_SYNC_IMAGE="${DWD_SYNC_IMAGE:-$IMAGE_DEFAULT}"
 DWS_SYNC_IMAGE="${DWS_SYNC_IMAGE:-$DWD_SYNC_IMAGE}"
+DQC_IMAGE="${DQC_IMAGE:-$DWS_SYNC_IMAGE}"
+DQC_AS_OF_DATE="${DQC_AS_OF_DATE:-$SCRIPT_START_DATE}"
 DOCKER_BIN="${DOCKER_BIN:-docker}"
 USE_SUDO="${USE_SUDO:-auto}"
 CONTINUE_ON_ERROR="${CONTINUE_ON_ERROR:-0}"
 NORMAL_JOBS_HAD_FAILURE=0
 DWD_SYNC_HAD_FAILURE=0
 DWS_SYNC_HAD_FAILURE=0
+DQC_HAD_FAILURE=0
 
 mkdir -p "$LOG_DIR"
-RUN_LOG="${RUN_LOG:-$LOG_DIR/${UPDATE_TYPE}-market-jobs-$(date +%Y%m%d).log}"
+RUN_LOG="${RUN_LOG:-$LOG_DIR/${UPDATE_TYPE}-market-jobs-${SCRIPT_START_DATE//-/}.log}"
 exec > >(tee -a "$RUN_LOG") 2>&1
 
 exec 9>"$LOCK_FILE"
@@ -224,6 +228,49 @@ run_dws_sync() {
   echo "[$(date '+%F %T')] DWS sync completed: $table"
 }
 
+run_dqc() {
+  local container="$1"
+  local image="$2"
+  local as_of_date="$3"
+  local container_id
+  local exit_code
+  local logs_pid
+
+  echo "[$(date '+%F %T')] Starting DWS DQC as_of_date=$as_of_date with $image as $container"
+  docker_cmd rm -f "$container" >/dev/null 2>&1 || true
+
+  container_id="$(
+    docker_cmd run -d \
+      --name "$container" \
+      --net=host \
+      -v "$CONFIG_FILE:/code/app/config.yaml:ro" \
+      "$image" \
+      python main.py quality dqc --layer dws --all --as-of-date "$as_of_date"
+  )"
+  echo "[$(date '+%F %T')] Container started: $container_id"
+  ACTIVE_CONTAINER="$container"
+
+  docker_cmd logs -f "$container" &
+  logs_pid="$!"
+  ACTIVE_LOGS_PID="$logs_pid"
+
+  exit_code="$(docker_cmd wait "$container")"
+  wait "$logs_pid" || true
+  ACTIVE_LOGS_PID=""
+  ACTIVE_CONTAINER=""
+
+  if [[ "$exit_code" != "0" ]]; then
+    echo "[$(date '+%F %T')] DWS DQC failed: as_of_date=$as_of_date exited with code $exit_code"
+    DQC_HAD_FAILURE=1
+    if [[ "$CONTINUE_ON_ERROR" == "1" ]]; then
+      return 0
+    fi
+    return "$exit_code"
+  fi
+
+  echo "[$(date '+%F %T')] DWS DQC completed: as_of_date=$as_of_date"
+}
+
 main() {
   require_file "$JOBS_FILE"
   require_file "$CONFIG_FILE"
@@ -297,7 +344,15 @@ main() {
     return 0
   fi
 
-  echo "[$(date '+%F %T')] Market jobs, DWD sync tasks, and DWS sync tasks completed."
+  echo "[$(date '+%F %T')] DWS DQC task started."
+  run_dqc "tushare-dqc-dws-all" "$DQC_IMAGE" "$DQC_AS_OF_DATE"
+
+  if [[ "$DQC_HAD_FAILURE" != "0" ]]; then
+    echo "[$(date '+%F %T')] Market jobs completed; DWS DQC task completed with failures."
+    return 0
+  fi
+
+  echo "[$(date '+%F %T')] Market jobs, DWD sync tasks, DWS sync tasks, and DWS DQC task completed."
 }
 
 main "$@"
