@@ -103,6 +103,18 @@ class QualityConfig(BaseModel):
     dqc_spot_check_samples: int = Field(
         default=50, ge=0, description="Deterministic DQC spot-check sample count"
     )
+    dqc_factor_cross_check_samples: int = Field(
+        default=20, ge=0, description="Deterministic factor business cross-check sample count"
+    )
+    dqc_factor_cross_check_history_rows: int = Field(
+        default=260, ge=1, description="Historical rows used to recompute sampled factors"
+    )
+    dqc_factor_cross_check_abs_tolerance: float = Field(
+        default=1e-8, ge=0, description="Absolute tolerance for factor business cross-checks"
+    )
+    dqc_factor_cross_check_rel_tolerance: float = Field(
+        default=1e-6, ge=0, description="Relative tolerance for factor business cross-checks"
+    )
     dqc_create_result_tables: bool = Field(
         default=True, description="Create systematic DQC result tables before recording runs"
     )

@@ -1,10 +1,17 @@
+import json
 import unittest
 from unittest import mock
 
 import pandas as pd
 
 from tushare_integration.dwd import DWDManager
-from tushare_integration.quality import DqcManager, QualityManager, QualityValidationError, ValidationResult
+from tushare_integration.quality import (
+    DqcManager,
+    QualityManager,
+    QualityValidationError,
+    ValidationResult,
+    _FactorExpressionReferenceEvaluator,
+)
 from tushare_integration.settings import TushareIntegrationSettings
 
 
@@ -57,6 +64,37 @@ class DqcMetricDB(DummyDB):
                     "instrument_count": [100],
                     "max_available_trade_date_day": [20000.0],
                     "max_build_time_ts": [1770000000.0],
+                }
+            )
+        return pd.DataFrame()
+
+
+class DqcFactorCrossCheckDB(DummyDB):
+    def __init__(self, actual_value=0.1):
+        super().__init__()
+        self.queries = []
+        self.actual_value = actual_value
+
+    def query_df(self, sql):
+        self.queries.append(sql)
+        if "actual_value" in sql:
+            return pd.DataFrame({"actual_value": [self.actual_value]})
+        if "dws_stock_factor_wide_matrix" in sql and "arrayElement" in sql:
+            return pd.DataFrame(
+                {
+                    "instrument_id": ["stock:300119.SZ"],
+                    "trade_date": [pd.Timestamp("2026-05-25").date()],
+                    "source_code": ["300119.SZ"],
+                    "factor_id": ["a158_vsumn30"],
+                }
+            )
+        if "dws_stock_factor_wide" in sql:
+            return pd.DataFrame(
+                {
+                    "trade_date": pd.to_datetime(
+                        ["2026-05-20", "2026-05-21", "2026-05-22", "2026-05-25"]
+                    ).date,
+                    "volume": [10.0, 8.0, 11.0, 7.0],
                 }
             )
         return pd.DataFrame()
@@ -464,6 +502,105 @@ class QualityValidationTest(unittest.TestCase):
         stats_queries = [query for query in db.queries if "UNION ALL" in query]
         self.assertEqual(len(stats_queries), 3)
         self.assertLessEqual(max(query.count("UNION ALL") for query in stats_queries), 39)
+
+    def test_factor_reference_evaluator_recomputes_vsumn30(self):
+        evaluator = _FactorExpressionReferenceEvaluator(
+            "Sum(Greater(Ref($volume, 1)-$volume, 0), 30)/(Sum(Abs($volume-Ref($volume, 1)), 30)+1e-12)"
+        )
+
+        value = evaluator.evaluate(
+            [
+                {"volume": 10.0},
+                {"volume": 8.0},
+                {"volume": 11.0},
+                {"volume": 7.0},
+            ]
+        )
+
+        self.assertAlmostEqual(value, 6.0 / 9.0)
+
+    def test_dqc_factor_business_cross_validation_records_mismatch_sample(self):
+        db = DqcFactorCrossCheckDB()
+        manager = DqcManager(
+            settings=self._settings(
+                {
+                    "dqc_create_result_tables": False,
+                    "dqc_factor_cross_check_samples": 1,
+                    "dqc_factor_cross_check_history_rows": 30,
+                }
+            ),
+            db_engine=db,
+        )
+        mapping = [
+            {
+                "factor_id": "a158_vsumn30",
+                "factor_name": "Alpha158_成交量下跌占比30日",
+                "expression": (
+                    "Sum(Greater(Ref($volume, 1)-$volume, 0), 30)"
+                    "/(Sum(Abs($volume-Ref($volume, 1)), 30)+1e-12)"
+                ),
+            }
+        ]
+
+        with mock.patch.object(manager, "_supported_factor_mapping", return_value=(mapping, 0)):
+            results, samples = manager._dws_factor_business_cross_validation(
+                domain="factor",
+                suite_name="stock_factor_panel",
+                as_of_date=pd.Timestamp("2026-05-25").date(),
+            )
+
+        cross_check = next(result for result in results if result.rule_id == "dqc_factor_business_cross_validation")
+        self.assertEqual(cross_check.checked_count, 1)
+        self.assertEqual(cross_check.issue_count, 1)
+        self.assertEqual(cross_check.status, "FAIL")
+        self.assertEqual(len(samples), 1)
+        self.assertEqual(samples[0].entity_name, "a158_vsumn30")
+        self.assertEqual(samples[0].sample_type, "factor_cross_check_failed")
+        payload = json.loads(samples[0].sample_json)
+        self.assertEqual(payload["actual_value"], 0.1)
+        self.assertAlmostEqual(payload["expected_value"], 6.0 / 9.0)
+        self.assertIn("factor_mapping_readable", cross_check.message)
+        self.assertTrue(any("`vol` AS `volume`" in query for query in db.queries))
+
+    def test_dqc_factor_business_cross_validation_records_passed_sample(self):
+        db = DqcFactorCrossCheckDB(actual_value=6.0 / 9.0)
+        manager = DqcManager(
+            settings=self._settings(
+                {
+                    "dqc_create_result_tables": False,
+                    "dqc_factor_cross_check_samples": 1,
+                    "dqc_factor_cross_check_history_rows": 30,
+                }
+            ),
+            db_engine=db,
+        )
+        mapping = [
+            {
+                "factor_id": "a158_vsumn30",
+                "factor_name": "Alpha158_成交量下跌占比30日",
+                "expression": (
+                    "Sum(Greater(Ref($volume, 1)-$volume, 0), 30)"
+                    "/(Sum(Abs($volume-Ref($volume, 1)), 30)+1e-12)"
+                ),
+            }
+        ]
+
+        with mock.patch.object(manager, "_supported_factor_mapping", return_value=(mapping, 0)):
+            results, samples = manager._dws_factor_business_cross_validation(
+                domain="factor",
+                suite_name="stock_factor_panel",
+                as_of_date=pd.Timestamp("2026-05-25").date(),
+            )
+
+        cross_check = next(result for result in results if result.rule_id == "dqc_factor_business_cross_validation")
+        self.assertEqual(cross_check.checked_count, 1)
+        self.assertEqual(cross_check.issue_count, 0)
+        self.assertEqual(cross_check.status, "PASS")
+        self.assertEqual(len(samples), 1)
+        self.assertEqual(samples[0].sample_type, "factor_cross_check_passed")
+        payload = json.loads(samples[0].sample_json)
+        self.assertAlmostEqual(payload["actual_value"], 6.0 / 9.0)
+        self.assertAlmostEqual(payload["expected_value"], 6.0 / 9.0)
 
     def test_dwd_dividend_sql_uses_source_key_and_announcement_visibility(self):
         sql = DWDManager().render_sync_sql("dwd_stock_dividend")

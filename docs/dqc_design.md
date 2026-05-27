@@ -71,13 +71,24 @@ Semantic checks:
 - bounded fields: `0 <= winner_rate <= 100`, `0 <= qb_rsi_14 <= 100`
 - matrix lineage points to `dws_stock_factor_wide`
 - matrix factor error payload is empty
+- matrix factor values match their business definitions in `docs/prd/factor_mapping_readable.csv`
 
 Consistency checks:
 
 - key-set equality on `(instrument_id, trade_date)`
 - row-count ratio and instrument-count ratio between wide and matrix
 - deterministic missing-key samples
-- deterministic spot-check samples by stock/date/entity
+- deterministic spot-check samples by stock/date/entity for audit navigation
+
+Business factor cross-validation:
+
+- `dqc_factor_business_cross_validation` samples matrix `(instrument_id, trade_date, factor_id)` pairs deterministically.
+- For each sampled factor, DQC reads `factor_mapping_readable.csv` and uses the factor expression as the business definition.
+- DQC fetches the required historical source fields from `dws_stock_factor_wide`, including field aliases such as `$volume -> vol`, `$vwap -> avg_price`, and `$turnover -> coalesce(turnover_rate_f, turn_over)`.
+- DQC recomputes the expected value with a reference evaluator implemented separately from the production `FactorEngine` and ClickHouse executable UDF path.
+- The expected value is compared with `dws_stock_factor_wide_matrix.<factor_id>` using absolute and relative tolerances.
+- Evaluated comparisons are written to `dq_dqc_sample` with `sample_type=factor_cross_check_passed` or `sample_type=factor_cross_check_failed`; the JSON payload includes the factor expression, actual value, expected value, diffs, and history window.
+- Unsupported expression operators are reported as a `MONITOR` coverage result instead of being treated as pass.
 
 ## Configuration
 
@@ -87,6 +98,10 @@ quality:
   dqc_baseline_window_days: 60
   dqc_min_baseline_days: 20
   dqc_spot_check_samples: 50
+  dqc_factor_cross_check_samples: 20
+  dqc_factor_cross_check_history_rows: 260
+  dqc_factor_cross_check_abs_tolerance: 1.0e-8
+  dqc_factor_cross_check_rel_tolerance: 1.0e-6
   dqc_create_result_tables: true
 ```
 
