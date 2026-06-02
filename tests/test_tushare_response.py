@@ -89,6 +89,25 @@ class TushareResponseTest(unittest.TestCase):
         self.assertNotIn("PARTITION BY price.instrument_id, price.event_date", sql)
         self.assertIn("AND event_date >= toDate32('2010-01-01')", sql)
 
+    def test_dws_stock_factor_wide_includes_pit_adj_factor(self):
+        manager = object.__new__(DWSManager)
+        manager.settings = self._clickhouse_settings()
+
+        sql = manager.render_sync_sql("dws_stock_factor_wide")
+        spec = manager.load_spec("dws_stock_factor_wide")
+        column_names = [column["name"] for column in spec["schema"]["columns"]]
+
+        self.assertIn("adj_factor", column_names)
+        self.assertIn("dwd_stock_adj_factor", manager.get_required_source_tables(spec))
+        self.assertIn("FROM default.dwd_stock_adj_factor", sql)
+        self.assertIn("LEFT JOIN adj_factor", sql)
+        self.assertIn("adj_factor.event_date = price.event_date", sql)
+        self.assertIn("coalesce(adj_factor.available_trade_date, price.available_trade_date)", sql)
+        self.assertIn("adj_factor.adj_factor AS adj_factor", sql)
+        self.assertIn("|', coalesce(adj_factor.source_batch_id, '')", sql)
+        self.assertIn("|', coalesce(adj_factor.source_record_hash, '')", sql)
+        self.assertNotIn("ASOF LEFT JOIN adj_factor", sql)
+
     def test_parse_response_treats_common_no_data_message_as_empty_item(self):
         spider = CyqChipsSpider()
         response = DummyResponse(

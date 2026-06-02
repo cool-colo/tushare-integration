@@ -21,6 +21,7 @@ DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT = 1200
 
 STOCK_FACTOR_WIDE_SOURCES = [
     "dwd_stock_eod_price",
+    "dwd_stock_adj_factor",
     "dwd_stock_daily_basic",
     "dwd_stock_eod_quote_metrics",
     "dwd_stock_financial_indicator",
@@ -124,6 +125,12 @@ daily_basic AS (
     WHERE sys_to = {FAR_FUTURE_TS_SQL}
       AND event_date >= {MIN_LAYER_TRADE_DATE_SQL}
 ),
+adj_factor AS (
+    SELECT *
+    FROM {db_name}.dwd_stock_adj_factor
+    WHERE sys_to = {FAR_FUTURE_TS_SQL}
+      AND event_date >= {MIN_LAYER_TRADE_DATE_SQL}
+),
 quote_metrics AS (
     SELECT *
     FROM {db_name}.dwd_stock_eod_quote_metrics
@@ -201,6 +208,7 @@ wide_candidates AS (
         price.event_date AS trade_date,
         greatest(
             price.available_trade_date,
+            coalesce(adj_factor.available_trade_date, price.available_trade_date),
             coalesce(daily_basic.available_trade_date, price.available_trade_date),
             coalesce(quote_metrics.available_trade_date, price.available_trade_date),
             coalesce(financial_indicator.available_trade_date, price.available_trade_date),
@@ -216,6 +224,7 @@ wide_candidates AS (
         price.pct_chg AS pct_chg,
         price.vol AS vol,
         price.amount AS amount,
+        adj_factor.adj_factor AS adj_factor,
         quote_metrics.buying AS buying,
         quote_metrics.selling AS selling,
         quote_metrics.vol_ratio AS vol_ratio,
@@ -276,6 +285,7 @@ wide_candidates AS (
         '{source_table_sql}' AS source_table,
         concat(
             price.source_batch_id,
+            '|', coalesce(adj_factor.source_batch_id, ''),
             '|', coalesce(daily_basic.source_batch_id, ''),
             '|', coalesce(quote_metrics.source_batch_id, ''),
             '|', coalesce(financial_indicator.source_batch_id, ''),
@@ -285,6 +295,7 @@ wide_candidates AS (
         ) AS source_batch_id,
         lower(hex(MD5(concat(
             price.source_record_hash,
+            '|', coalesce(adj_factor.source_record_hash, ''),
             '|', coalesce(daily_basic.source_record_hash, ''),
             '|', coalesce(quote_metrics.source_record_hash, ''),
             '|', coalesce(financial_indicator.source_record_hash, ''),
@@ -293,6 +304,9 @@ wide_candidates AS (
             '|', coalesce(chip_distribution.source_record_hash, '')
         )))) AS source_record_hash
     FROM price
+    LEFT JOIN adj_factor
+        ON adj_factor.instrument_id = price.instrument_id
+       AND adj_factor.event_date = price.event_date
     LEFT JOIN daily_basic
         ON daily_basic.instrument_id = price.instrument_id
        AND daily_basic.event_date = price.event_date
@@ -328,6 +342,7 @@ SELECT
     pct_chg,
     vol,
     amount,
+    adj_factor,
     buying,
     selling,
     vol_ratio,

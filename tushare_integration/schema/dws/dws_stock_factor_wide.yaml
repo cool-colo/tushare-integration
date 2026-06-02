@@ -70,6 +70,10 @@ schema:
       data_type: float
       nullable: true
       comment: 成交额
+    - name: adj_factor
+      data_type: float
+      nullable: true
+      comment: 复权因子
     - name: buying
       data_type: float
       nullable: true
