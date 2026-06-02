@@ -1,0 +1,1294 @@
+group,source,factor_id,name,expression,adj_type
+alpha101,alpha101,a101_001,Alpha101_短期极端情绪时点,"(CSRank(IdxMax((Sign(If((($close/Ref($close, 1)-1) < 0), Std(($close/Ref($close, 1)-1), 20), $close))*Abs(If((($close/Ref($close, 1)-1) < 0), Std(($close/Ref($close, 1)-1), 20), $close))**2), 5)) - 0.5)",前复权
+alpha101,alpha101,a101_002,Alpha101_量变与日内收益反转,"(-1*Corr(CSRank((Log($vol) - Ref(Log($vol), 2))), CSRank((($close - $open) / $open)), 6))",前复权
+alpha101,alpha101,a101_003,Alpha101_开盘量价背离,"(-1*Corr(CSRank($open), CSRank($vol), 10))",前复权
+alpha101,alpha101,a101_004,Alpha101_最低价时序反转,"(-1*Rank(CSRank($low), 9))",前复权
+alpha101,alpha101,a101_005,Alpha101_VWAP偏离与日内反转,"(CSRank(($open - (Sum(($amount / $vol), 10) / 10)))*(-1*Abs(CSRank(($close - ($amount / $vol))))))",前复权
+alpha101,alpha101,a101_006,Alpha101_开盘量价相关反转,"(-1*Corr($open, $vol, 10))",前复权
+alpha101,alpha101,a101_007,Alpha101_放量衰竭反转,"If((Mean($vol, 20) < $vol), ((-1*Rank(Abs(($close - Ref($close, 7))), 60))*Sign(($close - Ref($close, 7)))), (-1*1))",前复权
+alpha101,alpha101,a101_008,Alpha101_加权动量加速反转,"(-1*CSRank(((Sum($open, 5)*Sum(($close/Ref($close, 1)-1), 5)) - Ref((Sum($open, 5)*Sum(($close/Ref($close, 1)-1), 5)), 10))))",前复权
+alpha101,alpha101,a101_009,Alpha101_连涨连跌动量切换,"If((0 < Min(($close - Ref($close, 1)), 5)), ($close - Ref($close, 1)), If((Max(($close - Ref($close, 1)), 5) < 0), ($close - Ref($close, 1)), (-1*($close - Ref($close, 1)))))",前复权
+alpha101,alpha101,a101_010,Alpha101_4日动量反转切换,"CSRank(If((0 < Min(($close - Ref($close, 1)), 4)), ($close - Ref($close, 1)), If((Max(($close - Ref($close, 1)), 4) < 0), ($close - Ref($close, 1)), (-1*($close - Ref($close, 1))))))",前复权
+alpha101,alpha101,a101_011,Alpha101_尾盘放量弱势,"((CSRank(Max((($amount / $vol) - $close), 3)) + CSRank(Min((($amount / $vol) - $close), 3)))*CSRank(($vol - Ref($vol, 3))))",前复权
+alpha101,alpha101,a101_012,Alpha101_放量涨跌反转,"(Sign(($vol - Ref($vol, 1)))*(-1 * ($close - Ref($close, 1))))",前复权
+alpha101,alpha101,a101_013,Alpha101_价量协方差反转,"(-1*CSRank(Cov(CSRank($close), CSRank($vol), 5)))",前复权
+alpha101,alpha101,a101_014,Alpha101_收益加速与量价条件,"((-1*CSRank((($close/Ref($close, 1)-1) - Ref(($close/Ref($close, 1)-1), 3))))*Corr($open, $vol, 10))",前复权
+alpha101,alpha101,a101_015,Alpha101_最高价放量共振反转,"(-1*Sum(CSRank(Corr(CSRank($high), CSRank($vol), 3)), 3))",前复权
+alpha101,alpha101,a101_016,Alpha101_高价量价协方差反转,"(-1*CSRank(Cov(CSRank($high), CSRank($vol), 5)))",前复权
+alpha101,alpha101,a101_017,Alpha101_高位放量赶顶反转,"(((-1*CSRank(Rank($close, 10)))*CSRank((($close - Ref($close, 1)) - Ref(($close - Ref($close, 1)), 1))))*CSRank(Rank(($vol / Mean($vol, 20)), 5)))",前复权
+alpha101,alpha101,a101_018,Alpha101_波动率日内反转,"(-1*CSRank(((Std(Abs(($close - $open)), 5) + ($close - $open)) + Corr($close, $open, 10))))",前复权
+alpha101,alpha101,a101_019,Alpha101_长短期动量复合,"((-1*Sign((($close - Ref($close, 7)) + ($close - Ref($close, 7)))))*(1 + CSRank((1 + Sum(($close/Ref($close, 1)-1), 250)))))",前复权
+alpha101,alpha101,a101_020,Alpha101_隔夜跳空均值回复,"(((-1*CSRank(($open - Ref($high, 1))))*CSRank(($open - Ref($close, 1))))* CSRank(($open - Ref($low, 1))))",前复权
+alpha101,alpha101,a101_021,Alpha101_价格回归与量状态,"If((((Sum($close, 8) / 8) + Std($close, 8)) < (Sum($close, 2) / 2)), (-1* 1), If(((Sum($close, 2) / 2) < ((Sum($close, 8) / 8) - Std($close, 8))), 1, If(((1 < ($vol / Mean($vol, 20))) | (($vol / Mean($vol, 20)) == 1)), 1, (-1* 1))))",前复权
+alpha101,alpha101,a101_022,Alpha101_波动率加权情绪反转,"(-1* ((Corr($high, $vol, 5) - Ref(Corr($high, $vol, 5), 5))* CSRank(Std($close, 20))))",前复权
+alpha101,alpha101,a101_023,Alpha101_趋势过滤均值回归,"If(((Sum($high, 20) / 20) < $high), (-1* ($high - Ref($high, 2))), 0)",前复权
+alpha101,alpha101,a101_024,Alpha101_条件均值回复切换,"If((((((Sum($close, 100) / 100) - Ref((Sum($close, 100) / 100), 100)) / Ref($close, 100)) < 0.05) | ((((Sum($close, 100) / 100) - Ref((Sum($close, 100) / 100), 100)) / Ref($close, 100)) == 0.05)), (-1* ($close - Min($close, 100))), (-1* ($close - Ref($close, 3))))",前复权
+alpha101,alpha101,a101_025,Alpha101_卖压流动性反转,"CSRank(((((-1* ($close/Ref($close, 1)-1))* Mean($vol, 20))* ($amount / $vol))* ($high - $close)))",前复权
+alpha101,alpha101,a101_026,Alpha101_量价均值回归,"(-1* Max(Corr(Rank($vol, 5), Rank($high, 5), 5), 3))",前复权
+alpha101,alpha101,a101_027,Alpha101_短期量价均值回复,"If((0.5 < CSRank((Sum(Corr(CSRank($vol), CSRank(($amount / $vol)), 6), 2) / 2.0))), (-1* 1), 1)",前复权
+alpha101,alpha101,a101_028,Alpha101_量价动态复合,"((Corr(Mean($vol, 20), $low, 5) + (($high + $low) / 2)) - $close)",前复权
+alpha101,alpha101,a101_029,Alpha101_超跌反弹,"(Less(Product(CSRank(CSRank(Log(Sum(Min(CSRank(CSRank((-1*CSRank((($close - 1) - Ref(($close - 1), 5)))))), 2), 1)))), 1), 5) + Rank(Ref((-1*($close/Ref($close, 1)-1)), 6), 5))",前复权
+alpha101,alpha101,a101_030,Alpha101_成交量确认均值回归,"(((1.0 - CSRank(((Sign(($close - Ref($close, 1))) + Sign((Ref($close, 1) - Ref($close, 2)))) + Sign((Ref($close, 2) - Ref($close, 3))))))* Sum($vol, 5)) / Sum($vol, 20))",前复权
+alpha101,alpha101,a101_031,Alpha101_反转与量价背离综合,"((CSRank(CSRank(CSRank(DecayLinear((-1* CSRank(CSRank(($close - Ref($close, 10))))), 10)))) + CSRank((-1* ($close - Ref($close, 3))))) + Sign(Corr(Mean($vol, 20), $low, 12)))",前复权
+alpha101,alpha101,a101_032,Alpha101_短期反转与长期动量,"(((Sum($close, 7) / 7) - $close) + (20* Corr(($amount / $vol), Ref($close, 5), 230)))",前复权
+alpha101,alpha101,a101_033,Alpha101_日内反转,CSRank((-1* ((1 - ($open / $close))**1))),前复权
+alpha101,alpha101,a101_034,Alpha101_波动收敛与短期反转,"CSRank(((1 - CSRank((Std(($close/Ref($close, 1)-1), 2) / Std(($close/Ref($close, 1)-1), 5)))) + (1 - CSRank(($close - Ref($close, 1))))))",前复权
+alpha101,alpha101,a101_035,Alpha101_底部放量滞跌反转,"((Rank($vol, 32)* (1 - Rank((($close + $high) - $low), 16)))* (1 - Rank(($close/Ref($close, 1)-1), 32)))",前复权
+alpha101,alpha101,a101_036,Alpha101_综合动量反转,"(((((2* CSRank(Corr(($close - $open), Ref($vol, 1), 15))) + (0.7* CSRank(($open - $close)))) + (0.73* CSRank(Rank(Ref((-1* ($close/Ref($close, 1)-1)), 6), 5)))) + CSRank(Abs(Corr(($amount / $vol), Mean($vol, 20), 6)))) + (0.6* CSRank((((Sum($close, 200) / 200) - $open)* ($close - $open)))))",前复权
+alpha101,alpha101,a101_037,Alpha101_趋势识别条件反转,"(CSRank(Corr(Ref(($open - $close), 1), $close, 200)) + CSRank(($open - $close)))",前复权
+alpha101,alpha101,a101_038,Alpha101_双重反转,"((-1* CSRank(Rank($close, 10)))* CSRank(($close / $open)))",前复权
+alpha101,alpha101,a101_039,Alpha101_量价反转与长期动量,"((-1* CSRank((($close - Ref($close, 7))* (1 - CSRank(DecayLinear(($vol / Mean($vol, 20)), 9))))))* (1 + CSRank(Sum(($close/Ref($close, 1)-1), 250))))",前复权
+alpha101,alpha101,a101_040,Alpha101_波动率惩罚量价反转,"((-1* CSRank(Std($high, 10)))* Corr($high, $vol, 10))",前复权
+alpha101,alpha101,a101_041,Alpha101_价量背离,((($high* $low)**0.5) - ($amount / $vol)),前复权
+alpha101,alpha101,a101_042,Alpha101_日内微观结构,(CSRank((($amount / $vol) - $close)) / CSRank((($amount / $vol) + $close))),前复权
+alpha101,alpha101,a101_043,Alpha101_放量暴跌反转,"(Rank(($vol / Mean($vol, 20)), 20)* Rank((-1* ($close - Ref($close, 7))), 8))",前复权
+alpha101,alpha101,a101_044,Alpha101_短期量价均值回复,"(-1* Corr($high, CSRank($vol), 5))",前复权
+alpha101,alpha101,a101_045,Alpha101_短期量价均值回归,"(-1* ((CSRank((Sum(Ref($close, 5), 20) / 20))* Corr($close, $vol, 2))* CSRank(Corr(Sum($close, 5), Sum($close, 20), 2))))",前复权
+alpha101,alpha101,a101_046,Alpha101_非线性均值回归,"If((0.25 < (((Ref($close, 20) - Ref($close, 10)) / 10) - ((Ref($close, 10) - $close) / 10))), (-1* 1), If(((((Ref($close, 20) - Ref($close, 10)) / 10) - ((Ref($close, 10) - $close) / 10)) < 0), 1, ((-1* 1)* ($close - Ref($close, 1)))))",前复权
+alpha101,alpha101,a101_047,Alpha101_短期动量波动率反转,"((((CSRank((1 / $close))* $vol) / Mean($vol, 20))* (($high* CSRank(($high - $close))) / (Sum($high, 5) / 5))) - CSRank((($amount / $vol) - Ref(($amount / $vol), 5))))",前复权
+alpha101,alpha101,a101_048,Alpha101_微观自相关反转,"(((Corr(($close - Ref($close, 1)), (Ref($close, 1) - Ref(Ref($close, 1), 1)), 250)* ($close - Ref($close, 1))) / $close) / Sum(((($close - Ref($close, 1)) / Ref($close, 1))**2), 250))",前复权
+alpha101,alpha101,a101_049,Alpha101_中期短期条件切换,"If(((((Ref($close, 20) - Ref($close, 10)) / 10) - ((Ref($close, 10) - $close) / 10)) < (-1* 0.1)), 1, ((-1* 1)* ($close - Ref($close, 1))))",前复权
+alpha101,alpha101,a101_050,Alpha101_量价极值反转,"(-1* Max(CSRank(Corr(CSRank($vol), CSRank(($amount / $vol)), 5)), 5))",前复权
+alpha101,alpha101,a101_051,Alpha101_状态识别条件反转,"If(((((Ref($close, 20) - Ref($close, 10)) / 10) - ((Ref($close, 10) - $close) / 10)) < (-1* 0.05)), 1, ((-1* 1)* ($close - Ref($close, 1))))",前复权
+alpha101,alpha101,a101_052,Alpha101_动量反转量价复合,"((((-1* Min($low, 5)) + Ref(Min($low, 5), 5))* CSRank(((Sum(($close/Ref($close, 1)-1), 240) - Sum(($close/Ref($close, 1)-1), 20)) / 220)))* Rank($vol, 5))",前复权
+alpha101,alpha101,a101_053,Alpha101_价格结构情绪反转,"(-1* (((($close - $low) - ($high - $close)) / ($close - $low)) - Ref(((($close - $low) - ($high - $close)) / ($close - $low)), 9)))",前复权
+alpha101,alpha101,a101_054,Alpha101_多空博弈日内动量,((-1* (($low - $close)* ($open**5))) / (($low - $high)* ($close**5))),前复权
+alpha101,alpha101,a101_055,Alpha101_短期量价背离反转,"(-1* Corr(CSRank((($close - Min($low, 12)) / (Max($high, 12) - Min($low, 12)))), CSRank($vol), 6))",前复权
+alpha101,alpha101,a101_056,Alpha101_期限结构量价反转,"(0 - (1* (CSRank((Sum(($close/Ref($close, 1)-1), 10) / Sum(Sum(($close/Ref($close, 1)-1), 2), 3)))* CSRank((($close/Ref($close, 1)-1)* $total_mv)))))",不复权
+alpha101,alpha101,a101_057,Alpha101_日内反转与趋势复合,"(0 - (1* (($close - ($amount / $vol)) / DecayLinear(CSRank(IdxMax($close, 30)), 2))))",前复权
+alpha101,alpha101,a101_058,Alpha101_行业中性量价反转,"(-1* Rank(DecayLinear(Corr(($amount / $vol), $vol, 4), 8), 6))",前复权
+alpha101,alpha101,a101_059,Alpha101_短期量价均值回归2,"(-1* Rank(DecayLinear(Corr(((($amount / $vol)* 0.728317) + (($amount / $vol)* (1 - 0.728317))), $vol, 4), 16), 8))",前复权
+alpha101,alpha101,a101_060,Alpha101_短期动量日内回归,"(0 - (1* ((2* CSRank((((($close - $low) - ($high - $close)) / ($high - $low))* $vol))) - CSRank(IdxMax($close, 10)))))",前复权
+alpha101,alpha101,a101_061,Alpha101_量价背离条件触发,"(CSRank((($amount / $vol) - Min(($amount / $vol), 16))) < CSRank(Corr(($amount / $vol), Mean($vol, 180), 18)))",前复权
+alpha101,alpha101,a101_062,Alpha101_量价背离日内反转,"((CSRank(Corr(($amount / $vol), Sum(Mean($vol, 20), 22), 10)) < CSRank(((CSRank($open) + CSRank($open)) < (CSRank((($high + $low) / 2)) + CSRank($high)))))*-1)",前复权
+alpha101,alpha101,a101_063,Alpha101_流动性均值回归复合,"((CSRank(DecayLinear(($close - Ref($close, 2)), 8)) - CSRank(DecayLinear(Corr(((($amount / $vol)* 0.318108) + ($open* (1 - 0.318108))), Sum(Mean($vol, 180), 37), 14), 12)))* -1)",前复权
+alpha101,alpha101,a101_064,Alpha101_量价背离做空信号,"((CSRank(Corr(Sum((($open* 0.178404) + ($low* (1 - 0.178404))), 13), Sum(Mean($vol, 120), 13), 17)) < CSRank(((((($high + $low) / 2)* 0.178404) + (($amount / $vol)* (1 - 0.178404))) - Ref((((($high + $low) / 2)* 0.178404) + (($amount / $vol)* (1 - 0.178404))), 4))))* -1)",前复权
+alpha101,alpha101,a101_065,Alpha101_短期反转做空信号,"((CSRank(Corr((($open* 0.00817205) + (($amount / $vol)* (1 - 0.00817205))), Sum(Mean($vol, 60), 9), 6)) < CSRank(($open - Min($open, 14))))* -1)",前复权
+alpha101,alpha101,a101_066,Alpha101_微观结构复合反转,"((CSRank(DecayLinear((($amount / $vol) - Ref(($amount / $vol), 4)), 7)) + Rank(DecayLinear((((($low* 0.96633) + ($low* (1 - 0.96633))) - ($amount / $vol)) / ($open - (($high + $low) / 2))), 11), 7))* -1)",前复权
+alpha101,alpha101,a101_067,Alpha101_波动调整超短期回归,"((CSRank(($high - Min($high, 2)))**CSRank(Corr(($amount / $vol), Mean($vol, 20), 6)))* -1)",前复权
+alpha101,alpha101,a101_068,Alpha101_量价背离均值回归,"((Rank(Corr(CSRank($high), CSRank(Mean($vol, 15)), 9), 14) < CSRank(((($close* 0.518371) + ($low* (1 - 0.518371))) - Ref((($close* 0.518371) + ($low* (1 - 0.518371))), 1.06157))))* -1)",前复权
+alpha101,alpha101,a101_069,Alpha101_动态调节均值回归,"((CSRank(Max((($amount / $vol) - Ref(($amount / $vol), 3)), 5))**Rank(Corr((($close* 0.490655) + (($amount / $vol)* (1 - 0.490655))), Mean($vol, 20), 5), 9))* -1)",前复权
+alpha101,alpha101,a101_070,Alpha101_动态调制均值回归,"((CSRank((($amount / $vol) - Ref(($amount / $vol), 1.29456)))**Rank(Corr($close, Mean($vol, 50), 18), 18))* -1)",前复权
+alpha101,alpha101,a101_071,Alpha101_复合动量微观结构,"Greater(Rank(DecayLinear(Corr(Rank($close, 3), Rank(Mean($vol, 180), 12), 18), 4), 16), Rank(DecayLinear((CSRank((($low + $open) - (($amount / $vol) + ($amount / $vol))))**2), 16), 4))",前复权
+alpha101,alpha101,a101_072,Alpha101_量价背离动量重构,"(CSRank(DecayLinear(Corr((($high + $low) / 2), Mean($vol, 40), 9), 10)) / CSRank(DecayLinear(Corr(Rank(($amount / $vol), 4), Rank($vol, 19), 7), 3)))",前复权
+alpha101,alpha101,a101_073,Alpha101_价格企稳复合反转,"(Greater(CSRank(DecayLinear((($amount / $vol) - Ref(($amount / $vol), 5)), 3)), Rank(DecayLinear(((((($open* 0.147155) + ($low* (1 - 0.147155))) - Ref((($open* 0.147155) + ($low* (1 - 0.147155))), 2)) / (($open* 0.147155) + ($low* (1 - 0.147155))))* -1), 3), 17))* -1)",前复权
+alpha101,alpha101,a101_074,Alpha101_波动期限结构反转,"((CSRank(Corr($close, Sum(Mean($vol, 30), 37), 15)) < CSRank(Corr(CSRank((($high* 0.0261661) + (($amount / $vol)* (1 - 0.0261661)))), CSRank($vol), 11)))* -1)",前复权
+alpha101,alpha101,a101_075,Alpha101_流动性条件触发,"(CSRank(Corr(($amount / $vol), $vol, 4)) < CSRank(Corr(CSRank($low), CSRank(Mean($vol, 50)), 12)))",前复权
+alpha101,alpha101,a101_076,Alpha101_流动性复合反转,"(Greater(CSRank(DecayLinear((($amount / $vol) - Ref(($amount / $vol), 1.24383)), 12)), Rank(DecayLinear(Rank(Corr($low, Mean($vol, 81), 8), 20), 17), 19))* -1)",前复权
+alpha101,alpha101,a101_077,Alpha101_筹码量价动量反转,"Less(CSRank(DecayLinear((((($high + $low) / 2) + $high) - (($amount / $vol) + $high)), 20)), CSRank(DecayLinear(Corr((($high + $low) / 2), Mean($vol, 40), 3), 6)))",前复权
+alpha101,alpha101,a101_078,Alpha101_非线性量价关系,"(CSRank(Corr(Sum((($low* 0.352233) + (($amount / $vol)* (1 - 0.352233))), 20), Sum(Mean($vol, 40), 20), 7))**CSRank(Corr(CSRank(($amount / $vol)), CSRank($vol), 6)))",前复权
+alpha101,alpha101,a101_079,Alpha101_量价支撑条件反转,"(CSRank(((($close* 0.60733) + ($open* (1 - 0.60733))) - Ref((($close* 0.60733) + ($open* (1 - 0.60733))), 1.23438))) < CSRank(Corr(Rank(($amount / $vol), 4), Rank(Mean($vol, 150), 9), 15)))",前复权
+alpha101,alpha101,a101_080,Alpha101_行业内动量反转,"((CSRank(Sign(((($open* 0.868128) + ($high* (1 - 0.868128))) - Ref((($open* 0.868128) + ($high* (1 - 0.868128))), 4))))**Rank(Corr($high, Mean($vol, 10), 5), 6))* -1)",前复权
+alpha101,alpha101,a101_081,Alpha101_量价均值回归做空,"((CSRank(Log(Product(CSRank((CSRank(Corr(($amount / $vol), Sum(Mean($vol, 10), 50), 8))**4)), 15))) < CSRank(Corr(CSRank(($amount / $vol)), CSRank($vol), 5)))* -1)",前复权
+alpha101,alpha101,a101_082,Alpha101_量价拥挤均值回归,"(Less(CSRank(DecayLinear(($open - Ref($open, 1.46063)), 15)), Rank(DecayLinear(Corr($vol, (($open* 0.634196) + ($open* (1 - 0.634196))), 17), 7), 13))* -1)",前复权
+alpha101,alpha101,a101_083,Alpha101_加权日内均值回归,"((CSRank(Ref((($high - $low) / (Sum($close, 5) / 5)), 2))* CSRank(CSRank($vol))) / ((($high - $low) / (Sum($close, 5) / 5)) / (($amount / $vol) - $close)))",前复权
+alpha101,alpha101,a101_084,Alpha101_非线性超跌反转,"(Sign(Rank((($amount / $vol) - Max(($amount / $vol), 15)), 21))*Abs(Rank((($amount / $vol) - Max(($amount / $vol), 15)), 21))**($close - Ref($close, 5)))",前复权
+alpha101,alpha101,a101_085,Alpha101_多维量价非线性组合,"(CSRank(Corr((($high* 0.876703) + ($close* (1 - 0.876703))), Mean($vol, 30), 10))**CSRank(Corr(Rank((($high + $low) / 2), 4), Rank($vol, 10), 7)))",前复权
+alpha101,alpha101,a101_086,Alpha101_短线量价背离回归,"((Rank(Corr($close, Sum(Mean($vol, 20), 15), 6), 20) < CSRank((($open + $close) - (($amount / $vol) + $open))))* -1)",前复权
+alpha101,alpha101,a101_087,Alpha101_异常度复合反转,"(Greater(CSRank(DecayLinear(((($close* 0.369701) + (($amount / $vol)* (1 - 0.369701))) - Ref((($close* 0.369701) + (($amount / $vol)* (1 - 0.369701))), 1.91233)), 3)), Rank(DecayLinear(Abs(Corr(Mean($vol, 81), $close, 13)), 5), 14))* -1)",前复权
+alpha101,alpha101,a101_088,Alpha101_短线量价超卖反转,"Less(CSRank(DecayLinear(((CSRank($open) + CSRank($low)) - (CSRank($high) + CSRank($close))), 8)), Rank(DecayLinear(Corr(Rank($close, 8), Rank(Mean($vol, 60), 21), 8), 7), 3))",前复权
+alpha101,alpha101,a101_089,Alpha101_多维均值回归复合,"(Rank(DecayLinear(Corr((($low* 0.967285) + ($low* (1 - 0.967285))), Mean($vol, 10), 7), 6), 4) - Rank(DecayLinear((($amount / $vol) - Ref(($amount / $vol), 3)), 10), 15))",前复权
+alpha101,alpha101,a101_090,Alpha101_量价相关非线性调制,"((CSRank(($close - Max($close, 5)))**Rank(Corr(Mean($vol, 40), $low, 5), 3))* -1)",前复权
+alpha101,alpha101,a101_091,Alpha101_量价微观动量背离,"((Rank(DecayLinear(DecayLinear(Corr($close, $vol, 10), 16), 4), 5) - CSRank(DecayLinear(Corr(($amount / $vol), Mean($vol, 30), 4), 3)))* -1)",前复权
+alpha101,alpha101,a101_092,Alpha101_复合短期反转,"Less(Rank(DecayLinear((((($high + $low) / 2) + $close) < ($low + $open)), 15), 19), Rank(DecayLinear(Corr(CSRank($low), CSRank(Mean($vol, 30)), 8), 7), 7))",前复权
+alpha101,alpha101,a101_093,Alpha101_流动性动量复合反转,"(Rank(DecayLinear(Corr(($amount / $vol), Mean($vol, 81), 17), 20), 8) / CSRank(DecayLinear(((($close* 0.524434) + (($amount / $vol)* (1 - 0.524434))) - Ref((($close* 0.524434) + (($amount / $vol)* (1 - 0.524434))), 3)), 16)))",前复权
+alpha101,alpha101,a101_094,Alpha101_量价背离动量反转,"((CSRank((($amount / $vol) - Min(($amount / $vol), 12)))**Rank(Corr(Rank(($amount / $vol), 20), Rank(Mean($vol, 60), 4), 18), 3))* -1)",前复权
+alpha101,alpha101,a101_095,Alpha101_量价配合度补涨,"(CSRank(($open - Min($open, 12))) < Rank((CSRank(Corr(Sum((($high + $low) / 2), 19), Sum(Mean($vol, 40), 19), 13))**5), 12))",前复权
+alpha101,alpha101,a101_096,Alpha101_量价极端状态反转,"(Greater(Rank(DecayLinear(Corr(CSRank(($amount / $vol)), CSRank($vol), 4), 4), 8), Rank(DecayLinear(IdxMax(Corr(Rank($close, 7), Rank(Mean($vol, 60), 4), 4), 13), 14), 13))* -1)",前复权
+alpha101,alpha101,a101_097,Alpha101_行业中性超跌卖压,"((CSRank(DecayLinear(((($low* 0.721001) + (($amount / $vol)* (1 - 0.721001))) - Ref((($low* 0.721001) + (($amount / $vol)* (1 - 0.721001))), 3)), 20)) - Rank(DecayLinear(Rank(Corr(Rank($low, 8), Rank(Mean($vol, 60), 17), 5), 19), 16), 7))* -1)",前复权
+alpha101,alpha101,a101_098,Alpha101_量价动量微观异常,"(CSRank(DecayLinear(Corr(($amount / $vol), Sum(Mean($vol, 5), 26), 5), 7)) - CSRank(DecayLinear(Rank(IdxMin(Corr(CSRank($open), CSRank(Mean($vol, 15)), 21), 9), 7), 8)))",前复权
+alpha101,alpha101,a101_099,Alpha101_短期过热均值回归,"((CSRank(Corr(Sum((($high + $low) / 2), 20), Sum(Mean($vol, 60), 20), 9)) < CSRank(Corr($low, $vol, 6)))* -1)",前复权
+alpha101,alpha101,a101_100,Alpha101_成交量冲击高频反转,"(0 - (1* (((1.5* CSRank((((($close - $low) - ($high - $close)) / ($high - $low))* $vol))) - (Corr($close, CSRank(Mean($vol, 20)), 5) - CSRank(IdxMin($close, 30))))* ($vol / Mean($vol, 20)))))",前复权
+alpha101,alpha101,a101_101,Alpha101_日内动量收盘强度,(($close - $open) / (($high - $low) + .001)),前复权
+alpha158,qlib_alpha158,a158_beta10,Alpha158_趋势斜率10日,"Slope($close, 10)/$close",前复权
+alpha158,qlib_alpha158,a158_beta20,Alpha158_趋势斜率20日,"Slope($close, 20)/$close",前复权
+alpha158,qlib_alpha158,a158_beta30,Alpha158_趋势斜率30日,"Slope($close, 30)/$close",前复权
+alpha158,qlib_alpha158,a158_beta5,Alpha158_趋势斜率5日,"Slope($close, 5)/$close",前复权
+alpha158,qlib_alpha158,a158_beta60,Alpha158_趋势斜率60日,"Slope($close, 60)/$close",前复权
+alpha158,qlib_alpha158,a158_cntd10,Alpha158_涨跌差10日,"Mean($close>Ref($close, 1), 10)-Mean($close<Ref($close, 1), 10)",前复权
+alpha158,qlib_alpha158,a158_cntd20,Alpha158_涨跌差20日,"Mean($close>Ref($close, 1), 20)-Mean($close<Ref($close, 1), 20)",前复权
+alpha158,qlib_alpha158,a158_cntd30,Alpha158_涨跌差30日,"Mean($close>Ref($close, 1), 30)-Mean($close<Ref($close, 1), 30)",前复权
+alpha158,qlib_alpha158,a158_cntd5,Alpha158_涨跌差5日,"Mean($close>Ref($close, 1), 5)-Mean($close<Ref($close, 1), 5)",前复权
+alpha158,qlib_alpha158,a158_cntd60,Alpha158_涨跌差60日,"Mean($close>Ref($close, 1), 60)-Mean($close<Ref($close, 1), 60)",前复权
+alpha158,qlib_alpha158,a158_cntn10,Alpha158_下跌比例10日,"Mean($close<Ref($close, 1), 10)",前复权
+alpha158,qlib_alpha158,a158_cntn20,Alpha158_下跌比例20日,"Mean($close<Ref($close, 1), 20)",前复权
+alpha158,qlib_alpha158,a158_cntn30,Alpha158_下跌比例30日,"Mean($close<Ref($close, 1), 30)",前复权
+alpha158,qlib_alpha158,a158_cntn5,Alpha158_下跌比例5日,"Mean($close<Ref($close, 1), 5)",前复权
+alpha158,qlib_alpha158,a158_cntn60,Alpha158_下跌比例60日,"Mean($close<Ref($close, 1), 60)",前复权
+alpha158,qlib_alpha158,a158_cntp10,Alpha158_上涨比例10日,"Mean($close>Ref($close, 1), 10)",前复权
+alpha158,qlib_alpha158,a158_cntp20,Alpha158_上涨比例20日,"Mean($close>Ref($close, 1), 20)",前复权
+alpha158,qlib_alpha158,a158_cntp30,Alpha158_上涨比例30日,"Mean($close>Ref($close, 1), 30)",前复权
+alpha158,qlib_alpha158,a158_cntp5,Alpha158_上涨比例5日,"Mean($close>Ref($close, 1), 5)",前复权
+alpha158,qlib_alpha158,a158_cntp60,Alpha158_上涨比例60日,"Mean($close>Ref($close, 1), 60)",前复权
+alpha158,qlib_alpha158,a158_cord10,Alpha158_涨跌量相关10日,"Corr($close/Ref($close,1), Log($vol/Ref($vol, 1)+1), 10)",前复权
+alpha158,qlib_alpha158,a158_cord20,Alpha158_涨跌量相关20日,"Corr($close/Ref($close,1), Log($vol/Ref($vol, 1)+1), 20)",前复权
+alpha158,qlib_alpha158,a158_cord30,Alpha158_涨跌量相关30日,"Corr($close/Ref($close,1), Log($vol/Ref($vol, 1)+1), 30)",前复权
+alpha158,qlib_alpha158,a158_cord5,Alpha158_涨跌量相关5日,"Corr($close/Ref($close,1), Log($vol/Ref($vol, 1)+1), 5)",前复权
+alpha158,qlib_alpha158,a158_cord60,Alpha158_涨跌量相关60日,"Corr($close/Ref($close,1), Log($vol/Ref($vol, 1)+1), 60)",前复权
+alpha158,qlib_alpha158,a158_corr10,Alpha158_价量相关10日,"Corr($close, Log($vol+1), 10)",前复权
+alpha158,qlib_alpha158,a158_corr20,Alpha158_价量相关20日,"Corr($close, Log($vol+1), 20)",前复权
+alpha158,qlib_alpha158,a158_corr30,Alpha158_价量相关30日,"Corr($close, Log($vol+1), 30)",前复权
+alpha158,qlib_alpha158,a158_corr5,Alpha158_价量相关5日,"Corr($close, Log($vol+1), 5)",前复权
+alpha158,qlib_alpha158,a158_corr60,Alpha158_价量相关60日,"Corr($close, Log($vol+1), 60)",前复权
+alpha158,qlib_alpha158,a158_imax10,Alpha158_最高位置10日,"IdxMax($high, 10)/10",前复权
+alpha158,qlib_alpha158,a158_imax20,Alpha158_最高位置20日,"IdxMax($high, 20)/20",前复权
+alpha158,qlib_alpha158,a158_imax30,Alpha158_最高位置30日,"IdxMax($high, 30)/30",前复权
+alpha158,qlib_alpha158,a158_imax5,Alpha158_最高位置5日,"IdxMax($high, 5)/5",前复权
+alpha158,qlib_alpha158,a158_imax60,Alpha158_最高位置60日,"IdxMax($high, 60)/60",前复权
+alpha158,qlib_alpha158,a158_imin10,Alpha158_最低位置10日,"IdxMin($low, 10)/10",前复权
+alpha158,qlib_alpha158,a158_imin20,Alpha158_最低位置20日,"IdxMin($low, 20)/20",前复权
+alpha158,qlib_alpha158,a158_imin30,Alpha158_最低位置30日,"IdxMin($low, 30)/30",前复权
+alpha158,qlib_alpha158,a158_imin5,Alpha158_最低位置5日,"IdxMin($low, 5)/5",前复权
+alpha158,qlib_alpha158,a158_imin60,Alpha158_最低位置60日,"IdxMin($low, 60)/60",前复权
+alpha158,qlib_alpha158,a158_imxd10,Alpha158_极值距离10日,"(IdxMax($high, 10)-IdxMin($low, 10))/10",前复权
+alpha158,qlib_alpha158,a158_imxd20,Alpha158_极值距离20日,"(IdxMax($high, 20)-IdxMin($low, 20))/20",前复权
+alpha158,qlib_alpha158,a158_imxd30,Alpha158_极值距离30日,"(IdxMax($high, 30)-IdxMin($low, 30))/30",前复权
+alpha158,qlib_alpha158,a158_imxd5,Alpha158_极值距离5日,"(IdxMax($high, 5)-IdxMin($low, 5))/5",前复权
+alpha158,qlib_alpha158,a158_imxd60,Alpha158_极值距离60日,"(IdxMax($high, 60)-IdxMin($low, 60))/60",前复权
+alpha158,qlib_alpha158,a158_klen,Alpha158_K线长度,($high-$low)/$open,前复权
+alpha158,qlib_alpha158,a158_klow,Alpha158_下影线,"(Less($open, $close)-$low)/$open",前复权
+alpha158,qlib_alpha158,a158_klow2,Alpha158_下影线比,"(Less($open, $close)-$low)/($high-$low+1e-12)",前复权
+alpha158,qlib_alpha158,a158_kmid,Alpha158_K线中点,($close-$open)/$open,前复权
+alpha158,qlib_alpha158,a158_kmid2,Alpha158_K线中点比,($close-$open)/($high-$low+1e-12),前复权
+alpha158,qlib_alpha158,a158_ksft,Alpha158_K线偏移,(2*$close-$high-$low)/$open,前复权
+alpha158,qlib_alpha158,a158_ksft2,Alpha158_K线偏移比,(2*$close-$high-$low)/($high-$low+1e-12),前复权
+alpha158,qlib_alpha158,a158_kup,Alpha158_上影线,"($high-Greater($open, $close))/$open",前复权
+alpha158,qlib_alpha158,a158_kup2,Alpha158_上影线比,"($high-Greater($open, $close))/($high-$low+1e-12)",前复权
+alpha158,qlib_alpha158,a158_ma10,Alpha158_均线10日,"Mean($close, 10)/$close",前复权
+alpha158,qlib_alpha158,a158_ma20,Alpha158_均线20日,"Mean($close, 20)/$close",前复权
+alpha158,qlib_alpha158,a158_ma30,Alpha158_均线30日,"Mean($close, 30)/$close",前复权
+alpha158,qlib_alpha158,a158_ma5,Alpha158_均线5日,"Mean($close, 5)/$close",前复权
+alpha158,qlib_alpha158,a158_ma60,Alpha158_均线60日,"Mean($close, 60)/$close",前复权
+alpha158,qlib_alpha158,a158_max10,Alpha158_最高价10日,"Max($high, 10)/$close",前复权
+alpha158,qlib_alpha158,a158_max20,Alpha158_最高价20日,"Max($high, 20)/$close",前复权
+alpha158,qlib_alpha158,a158_max30,Alpha158_最高价30日,"Max($high, 30)/$close",前复权
+alpha158,qlib_alpha158,a158_max5,Alpha158_最高价5日,"Max($high, 5)/$close",前复权
+alpha158,qlib_alpha158,a158_max60,Alpha158_最高价60日,"Max($high, 60)/$close",前复权
+alpha158,qlib_alpha158,a158_min10,Alpha158_最低价10日,"Min($low, 10)/$close",前复权
+alpha158,qlib_alpha158,a158_min20,Alpha158_最低价20日,"Min($low, 20)/$close",前复权
+alpha158,qlib_alpha158,a158_min30,Alpha158_最低价30日,"Min($low, 30)/$close",前复权
+alpha158,qlib_alpha158,a158_min5,Alpha158_最低价5日,"Min($low, 5)/$close",前复权
+alpha158,qlib_alpha158,a158_min60,Alpha158_最低价60日,"Min($low, 60)/$close",前复权
+alpha158,qlib_alpha158,a158_qtld10,Alpha158_下分位10日,"Quantile($close, 10, 0.2)/$close",前复权
+alpha158,qlib_alpha158,a158_qtld20,Alpha158_下分位20日,"Quantile($close, 20, 0.2)/$close",前复权
+alpha158,qlib_alpha158,a158_qtld30,Alpha158_下分位30日,"Quantile($close, 30, 0.2)/$close",前复权
+alpha158,qlib_alpha158,a158_qtld5,Alpha158_下分位5日,"Quantile($close, 5, 0.2)/$close",前复权
+alpha158,qlib_alpha158,a158_qtld60,Alpha158_下分位60日,"Quantile($close, 60, 0.2)/$close",前复权
+alpha158,qlib_alpha158,a158_qtlu10,Alpha158_上分位10日,"Quantile($close, 10, 0.8)/$close",前复权
+alpha158,qlib_alpha158,a158_qtlu20,Alpha158_上分位20日,"Quantile($close, 20, 0.8)/$close",前复权
+alpha158,qlib_alpha158,a158_qtlu30,Alpha158_上分位30日,"Quantile($close, 30, 0.8)/$close",前复权
+alpha158,qlib_alpha158,a158_qtlu5,Alpha158_上分位5日,"Quantile($close, 5, 0.8)/$close",前复权
+alpha158,qlib_alpha158,a158_qtlu60,Alpha158_上分位60日,"Quantile($close, 60, 0.8)/$close",前复权
+alpha158,qlib_alpha158,a158_rank10,Alpha158_时序排名10日,"Rank($close, 10)",前复权
+alpha158,qlib_alpha158,a158_rank20,Alpha158_时序排名20日,"Rank($close, 20)",前复权
+alpha158,qlib_alpha158,a158_rank30,Alpha158_时序排名30日,"Rank($close, 30)",前复权
+alpha158,qlib_alpha158,a158_rank5,Alpha158_时序排名5日,"Rank($close, 5)",前复权
+alpha158,qlib_alpha158,a158_rank60,Alpha158_时序排名60日,"Rank($close, 60)",前复权
+alpha158,qlib_alpha158,a158_resi10,Alpha158_残差10日,"Resi($close, 10)/$close",前复权
+alpha158,qlib_alpha158,a158_resi20,Alpha158_残差20日,"Resi($close, 20)/$close",前复权
+alpha158,qlib_alpha158,a158_resi30,Alpha158_残差30日,"Resi($close, 30)/$close",前复权
+alpha158,qlib_alpha158,a158_resi5,Alpha158_残差5日,"Resi($close, 5)/$close",前复权
+alpha158,qlib_alpha158,a158_resi60,Alpha158_残差60日,"Resi($close, 60)/$close",前复权
+alpha158,qlib_alpha158,a158_roc60,Alpha158_ROC60日,"Ref($close, 60)/$close",前复权
+alpha158,qlib_alpha158,a158_rsqr10,Alpha158_R方10日,"Rsquare($close, 10)",前复权
+alpha158,qlib_alpha158,a158_rsqr20,Alpha158_R方20日,"Rsquare($close, 20)",前复权
+alpha158,qlib_alpha158,a158_rsqr30,Alpha158_R方30日,"Rsquare($close, 30)",前复权
+alpha158,qlib_alpha158,a158_rsqr5,Alpha158_R方5日,"Rsquare($close, 5)",前复权
+alpha158,qlib_alpha158,a158_rsqr60,Alpha158_R方60日,"Rsquare($close, 60)",前复权
+alpha158,qlib_alpha158,a158_rsv10,Alpha158_RSV10日,"($close-Min($low, 10))/(Max($high, 10)-Min($low, 10)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_rsv20,Alpha158_RSV20日,"($close-Min($low, 20))/(Max($high, 20)-Min($low, 20)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_rsv30,Alpha158_RSV30日,"($close-Min($low, 30))/(Max($high, 30)-Min($low, 30)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_rsv5,Alpha158_RSV5日,"($close-Min($low, 5))/(Max($high, 5)-Min($low, 5)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_rsv60,Alpha158_RSV60日,"($close-Min($low, 60))/(Max($high, 60)-Min($low, 60)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_std10,Alpha158_波动率10日,"Std($close, 10)/$close",前复权
+alpha158,qlib_alpha158,a158_std20,Alpha158_波动率20日,"Std($close, 20)/$close",前复权
+alpha158,qlib_alpha158,a158_std30,Alpha158_波动率30日,"Std($close, 30)/$close",前复权
+alpha158,qlib_alpha158,a158_std5,Alpha158_波动率5日,"Std($close, 5)/$close",前复权
+alpha158,qlib_alpha158,a158_std60,Alpha158_波动率60日,"Std($close, 60)/$close",前复权
+alpha158,qlib_alpha158,a158_sumd10,Alpha158_涨跌幅差10日,"(Sum(Greater($close-Ref($close, 1), 0), 10)-Sum(Greater(Ref($close, 1)-$close, 0), 10))/(Sum(Abs($close-Ref($close, 1)), 10)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sumd20,Alpha158_涨跌幅差20日,"(Sum(Greater($close-Ref($close, 1), 0), 20)-Sum(Greater(Ref($close, 1)-$close, 0), 20))/(Sum(Abs($close-Ref($close, 1)), 20)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sumd30,Alpha158_涨跌幅差30日,"(Sum(Greater($close-Ref($close, 1), 0), 30)-Sum(Greater(Ref($close, 1)-$close, 0), 30))/(Sum(Abs($close-Ref($close, 1)), 30)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sumd5,Alpha158_涨跌幅差5日,"(Sum(Greater($close-Ref($close, 1), 0), 5)-Sum(Greater(Ref($close, 1)-$close, 0), 5))/(Sum(Abs($close-Ref($close, 1)), 5)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sumd60,Alpha158_涨跌幅差60日,"(Sum(Greater($close-Ref($close, 1), 0), 60)-Sum(Greater(Ref($close, 1)-$close, 0), 60))/(Sum(Abs($close-Ref($close, 1)), 60)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sumn10,Alpha158_下跌幅度10日,"Sum(Greater(Ref($close, 1)-$close, 0), 10)/(Sum(Abs($close-Ref($close, 1)), 10)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sumn20,Alpha158_下跌幅度20日,"Sum(Greater(Ref($close, 1)-$close, 0), 20)/(Sum(Abs($close-Ref($close, 1)), 20)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sumn30,Alpha158_下跌幅度30日,"Sum(Greater(Ref($close, 1)-$close, 0), 30)/(Sum(Abs($close-Ref($close, 1)), 30)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sumn5,Alpha158_下跌幅度5日,"Sum(Greater(Ref($close, 1)-$close, 0), 5)/(Sum(Abs($close-Ref($close, 1)), 5)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sumn60,Alpha158_下跌幅度60日,"Sum(Greater(Ref($close, 1)-$close, 0), 60)/(Sum(Abs($close-Ref($close, 1)), 60)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sump10,Alpha158_上涨幅度10日,"Sum(Greater($close-Ref($close, 1), 0), 10)/(Sum(Abs($close-Ref($close, 1)), 10)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sump20,Alpha158_上涨幅度20日,"Sum(Greater($close-Ref($close, 1), 0), 20)/(Sum(Abs($close-Ref($close, 1)), 20)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sump30,Alpha158_上涨幅度30日,"Sum(Greater($close-Ref($close, 1), 0), 30)/(Sum(Abs($close-Ref($close, 1)), 30)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sump5,Alpha158_上涨幅度5日,"Sum(Greater($close-Ref($close, 1), 0), 5)/(Sum(Abs($close-Ref($close, 1)), 5)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_sump60,Alpha158_上涨幅度60日,"Sum(Greater($close-Ref($close, 1), 0), 60)/(Sum(Abs($close-Ref($close, 1)), 60)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vma10,Alpha158_量均线10日,"Mean($vol, 10)/($vol+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vma20,Alpha158_量均线20日,"Mean($vol, 20)/($vol+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vma30,Alpha158_量均线30日,"Mean($vol, 30)/($vol+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vma5,Alpha158_量均线5日,"Mean($vol, 5)/($vol+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vma60,Alpha158_量均线60日,"Mean($vol, 60)/($vol+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vstd10,Alpha158_量波动10日,"Std($vol, 10)/($vol+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vstd20,Alpha158_量波动20日,"Std($vol, 20)/($vol+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vstd30,Alpha158_量波动30日,"Std($vol, 30)/($vol+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vstd5,Alpha158_量波动5日,"Std($vol, 5)/($vol+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vstd60,Alpha158_量波动60日,"Std($vol, 60)/($vol+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsumd10,Alpha158_量涨跌差10日,"(Sum(Greater($vol-Ref($vol, 1), 0), 10)-Sum(Greater(Ref($vol, 1)-$vol, 0), 10))/(Sum(Abs($vol-Ref($vol, 1)), 10)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsumd20,Alpha158_量涨跌差20日,"(Sum(Greater($vol-Ref($vol, 1), 0), 20)-Sum(Greater(Ref($vol, 1)-$vol, 0), 20))/(Sum(Abs($vol-Ref($vol, 1)), 20)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsumd30,Alpha158_量涨跌差30日,"(Sum(Greater($vol-Ref($vol, 1), 0), 30)-Sum(Greater(Ref($vol, 1)-$vol, 0), 30))/(Sum(Abs($vol-Ref($vol, 1)), 30)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsumd5,Alpha158_量涨跌差5日,"(Sum(Greater($vol-Ref($vol, 1), 0), 5)-Sum(Greater(Ref($vol, 1)-$vol, 0), 5))/(Sum(Abs($vol-Ref($vol, 1)), 5)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsumd60,Alpha158_量涨跌差60日,"(Sum(Greater($vol-Ref($vol, 1), 0), 60)-Sum(Greater(Ref($vol, 1)-$vol, 0), 60))/(Sum(Abs($vol-Ref($vol, 1)), 60)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsumn10,Alpha158_量减比例10日,"Sum(Greater(Ref($vol, 1)-$vol, 0), 10)/(Sum(Abs($vol-Ref($vol, 1)), 10)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsumn20,Alpha158_量减比例20日,"Sum(Greater(Ref($vol, 1)-$vol, 0), 20)/(Sum(Abs($vol-Ref($vol, 1)), 20)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsumn30,Alpha158_量减比例30日,"Sum(Greater(Ref($vol, 1)-$vol, 0), 30)/(Sum(Abs($vol-Ref($vol, 1)), 30)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsumn5,Alpha158_量减比例5日,"Sum(Greater(Ref($vol, 1)-$vol, 0), 5)/(Sum(Abs($vol-Ref($vol, 1)), 5)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsumn60,Alpha158_量减比例60日,"Sum(Greater(Ref($vol, 1)-$vol, 0), 60)/(Sum(Abs($vol-Ref($vol, 1)), 60)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsump10,Alpha158_量增比例10日,"Sum(Greater($vol-Ref($vol, 1), 0), 10)/(Sum(Abs($vol-Ref($vol, 1)), 10)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsump20,Alpha158_量增比例20日,"Sum(Greater($vol-Ref($vol, 1), 0), 20)/(Sum(Abs($vol-Ref($vol, 1)), 20)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsump30,Alpha158_量增比例30日,"Sum(Greater($vol-Ref($vol, 1), 0), 30)/(Sum(Abs($vol-Ref($vol, 1)), 30)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsump5,Alpha158_量增比例5日,"Sum(Greater($vol-Ref($vol, 1), 0), 5)/(Sum(Abs($vol-Ref($vol, 1)), 5)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_vsump60,Alpha158_量增比例60日,"Sum(Greater($vol-Ref($vol, 1), 0), 60)/(Sum(Abs($vol-Ref($vol, 1)), 60)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_wvma10,Alpha158_加权量波动10日,"Std(Abs($close/Ref($close, 1)-1)*$vol, 10)/(Mean(Abs($close/Ref($close, 1)-1)*$vol, 10)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_wvma20,Alpha158_加权量波动20日,"Std(Abs($close/Ref($close, 1)-1)*$vol, 20)/(Mean(Abs($close/Ref($close, 1)-1)*$vol, 20)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_wvma30,Alpha158_加权量波动30日,"Std(Abs($close/Ref($close, 1)-1)*$vol, 30)/(Mean(Abs($close/Ref($close, 1)-1)*$vol, 30)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_wvma5,Alpha158_加权量波动5日,"Std(Abs($close/Ref($close, 1)-1)*$vol, 5)/(Mean(Abs($close/Ref($close, 1)-1)*$vol, 5)+1e-12)",前复权
+alpha158,qlib_alpha158,a158_wvma60,Alpha158_加权量波动60日,"Std(Abs($close/Ref($close, 1)-1)*$vol, 60)/(Mean(Abs($close/Ref($close, 1)-1)*$vol, 60)+1e-12)",前复权
+alpha191,alpha191,a191_001,Alpha191_是短期量价相关性的反转效应,"(-1 * Corr(CSRank((Log($vol) - Ref(Log($vol), 1))), CSRank((($close - $open) / $open)), 6))",前复权
+alpha191,alpha191,a191_002,Alpha191_空力量边际变化的短期反转因子,"-1 * ((($close-$low)-($high-$close))/($high-$low) - Ref((($close-$low)-($high-$close))/($high-$low), 1))",前复权
+alpha191,alpha191,a191_003,Alpha191_短期累积多空动能指标,"Sum(If($close=Ref($close,1), 0, $close-If($close>Ref($close,1), Less($low,Ref($close,1)), Greater($high,Ref($close,1)))),6)",前复权
+alpha191,alpha191,a191_004,Alpha191_归与成交量动量的复合反转因子,"If((((Sum($close,8)/8)+Std($close,8))<(Sum($close,2)/2)), (-1* 1), If(((Sum($close,2)/2)<((Sum($close,8)/8)-Std($close,8))), 1, If(((1<($vol/Mean($vol,20)))|(($vol/Mean($vol,20))==1)), 1, (-1* 1))))",前复权
+alpha191,alpha191,a191_006,Alpha191_基于开盘情绪的短期动量反转因子,"(CSRank(Sign((((($open * 0.85)+($high * 0.15))) - Ref(((($open * 0.85)+($high * 0.15))), 4))))*-1)",前复权
+alpha191,alpha191,a191_007,Alpha191_量价背离因子,"((CSRank(Greater((($amount / $vol)-$close),3))+CSRank(Less((($amount / $vol)-$close),3)))* CSRank(($vol - Ref($vol, 3))))",前复权
+alpha191,alpha191,a191_008,Alpha191_短周期（4日）量价反转因子,"CSRank(((((($high + $low) / 2) * 0.2) + (($amount / $vol) * 0.8)) - Ref((((($high + $low) / 2) * 0.2) + (($amount / $vol) * 0.8)), 4)) * -1)",前复权
+alpha191,alpha191,a191_009,Alpha191_动性与价格动量的价格冲击因子,"SMA((($high+$low)/2-(Ref($high,1)+Ref($low,1))/2)*($high-$low)/$vol,7,2)",前复权
+alpha191,alpha191,a191_010,Alpha191_设计初衷：该因子试图在股,"(CSRank(Greater(If((($close/Ref($close, 1)-1) < 0), Std(($close/Ref($close, 1)-1), 20), $close)**2),5))",前复权
+alpha191,alpha191,a191_011,Alpha191_“累积/派发线”的短期变体,"Sum((($close-$low)-($high-$close))/($high-$low) * $vol,6)",前复权
+alpha191,alpha191,a191_012,Alpha191_量价反转因子,"(CSRank(($open - (Sum(($amount / $vol), 10) / 10)))) * (-1 * (CSRank(Abs(($close - ($amount / $vol))))))",前复权
+alpha191,alpha191,a191_013,Alpha191_本质是一个日内量价分布因子,((($high * $low)**0.5)-($amount / $vol)),前复权
+alpha191,alpha191,a191_014,Alpha191_经典的短周期动量指标,"$close-Ref($close,5)",前复权
+alpha191,alpha191,a191_015,Alpha191_衡量的是股票的隔夜收益率,"$open/Ref($close,1)-1",前复权
+alpha191,alpha191,a191_016,Alpha191_短期量价反转因子,"(-1 * Max(CSRank(Corr(CSRank($vol),CSRank(($amount / $vol)),5)),5))",前复权
+alpha191,alpha191,a191_017,Alpha191_性数学变换的极端超跌反转因子,"CSRank((($amount / $vol)-Greater(($amount / $vol),15)))**($close - Ref($close, 5))",前复权
+alpha191,alpha191,a191_018,Alpha191_经典的短周期动量/反转因子,"$close/Ref($close,5)",前复权
+alpha191,alpha191,a191_019,Alpha191_日短期动量/反转因子,"If($close<Ref($close,5), ($close-Ref($close,5))/Ref($close,5), If($close=Ref($close,5), 0, ($close-Ref($close,5))/$close))",前复权
+alpha191,alpha191,a191_020,Alpha191_经典的短周期收益率因子,"($close-Ref($close,6))/Ref($close,6)*100",前复权
+alpha191,alpha191,a191_024,Alpha191_经过平滑处理的短期动量因子,"SMA($close-Ref($close,5),5,1)",前复权
+alpha191,alpha191,a191_025,Alpha191_动量放大器的短期量价反转因子,"((-1*CSRank((($close - Ref($close, 7))*(1-CSRank(DecayLinear(($vol/Mean($vol,20)),9))))))*(1+CSRank(Sum(($close/Ref($close, 1)-1),250))))",前复权
+alpha191,alpha191,a191_026,Alpha191_“长动量+短反转”复合因子,"((((Sum($close,7)/7)-$close))+((Corr(($amount / $vol),Ref($close,5),230))))",前复权
+alpha191,alpha191,a191_027,Alpha191_经过平滑处理的短期趋势动量因子,"WMA(($close-Ref($close,3))/Ref($close,3)100+($close-Ref($close,6))/Ref($close,6)100,12)",前复权
+alpha191,alpha191,a191_028,Alpha191_本质上是技术分析中经典,"3*SMA(($close-Min($low,9))/(Max($high,9)-Min($low,9))100,3,1)-2*SMA(SMA(($close-Min($low,9))/( Greater($high,9)-Max($low,9))100,3,1),3,1)",前复权
+alpha191,alpha191,a191_029,Alpha191_量价结合动量因子,"($close-Ref($close,6))/Ref($close,6)*$vol",前复权
+alpha191,alpha191,a191_032,Alpha191_基于量价相关性的短期反转因子,"(-1*Sum(CSRank(Corr(CSRank($high),CSRank($vol),3)),3))",前复权
+alpha191,alpha191,a191_033,Alpha191_期反转与成交量确认的复合因子,"((((-1*Min($low,5))+Ref(Min($low,5),5))*CSRank(((Sum(($close/Ref($close, 1)-1),240)-Sum(($close/Ref($close, 1)-1),20))/220)))*Rank($vol,5))",前复权
+alpha191,alpha191,a191_034,Alpha191_短期均值回归（反转）因子,"Mean($close,12)/$close",前复权
+alpha191,alpha191,a191_035,Alpha191_短期反转因子,"(Less(CSRank(DecayLinear(($open - Ref($open, 1)),15)),CSRank(DecayLinear(Corr(($vol),(($open*0.65)+($open*0.35)),17),7)))*-1)",前复权
+alpha191,alpha191,a191_036,Alpha191_量价相关性因子,"CSRank(Sum(Corr(CSRank($vol),CSRank(($amount / $vol))),6),2)",前复权
+alpha191,alpha191,a191_037,Alpha191_短期动量反转因子,"(-1*CSRank(((Sum($open,5)*Sum(($close/Ref($close, 1)-1),5))-Ref((Sum($open,5)*Sum(($close/Ref($close, 1)-1),5)),10))))",前复权
+alpha191,alpha191,a191_038,Alpha191_带有条件触发机制的短期反转因子,"If(((Sum($high,20)/20)<$high), (-1*($high - Ref($high, 2))), 0)",前复权
+alpha191,alpha191,a191_040,Alpha191_基于“量价配合”原理,"Sum(If($close>Ref($close,1), $vol, 0),26)/Sum(If($close<=Ref($close,1), $vol, 0),26)*100",前复权
+alpha191,alpha191,a191_041,Alpha191_短期极端动量反转因子,"(CSRank(Greater(((($amount / $vol)) - Ref((($amount / $vol)), 3)),5))*-1)",前复权
+alpha191,alpha191,a191_043,Alpha191_OBV（能量潮指标,"Sum(If($close>Ref($close,1), $vol, If($close<Ref($close,1), -$vol, 0)),6)",前复权
+alpha191,alpha191,a191_044,Alpha191_综合动量因子,"(Rank(DecayLinear(Corr((($low)),Mean($vol,10),7),6),4)+Rank(DecayLinear(((($amount / $vol)) - Ref((($amount / $vol)), 3)),10),15))",前复权
+alpha191,alpha191,a191_045,Alpha191_复合因子,"(CSRank((((($close*0.6)+($open*0.4))) - Ref(((($close*0.6)+($open*0.4))), 1)))*CSRank(Corr(($amount / $vol),Mean($vol,150),15)))",前复权
+alpha191,alpha191,a191_046,Alpha191_乖离率（偏离度）与均值回归因子,"(Mean($close,3)+Mean($close,6)+Mean($close,12)+Mean($close,24))/(4*$close)",前复权
+alpha191,alpha191,a191_047,Alpha191_是平滑后的短周期威廉指标,"SMA((Max($high,6)-$close)/(Max($high,6)-Min($low,6))*100,9,1)",前复权
+alpha191,alpha191,a191_049,Alpha191_空方动量（弱势）指标,"Sum(If(($high+$low)>=(Ref($high,1)+Ref($low,1)), 0, Greater(Abs($high-Ref($high,1)),Abs($low-Ref($low,1)))),12)/(Sum(If(($high+$low)>=(Ref($high,1)+Ref($low,1)), 0, Greater(Abs($high-Ref($high,1)),Abs($low-Ref($low,1)))),12)+Sum(If(($high+$low)<=(Ref($high,1)+Ref($low,1)), 0, Greater(Abs($high-Ref(HI GH,1)),Abs($low-Ref($low,1)))),12))",前复权
+alpha191,alpha191,a191_050,Alpha191_动量/趋势强度指标,"Sum(If(($high+$low)<=(Ref($high,1)+Ref($low,1)), 0, Greater(Abs($high-Ref($high,1)),Abs($low-Ref($low,1)))),12)/(Sum(If(($high+$low)<=(Ref($high,1)+Ref($low,1)), 0, Greater(Abs($high-Ref($high,1)),Abs($low-Ref($low,1)))),12)+Sum(If(($high+$low)>=(Ref($high,1)+Ref($low,1)), 0, Greater(Abs($high-Ref($high,1)),Abs($low-Ref($low,1)))),12))-Sum(If(($high+$low)>=(Ref($high,1)+Ref($low,1)), 0, Greater(Abs($high-Ref($high,1)),Abs($low-Ref($low,1)))),12)/(Sum(If(($high+$low)>=(Ref($high,1)+Ref($low,1)), 0, Greater(Abs($high-Ref($high,1)),Abs($low-Ref($low,1)))),12)+Sum(If(($high+$low)<=(Ref($high,1)+DELA Y($low,1)), 0, Greater(Abs($high-Ref($high,1)),Abs($low-Ref($low,1)))),12))",前复权
+alpha191,alpha191,a191_051,Alpha191_空力量对比的动量/趋势型因子,"Sum(If(($high+$low)<=(Ref($high,1)+Ref($low,1)), 0, Greater(Abs($high-Ref($high,1)),Abs($low-Ref($low,1)))),12)/(Sum(If(($high+$low)<=(Ref($high,1)+Ref($low,1)), 0, Greater(Abs($high-Ref($high,1)),Abs($low-Ref($low,1)))),12)+Sum(If(($high+$low)>=(Ref($high,1)+Ref($low,1)), 0, Greater(Abs($high-Ref(HI GH,1)),Abs($low-Ref($low,1)))),12))",前复权
+alpha191,alpha191,a191_052,Alpha191_中间意愿指标,"Sum(Greater(0,$high-Ref(($high+$low+$close)/3,1)),26)/Sum(Greater(0,Ref(($high+$low+$close)/3,1)-L),26)*100",前复权
+alpha191,alpha191,a191_054,Alpha191_短期日内超跌反转因子,"(-1*CSRank((Std(Abs($close-$open))+($close-$open))+Corr($close,$open,10)))",前复权
+alpha191,alpha191,a191_055,Alpha191_旨在过滤掉日常K线中的价,"Sum(16($close-Ref($close,1)+($close-$open)/2+Ref($close,1)-Ref($open,1))/(If(Abs($high-Ref(CL OSE,1))>Abs($low-Ref($close,1))&Abs($high-Ref($close,1))>Abs($high-Ref($low,1)), Abs($high-Ref($close,1))+Abs($low-Ref($close,1))/2+Abs(Ref($close,1)-Ref($open,1))/4, If(Abs($low-Ref($close,1))>Abs($high-Ref($low,1))&Abs($low-Ref($close,1))>Abs($high-Ref($close,1)), Abs($low-Ref($close,1))+Abs($high-Ref($close,1))/2+Abs(Ref($close,1)-Ref($open,1))/4, Abs($high-Ref($low,1))+Abs(Ref($close,1)-Ref($open,1))/4)))*Greater(Abs($high-Ref($close,1)),Abs($low-Ref($close,1))),20)",前复权
+alpha191,alpha191,a191_056,Alpha191_“底部量价蓄势”捕捉因子,"(CSRank(($open-Min($open,12)))<CSRank((CSRank(Corr(Sum((($high +$low)/2),19),Sum(Mean($vol,40),19),13))**5)))",前复权
+alpha191,alpha191,a191_057,Alpha191_本质上是经典技术指标,"SMA(($close-Min($low,9))/(Max($high,9)-Min($low,9))*100,3,1)",前复权
+alpha191,alpha191,a191_059,Alpha191_日威廉累积/派发指标,"Sum(If($close=Ref($close,1), 0, $close-If($close>Ref($close,1), Less($low,Ref($close,1)), Greater($high,Ref($close,1)))),20)",前复权
+alpha191,alpha191,a191_060,Alpha191_是经典的“累积/派发线（,"Sum((($close-$low)-($high-$close))/($high-$low)*$vol,20)",前复权
+alpha191,alpha191,a191_061,Alpha191_短期反转因子,"(Greater(CSRank(DecayLinear((($amount / $vol) - Ref(($amount / $vol), 1)),12)),CSRank(DecayLinear(CSRank(Corr(($low),Mean($vol,80),8)),17)))*-1)",前复权
+alpha191,alpha191,a191_062,Alpha191_量价背离与反转因子,"(-1*Corr($high,CSRank($vol),5))",前复权
+alpha191,alpha191,a191_063,Alpha191_衡量了短期（6日）内多空,"SMA(Greater($close-Ref($close,1),0),6,1)/SMA(Abs($close-Ref($close,1)),6,1)*100",前复权
+alpha191,alpha191,a191_064,Alpha191_量价背离与短期均值回归（,"(Greater(CSRank(DecayLinear(Corr(CSRank(($amount / $vol)),CSRank($vol),4),4)),CSRank(DecayLinear(Greater(Corr(CSRank($close),CSRank(Mean($vol,60)),4),13),14)))*-1)",前复权
+alpha191,alpha191,a191_065,Alpha191_短期均值回复因子,"Mean($close,6)/$close",前复权
+alpha191,alpha191,a191_066,Alpha191_离短期均值程度的经典技术指标,"($close-Mean($close,6))/Mean($close,6)*100",前复权
+alpha191,alpha191,a191_067,Alpha191_力量对比的动量/超买超卖因子,"SMA(Greater($close-Ref($close,1),0),24,1)/SMA(Abs($close-Ref($close,1)),24,1)*100",前复权
+alpha191,alpha191,a191_068,Alpha191_量价动能与流动性冲击因子,"SMA((($high+$low)/2-(Ref($high,1)+Ref($low,1))/2)*($high-$low)/$vol,15,2)",前复权
+alpha191,alpha191,a191_070,Alpha191_衡量的是短期资金交投活跃,"Std($amount,6)",前复权
+alpha191,alpha191,a191_071,Alpha191_是经典的乖离率指标,"($close-Mean($close,24))/Mean($close,24)*100",前复权
+alpha191,alpha191,a191_072,Alpha191_是平滑后的威廉指标,"SMA((Max($high,6)-$close)/(Max($high,6)-Min($low,6))*100,15,1)",前复权
+alpha191,alpha191,a191_073,Alpha191_量价背离与均值回归因子,"((Rank(DecayLinear(DecayLinear(Corr(($close),$vol,10),16),4),5)-CSRank(DecayLinear(Corr(($amount / $vol),Mean($vol,30),4),3)))*-1)",前复权
+alpha191,alpha191,a191_074,Alpha191_复合的量价相关性（价量协,"(CSRank(Corr(Sum((($low*0.35)+(($amount / $vol)*0.65)),20),Sum(Mean($vol,40),20),7))+CSRank(Corr(CSRank(($amount / $vol)),CSRank($vol),6)))",前复权
+alpha191,alpha191,a191_076,Alpha191_衡量的是股票流动性状态,"Std(Abs(($close/Ref($close,1)-1))/$vol,20)/Mean(Abs(($close/Ref($close,1)-1))/$vol,20)",前复权
+alpha191,alpha191,a191_077,Alpha191_价相关性的复合动量/反转因子,"Less(CSRank(DecayLinear((((($high+$low)/2)+$high)-(($amount / $vol)+$high)),20)),CSRank(DecayLinear(Corr((($high+$low)/2),Mean($vol,40),3),6)))",前复权
+alpha191,alpha191,a191_079,Alpha191_是经典的12日相对强弱指标,"SMA(Greater($close-Ref($close,1),0),12,1)/SMA(Abs($close-Ref($close,1)),12,1)*100",前复权
+alpha191,alpha191,a191_080,Alpha191_成交量短期动量因子,"($vol-Ref($vol,5))/Ref($vol,5)*100",前复权
+alpha191,alpha191,a191_081,Alpha191_本质上是中短期（约一个月,"SMA($vol,21,2)",前复权
+alpha191,alpha191,a191_082,Alpha191_属于经典的动量/反转类技术指标,"SMA((Max($high,6)-$close)/(Max($high,6)-Min($low,6))*100,20,1)",前复权
+alpha191,alpha191,a191_084,Alpha191_能量潮（OBV,"Sum(If($close>Ref($close,1), $vol, If($close<Ref($close,1), -$vol, 0)),20)",前复权
+alpha191,alpha191,a191_085,Alpha191_“超跌反转与底部放量”因子,"(Rank(($vol/Mean($vol,20)),20)* Rank((-1*($close - Ref($close, 7))),8))",前复权
+alpha191,alpha191,a191_086,Alpha191_复合逻辑因子,"If((0.25<(((Ref($close,20)-Ref($close,10))/10)-((Ref($close,10)-$close)/10))), (-1*1), If(((((Ref($close,20)-Ref($close,10))/10)-((Ref($close,10)-$close)/10))<0), 1, ((-1*1)*($close-Ref($close,1)))))",前复权
+alpha191,alpha191,a191_087,Alpha191_短周期量价反转因子,"((CSRank(DecayLinear((($amount / $vol) - Ref(($amount / $vol), 4)),7))+Rank(DecayLinear((((($low*0.9)+($low*0.1))-($amount / $vol))/($open-(($high+$low)/2))),11),7))*-1)",前复权
+alpha191,alpha191,a191_088,Alpha191_经典的中期（月度）收益率因子,"($close-Ref($close,20))/Ref($close,20)*100",前复权
+alpha191,alpha191,a191_089,Alpha191_柱状图指标,"2*(SMA($close,13,2)-SMA($close,27,2)-SMA(SMA($close,13,2)-SMA($close,27,2),10,2))",前复权
+alpha191,alpha191,a191_090,Alpha191_短期量价反转因子,"(CSRank(Corr(CSRank(($amount / $vol)),CSRank($vol),5))*-1)",前复权
+alpha191,alpha191,a191_091,Alpha191_反转与量价背离的复合反转因子,"((CSRank(($close-Greater($close,5)))*CSRank(Corr((Mean($vol,40)),$low,5)))*-1)",前复权
+alpha191,alpha191,a191_092,Alpha191_短期反转与量价异常综合因子,"(Greater(CSRank(DecayLinear(((($close*0.35)+(($amount / $vol)*0.65)) - Ref((($close*0.35)+(($amount / $vol)*0.65)), 2)),3)),Rank(DecayLinear(Abs(Corr((Mean($vol,180)),$close,13)),5),15))*-1)",前复权
+alpha191,alpha191,a191_093,Alpha191_衡量空头下探动能的指标,"Sum(If($open>=Ref($open,1), 0, Greater(($open-$low),($open-Ref($open,1)))),20)",前复权
+alpha191,alpha191,a191_094,Alpha191_能量潮（OBV,"Sum(If($close>Ref($close,1), $vol, If($close<Ref($close,1), -$vol, 0)),30)",前复权
+alpha191,alpha191,a191_095,Alpha191_衡量的是股票近期流动性（,"Std($amount,20)",前复权
+alpha191,alpha191,a191_096,Alpha191_基于短期动量与均值回归（,"SMA(SMA(($close-Min($low,9))/(Max($high,9)-Min($low,9))*100,3,1),3,1)",前复权
+alpha191,alpha191,a191_097,Alpha191_衡量的是短期交易活跃度,"Std($vol,10)",前复权
+alpha191,alpha191,a191_098,Alpha191_复合动量/反转因子,"If((((((Sum($close,100)/100) - Ref((Sum($close,100)/100), 100))/Ref($close,100))<0.05)|((((Sum($close,100)/100) - Ref((Sum($close,100)/100), 100))/Ref($close,100))==0.05)), (-1*($close-Min($close,100))), (-1*($close - Ref($close, 3))))",前复权
+alpha191,alpha191,a191_100,Alpha191_衡量的是股票近期流动性（,"Std($vol,20)",前复权
+alpha191,alpha191,a191_101,Alpha191_基于量价相关性期限结构,"((CSRank(Corr($close, Sum(Mean($vol,30), 37), 15)) < CSRank(Corr(CSRank((($high * 0.1) + (($amount / $vol) * 0.9))), CSRank($vol), 11))) * -1)",前复权
+alpha191,alpha191,a191_102,Alpha191_本质上是成交量的相对强弱指标,"SMA(Greater($vol-Ref($vol,1),0),6,1)/SMA(Abs($vol-Ref($vol,1)),6,1)*100",前复权
+alpha191,alpha191,a191_104,Alpha191_波动率股票的量价关系反转效应,"(-1 * ((Corr($high,$vol,5) - Ref(Corr($high,$vol,5), 5)) * CSRank(Std($close,20))))",前复权
+alpha191,alpha191,a191_105,Alpha191_个基于微观结构的短期反转因子,"(-1*Corr(CSRank($open),CSRank($vol),10))",前复权
+alpha191,alpha191,a191_106,Alpha191_经典的中短期绝对动量因子,"$close-Ref($close,20)",前复权
+alpha191,alpha191,a191_107,Alpha191_捕捉的是隔夜跳空的反转效应,"(((-1*CSRank(($open-Ref($high,1))))*CSRank(($open-Ref($close,1))))*CSRank(($open-Ref($low,1))))",前复权
+alpha191,alpha191,a191_108,Alpha191_短期动能与量价背离的反转因子,"((CSRank(($high-Less($high,2)))**CSRank(Corr((($amount / $vol)),(Mean($vol,120)),6)))*-1)",前复权
+alpha191,alpha191,a191_109,Alpha191_波动率相对变化（波动率动,"SMA($high-$low,10,2)/SMA(SMA($high-$low,10,2),10,2)",前复权
+alpha191,alpha191,a191_110,Alpha191_买卖意愿指标,"Sum(Greater(0,$high-Ref($close,1)),20)/Sum(Greater(0,Ref($close,1)-$low),20)*100",前复权
+alpha191,alpha191,a191_111,Alpha191_是基于蔡金资金流量逻辑,"SMA($vol(($close-$low)-($high-$close))/($high-$low),11,2)-SMA($vol(($close-$low)-($high-$close))/($high-$low),4,2)",前复权
+alpha191,alpha191,a191_114,Alpha191_日内微观结构的短期反转因子,"((CSRank(Ref((($high-$low)/(Sum($close,5)/5)),2))*CSRank(CSRank($vol)))/((($high-$low)/(Sum($close,5)/5))/(($amount / $vol)-$close)))",前复权
+alpha191,alpha191,a191_115,Alpha191_复合的量价背离与筹码锁定因子,"(CSRank(Corr((($high*0.9)+($close*0.1)),Mean($vol,30),10))**CSRank(Corr(Rank((($high+$low)/2),4),Rank($vol,10),7)))",前复权
+alpha191,alpha191,a191_117,Alpha191_底部放量与超跌反转因子,"((Rank($vol,32)*(1-Rank((($close+$high)-$low),16)))*(1-Rank(($close/Ref($close, 1)-1),32)))",前复权
+alpha191,alpha191,a191_118,Alpha191_基于市场微观结构中的多空,"Sum($high-$open,20)/Sum($open-$low,20)*100",前复权
+alpha191,alpha191,a191_119,Alpha191_跨周期的量价背离与动量复合因子,"(CSRank(DecayLinear(Corr(($amount / $vol),Sum(Mean($vol,5),26),5),7))-CSRank(DecayLinear(Rank(Less(Corr(CSRank($open),CSRank(Mean($vol,15)),21),9),7),8)))",前复权
+alpha191,alpha191,a191_120,Alpha191_结构与绝对价格水平的复合因子,(CSRank((($amount / $vol)-$close))/CSRank((($amount / $vol)+$close))),前复权
+alpha191,alpha191,a191_121,Alpha191_价结构动态变化的短期反转因子,"((CSRank((($amount / $vol)-Less(($amount / $vol),12)))**Rank(Corr(Rank(($amount / $vol),20),Rank(Mean($vol,60),2),18),3))*-1)",前复权
+alpha191,alpha191,a191_122,Alpha191_三重平滑移动平均指标,"(SMA(SMA(SMA(Log($close),13,2),13,2),13,2)-Ref(SMA(SMA(SMA(Log($close),13,2),13,2),13,2),1))/Ref(SMA(SMA(SMA(Log($close),13,2),13,2),13,2),1)",前复权
+alpha191,alpha191,a191_124,Alpha191_近期强势度调整的日内动量因子,"($close-($amount / $vol))/DecayLinear(CSRank(Max($close,30)),2)",前复权
+alpha191,alpha191,a191_125,Alpha191_复合因子,"(CSRank(DecayLinear(Corr((($amount / $vol)),Mean($vol,80),17),20))/CSRank(DecayLinear(((($close*0.5)+(($amount / $vol)*0.5)) - Ref((($close*0.5)+(($amount / $vol)*0.5)), 3)),16)))",前复权
+alpha191,alpha191,a191_126,Alpha191_计算的是单日典型价格,($close+$high+$low)/3,前复权
+alpha191,alpha191,a191_127,Alpha191_下行风险（回撤）波动率指标,"(Mean((100*($close-Greater($close,12))/(Greater($close,12)))**2))**(1/2)",前复权
+alpha191,alpha191,a191_128,Alpha191_是经典的资金流量指标,"100-(100/(1+Sum(If(($high+$low+$close)/3>Ref(($high+$low+$close)/3,1), ($high+$low+$close)/3* VOLUM E, 0),14)/Sum(If(($high+$low+$close)/3 < Ref(($high+$low+$close)/3,1), ($high+$low+$close)/3* $vol, 0), 14)))",前复权
+alpha191,alpha191,a191_129,Alpha191_衡量的是资产在过去12个,"Sum(If($close-Ref($close,1)<0, Abs($close-Ref($close,1)), 0),12)",前复权
+alpha191,alpha191,a191_130,Alpha191_长短期量价背离与动量结合因子,"(CSRank(DecayLinear(Corr((($high+$low)/2),Mean($vol,40),9),10))/CSRank(DecayLinear(Corr(CSRank(($amount / $vol)),CSRank($vol),7),3)))",前复权
+alpha191,alpha191,a191_132,Alpha191_衡量的是股票在中短期（约,"Mean($amount,20)",前复权
+alpha191,alpha191,a191_134,Alpha191_量价结合的动量因子,"($close-Ref($close,12))/Ref($close,12)*$vol",前复权
+alpha191,alpha191,a191_135,Alpha191_平滑中短期反转因子,"-SMA(Ref($close/Ref($close,20),1),20,1)",前复权
+alpha191,alpha191,a191_136,Alpha191_复合动量/反转因子,"((-1*CSRank((($close/Ref($close, 1)-1) - Ref(($close/Ref($close, 1)-1), 3))))*Corr($open,$vol,10))",前复权
+alpha191,alpha191,a191_137,Alpha191_发明的震荡指标逻辑,"16($close-Ref($close,1)+($close-$open)/2+Ref($close,1)-Ref($open,1))/(If(Abs($high-Ref($close,1))>Abs($low-Ref($close,1)) &Abs($high-Ref($close,1))>Abs($high-Ref($low,1)), Abs($high-Ref($close,1))+Abs($low-Ref($close,1))/2+Abs(Ref($close,1)-Ref($open,1))/4, If(Abs($low-Ref($close,1))>Abs($high-Ref($low,1)) & Abs($low-Ref($close,1))>Abs($high-Ref($close,1)), Abs($low-Ref($close,1))+Abs($high-Ref($close,1))/2+Abs(Ref($close,1)-Ref($open,1))/4, Abs($high-Ref($low,1))+Abs(Ref($close,1)-Ref($open,1))/4)))*Greater(Abs($high-Ref($close,1)),Abs($low-Ref($close,1)))",前复权
+alpha191,alpha191,a191_138,Alpha191_结合量价确认的动量反转因子,"((CSRank(DecayLinear((((($low*0.7)+(($amount / $vol)*0.3))) - Ref(((($low*0.7)+(($amount / $vol)*0.3))), 3)),20))-Rank(DecayLinear(Rank(Corr(Rank($low,8),Rank(Mean($vol,60),17),5),19),16),7))* -1)",前复权
+alpha191,alpha191,a191_139,Alpha191_属于典型的量价相关性（反,"(-1*Corr($open,$vol,10))",前复权
+alpha191,alpha191,a191_140,Alpha191_背离/同步特征的复合反转因子,"Less(CSRank(DecayLinear(((CSRank($open)+CSRank($low))-(CSRank($high)+CSRank($close))),8)),Rank(DecayLinear(Corr(Rank($close,8),Rank(Mean($vol,60),20),8),7),3))",前复权
+alpha191,alpha191,a191_141,Alpha191_短线价量反转因子,"(CSRank(Corr(CSRank($high),CSRank(Mean($vol,15)),9))*-1)",前复权
+alpha191,alpha191,a191_142,Alpha191_反转效应,"(((-1*CSRank(Rank($close,10)))*CSRank((($close - Ref($close, 1)) - Ref(($close - Ref($close, 1)), 1))))*CSRank(Rank(($vol/Mean($vol,20)),5)))",前复权
+alpha191,alpha191,a191_145,Alpha191_成交量动量因子,"(Mean($vol,9)-Mean($vol,26))/Mean($vol,12)*100",前复权
+alpha191,alpha191,a191_146,Alpha191_波动率调整的短期异常动量因子,"Mean(($close-Ref($close,1))/Ref($close,1)-SMA(($close-Ref($close,1))/Ref($close,1),61,2),20)*(( $close-Ref($close,1))/Ref($close,1)-SMA(($close-Ref($close,1))/Ref($close,1),61,2))/SMA(((CLOS E-Ref($close,1))/Ref($close,1)-(($close-Ref($close,1))/Ref($close,1)-SMA(($close-Ref($close,1))/Ref($close,1),61,2)))**2,60)",前复权
+alpha191,alpha191,a191_148,Alpha191_盘价的量价背离与短期反转因子,"((CSRank(Corr(($open),Sum(Mean($vol,60),9),6))<CSRank(($open-Min($open,14))))*-1)",前复权
+alpha191,alpha191,a191_150,Alpha191_金流量或交易活跃度的基础指标,($close+$high+$low)/3*$vol,前复权
+alpha191,alpha191,a191_151,Alpha191_平滑趋势动量因子,"SMA($close-Ref($close,20),20,1)",前复权
+alpha191,alpha191,a191_152,Alpha191_基于动量指标,"SMA(Mean(Ref(SMA(Ref($close/Ref($close,9),1),9,1),1),12)-Mean(Ref(SMA(Ref($close/DELAY($close,9),1),9,1),1),26),9,1)",前复权
+alpha191,alpha191,a191_153,Alpha191_多周期综合均线（趋势中枢）指标,"(Mean($close,3)+Mean($close,6)+Mean($close,12)+Mean($close,24))/4",前复权
+alpha191,alpha191,a191_154,Alpha191_极度苛刻的超跌筑底探测因子,"(((($amount / $vol)-Less(($amount / $vol),16)))<(Corr(($amount / $vol),Mean($vol,180),18)))",前复权
+alpha191,alpha191,a191_155,Alpha191_将经典的价格MACD逻辑,"SMA($vol,13,2)-SMA($vol,27,2)-SMA(SMA($vol,13,2)-SMA($vol,27,2),10,2)",前复权
+alpha191,alpha191,a191_156,Alpha191_量与支撑位强度的综合测度因子,"(Greater(CSRank(DecayLinear((($amount / $vol) - Ref(($amount / $vol), 5)),3)),CSRank(DecayLinear(((((($open*0.15)+($low*0.85)) - Ref((($open*0.15)+($low*0.85)), 2))/(($open*0.15)+($low*0.85)))-1),3)))-1)",前复权
+alpha191,alpha191,a191_157,Alpha191_过度反应理论与短期反转效应,"(Less(Product(CSRank(CSRank(Log(Sum(Min(CSRank(CSRank((-1*CSRank((($close-1) - Ref(($close-1), 5)))))),2),1)))),1),5) +Rank(Ref((-1*($close/Ref($close, 1)-1)),6),5))",前复权
+alpha191,alpha191,a191_158,Alpha191_日内相对振幅（波动率）因,"(($high-SMA($close,15,2))-($low-SMA($close,15,2)))/$close",前复权
+alpha191,alpha191,a191_160,Alpha191_衡量的是股票的“下行波动风险”,"SMA(If($close<=Ref($close,1), Std($close,20), 0),20,1)",前复权
+alpha191,alpha191,a191_161,Alpha191_衡量股票绝对波动率的经典指标,"Mean(Greater(Greater(($high-$low),Abs(Ref($close,1)-$high)),Abs(Ref($close,1)-$low)),12)",前复权
+alpha191,alpha191,a191_162,Alpha191_随机相对强弱指标,"(SMA(Greater($close-Ref($close,1),0),12,1)/SMA(Abs($close-Ref($close,1)),12,1)100-Less(SMA(Greater($close-Ref($close,1),0),12,1)/SMA(Abs($close-Ref($close,1)),12,1)100,12))/(Greater(SMA(Greater($close-Ref($close,1),0),12,1)/SMA(Abs($close-Ref($close,1)),12,1)100,12)-Less(SMA(Greater($close-Ref($close,1),0),12, 1)/SMA(Abs($close-Ref($close,1)),12,1)100,12))",前复权
+alpha191,alpha191,a191_163,Alpha191_态与流动性权重的短期反转因子,"CSRank(((((-1*($close/Ref($close, 1)-1))*Mean($vol,20))*($amount / $vol))*($high-$close)))",前复权
+alpha191,alpha191,a191_166,Alpha191_基于行为金融学中的“彩票,"-20(20-1)**1.5*Sum($close/Ref($close,1)-1-Mean($close/Ref($close,1)-1,20),20)/((20-1)* (20-2)*(Sum(($close/Ref($close,1),20)**2,20))**1.5)",前复权
+alpha191,alpha191,a191_168,Alpha191_缩量偏好（或放量惩罚）因子,"(-1*$vol/Mean($vol,20))",前复权
+alpha191,alpha191,a191_169,Alpha191_变种指标,"SMA(Mean(Ref(SMA($close-Ref($close,1),9,1),1),12)-Mean(Ref(SMA($close-Ref($close,1),9,1),1), 26),10,1)",前复权
+alpha191,alpha191,a191_170,Alpha191_价形态与短期动量的反转类因子,"((((CSRank((1/$close))$vol)/Mean($vol,20))*(($high*CSRank(($high-$close)))/(Sum($high,5)/5)))-CSRank((($amount / $vol)-Ref(($amount / $vol),5))))",前复权
+alpha191,alpha191,a191_173,Alpha191_延迟技术的趋势跟踪与动量因子,"3*SMA($close,13,2)-2*SMA(SMA($close,13,2),13,2)+SMA(SMA(SMA(Log($close),13,2),13,2),13,2)",前复权
+alpha191,alpha191,a191_174,Alpha191_衡量指标,"SMA(If($close>Ref($close,1), Std($close,20), 0),20,1)",前复权
+alpha191,alpha191,a191_175,Alpha191_是经典的波动率指标,"Mean(Greater(Greater(($high-$low),Abs(Ref($close,1)-$high)),Abs(Ref($close,1)-$low)),6)",前复权
+alpha191,alpha191,a191_176,Alpha191_短周期量价相关性因子,"Corr(CSRank((($close-Min($low,12))/(Max($high,12)-Min($low,12)))),CSRank($vol),6)",前复权
+alpha191,alpha191,a191_178,Alpha191_经典的“量价结合”因子,"($close-Ref($close,1))/Ref($close,1)*$vol",前复权
+alpha191,alpha191,a191_179,Alpha191_复合型量价动能因子,"(CSRank(Corr(($amount / $vol),$vol,4))*CSRank(Corr(CSRank($low),CSRank(Mean($vol,50)),12)))",前复权
+alpha191,alpha191,a191_184,Alpha191_线形态的量价因子,"(CSRank(Corr(Ref(($open-$close),1),$close,200))+CSRank(($open-$close)))",前复权
+alpha191,alpha191,a191_185,Alpha191_衡量日内K线实体波动率的因子,CSRank((-1*((1-($open/$close))**2))),前复权
+alpha191,alpha191,a191_187,Alpha191_多头极端动能的情绪与动量指标,"Sum(If($open<=Ref($open,1), 0, Greater(($high-$open),($open-Ref($open,1)))),20)",前复权
+alpha191,alpha191,a191_188,Alpha191_波动率偏离（异常波动）因子,"(($high-$low-SMA($high-$low,11,2))/SMA($high-$low,11,2))*100",前复权
+alpha191,alpha191,a191_189,Alpha191_短期波动率（离散度）因子,"Mean(Abs($close-Mean($close,6)),6)",前复权
+alpha191,alpha191,a191_191,Alpha191_双重逻辑,"((Corr(Mean($vol,20),$low,5)+(($high+$low)/2))-$close)",前复权
+alpha360,qlib_builtin,a360_001,Alpha360_CLOSE59,"Ref($close, 59)/$close",前复权
+alpha360,qlib_builtin,a360_002,Alpha360_CLOSE58,"Ref($close, 58)/$close",前复权
+alpha360,qlib_builtin,a360_003,Alpha360_CLOSE57,"Ref($close, 57)/$close",前复权
+alpha360,qlib_builtin,a360_004,Alpha360_CLOSE56,"Ref($close, 56)/$close",前复权
+alpha360,qlib_builtin,a360_005,Alpha360_CLOSE55,"Ref($close, 55)/$close",前复权
+alpha360,qlib_builtin,a360_006,Alpha360_CLOSE54,"Ref($close, 54)/$close",前复权
+alpha360,qlib_builtin,a360_007,Alpha360_CLOSE53,"Ref($close, 53)/$close",前复权
+alpha360,qlib_builtin,a360_008,Alpha360_CLOSE52,"Ref($close, 52)/$close",前复权
+alpha360,qlib_builtin,a360_009,Alpha360_CLOSE51,"Ref($close, 51)/$close",前复权
+alpha360,qlib_builtin,a360_010,Alpha360_CLOSE50,"Ref($close, 50)/$close",前复权
+alpha360,qlib_builtin,a360_011,Alpha360_CLOSE49,"Ref($close, 49)/$close",前复权
+alpha360,qlib_builtin,a360_012,Alpha360_CLOSE48,"Ref($close, 48)/$close",前复权
+alpha360,qlib_builtin,a360_013,Alpha360_CLOSE47,"Ref($close, 47)/$close",前复权
+alpha360,qlib_builtin,a360_014,Alpha360_CLOSE46,"Ref($close, 46)/$close",前复权
+alpha360,qlib_builtin,a360_015,Alpha360_CLOSE45,"Ref($close, 45)/$close",前复权
+alpha360,qlib_builtin,a360_016,Alpha360_CLOSE44,"Ref($close, 44)/$close",前复权
+alpha360,qlib_builtin,a360_017,Alpha360_CLOSE43,"Ref($close, 43)/$close",前复权
+alpha360,qlib_builtin,a360_018,Alpha360_CLOSE42,"Ref($close, 42)/$close",前复权
+alpha360,qlib_builtin,a360_019,Alpha360_CLOSE41,"Ref($close, 41)/$close",前复权
+alpha360,qlib_builtin,a360_020,Alpha360_CLOSE40,"Ref($close, 40)/$close",前复权
+alpha360,qlib_builtin,a360_021,Alpha360_CLOSE39,"Ref($close, 39)/$close",前复权
+alpha360,qlib_builtin,a360_022,Alpha360_CLOSE38,"Ref($close, 38)/$close",前复权
+alpha360,qlib_builtin,a360_023,Alpha360_CLOSE37,"Ref($close, 37)/$close",前复权
+alpha360,qlib_builtin,a360_024,Alpha360_CLOSE36,"Ref($close, 36)/$close",前复权
+alpha360,qlib_builtin,a360_025,Alpha360_CLOSE35,"Ref($close, 35)/$close",前复权
+alpha360,qlib_builtin,a360_026,Alpha360_CLOSE34,"Ref($close, 34)/$close",前复权
+alpha360,qlib_builtin,a360_027,Alpha360_CLOSE33,"Ref($close, 33)/$close",前复权
+alpha360,qlib_builtin,a360_028,Alpha360_CLOSE32,"Ref($close, 32)/$close",前复权
+alpha360,qlib_builtin,a360_029,Alpha360_CLOSE31,"Ref($close, 31)/$close",前复权
+alpha360,qlib_builtin,a360_030,Alpha360_CLOSE30,"Ref($close, 30)/$close",前复权
+alpha360,qlib_builtin,a360_031,Alpha360_CLOSE29,"Ref($close, 29)/$close",前复权
+alpha360,qlib_builtin,a360_032,Alpha360_CLOSE28,"Ref($close, 28)/$close",前复权
+alpha360,qlib_builtin,a360_033,Alpha360_CLOSE27,"Ref($close, 27)/$close",前复权
+alpha360,qlib_builtin,a360_034,Alpha360_CLOSE26,"Ref($close, 26)/$close",前复权
+alpha360,qlib_builtin,a360_035,Alpha360_CLOSE25,"Ref($close, 25)/$close",前复权
+alpha360,qlib_builtin,a360_036,Alpha360_CLOSE24,"Ref($close, 24)/$close",前复权
+alpha360,qlib_builtin,a360_037,Alpha360_CLOSE23,"Ref($close, 23)/$close",前复权
+alpha360,qlib_builtin,a360_038,Alpha360_CLOSE22,"Ref($close, 22)/$close",前复权
+alpha360,qlib_builtin,a360_039,Alpha360_CLOSE21,"Ref($close, 21)/$close",前复权
+alpha360,qlib_builtin,a360_040,Alpha360_CLOSE20,"Ref($close, 20)/$close",前复权
+alpha360,qlib_builtin,a360_041,Alpha360_CLOSE19,"Ref($close, 19)/$close",前复权
+alpha360,qlib_builtin,a360_042,Alpha360_CLOSE18,"Ref($close, 18)/$close",前复权
+alpha360,qlib_builtin,a360_043,Alpha360_CLOSE17,"Ref($close, 17)/$close",前复权
+alpha360,qlib_builtin,a360_044,Alpha360_CLOSE16,"Ref($close, 16)/$close",前复权
+alpha360,qlib_builtin,a360_045,Alpha360_CLOSE15,"Ref($close, 15)/$close",前复权
+alpha360,qlib_builtin,a360_046,Alpha360_CLOSE14,"Ref($close, 14)/$close",前复权
+alpha360,qlib_builtin,a360_047,Alpha360_CLOSE13,"Ref($close, 13)/$close",前复权
+alpha360,qlib_builtin,a360_048,Alpha360_CLOSE12,"Ref($close, 12)/$close",前复权
+alpha360,qlib_builtin,a360_049,Alpha360_CLOSE11,"Ref($close, 11)/$close",前复权
+alpha360,qlib_builtin,a360_050,Alpha360_CLOSE10,"Ref($close, 10)/$close",前复权
+alpha360,qlib_builtin,a360_051,Alpha360_CLOSE9,"Ref($close, 9)/$close",前复权
+alpha360,qlib_builtin,a360_052,Alpha360_CLOSE8,"Ref($close, 8)/$close",前复权
+alpha360,qlib_builtin,a360_053,Alpha360_CLOSE7,"Ref($close, 7)/$close",前复权
+alpha360,qlib_builtin,a360_054,Alpha360_CLOSE6,"Ref($close, 6)/$close",前复权
+alpha360,qlib_builtin,a360_055,Alpha360_CLOSE5,"Ref($close, 5)/$close",前复权
+alpha360,qlib_builtin,a360_056,Alpha360_CLOSE4,"Ref($close, 4)/$close",前复权
+alpha360,qlib_builtin,a360_057,Alpha360_CLOSE3,"Ref($close, 3)/$close",前复权
+alpha360,qlib_builtin,a360_058,Alpha360_CLOSE2,"Ref($close, 2)/$close",前复权
+alpha360,qlib_builtin,a360_059,Alpha360_CLOSE1,"Ref($close, 1)/$close",前复权
+alpha360,qlib_builtin,a360_060,Alpha360_CLOSE0,$close/$close,前复权
+alpha360,qlib_builtin,a360_061,Alpha360_OPEN59,"Ref($open, 59)/$close",前复权
+alpha360,qlib_builtin,a360_062,Alpha360_OPEN58,"Ref($open, 58)/$close",前复权
+alpha360,qlib_builtin,a360_063,Alpha360_OPEN57,"Ref($open, 57)/$close",前复权
+alpha360,qlib_builtin,a360_064,Alpha360_OPEN56,"Ref($open, 56)/$close",前复权
+alpha360,qlib_builtin,a360_065,Alpha360_OPEN55,"Ref($open, 55)/$close",前复权
+alpha360,qlib_builtin,a360_066,Alpha360_OPEN54,"Ref($open, 54)/$close",前复权
+alpha360,qlib_builtin,a360_067,Alpha360_OPEN53,"Ref($open, 53)/$close",前复权
+alpha360,qlib_builtin,a360_068,Alpha360_OPEN52,"Ref($open, 52)/$close",前复权
+alpha360,qlib_builtin,a360_069,Alpha360_OPEN51,"Ref($open, 51)/$close",前复权
+alpha360,qlib_builtin,a360_070,Alpha360_OPEN50,"Ref($open, 50)/$close",前复权
+alpha360,qlib_builtin,a360_071,Alpha360_OPEN49,"Ref($open, 49)/$close",前复权
+alpha360,qlib_builtin,a360_072,Alpha360_OPEN48,"Ref($open, 48)/$close",前复权
+alpha360,qlib_builtin,a360_073,Alpha360_OPEN47,"Ref($open, 47)/$close",前复权
+alpha360,qlib_builtin,a360_074,Alpha360_OPEN46,"Ref($open, 46)/$close",前复权
+alpha360,qlib_builtin,a360_075,Alpha360_OPEN45,"Ref($open, 45)/$close",前复权
+alpha360,qlib_builtin,a360_076,Alpha360_OPEN44,"Ref($open, 44)/$close",前复权
+alpha360,qlib_builtin,a360_077,Alpha360_OPEN43,"Ref($open, 43)/$close",前复权
+alpha360,qlib_builtin,a360_078,Alpha360_OPEN42,"Ref($open, 42)/$close",前复权
+alpha360,qlib_builtin,a360_079,Alpha360_OPEN41,"Ref($open, 41)/$close",前复权
+alpha360,qlib_builtin,a360_080,Alpha360_OPEN40,"Ref($open, 40)/$close",前复权
+alpha360,qlib_builtin,a360_081,Alpha360_OPEN39,"Ref($open, 39)/$close",前复权
+alpha360,qlib_builtin,a360_082,Alpha360_OPEN38,"Ref($open, 38)/$close",前复权
+alpha360,qlib_builtin,a360_083,Alpha360_OPEN37,"Ref($open, 37)/$close",前复权
+alpha360,qlib_builtin,a360_084,Alpha360_OPEN36,"Ref($open, 36)/$close",前复权
+alpha360,qlib_builtin,a360_085,Alpha360_OPEN35,"Ref($open, 35)/$close",前复权
+alpha360,qlib_builtin,a360_086,Alpha360_OPEN34,"Ref($open, 34)/$close",前复权
+alpha360,qlib_builtin,a360_087,Alpha360_OPEN33,"Ref($open, 33)/$close",前复权
+alpha360,qlib_builtin,a360_088,Alpha360_OPEN32,"Ref($open, 32)/$close",前复权
+alpha360,qlib_builtin,a360_089,Alpha360_OPEN31,"Ref($open, 31)/$close",前复权
+alpha360,qlib_builtin,a360_090,Alpha360_OPEN30,"Ref($open, 30)/$close",前复权
+alpha360,qlib_builtin,a360_091,Alpha360_OPEN29,"Ref($open, 29)/$close",前复权
+alpha360,qlib_builtin,a360_092,Alpha360_OPEN28,"Ref($open, 28)/$close",前复权
+alpha360,qlib_builtin,a360_093,Alpha360_OPEN27,"Ref($open, 27)/$close",前复权
+alpha360,qlib_builtin,a360_094,Alpha360_OPEN26,"Ref($open, 26)/$close",前复权
+alpha360,qlib_builtin,a360_095,Alpha360_OPEN25,"Ref($open, 25)/$close",前复权
+alpha360,qlib_builtin,a360_096,Alpha360_OPEN24,"Ref($open, 24)/$close",前复权
+alpha360,qlib_builtin,a360_097,Alpha360_OPEN23,"Ref($open, 23)/$close",前复权
+alpha360,qlib_builtin,a360_098,Alpha360_OPEN22,"Ref($open, 22)/$close",前复权
+alpha360,qlib_builtin,a360_099,Alpha360_OPEN21,"Ref($open, 21)/$close",前复权
+alpha360,qlib_builtin,a360_100,Alpha360_OPEN20,"Ref($open, 20)/$close",前复权
+alpha360,qlib_builtin,a360_101,Alpha360_OPEN19,"Ref($open, 19)/$close",前复权
+alpha360,qlib_builtin,a360_102,Alpha360_OPEN18,"Ref($open, 18)/$close",前复权
+alpha360,qlib_builtin,a360_103,Alpha360_OPEN17,"Ref($open, 17)/$close",前复权
+alpha360,qlib_builtin,a360_104,Alpha360_OPEN16,"Ref($open, 16)/$close",前复权
+alpha360,qlib_builtin,a360_105,Alpha360_OPEN15,"Ref($open, 15)/$close",前复权
+alpha360,qlib_builtin,a360_106,Alpha360_OPEN14,"Ref($open, 14)/$close",前复权
+alpha360,qlib_builtin,a360_107,Alpha360_OPEN13,"Ref($open, 13)/$close",前复权
+alpha360,qlib_builtin,a360_108,Alpha360_OPEN12,"Ref($open, 12)/$close",前复权
+alpha360,qlib_builtin,a360_109,Alpha360_OPEN11,"Ref($open, 11)/$close",前复权
+alpha360,qlib_builtin,a360_110,Alpha360_OPEN10,"Ref($open, 10)/$close",前复权
+alpha360,qlib_builtin,a360_111,Alpha360_OPEN9,"Ref($open, 9)/$close",前复权
+alpha360,qlib_builtin,a360_112,Alpha360_OPEN8,"Ref($open, 8)/$close",前复权
+alpha360,qlib_builtin,a360_113,Alpha360_OPEN7,"Ref($open, 7)/$close",前复权
+alpha360,qlib_builtin,a360_114,Alpha360_OPEN6,"Ref($open, 6)/$close",前复权
+alpha360,qlib_builtin,a360_115,Alpha360_OPEN5,"Ref($open, 5)/$close",前复权
+alpha360,qlib_builtin,a360_116,Alpha360_OPEN4,"Ref($open, 4)/$close",前复权
+alpha360,qlib_builtin,a360_117,Alpha360_OPEN3,"Ref($open, 3)/$close",前复权
+alpha360,qlib_builtin,a360_118,Alpha360_OPEN2,"Ref($open, 2)/$close",前复权
+alpha360,qlib_builtin,a360_119,Alpha360_OPEN1,"Ref($open, 1)/$close",前复权
+alpha360,qlib_builtin,a360_120,Alpha360_OPEN0,$open/$close,前复权
+alpha360,qlib_builtin,a360_121,Alpha360_HIGH59,"Ref($high, 59)/$close",前复权
+alpha360,qlib_builtin,a360_122,Alpha360_HIGH58,"Ref($high, 58)/$close",前复权
+alpha360,qlib_builtin,a360_123,Alpha360_HIGH57,"Ref($high, 57)/$close",前复权
+alpha360,qlib_builtin,a360_124,Alpha360_HIGH56,"Ref($high, 56)/$close",前复权
+alpha360,qlib_builtin,a360_125,Alpha360_HIGH55,"Ref($high, 55)/$close",前复权
+alpha360,qlib_builtin,a360_126,Alpha360_HIGH54,"Ref($high, 54)/$close",前复权
+alpha360,qlib_builtin,a360_127,Alpha360_HIGH53,"Ref($high, 53)/$close",前复权
+alpha360,qlib_builtin,a360_128,Alpha360_HIGH52,"Ref($high, 52)/$close",前复权
+alpha360,qlib_builtin,a360_129,Alpha360_HIGH51,"Ref($high, 51)/$close",前复权
+alpha360,qlib_builtin,a360_130,Alpha360_HIGH50,"Ref($high, 50)/$close",前复权
+alpha360,qlib_builtin,a360_131,Alpha360_HIGH49,"Ref($high, 49)/$close",前复权
+alpha360,qlib_builtin,a360_132,Alpha360_HIGH48,"Ref($high, 48)/$close",前复权
+alpha360,qlib_builtin,a360_133,Alpha360_HIGH47,"Ref($high, 47)/$close",前复权
+alpha360,qlib_builtin,a360_134,Alpha360_HIGH46,"Ref($high, 46)/$close",前复权
+alpha360,qlib_builtin,a360_135,Alpha360_HIGH45,"Ref($high, 45)/$close",前复权
+alpha360,qlib_builtin,a360_136,Alpha360_HIGH44,"Ref($high, 44)/$close",前复权
+alpha360,qlib_builtin,a360_137,Alpha360_HIGH43,"Ref($high, 43)/$close",前复权
+alpha360,qlib_builtin,a360_138,Alpha360_HIGH42,"Ref($high, 42)/$close",前复权
+alpha360,qlib_builtin,a360_139,Alpha360_HIGH41,"Ref($high, 41)/$close",前复权
+alpha360,qlib_builtin,a360_140,Alpha360_HIGH40,"Ref($high, 40)/$close",前复权
+alpha360,qlib_builtin,a360_141,Alpha360_HIGH39,"Ref($high, 39)/$close",前复权
+alpha360,qlib_builtin,a360_142,Alpha360_HIGH38,"Ref($high, 38)/$close",前复权
+alpha360,qlib_builtin,a360_143,Alpha360_HIGH37,"Ref($high, 37)/$close",前复权
+alpha360,qlib_builtin,a360_144,Alpha360_HIGH36,"Ref($high, 36)/$close",前复权
+alpha360,qlib_builtin,a360_145,Alpha360_HIGH35,"Ref($high, 35)/$close",前复权
+alpha360,qlib_builtin,a360_146,Alpha360_HIGH34,"Ref($high, 34)/$close",前复权
+alpha360,qlib_builtin,a360_147,Alpha360_HIGH33,"Ref($high, 33)/$close",前复权
+alpha360,qlib_builtin,a360_148,Alpha360_HIGH32,"Ref($high, 32)/$close",前复权
+alpha360,qlib_builtin,a360_149,Alpha360_HIGH31,"Ref($high, 31)/$close",前复权
+alpha360,qlib_builtin,a360_150,Alpha360_HIGH30,"Ref($high, 30)/$close",前复权
+alpha360,qlib_builtin,a360_151,Alpha360_HIGH29,"Ref($high, 29)/$close",前复权
+alpha360,qlib_builtin,a360_152,Alpha360_HIGH28,"Ref($high, 28)/$close",前复权
+alpha360,qlib_builtin,a360_153,Alpha360_HIGH27,"Ref($high, 27)/$close",前复权
+alpha360,qlib_builtin,a360_154,Alpha360_HIGH26,"Ref($high, 26)/$close",前复权
+alpha360,qlib_builtin,a360_155,Alpha360_HIGH25,"Ref($high, 25)/$close",前复权
+alpha360,qlib_builtin,a360_156,Alpha360_HIGH24,"Ref($high, 24)/$close",前复权
+alpha360,qlib_builtin,a360_157,Alpha360_HIGH23,"Ref($high, 23)/$close",前复权
+alpha360,qlib_builtin,a360_158,Alpha360_HIGH22,"Ref($high, 22)/$close",前复权
+alpha360,qlib_builtin,a360_159,Alpha360_HIGH21,"Ref($high, 21)/$close",前复权
+alpha360,qlib_builtin,a360_160,Alpha360_HIGH20,"Ref($high, 20)/$close",前复权
+alpha360,qlib_builtin,a360_161,Alpha360_HIGH19,"Ref($high, 19)/$close",前复权
+alpha360,qlib_builtin,a360_162,Alpha360_HIGH18,"Ref($high, 18)/$close",前复权
+alpha360,qlib_builtin,a360_163,Alpha360_HIGH17,"Ref($high, 17)/$close",前复权
+alpha360,qlib_builtin,a360_164,Alpha360_HIGH16,"Ref($high, 16)/$close",前复权
+alpha360,qlib_builtin,a360_165,Alpha360_HIGH15,"Ref($high, 15)/$close",前复权
+alpha360,qlib_builtin,a360_166,Alpha360_HIGH14,"Ref($high, 14)/$close",前复权
+alpha360,qlib_builtin,a360_167,Alpha360_HIGH13,"Ref($high, 13)/$close",前复权
+alpha360,qlib_builtin,a360_168,Alpha360_HIGH12,"Ref($high, 12)/$close",前复权
+alpha360,qlib_builtin,a360_169,Alpha360_HIGH11,"Ref($high, 11)/$close",前复权
+alpha360,qlib_builtin,a360_170,Alpha360_HIGH10,"Ref($high, 10)/$close",前复权
+alpha360,qlib_builtin,a360_171,Alpha360_HIGH9,"Ref($high, 9)/$close",前复权
+alpha360,qlib_builtin,a360_172,Alpha360_HIGH8,"Ref($high, 8)/$close",前复权
+alpha360,qlib_builtin,a360_173,Alpha360_HIGH7,"Ref($high, 7)/$close",前复权
+alpha360,qlib_builtin,a360_174,Alpha360_HIGH6,"Ref($high, 6)/$close",前复权
+alpha360,qlib_builtin,a360_175,Alpha360_HIGH5,"Ref($high, 5)/$close",前复权
+alpha360,qlib_builtin,a360_176,Alpha360_HIGH4,"Ref($high, 4)/$close",前复权
+alpha360,qlib_builtin,a360_177,Alpha360_HIGH3,"Ref($high, 3)/$close",前复权
+alpha360,qlib_builtin,a360_178,Alpha360_HIGH2,"Ref($high, 2)/$close",前复权
+alpha360,qlib_builtin,a360_179,Alpha360_HIGH1,"Ref($high, 1)/$close",前复权
+alpha360,qlib_builtin,a360_180,Alpha360_HIGH0,$high/$close,前复权
+alpha360,qlib_builtin,a360_181,Alpha360_LOW59,"Ref($low, 59)/$close",前复权
+alpha360,qlib_builtin,a360_182,Alpha360_LOW58,"Ref($low, 58)/$close",前复权
+alpha360,qlib_builtin,a360_183,Alpha360_LOW57,"Ref($low, 57)/$close",前复权
+alpha360,qlib_builtin,a360_184,Alpha360_LOW56,"Ref($low, 56)/$close",前复权
+alpha360,qlib_builtin,a360_185,Alpha360_LOW55,"Ref($low, 55)/$close",前复权
+alpha360,qlib_builtin,a360_186,Alpha360_LOW54,"Ref($low, 54)/$close",前复权
+alpha360,qlib_builtin,a360_187,Alpha360_LOW53,"Ref($low, 53)/$close",前复权
+alpha360,qlib_builtin,a360_188,Alpha360_LOW52,"Ref($low, 52)/$close",前复权
+alpha360,qlib_builtin,a360_189,Alpha360_LOW51,"Ref($low, 51)/$close",前复权
+alpha360,qlib_builtin,a360_190,Alpha360_LOW50,"Ref($low, 50)/$close",前复权
+alpha360,qlib_builtin,a360_191,Alpha360_LOW49,"Ref($low, 49)/$close",前复权
+alpha360,qlib_builtin,a360_192,Alpha360_LOW48,"Ref($low, 48)/$close",前复权
+alpha360,qlib_builtin,a360_193,Alpha360_LOW47,"Ref($low, 47)/$close",前复权
+alpha360,qlib_builtin,a360_194,Alpha360_LOW46,"Ref($low, 46)/$close",前复权
+alpha360,qlib_builtin,a360_195,Alpha360_LOW45,"Ref($low, 45)/$close",前复权
+alpha360,qlib_builtin,a360_196,Alpha360_LOW44,"Ref($low, 44)/$close",前复权
+alpha360,qlib_builtin,a360_197,Alpha360_LOW43,"Ref($low, 43)/$close",前复权
+alpha360,qlib_builtin,a360_198,Alpha360_LOW42,"Ref($low, 42)/$close",前复权
+alpha360,qlib_builtin,a360_199,Alpha360_LOW41,"Ref($low, 41)/$close",前复权
+alpha360,qlib_builtin,a360_200,Alpha360_LOW40,"Ref($low, 40)/$close",前复权
+alpha360,qlib_builtin,a360_201,Alpha360_LOW39,"Ref($low, 39)/$close",前复权
+alpha360,qlib_builtin,a360_202,Alpha360_LOW38,"Ref($low, 38)/$close",前复权
+alpha360,qlib_builtin,a360_203,Alpha360_LOW37,"Ref($low, 37)/$close",前复权
+alpha360,qlib_builtin,a360_204,Alpha360_LOW36,"Ref($low, 36)/$close",前复权
+alpha360,qlib_builtin,a360_205,Alpha360_LOW35,"Ref($low, 35)/$close",前复权
+alpha360,qlib_builtin,a360_206,Alpha360_LOW34,"Ref($low, 34)/$close",前复权
+alpha360,qlib_builtin,a360_207,Alpha360_LOW33,"Ref($low, 33)/$close",前复权
+alpha360,qlib_builtin,a360_208,Alpha360_LOW32,"Ref($low, 32)/$close",前复权
+alpha360,qlib_builtin,a360_209,Alpha360_LOW31,"Ref($low, 31)/$close",前复权
+alpha360,qlib_builtin,a360_210,Alpha360_LOW30,"Ref($low, 30)/$close",前复权
+alpha360,qlib_builtin,a360_211,Alpha360_LOW29,"Ref($low, 29)/$close",前复权
+alpha360,qlib_builtin,a360_212,Alpha360_LOW28,"Ref($low, 28)/$close",前复权
+alpha360,qlib_builtin,a360_213,Alpha360_LOW27,"Ref($low, 27)/$close",前复权
+alpha360,qlib_builtin,a360_214,Alpha360_LOW26,"Ref($low, 26)/$close",前复权
+alpha360,qlib_builtin,a360_215,Alpha360_LOW25,"Ref($low, 25)/$close",前复权
+alpha360,qlib_builtin,a360_216,Alpha360_LOW24,"Ref($low, 24)/$close",前复权
+alpha360,qlib_builtin,a360_217,Alpha360_LOW23,"Ref($low, 23)/$close",前复权
+alpha360,qlib_builtin,a360_218,Alpha360_LOW22,"Ref($low, 22)/$close",前复权
+alpha360,qlib_builtin,a360_219,Alpha360_LOW21,"Ref($low, 21)/$close",前复权
+alpha360,qlib_builtin,a360_220,Alpha360_LOW20,"Ref($low, 20)/$close",前复权
+alpha360,qlib_builtin,a360_221,Alpha360_LOW19,"Ref($low, 19)/$close",前复权
+alpha360,qlib_builtin,a360_222,Alpha360_LOW18,"Ref($low, 18)/$close",前复权
+alpha360,qlib_builtin,a360_223,Alpha360_LOW17,"Ref($low, 17)/$close",前复权
+alpha360,qlib_builtin,a360_224,Alpha360_LOW16,"Ref($low, 16)/$close",前复权
+alpha360,qlib_builtin,a360_225,Alpha360_LOW15,"Ref($low, 15)/$close",前复权
+alpha360,qlib_builtin,a360_226,Alpha360_LOW14,"Ref($low, 14)/$close",前复权
+alpha360,qlib_builtin,a360_227,Alpha360_LOW13,"Ref($low, 13)/$close",前复权
+alpha360,qlib_builtin,a360_228,Alpha360_LOW12,"Ref($low, 12)/$close",前复权
+alpha360,qlib_builtin,a360_229,Alpha360_LOW11,"Ref($low, 11)/$close",前复权
+alpha360,qlib_builtin,a360_230,Alpha360_LOW10,"Ref($low, 10)/$close",前复权
+alpha360,qlib_builtin,a360_231,Alpha360_LOW9,"Ref($low, 9)/$close",前复权
+alpha360,qlib_builtin,a360_232,Alpha360_LOW8,"Ref($low, 8)/$close",前复权
+alpha360,qlib_builtin,a360_233,Alpha360_LOW7,"Ref($low, 7)/$close",前复权
+alpha360,qlib_builtin,a360_234,Alpha360_LOW6,"Ref($low, 6)/$close",前复权
+alpha360,qlib_builtin,a360_235,Alpha360_LOW5,"Ref($low, 5)/$close",前复权
+alpha360,qlib_builtin,a360_236,Alpha360_LOW4,"Ref($low, 4)/$close",前复权
+alpha360,qlib_builtin,a360_237,Alpha360_LOW3,"Ref($low, 3)/$close",前复权
+alpha360,qlib_builtin,a360_238,Alpha360_LOW2,"Ref($low, 2)/$close",前复权
+alpha360,qlib_builtin,a360_239,Alpha360_LOW1,"Ref($low, 1)/$close",前复权
+alpha360,qlib_builtin,a360_240,Alpha360_LOW0,$low/$close,前复权
+alpha360,qlib_builtin,a360_241,Alpha360_VWAP59,"Ref(($amount / $vol), 59)/$close",前复权
+alpha360,qlib_builtin,a360_242,Alpha360_VWAP58,"Ref(($amount / $vol), 58)/$close",前复权
+alpha360,qlib_builtin,a360_243,Alpha360_VWAP57,"Ref(($amount / $vol), 57)/$close",前复权
+alpha360,qlib_builtin,a360_244,Alpha360_VWAP56,"Ref(($amount / $vol), 56)/$close",前复权
+alpha360,qlib_builtin,a360_245,Alpha360_VWAP55,"Ref(($amount / $vol), 55)/$close",前复权
+alpha360,qlib_builtin,a360_246,Alpha360_VWAP54,"Ref(($amount / $vol), 54)/$close",前复权
+alpha360,qlib_builtin,a360_247,Alpha360_VWAP53,"Ref(($amount / $vol), 53)/$close",前复权
+alpha360,qlib_builtin,a360_248,Alpha360_VWAP52,"Ref(($amount / $vol), 52)/$close",前复权
+alpha360,qlib_builtin,a360_249,Alpha360_VWAP51,"Ref(($amount / $vol), 51)/$close",前复权
+alpha360,qlib_builtin,a360_250,Alpha360_VWAP50,"Ref(($amount / $vol), 50)/$close",前复权
+alpha360,qlib_builtin,a360_251,Alpha360_VWAP49,"Ref(($amount / $vol), 49)/$close",前复权
+alpha360,qlib_builtin,a360_252,Alpha360_VWAP48,"Ref(($amount / $vol), 48)/$close",前复权
+alpha360,qlib_builtin,a360_253,Alpha360_VWAP47,"Ref(($amount / $vol), 47)/$close",前复权
+alpha360,qlib_builtin,a360_254,Alpha360_VWAP46,"Ref(($amount / $vol), 46)/$close",前复权
+alpha360,qlib_builtin,a360_255,Alpha360_VWAP45,"Ref(($amount / $vol), 45)/$close",前复权
+alpha360,qlib_builtin,a360_256,Alpha360_VWAP44,"Ref(($amount / $vol), 44)/$close",前复权
+alpha360,qlib_builtin,a360_257,Alpha360_VWAP43,"Ref(($amount / $vol), 43)/$close",前复权
+alpha360,qlib_builtin,a360_258,Alpha360_VWAP42,"Ref(($amount / $vol), 42)/$close",前复权
+alpha360,qlib_builtin,a360_259,Alpha360_VWAP41,"Ref(($amount / $vol), 41)/$close",前复权
+alpha360,qlib_builtin,a360_260,Alpha360_VWAP40,"Ref(($amount / $vol), 40)/$close",前复权
+alpha360,qlib_builtin,a360_261,Alpha360_VWAP39,"Ref(($amount / $vol), 39)/$close",前复权
+alpha360,qlib_builtin,a360_262,Alpha360_VWAP38,"Ref(($amount / $vol), 38)/$close",前复权
+alpha360,qlib_builtin,a360_263,Alpha360_VWAP37,"Ref(($amount / $vol), 37)/$close",前复权
+alpha360,qlib_builtin,a360_264,Alpha360_VWAP36,"Ref(($amount / $vol), 36)/$close",前复权
+alpha360,qlib_builtin,a360_265,Alpha360_VWAP35,"Ref(($amount / $vol), 35)/$close",前复权
+alpha360,qlib_builtin,a360_266,Alpha360_VWAP34,"Ref(($amount / $vol), 34)/$close",前复权
+alpha360,qlib_builtin,a360_267,Alpha360_VWAP33,"Ref(($amount / $vol), 33)/$close",前复权
+alpha360,qlib_builtin,a360_268,Alpha360_VWAP32,"Ref(($amount / $vol), 32)/$close",前复权
+alpha360,qlib_builtin,a360_269,Alpha360_VWAP31,"Ref(($amount / $vol), 31)/$close",前复权
+alpha360,qlib_builtin,a360_270,Alpha360_VWAP30,"Ref(($amount / $vol), 30)/$close",前复权
+alpha360,qlib_builtin,a360_271,Alpha360_VWAP29,"Ref(($amount / $vol), 29)/$close",前复权
+alpha360,qlib_builtin,a360_272,Alpha360_VWAP28,"Ref(($amount / $vol), 28)/$close",前复权
+alpha360,qlib_builtin,a360_273,Alpha360_VWAP27,"Ref(($amount / $vol), 27)/$close",前复权
+alpha360,qlib_builtin,a360_274,Alpha360_VWAP26,"Ref(($amount / $vol), 26)/$close",前复权
+alpha360,qlib_builtin,a360_275,Alpha360_VWAP25,"Ref(($amount / $vol), 25)/$close",前复权
+alpha360,qlib_builtin,a360_276,Alpha360_VWAP24,"Ref(($amount / $vol), 24)/$close",前复权
+alpha360,qlib_builtin,a360_277,Alpha360_VWAP23,"Ref(($amount / $vol), 23)/$close",前复权
+alpha360,qlib_builtin,a360_278,Alpha360_VWAP22,"Ref(($amount / $vol), 22)/$close",前复权
+alpha360,qlib_builtin,a360_279,Alpha360_VWAP21,"Ref(($amount / $vol), 21)/$close",前复权
+alpha360,qlib_builtin,a360_280,Alpha360_VWAP20,"Ref(($amount / $vol), 20)/$close",前复权
+alpha360,qlib_builtin,a360_281,Alpha360_VWAP19,"Ref(($amount / $vol), 19)/$close",前复权
+alpha360,qlib_builtin,a360_282,Alpha360_VWAP18,"Ref(($amount / $vol), 18)/$close",前复权
+alpha360,qlib_builtin,a360_283,Alpha360_VWAP17,"Ref(($amount / $vol), 17)/$close",前复权
+alpha360,qlib_builtin,a360_284,Alpha360_VWAP16,"Ref(($amount / $vol), 16)/$close",前复权
+alpha360,qlib_builtin,a360_285,Alpha360_VWAP15,"Ref(($amount / $vol), 15)/$close",前复权
+alpha360,qlib_builtin,a360_286,Alpha360_VWAP14,"Ref(($amount / $vol), 14)/$close",前复权
+alpha360,qlib_builtin,a360_287,Alpha360_VWAP13,"Ref(($amount / $vol), 13)/$close",前复权
+alpha360,qlib_builtin,a360_288,Alpha360_VWAP12,"Ref(($amount / $vol), 12)/$close",前复权
+alpha360,qlib_builtin,a360_289,Alpha360_VWAP11,"Ref(($amount / $vol), 11)/$close",前复权
+alpha360,qlib_builtin,a360_290,Alpha360_VWAP10,"Ref(($amount / $vol), 10)/$close",前复权
+alpha360,qlib_builtin,a360_291,Alpha360_VWAP9,"Ref(($amount / $vol), 9)/$close",前复权
+alpha360,qlib_builtin,a360_292,Alpha360_VWAP8,"Ref(($amount / $vol), 8)/$close",前复权
+alpha360,qlib_builtin,a360_293,Alpha360_VWAP7,"Ref(($amount / $vol), 7)/$close",前复权
+alpha360,qlib_builtin,a360_294,Alpha360_VWAP6,"Ref(($amount / $vol), 6)/$close",前复权
+alpha360,qlib_builtin,a360_295,Alpha360_VWAP5,"Ref(($amount / $vol), 5)/$close",前复权
+alpha360,qlib_builtin,a360_296,Alpha360_VWAP4,"Ref(($amount / $vol), 4)/$close",前复权
+alpha360,qlib_builtin,a360_297,Alpha360_VWAP3,"Ref(($amount / $vol), 3)/$close",前复权
+alpha360,qlib_builtin,a360_298,Alpha360_VWAP2,"Ref(($amount / $vol), 2)/$close",前复权
+alpha360,qlib_builtin,a360_299,Alpha360_VWAP1,"Ref(($amount / $vol), 1)/$close",前复权
+alpha360,qlib_builtin,a360_300,Alpha360_VWAP0,($amount / $vol)/$close,前复权
+alpha360,qlib_builtin,a360_301,Alpha360_VOLUME59,"Ref($vol, 59)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_302,Alpha360_VOLUME58,"Ref($vol, 58)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_303,Alpha360_VOLUME57,"Ref($vol, 57)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_304,Alpha360_VOLUME56,"Ref($vol, 56)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_305,Alpha360_VOLUME55,"Ref($vol, 55)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_306,Alpha360_VOLUME54,"Ref($vol, 54)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_307,Alpha360_VOLUME53,"Ref($vol, 53)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_308,Alpha360_VOLUME52,"Ref($vol, 52)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_309,Alpha360_VOLUME51,"Ref($vol, 51)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_310,Alpha360_VOLUME50,"Ref($vol, 50)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_311,Alpha360_VOLUME49,"Ref($vol, 49)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_312,Alpha360_VOLUME48,"Ref($vol, 48)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_313,Alpha360_VOLUME47,"Ref($vol, 47)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_314,Alpha360_VOLUME46,"Ref($vol, 46)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_315,Alpha360_VOLUME45,"Ref($vol, 45)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_316,Alpha360_VOLUME44,"Ref($vol, 44)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_317,Alpha360_VOLUME43,"Ref($vol, 43)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_318,Alpha360_VOLUME42,"Ref($vol, 42)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_319,Alpha360_VOLUME41,"Ref($vol, 41)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_320,Alpha360_VOLUME40,"Ref($vol, 40)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_321,Alpha360_VOLUME39,"Ref($vol, 39)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_322,Alpha360_VOLUME38,"Ref($vol, 38)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_323,Alpha360_VOLUME37,"Ref($vol, 37)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_324,Alpha360_VOLUME36,"Ref($vol, 36)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_325,Alpha360_VOLUME35,"Ref($vol, 35)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_326,Alpha360_VOLUME34,"Ref($vol, 34)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_327,Alpha360_VOLUME33,"Ref($vol, 33)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_328,Alpha360_VOLUME32,"Ref($vol, 32)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_329,Alpha360_VOLUME31,"Ref($vol, 31)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_330,Alpha360_VOLUME30,"Ref($vol, 30)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_331,Alpha360_VOLUME29,"Ref($vol, 29)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_332,Alpha360_VOLUME28,"Ref($vol, 28)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_333,Alpha360_VOLUME27,"Ref($vol, 27)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_334,Alpha360_VOLUME26,"Ref($vol, 26)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_335,Alpha360_VOLUME25,"Ref($vol, 25)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_336,Alpha360_VOLUME24,"Ref($vol, 24)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_337,Alpha360_VOLUME23,"Ref($vol, 23)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_338,Alpha360_VOLUME22,"Ref($vol, 22)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_339,Alpha360_VOLUME21,"Ref($vol, 21)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_340,Alpha360_VOLUME20,"Ref($vol, 20)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_341,Alpha360_VOLUME19,"Ref($vol, 19)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_342,Alpha360_VOLUME18,"Ref($vol, 18)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_343,Alpha360_VOLUME17,"Ref($vol, 17)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_344,Alpha360_VOLUME16,"Ref($vol, 16)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_345,Alpha360_VOLUME15,"Ref($vol, 15)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_346,Alpha360_VOLUME14,"Ref($vol, 14)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_347,Alpha360_VOLUME13,"Ref($vol, 13)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_348,Alpha360_VOLUME12,"Ref($vol, 12)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_349,Alpha360_VOLUME11,"Ref($vol, 11)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_350,Alpha360_VOLUME10,"Ref($vol, 10)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_351,Alpha360_VOLUME9,"Ref($vol, 9)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_352,Alpha360_VOLUME8,"Ref($vol, 8)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_353,Alpha360_VOLUME7,"Ref($vol, 7)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_354,Alpha360_VOLUME6,"Ref($vol, 6)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_355,Alpha360_VOLUME5,"Ref($vol, 5)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_356,Alpha360_VOLUME4,"Ref($vol, 4)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_357,Alpha360_VOLUME3,"Ref($vol, 3)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_358,Alpha360_VOLUME2,"Ref($vol, 2)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_359,Alpha360_VOLUME1,"Ref($vol, 1)/($vol+1e-12)",前复权
+alpha360,qlib_builtin,a360_360,Alpha360_VOLUME0,$vol/($vol+1e-12),前复权
+alpha_community,alpha_community,ac_amt_impact_decay,成交额冲击衰减,"Mean(Abs($close / Ref($close, 1) - 1) / (Log($close * $vol + 1)), 5) / (Mean(Abs($close / Ref($close, 1) - 1) / (Log($close * $vol + 1)), 20) + 1e-12)",前复权
+alpha_community,alpha_community,ac_cov_px_vol_short,短窗量价协方差,"Cov($close, $vol, 10)",前复权
+alpha_community,alpha_community,ac_hl_amp_vol_link,振幅与成交量联动,"($high / $low - 1) * ($vol / (Mean($vol, 20) + 1e-12))",前复权
+alpha_community,alpha_community,ac_hl_range_position_delta,高低区间位置变化,"($close - Min($low, 20)) / (Max($high, 20) - Min($low, 20) + 1e-12) - Ref(($close - Min($low, 20)) / (Max($high, 20) - Min($low, 20) + 1e-12), 1)",前复权
+alpha_community,alpha_community,ac_mom_vol_mix,动量波动联合,"($close / Ref($close, 10) - 1) / (Std($close / Ref($close, 1) - 1, 20) + 1e-12)",前复权
+alpha_community,alpha_community,ac_oc_spread_norm,开收盘价差标准化,($open - $close) / ($close + 1e-12),前复权
+alpha_community,alpha_community,ac_rankcorr_px_vol,价量秩相关短窗,"Corr(($close - Min($close, 10)) / (Max($close, 10) - Min($close, 10) + 1e-12), ($vol - Min($vol, 10)) / (Max($vol, 10) - Min($vol, 10) + 1e-12), 10)",前复权
+alpha_community,alpha_community,ac_ret_skew_roll,滚动收益偏度,"Skew($close / Ref($close, 1) - 1, 20)",前复权
+alpha_community,alpha_community,ac_ts_rank_ret_short,短期收益时序排名,"($close / Ref($close, 1) - 1 - Min($close / Ref($close, 1) - 1, 10)) / (Max($close / Ref($close, 1) - 1, 10) - Min($close / Ref($close, 1) - 1, 10) + 1e-12)",前复权
+alpha_community,alpha_community,ac_ts_rank_vol_short,短期成交量时序排名,"($vol - Min($vol, 10)) / (Max($vol, 10) - Min($vol, 10) + 1e-12)",前复权
+alpha_community,alpha_community,ac_vol_cluster_ratio,波动聚集短中窗比,"Std($close / Ref($close, 1) - 1, 5) / (Std($close / Ref($close, 1) - 1, 20) + 1e-12)",前复权
+alpha_community,alpha_community,ac_vwap_bias,VWAP偏离,$close / (($close * $vol) / ($vol + 1e-12)) - 1,前复权
+cross_section,custom,cs_amp_rank,振幅时序排名,"($high / $low - 1 - Min($high / $low - 1, 20)) / (Max($high / $low - 1, 20) - Min($high / $low - 1, 20) + 1e-12)",前复权
+cross_section,custom,cs_close_vs_mean5,收盘偏离5日均值,"($close - Mean($close, 5)) / (Std($close, 5) + 1e-12)",前复权
+cross_section,custom,cs_ret5_rank,5日收益时序排名,"($close / Ref($close, 5) - 1 - Min($close / Ref($close, 5) - 1, 20)) / (Max($close / Ref($close, 5) - 1, 20) - Min($close / Ref($close, 5) - 1, 20) + 1e-12)",前复权
+cross_section,custom,cs_turnover_rank,换手率时序排名,"($turn_over - Min($turn_over, 20)) / (Max($turn_over, 20) - Min($turn_over, 20) + 1e-12)",不复权
+cross_section,custom,cs_vol_rank,成交量时序排名,"($vol - Min($vol, 20)) / (Max($vol, 20) - Min($vol, 20) + 1e-12)",前复权
+cross_section,custom,cs_volume_trend,成交量趋势斜率,"Slope($vol, 10) / (Mean($vol, 10) + 1e-12)",前复权
+custom_basic,custom,cb_indneu_mom_20,行业中性短动量20,"$close / Ref($close, 20) - 1",前复权
+custom_basic,custom,cb_indneu_vol_20,行业中性波动20,"Std($close / Ref($close, 1) - 1, 20)",前复权
+custom_basic,custom,cb_turn_shock_recover_5_20,换手冲击恢复5_20,"Mean($turn_over, 5) / (Mean($turn_over, 20) + 1e-12) - 1",不复权
+custom_basic,custom,cb_vol_price_asym,缩量涨放量跌不对称,"Mean(If($close > Ref($close, 1), $vol, 0), 20) / (Mean(If($close < Ref($close, 1), $vol, 0), 20) + 1e-12)",前复权
+joinquant_factor,joinquant,jq_100,基础科目及衍生类因子_市值,$total_mv,不复权
+joinquant_factor,joinquant,jq_133,风险类因子_120日收益方差,"Std($close / Ref($close, 1) - 1, 120) ** 2",前复权
+joinquant_factor,joinquant,jq_136,风险类因子_20日夏普比率,"Mean($close / Ref($close, 1) - 1, 20) / Std($close / Ref($close, 1) - 1, 20)",前复权
+joinquant_factor,joinquant,jq_138,风险类因子_60日夏普比率,"Mean($close / Ref($close, 1) - 1, 60) / Std($close / Ref($close, 1) - 1, 60)",前复权
+joinquant_factor,joinquant,jq_141,风险类因子_120日夏普比率,"Mean($close / Ref($close, 1) - 1, 120) / Std($close / Ref($close, 1) - 1, 120)",前复权
+joinquant_factor,joinquant,jq_142,风险类因子_20日收益方差,"Std($close / Ref($close, 1) - 1, 20) ** 2",前复权
+joinquant_factor,joinquant,jq_143,风险类因子_60日收益方差,"Std($close / Ref($close, 1) - 1, 60) ** 2",前复权
+joinquant_factor,joinquant,jq_145,情绪类因子_心理线指标_PSY,"Sum(If($close > Ref($close, 1), 1, 0), 12) / 12 * 100",前复权
+joinquant_factor,joinquant,jq_146,情绪类因子_12日量变动速率_VROC12,"($vol - Ref($vol, 12)) / Ref($vol, 12) * 100",前复权
+joinquant_factor,joinquant,jq_147,情绪类因子_6日成交金额均值,"Mean($amount, 6)",前复权
+joinquant_factor,joinquant,jq_148,情绪类因子_成交量10日EMA,"EMA($vol, 10)",前复权
+joinquant_factor,joinquant,jq_149,情绪类因子_成交量比率_VR,"(Sum(If($close > Ref($close, 1), $vol, 0), 26) + 0.5 * Sum(If($close == Ref($close, 1), $vol, 0), 26)) / (Sum(If($close < Ref($close, 1), $vol, 0), 26) + 0.5 * Sum(If($close == Ref($close, 1), $vol, 0), 26)) * 100",前复权
+joinquant_factor,joinquant,jq_150,情绪类因子_5日平均换手率,"Mean($turnover_rate_f, 5)",不复权
+joinquant_factor,joinquant,jq_151,情绪类因子_意愿指标_BR,"Sum(Greater($high - Ref($close, 1), 0), 26) / Sum(Greater(Ref($close, 1) - $low, 0), 26) * 100",前复权
+joinquant_factor,joinquant,jq_152,情绪类因子_12日成交量均值,"Mean($vol, 12)",前复权
+joinquant_factor,joinquant,jq_153,情绪类因子_20日成交金额均值,"Mean($amount, 20)",前复权
+joinquant_factor,joinquant,jq_154,情绪类因子_换手率比_5d120d,"Mean($turnover_rate_f, 5) / Mean($turnover_rate_f, 120)",不复权
+joinquant_factor,joinquant,jq_155,情绪类因子_VMACD_VDIFF,"EMA($vol, 12) - EMA($vol, 26)",前复权
+joinquant_factor,joinquant,jq_156,情绪类因子_威廉变异离散量_WVAD6,"Sum(($close - $open) / ($high - $low) * $vol, 6)",前复权
+joinquant_factor,joinquant,jq_157,情绪类因子_WVAD_6日均值,"Mean(($close - $open) / ($high - $low) * $vol, 6)",前复权
+joinquant_factor,joinquant,jq_158,情绪类因子_10日成交量标准差,"Std($vol, 10)",前复权
+joinquant_factor,joinquant,jq_159,情绪类因子_14日均幅指标_ATR,"Mean(Greater(Greater($high - $low, Abs($high - Ref($close, 1))), Abs($low - Ref($close, 1))), 14)",前复权
+joinquant_factor,joinquant,jq_160,情绪类因子_10日平均换手率,"Mean($turnover_rate_f, 10)",不复权
+joinquant_factor,joinquant,jq_161,情绪类因子_换手率比_10d120d,"Mean($turnover_rate_f, 10) / Mean($turnover_rate_f, 120)",不复权
+joinquant_factor,joinquant,jq_162,情绪类因子_VMACD_DEA,"EMA(EMA($vol, 12) - EMA($vol, 26), 9)",前复权
+joinquant_factor,joinquant,jq_163,情绪类因子_20日成交量标准差,"Std($vol, 20)",前复权
+joinquant_factor,joinquant,jq_164,情绪类因子_6日均幅指标_ATR6,"Mean(Greater(Greater($high - $low, Abs($high - Ref($close, 1))), Abs($low - Ref($close, 1))), 6)",前复权
+joinquant_factor,joinquant,jq_165,情绪类因子_20日平均换手率,"Mean($turnover_rate_f, 20)",不复权
+joinquant_factor,joinquant,jq_166,情绪类因子_换手率比_20d120d,"Mean($turnover_rate_f, 20) / Mean($turnover_rate_f, 120)",不复权
+joinquant_factor,joinquant,jq_167,情绪类因子_VMACD_HIST,"(EMA($vol, 12) - EMA($vol, 26)) - EMA(EMA($vol, 12) - EMA($vol, 26), 9)",前复权
+joinquant_factor,joinquant,jq_168,情绪类因子_人气指标_AR,"Sum($high - $open, 26) / Sum($open - $low, 26) * 100",前复权
+joinquant_factor,joinquant,jq_169,情绪类因子_60日平均换手率,"Mean($turnover_rate_f, 60)",不复权
+joinquant_factor,joinquant,jq_170,情绪类因子_换手率波动率_20d,"Std($turnover_rate_f, 20)",不复权
+joinquant_factor,joinquant,jq_171,情绪类因子_120日平均换手率,"Mean($turnover_rate_f, 120)",不复权
+joinquant_factor,joinquant,jq_172,情绪类因子_6日量变动速率_VROC6,"($vol - Ref($vol, 6)) / Ref($vol, 6) * 100",前复权
+joinquant_factor,joinquant,jq_173,情绪类因子_20日成交金额标准差,"Std($amount, 20)",前复权
+joinquant_factor,joinquant,jq_174,情绪类因子_AR减BR,"Sum($high - $open, 26) / Sum($open - $low, 26) * 100 - Sum(Greater($high - Ref($close, 1), 0), 26) / Sum(Greater(Ref($close, 1) - $low, 0), 26) * 100",前复权
+joinquant_factor,joinquant,jq_175,情绪类因子_20日资金流量,"Mean(($high + $low + $close) / 3 * $vol, 20)",前复权
+joinquant_factor,joinquant,jq_176,情绪类因子_成交量5日EMA,"EMA($vol, 5)",前复权
+joinquant_factor,joinquant,jq_177,情绪类因子_240日平均换手率,"Mean($turnover_rate_f, 240)",不复权
+joinquant_factor,joinquant,jq_178,情绪类因子_成交量26日EMA,"EMA($vol, 26)",前复权
+joinquant_factor,joinquant,jq_179,情绪类因子_成交量震荡_VOSC,"(EMA($vol, 12) - EMA($vol, 26)) / EMA($vol, 12) * 100",前复权
+joinquant_factor,joinquant,jq_180,情绪类因子_6日成交金额标准差,"Std($amount, 6)",前复权
+joinquant_factor,joinquant,jq_181,动量类因子_5日乖离率_BIAS5,"($close - Mean($close, 5)) / Mean($close, 5) * 100",前复权
+joinquant_factor,joinquant,jq_182,动量类因子_价格偏离_1Y,"$close / Mean($close, 250) - 1",前复权
+joinquant_factor,joinquant,jq_183,动量类因子_价格偏离_3M,"$close / Mean($close, 61) - 1",前复权
+joinquant_factor,joinquant,jq_184,动量类因子_价格偏离_1M,"$close / Mean($close, 21) - 1",前复权
+joinquant_factor,joinquant,jq_186,动量类因子_BBI动量,"(Mean($close, 3) + Mean($close, 6) + Mean($close, 12) + Mean($close, 24)) / 4 / $close",前复权
+joinquant_factor,joinquant,jq_187,动量类因子_12日变动速率_ROC12,"($close - Ref($close, 12)) / Ref($close, 12) * 100",前复权
+joinquant_factor,joinquant,jq_188,动量类因子_120日变动速率_ROC120,"($close - Ref($close, 120)) / Ref($close, 120) * 100",前复权
+joinquant_factor,joinquant,jq_189,动量类因子_60日乖离率_BIAS60,"($close - Mean($close, 60)) / Mean($close, 60) * 100",前复权
+joinquant_factor,joinquant,jq_190,动量类因子_20日变动速率_ROC20,"($close - Ref($close, 20)) / Ref($close, 20) * 100",前复权
+joinquant_factor,joinquant,jq_191,动量类因子_Aroon下轨,"(25 - IdxMin($low, 25)) / 25 * 100",前复权
+joinquant_factor,joinquant,jq_192,动量类因子_价量趋势_VPT_MA12,"Mean(($close - Ref($close, 1)) / Ref($close, 1) * $vol, 12)",前复权
+joinquant_factor,joinquant,jq_193,动量类因子_量价动量_20d,"$vol / Mean($vol, 20) * Mean($close / Ref($close, 1) - 1, 20)",前复权
+joinquant_factor,joinquant,jq_194,动量类因子_20日顺势指标_CCI20,"(($high + $low + $close) / 3 - Mean(($high + $low + $close) / 3, 20)) / (0.015 * Mean(Abs(($high + $low + $close) / 3 - Mean(($high + $low + $close) / 3, 20)), 20))",前复权
+joinquant_factor,joinquant,jq_196,动量类因子_CR指标,"Sum(Greater($high - Ref(($high + $low) / 2, 1), 0), 20) / Sum(Greater(Ref(($high + $low) / 2, 1) - $low, 0), 20) * 100",前复权
+joinquant_factor,joinquant,jq_197,动量类因子_60日变动速率_ROC60,"($close - Ref($close, 60)) / Ref($close, 60) * 100",前复权
+joinquant_factor,joinquant,jq_198,动量类因子_20日乖离率_BIAS20,"($close - Mean($close, 20)) / Mean($close, 20) * 100",前复权
+joinquant_factor,joinquant,jq_199,动量类因子_多头力道,"($high - EMA($close, 13)) / $close",前复权
+joinquant_factor,joinquant,jq_200,动量类因子_Aroon上轨,"(25 - IdxMax($high, 25)) / 25 * 100",前复权
+joinquant_factor,joinquant,jq_201,动量类因子_价量趋势_VPT_MA6,"Mean(($close - Ref($close, 1)) / Ref($close, 1) * $vol, 6)",前复权
+joinquant_factor,joinquant,jq_202,动量类因子_10日终极指标_TRIX10,"(EMA(EMA(EMA($close, 10), 10), 10) - Ref(EMA(EMA(EMA($close, 10), 10), 10), 1)) / Ref(EMA(EMA(EMA($close, 10), 10), 10), 1) * 100",前复权
+joinquant_factor,joinquant,jq_203,动量类因子_10日顺势指标_CCI10,"(($high + $low + $close) / 3 - Mean(($high + $low + $close) / 3, 10)) / (0.015 * Mean(Abs(($high + $low + $close) / 3 - Mean(($high + $low + $close) / 3, 10)), 10))",前复权
+joinquant_factor,joinquant,jq_204,动量类因子_88日顺势指标_CCI88,"(($high + $low + $close) / 3 - Mean(($high + $low + $close) / 3, 88)) / (0.015 * Mean(Abs(($high + $low + $close) / 3 - Mean(($high + $low + $close) / 3, 88)), 88))",前复权
+joinquant_factor,joinquant,jq_206,动量类因子_10日乖离率_BIAS10,"($close - Mean($close, 10)) / Mean($close, 10) * 100",前复权
+joinquant_factor,joinquant,jq_207,动量类因子_6日变动速率_ROC6,"($close - Ref($close, 6)) / Ref($close, 6) * 100",前复权
+joinquant_factor,joinquant,jq_208,动量类因子_价格位置_1Y,"($close - Min($close, 250)) / (Max($close, 250) - Min($close, 250))",前复权
+joinquant_factor,joinquant,jq_209,动量类因子_梅斯线_MASS,"Sum(EMA($high - $low, 9) / EMA(EMA($high - $low, 9), 9), 25)",前复权
+joinquant_factor,joinquant,jq_210,动量类因子_空头力道,"($low - EMA($close, 13)) / $close",前复权
+joinquant_factor,joinquant,jq_211,动量类因子_单日价量趋势_VPT,"($close - Ref($close, 1)) / Ref($close, 1) * $vol",前复权
+joinquant_factor,joinquant,jq_212,动量类因子_5日终极指标_TRIX5,"(EMA(EMA(EMA($close, 5), 5), 5) - Ref(EMA(EMA(EMA($close, 5), 5), 5), 1)) / Ref(EMA(EMA(EMA($close, 5), 5), 5), 1) * 100",前复权
+joinquant_factor,joinquant,jq_213,动量类因子_收益率反转排名_1M,"1 - CSRank($close / Ref($close, 20) - 1)",前复权
+joinquant_factor,joinquant,jq_214,动量类因子_15日顺势指标_CCI15,"(($high + $low + $close) / 3 - Mean(($high + $low + $close) / 3, 15)) / (0.015 * Mean(Abs(($high + $low + $close) / 3 - Mean(($high + $low + $close) / 3, 15)), 15))",前复权
+joinquant_factor,joinquant,jq_215,技术指标因子_5日均线比,"Mean($close, 5) / $close",前复权
+joinquant_factor,joinquant,jq_216,技术指标因子_布林上轨比,"(Mean($close, 20) + 2 * Std($close, 20)) / $close",前复权
+joinquant_factor,joinquant,jq_217,技术指标因子_26日EMA比,"EMA($close, 26) / $close",前复权
+joinquant_factor,joinquant,jq_218,技术指标因子_资金流量指标_MFI,"100 - 100 / (1 + Sum(If(($high + $low + $close) / 3 > Ref(($high + $low + $close) / 3, 1), ($high + $low + $close) / 3 * $vol, 0), 14) / Sum(If(($high + $low + $close) / 3 <= Ref(($high + $low + $close) / 3, 1), ($high + $low + $close) / 3 * $vol, 0), 14))",前复权
+joinquant_factor,joinquant,jq_219,技术指标因子_120日EMA比,"EMA($close, 120) / $close",前复权
+joinquant_factor,joinquant,jq_220,技术指标因子_60日均线比,"Mean($close, 60) / $close",前复权
+joinquant_factor,joinquant,jq_221,技术指标因子_120日均线比,"Mean($close, 120) / $close",前复权
+joinquant_factor,joinquant,jq_222,技术指标因子_布林下轨比,"(Mean($close, 20) - 2 * Std($close, 20)) / $close",前复权
+joinquant_factor,joinquant,jq_223,技术指标因子_12日EMA比,"EMA($close, 12) / $close",前复权
+joinquant_factor,joinquant,jq_224,技术指标因子_5日EMA比,"EMA($close, 5) / $close",前复权
+joinquant_factor,joinquant,jq_225,技术指标因子_20日EMA比,"EMA($close, 20) / $close",前复权
+joinquant_factor,joinquant,jq_226,技术指标因子_20日均线比,"Mean($close, 20) / $close",前复权
+joinquant_factor,joinquant,jq_227,技术指标因子_MACD比,"(EMA($close, 12) - EMA($close, 26)) / $close",前复权
+joinquant_factor,joinquant,jq_228,技术指标因子_10日EMA比,"EMA($close, 10) / $close",前复权
+joinquant_factor,joinquant,jq_229,技术指标因子_10日均线比,"Mean($close, 10) / $close",前复权
+joinquant_factor,joinquant,jq_230,技术指标因子_收盘价,$close,前复权
+joinquant_factor,joinquant,jq_236,风险因子 - 风格因子_流动性因子,"0.35 * Log(Sum($turnover_rate_f, 21)) + 0.35 * Log(Mean($turnover_rate_f, 63)) + 0.3 * Log(Mean($turnover_rate_f, 252))",不复权
+joinquant_factor,joinquant,jq_242,风险因子 - 风格因子_对数总市值,Log($total_mv),不复权
+joinquant_factor,joinquant,jq_243,风险因子 - 风格因子_季度平均月换手率,"Log(Mean($turnover_rate_f, 63))",不复权
+joinquant_factor,joinquant,jq_246,风险因子 - 风格因子_月换手率,"Log(Sum($turnover_rate_f, 21))",不复权
+joinquant_factor,joinquant,jq_250,风险因子 - 风格因子_年度平均月换手率,"Log(Mean($turnover_rate_f, 252))",不复权
+joinquant_factor,joinquant,jq_251,风险因子 - 风格因子_日收益率标准差_DASTD,"Std($close / Ref($close, 1) - 1, 252)",前复权
+liquidity,custom,liq_amihud_20,Amihud非流动性20日,"Mean(Abs($close / Ref($close, 1) - 1) / (Log($amount + 1)), 20)",前复权
+liquidity,custom,liq_amt_concentration,成交额集中度,"Max($amount, 5) / (Sum($amount, 5) + 1e-12)",前复权
+liquidity,custom,liq_large_amount_ratio,大额成交占比,"Mean(If($amount > 2 * Mean($amount, 20), $amount, 0), 10) / (Mean($amount, 10) + 1e-12)",前复权
+liquidity,custom,liq_volume_cv_20,成交量变异系数20日,"Std($vol, 20) / (Mean($vol, 20) + 1e-12)",前复权
+liquidity,custom,liq_zero_trade_ratio_20,零交易日占比20,"Mean(If($vol < 1, 1, 0), 20)",前复权
+margin,wide_table,mg_buy_intensity,融资买入强度,$rzmre / ($amount + 1e-12),不复权
+margin,wide_table,mg_buy_intensity_chg5,融资买入强度5日变化,"$rzmre / ($amount + 1e-12) - Ref($rzmre, 5) / (Ref($amount, 5) + 1e-12)",不复权
+margin,wide_table,mg_crowding,融资拥挤度,"$rzye / ($circ_mv + 1e-12) - Mean($rzye / ($circ_mv + 1e-12), 60)",不复权
+margin,wide_table,mg_leverage,融资杠杆率,$rzye / ($circ_mv + 1e-12),不复权
+margin,wide_table,mg_leverage_chg20,融资杠杆率20日变化,"$rzye / ($circ_mv + 1e-12) - Ref($rzye, 20) / (Ref($circ_mv, 20) + 1e-12)",不复权
+margin,wide_table,mg_long_short_chg20,多空比20日变化,"($rzye / ($rqye + 1e-12)) / (Ref($rzye, 20) / (Ref($rqye, 20) + 1e-12) + 1e-12) - 1",不复权
+margin,wide_table,mg_long_short_chg5,多空比5日变化,"$rzye / ($rqye + 1e-12) - Ref($rzye, 5) / (Ref($rqye, 5) + 1e-12)",不复权
+margin,wide_table,mg_long_short_ratio,融资融券多空比,$rzye / ($rqye + 1e-12),不复权
+margin,wide_table,mg_net_buy,融资净买入额,$rzmre - $rzche,不复权
+margin,wide_table,mg_net_buy_chg5,融资净买入额5日变化,"($rzmre - $rzche) / (Ref($rzmre - $rzche, 5) + 1e-12) - 1",不复权
+margin,wide_table,mg_net_buy_ratio,融资净买入占成交比,($rzmre - $rzche) / ($amount + 1e-12),不复权
+margin,wide_table,mg_net_buy_ratio_sum5,融资净买入占比5日累计,"Sum($rzmre - $rzche, 5) / (Sum($amount, 5) + 1e-12)",不复权
+margin,wide_table,mg_net_buy_sum20,融资净买入额20日累计,"Sum($rzmre - $rzche, 20)",不复权
+margin,wide_table,mg_net_buy_sum5,融资净买入额5日累计,"Sum($rzmre - $rzche, 5)",不复权
+margin,wide_table,mg_net_buy_surprise,融资净买入超预期,"($rzmre - $rzche - Mean($rzmre - $rzche, 20)) / (Std($rzmre - $rzche, 20) + 1e-12)",不复权
+margin,wide_table,mg_rqye_chg20,融券余额20日变化,"$rqye / (Ref($rqye, 20) + 1e-12) - 1",不复权
+margin,wide_table,mg_rzye_bias20,融资余额20日偏离,"($rzye - Mean($rzye, 20)) / (Std($rzye, 20) + 1e-12)",不复权
+margin,wide_table,mg_rzye_chg20,融资余额20日变化,"$rzye / (Ref($rzye, 20) + 1e-12) - 1",不复权
+margin,wide_table,mg_rzye_chg5,融资余额5日变化,"$rzye / (Ref($rzye, 5) + 1e-12) - 1",不复权
+margin,wide_table,mg_rzye_price_diverge,融资余额与价格背离,"($rzye / (Ref($rzye, 20) + 1e-12) - 1) - ($close / Ref($close, 20) - 1)",不复权
+margin,wide_table,mg_rzye_raw,融资余额(原始),$rzye,不复权
+margin,wide_table,mg_rzye_slope10,融资余额10日趋势,"Slope($rzye, 10)",不复权
+margin,wide_table,mg_sentiment_composite,融资融券情绪综合,"($rzye / (Ref($rzye, 10) + 1e-12) - 1) - ($rqye / (Ref($rqye, 10) + 1e-12) - 1)",不复权
+margin,wide_table,mg_short_intensity,融券卖出强度,$rqmcl / ($vol + 1e-12),不复权
+margin,wide_table,mg_short_intensity_chg5,融券卖出强度5日变化,"$rqmcl / ($vol + 1e-12) - Ref($rqmcl, 5) / (Ref($vol, 5) + 1e-12)",不复权
+margin,wide_table,mg_short_squeeze,融券余量收缩信号,"(-1) * ($rqyl / (Ref($rqyl, 5) + 1e-12) - 1)",不复权
+microstructure,custom,ms_body_ratio,实体占比,Abs($close - $open) / ($high - $low + 1e-12),前复权
+microstructure,custom,ms_gap_fill_speed,跳空回补速度,"Mean(If(($open - Ref($close, 1)) * ($close - $open) < 0, 1, 0), 10)",前复权
+microstructure,custom,ms_intraday_pos,日内收盘位置,($close - $low) / ($high - $low + 1e-12),前复权
+microstructure,custom,ms_lower_shadow,下影线占比,"(If($open < $close, $open, $close) - $low) / ($high - $low + 1e-12)",前复权
+microstructure,custom,ms_open_gap,开盘跳空,"($open - Ref($close, 1)) / (Ref($close, 1) + 1e-12)",前复权
+microstructure,custom,ms_upper_shadow,上影线占比,"($high - Greater($open, $close)) / ($high - $low + 1e-12)",前复权
+nb_margin_cross,wide_table,capital_flow_momentum,资金流合力动量,"Slope($hk_hold_ratio, 10) / (Std($hk_hold_ratio, 10) + 1e-12) + Slope($rzye, 10) / (Std($rzye, 10) + 1e-12)",不复权
+nb_margin_cross,wide_table,nb_margin_price_triple_diverge,三重背离(北向+融资+价格),"(($hk_hold_ratio / (Ref($hk_hold_ratio, 20) + 1e-12) - 1) + ($rzye / (Ref($rzye, 20) + 1e-12) - 1)) / 2 - ($close / Ref($close, 20) - 1)",不复权
+nb_margin_cross,wide_table,smart_money_consensus,聪明钱共识(北向+融资),"($hk_hold_ratio / (Ref($hk_hold_ratio, 10) + 1e-12) - 1) + ($rzye / (Ref($rzye, 10) + 1e-12) - 1)",不复权
+nb_margin_cross,wide_table,smart_vs_crowd,聪明钱vs散户(北向vs融资),"($hk_hold_ratio / (Ref($hk_hold_ratio, 10) + 1e-12) - 1) - ($rzye / (Ref($rzye, 10) + 1e-12) - 1)",不复权
+northbound,wide_table,nb_hold_ratio_accel,北向增持加速度,"($hk_hold_ratio - Ref($hk_hold_ratio, 5)) - (Ref($hk_hold_ratio, 5) - Ref($hk_hold_ratio, 10))",不复权
+northbound,wide_table,nb_hold_ratio_bias20,北向持股占比20日偏离,"($hk_hold_ratio - Mean($hk_hold_ratio, 20)) / (Std($hk_hold_ratio, 20) + 1e-12)",不复权
+northbound,wide_table,nb_hold_ratio_chg20,北向持股占比20日变化,"$hk_hold_ratio / (Ref($hk_hold_ratio, 20) + 1e-12) - 1",不复权
+northbound,wide_table,nb_hold_ratio_chg5,北向持股占比5日变化,"$hk_hold_ratio / (Ref($hk_hold_ratio, 5) + 1e-12) - 1",不复权
+northbound,wide_table,nb_hold_ratio_max20_dist,北向持股占比距20日高点,"$hk_hold_ratio / (Max($hk_hold_ratio, 20) + 1e-12) - 1",不复权
+northbound,wide_table,nb_hold_ratio_mom20,北向持股占比20日动量,"$hk_hold_ratio - Ref($hk_hold_ratio, 20)",不复权
+northbound,wide_table,nb_hold_ratio_mom5,北向持股占比5日动量,"$hk_hold_ratio - Ref($hk_hold_ratio, 5)",不复权
+northbound,wide_table,nb_hold_ratio_quantile20,北向持股占比20日分位,"Rank($hk_hold_ratio, 20)",不复权
+northbound,wide_table,nb_hold_ratio_raw,北向持股占比(原始),$hk_hold_ratio,不复权
+northbound,wide_table,nb_hold_ratio_slope10,北向持股占比10日趋势,"Slope($hk_hold_ratio, 10)",不复权
+northbound,wide_table,nb_hold_ratio_slope20,北向持股占比20日趋势,"Slope($hk_hold_ratio, 20)",不复权
+northbound,wide_table,nb_hold_vol_bias20,北向持股数量20日偏离,"($hk_hold_vol - Mean($hk_hold_vol, 20)) / (Std($hk_hold_vol, 20) + 1e-12)",不复权
+northbound,wide_table,nb_hold_vol_chg20,北向持股数量20日变化,"$hk_hold_vol / (Ref($hk_hold_vol, 20) + 1e-12) - 1",不复权
+northbound,wide_table,nb_hold_vol_chg5,北向持股数量5日变化,"$hk_hold_vol / (Ref($hk_hold_vol, 5) + 1e-12) - 1",不复权
+northbound,wide_table,nb_hold_vol_std20,北向持股数量20日波动,"Std($hk_hold_vol, 20) / (Mean($hk_hold_vol, 20) + 1e-12)",不复权
+northbound,wide_table,nb_price_corr20,北向持股与价格20日相关,"Corr($hk_hold_ratio, $close, 20)",不复权
+northbound,wide_table,nb_price_diverge20,北向资金与价格20日背离,"($hk_hold_ratio / (Ref($hk_hold_ratio, 20) + 1e-12) - 1) - ($close / Ref($close, 20) - 1)",不复权
+northbound,wide_table,nb_price_diverge5,北向资金与价格5日背离,"($hk_hold_ratio / (Ref($hk_hold_ratio, 5) + 1e-12) - 1) - ($close / Ref($close, 5) - 1)",不复权
+northbound,wide_table,nb_surprise,北向超预期增持,"($hk_hold_ratio - Ref($hk_hold_ratio, 1)) / (Std($hk_hold_ratio - Ref($hk_hold_ratio, 1), 20) + 1e-12)",不复权
+northbound,wide_table,nb_vol_corr20,北向持股与成交量20日相关,"Corr($hk_hold_vol, $vol, 20)",不复权
+price_volume,custom,pv_corr_ret_vol_10,收益量相关性10日,"Corr($close / Ref($close, 1) - 1, $vol, 10)",前复权
+price_volume,custom,pv_obv_slope,OBV斜率10日,"Slope(Sum(If($close > Ref($close, 1), $vol, 0) - If($close < Ref($close, 1), $vol, 0), 1), 10)",前复权
+price_volume,custom,pv_price_vol_diverge,量价背离,"($close / Ref($close, 5) - 1) - ($vol / Ref($vol, 5) - 1)",前复权
+price_volume,custom,pv_smart_money,聪明资金指标,"Corr($close, Ref($vol, 1), 10)",前复权
+price_volume,custom,pv_vol_breakout,成交量突破,"$vol / (Max($vol, 20) + 1e-12)",前复权
+price_volume,custom,pv_vol_price_trend,量价趋势相关20日,"Corr(Mean($close, 5), Mean($vol, 5), 20)",前复权
+qlib_builtin,qlib_builtin,qb_amp_mean_10,10日振幅均值,"Mean($high / $low - 1, 10)",前复权
+qlib_builtin,qlib_builtin,qb_amp_mean_20,20日振幅均值,"Mean($high / $low - 1, 20)",前复权
+qlib_builtin,qlib_builtin,qb_amt_trend_20,20日成交额趋势,"Slope(Mean($close * $vol, 1), 20)",前复权
+qlib_builtin,qlib_builtin,qb_boll_pos_20,布林带位置20日,"($close - Mean($close, 20)) / (Std($close, 20) + 1e-12)",前复权
+qlib_builtin,qlib_builtin,qb_corr_px_vol_20,20日价量相关,"Corr($close, $vol, 20)",前复权
+qlib_builtin,qlib_builtin,qb_dist_high_20,相对20日最高价偏离,"$close / Max($high, 20) - 1",前复权
+qlib_builtin,qlib_builtin,qb_dist_low_20,相对20日最低价偏离,"$close / Min($low, 20) - 1",前复权
+qlib_builtin,qlib_builtin,qb_div_px_vol_20,20日量价背离,"$close / Ref($close, 20) - 1 - (Mean($vol, 5) / Mean($vol, 20) - 1)",前复权
+qlib_builtin,qlib_builtin,qb_ma_bias_20,相对20日均线偏离,"$close / Mean($close, 20) - 1",前复权
+qlib_builtin,qlib_builtin,qb_ma_bias_60,相对60日均线偏离,"$close / Mean($close, 60) - 1",前复权
+qlib_builtin,qlib_builtin,qb_macd_hist,MACD柱值,"EMA($close, 12) - EMA($close, 26) - EMA(EMA($close, 12) - EMA($close, 26), 9)",前复权
+qlib_builtin,qlib_builtin,qb_mom_10,10日收益率动量,"$close / Ref($close, 10) - 1",前复权
+qlib_builtin,qlib_builtin,qb_mom_5,5日收益率动量,"$close / Ref($close, 5) - 1",前复权
+qlib_builtin,qlib_builtin,qb_mom_60,60日收益率动量,"$close / Ref($close, 60) - 1",前复权
+qlib_builtin,qlib_builtin,qb_rsi_14,RSI14,"100 - 100 / (1 + Mean(Greater($close - Ref($close, 1), 0), 14) / (Mean(Abs($close - Ref($close, 1)), 14) + 1e-12))",前复权
+qlib_builtin,qlib_builtin,qb_turn_mean_20,20日换手率均值,"Mean($turn_over, 20)",不复权
+qlib_builtin,qlib_builtin,qb_turn_mean_5,5日换手率均值,"Mean($turn_over, 5)",不复权
+qlib_builtin,qlib_builtin,qb_turn_std_20,20日换手率波动率,"Std($turn_over, 20)",不复权
+qlib_builtin,qlib_builtin,qb_vol_ret_60,60日收益波动率,"Std($close / Ref($close, 1) - 1, 60)",前复权
+qlib_builtin,qlib_builtin,qb_volratio_5_20,5日量比相对20日,"Mean($vol, 5) / Mean($vol, 20)",前复权
+rdexp,wide_table,rd_growth_20,研发费用20日增速,"$rd_exp / (Ref($rd_exp, 20) + 1e-12) - 1",不复权
+rdexp,wide_table,rd_growth_60,研发费用60日增速,"$rd_exp / (Ref($rd_exp, 60) + 1e-12) - 1",不复权
+rdexp,wide_table,rd_intensity,研发投入强度,$rd_exp / ($total_mv + 1e-12),不复权
+rdexp,wide_table,rd_intensity_bias60,研发投入强度60日偏离,"($rd_exp / ($total_mv + 1e-12) - Mean($rd_exp / ($total_mv + 1e-12), 60)) / (Std($rd_exp / ($total_mv + 1e-12), 60) + 1e-12)",不复权
+rdexp,wide_table,rd_intensity_chg20,研发投入强度20日变化,"$rd_exp / ($total_mv + 1e-12) - Ref($rd_exp, 20) / (Ref($total_mv, 20) + 1e-12)",不复权
+rdexp,wide_table,rd_momentum,研发费用动量,"Slope($rd_exp, 20) / (Mean($rd_exp, 20) + 1e-12)",不复权
+rdexp,wide_table,rd_to_revenue_proxy,研发占营收代理,$rd_exp / ($amount * 252 + 1e-12),不复权
+risk_model,custom,rm_beta_120,Beta_120日,"Slope($close / Ref($close, 1) - 1, 120)",前复权
+risk_model,custom,rm_beta_20,Beta_20日,"Slope($close / Ref($close, 1) - 1, 20)",前复权
+risk_model,custom,rm_beta_252,Beta_252日,"Slope($close / Ref($close, 1) - 1, 252)",前复权
+risk_model,custom,rm_beta_60,Beta_60日,"Slope($close / Ref($close, 1) - 1, 60)",前复权
+risk_model,custom,rm_cmra_12m,累计收益振幅_12月,"Max($close / Ref($close, 21) - 1, 252) - Min($close / Ref($close, 21) - 1, 252)",前复权
+risk_model,custom,rm_cmra_6m,累计收益振幅_6月,"Max($close / Ref($close, 21) - 1, 126) - Min($close / Ref($close, 21) - 1, 126)",前复权
+risk_model,custom,rm_composite_risk,综合风险因子,"0.5 * Std($close / Ref($close, 1) - 1, 252) + 0.35 * (Max($close / Ref($close, 21) - 1, 252) - Min($close / Ref($close, 21) - 1, 252)) + 0.15 * Std($close / Ref($close, 1) - 1 - Mean($close / Ref($close, 1) - 1, 252), 252)",前复权
+risk_model,custom,rm_downside_vol_20,下行波动率_20日,"Std(If($close / Ref($close, 1) - 1 < 0, $close / Ref($close, 1) - 1, 0), 20)",前复权
+risk_model,custom,rm_downside_vol_60,下行波动率_60日,"Std(If($close / Ref($close, 1) - 1 < 0, $close / Ref($close, 1) - 1, 0), 60)",前复权
+risk_model,custom,rm_hsigma_120,残差波动率_120日,"Std($close / Ref($close, 1) - 1 - Mean($close / Ref($close, 1) - 1, 120), 120)",前复权
+risk_model,custom,rm_hsigma_20,残差波动率_20日,"Std($close / Ref($close, 1) - 1 - Mean($close / Ref($close, 1) - 1, 20), 20)",前复权
+risk_model,custom,rm_hsigma_252,残差波动率_252日,"Std($close / Ref($close, 1) - 1 - Mean($close / Ref($close, 1) - 1, 252), 252)",前复权
+risk_model,custom,rm_hsigma_60,残差波动率_60日,"Std($close / Ref($close, 1) - 1 - Mean($close / Ref($close, 1) - 1, 60), 60)",前复权
+risk_model,custom,rm_kurt_120,峰度_120日,"Mean(($close / Ref($close, 1) - 1 - Mean($close / Ref($close, 1) - 1, 120)) ** 4, 120) / (Std($close / Ref($close, 1) - 1, 120) ** 4 + 1e-12) - 3",前复权
+risk_model,custom,rm_kurt_20,峰度_20日,"Mean(($close / Ref($close, 1) - 1 - Mean($close / Ref($close, 1) - 1, 20)) ** 4, 20) / (Std($close / Ref($close, 1) - 1, 20) ** 4 + 1e-12) - 3",前复权
+risk_model,custom,rm_kurt_60,峰度_60日,"Mean(($close / Ref($close, 1) - 1 - Mean($close / Ref($close, 1) - 1, 60)) ** 4, 60) / (Std($close / Ref($close, 1) - 1, 60) ** 4 + 1e-12) - 3",前复权
+risk_model,custom,rm_max_drawdown_20,最大回撤_20日,"($close - Max($high, 20)) / (Max($high, 20) + 1e-12)",前复权
+risk_model,custom,rm_max_drawdown_60,最大回撤_60日,"($close - Max($high, 60)) / (Max($high, 60) + 1e-12)",前复权
+risk_model,custom,rm_skew_120,偏度_120日,"Mean(($close / Ref($close, 1) - 1 - Mean($close / Ref($close, 1) - 1, 120)) ** 3, 120) / (Std($close / Ref($close, 1) - 1, 120) ** 3 + 1e-12)",前复权
+risk_model,custom,rm_skew_20,偏度_20日,"Mean(($close / Ref($close, 1) - 1 - Mean($close / Ref($close, 1) - 1, 20)) ** 3, 20) / (Std($close / Ref($close, 1) - 1, 20) ** 3 + 1e-12)",前复权
+risk_model,custom,rm_skew_60,偏度_60日,"Mean(($close / Ref($close, 1) - 1 - Mean($close / Ref($close, 1) - 1, 60)) ** 3, 60) / (Std($close / Ref($close, 1) - 1, 60) ** 3 + 1e-12)",前复权
+risk_model,custom,rm_tail_risk_20,尾部风险_20日,"Quantile($close / Ref($close, 1) - 1, 20, 0.05)",前复权
+risk_model,custom,rm_tail_risk_60,尾部风险_60日,"Quantile($close / Ref($close, 1) - 1, 60, 0.05)",前复权
+risk_model,custom,rm_updown_vol_ratio_20,上下行波动比_20日,"Std(If($close / Ref($close, 1) - 1 > 0, $close / Ref($close, 1) - 1, 0), 20) / (Std(If($close / Ref($close, 1) - 1 < 0, $close / Ref($close, 1) - 1, 0), 20) + 1e-12)",前复权
+risk_model,custom,rm_updown_vol_ratio_60,上下行波动比_60日,"Std(If($close / Ref($close, 1) - 1 > 0, $close / Ref($close, 1) - 1, 0), 60) / (Std(If($close / Ref($close, 1) - 1 < 0, $close / Ref($close, 1) - 1, 0), 60) + 1e-12)",前复权
+risk_model,custom,rm_vol_of_vol_60,波动率的波动率_60日,"Std(Std($close / Ref($close, 1) - 1, 20), 60)",前复权
+risk_model,custom,rm_vol_regime_chg,波动率状态切换,"Std($close / Ref($close, 1) - 1, 10) / (Std($close / Ref($close, 1) - 1, 60) + 1e-12)",前复权
+risk_model,custom,rm_volatility_120,波动率_120日,"Std($close / Ref($close, 1) - 1, 120)",前复权
+risk_model,custom,rm_volatility_20,波动率_20日,"Std($close / Ref($close, 1) - 1, 20)",前复权
+risk_model,custom,rm_volatility_252,波动率_252日,"Std($close / Ref($close, 1) - 1, 252)",前复权
+risk_model,custom,rm_volatility_60,波动率_60日,"Std($close / Ref($close, 1) - 1, 60)",前复权
+statistics,custom,stat_consecutive_up,连续上涨天数5日,"Sum(If($close > Ref($close, 1), 1, 0), 5)",前复权
+statistics,custom,stat_max_drawdown_10,最大回撤10日,"($close - Max($high, 10)) / (Max($high, 10) + 1e-12)",前复权
+statistics,custom,stat_recovery_speed,低点回复速度,"$close / Min($low, 10) - 1",前复权
+statistics,custom,stat_ret_autocorr_5,收益率自相关5日,"Corr($close / Ref($close, 1) - 1, Ref($close / Ref($close, 1) - 1, 1), 5)",前复权
+statistics,custom,stat_ret_kurt_20,收益率峰度20日,"Kurt($close / Ref($close, 1) - 1, 20)",前复权
+statistics,custom,stat_updown_ratio,上涨比率20日,"Mean(If($close > Ref($close, 1), 1, 0), 20)",前复权
+tech_indicator,joinquant,ti_002,超买超卖型_BIAS6_乖离率,"($close - Mean($close, 6)) / Mean($close, 6) * 100",前复权
+tech_indicator,joinquant,ti_003,超买超卖型_BIAS12_乖离率,"($close - Mean($close, 12)) / Mean($close, 12) * 100",前复权
+tech_indicator,joinquant,ti_004,超买超卖型_BIAS24_乖离率,"($close - Mean($close, 24)) / Mean($close, 24) * 100",前复权
+tech_indicator,joinquant,ti_005,超买超卖型_CCI_商品路径指标,"(($high + $low + $close) / 3 - Mean(($high + $low + $close) / 3, 14)) / (0.015 * Mean(Abs(($high + $low + $close) / 3 - Mean(($high + $low + $close) / 3, 14)), 14))",前复权
+tech_indicator,joinquant,ti_006,超买超卖型_KDJ_RSV,"($close - Min($low, 9)) / (Max($high, 9) - Min($low, 9)) * 100",前复权
+tech_indicator,joinquant,ti_008,超买超卖型_MTM_动量线,"$close - Ref($close, 14)",前复权
+tech_indicator,joinquant,ti_010,超买超卖型_RSI6_相对强弱指标,"EMA(Greater($close - Ref($close, 1), 0), 6) / EMA(Abs($close - Ref($close, 1)), 6) * 100",前复权
+tech_indicator,joinquant,ti_011,超买超卖型_RSI12_相对强弱指标,"EMA(Greater($close - Ref($close, 1), 0), 12) / EMA(Abs($close - Ref($close, 1)), 12) * 100",前复权
+tech_indicator,joinquant,ti_012,超买超卖型_RSI24_相对强弱指标,"EMA(Greater($close - Ref($close, 1), 0), 24) / EMA(Abs($close - Ref($close, 1)), 24) * 100",前复权
+tech_indicator,joinquant,ti_013,超买超卖型_OSC_变动速率线,"$close / Mean($close, 20) * 100",前复权
+tech_indicator,joinquant,ti_014,超买超卖型_UDL_引力线,"(Mean($close, 3) + Mean($close, 5) + Mean($close, 10) + Mean($close, 20)) / 4",前复权
+tech_indicator,joinquant,ti_015,超买超卖型_WR_威廉指标,"(Max($high, 10) - $close) / (Max($high, 10) - Min($low, 10)) * 100",前复权
+tech_indicator,joinquant,ti_016,超买超卖型_ADTM_动态买卖气指标,"(Sum(If($open > Ref($open, 1), Greater($high - $open, $open - Ref($open, 1)), 0), 23) - Sum(If($open < Ref($open, 1), Greater($open - $low, $open - Ref($open, 1)), 0), 23)) / Greater(Sum(If($open > Ref($open, 1), Greater($high - $open, $open - Ref($open, 1)), 0), 23), Sum(If($open < Ref($open, 1), Greater($open - $low, $open - Ref($open, 1)), 0), 23))",前复权
+tech_indicator,joinquant,ti_017,趋势型_DMA_平均差,"Mean($close, 10) - Mean($close, 50)",前复权
+tech_indicator,joinquant,ti_018,趋势型_DPO_区间震荡线,"$close - Ref(Mean($close, 20), 11)",前复权
+tech_indicator,joinquant,ti_019,趋势型_EMV_简易波动指标,"Mean((($high + $low) / 2 - (Ref($high, 1) + Ref($low, 1)) / 2) / ($vol / ($high - $low)), 14)",前复权
+tech_indicator,joinquant,ti_020,趋势型_MACD_DIF,"EMA($close, 12) - EMA($close, 26)",前复权
+tech_indicator,joinquant,ti_021,趋势型_MACD_DEA,"EMA(EMA($close, 12) - EMA($close, 26), 9)",前复权
+tech_indicator,joinquant,ti_022,趋势型_MACD_HIST,"(EMA($close, 12) - EMA($close, 26)) - EMA(EMA($close, 12) - EMA($close, 26), 9)",前复权
+tech_indicator,joinquant,ti_023,趋势型_TRIX_三重指数平滑,"(EMA(EMA(EMA($close, 12), 12), 12) - Ref(EMA(EMA(EMA($close, 12), 12), 12), 1)) / Ref(EMA(EMA(EMA($close, 12), 12), 12), 1) * 100",前复权
+tech_indicator,joinquant,ti_024,趋势型_UOS_终极指标,"(Sum($close - Less($low, Ref($close, 1)), 7) / Sum(Greater($high, Ref($close, 1)) - Less($low, Ref($close, 1)), 7) * 4 + Sum($close - Less($low, Ref($close, 1)), 14) / Sum(Greater($high, Ref($close, 1)) - Less($low, Ref($close, 1)), 14) * 2 + Sum($close - Less($low, Ref($close, 1)), 28) / Sum(Greater($high, Ref($close, 1)) - Less($low, Ref($close, 1)), 28)) / 7 * 100",前复权
+tech_indicator,joinquant,ti_026,趋势型_WVAD_威廉变异离散量,"Sum(($close - $open) / ($high - $low) * $vol, 24)",前复权
+tech_indicator,joinquant,ti_027,趋势型_CHO_佳庆指标,"EMA((($close - $low) - ($high - $close)) / ($high - $low) * $vol, 10) - EMA((($close - $low) - ($high - $close)) / ($high - $low) * $vol, 20)",前复权
+tech_indicator,joinquant,ti_030,能量型_CR_带状能量线,"Sum(Greater($high - Ref(($high + $low + $close) / 3, 1), 0), 26) / Sum(Greater(Ref(($high + $low + $close) / 3, 1) - $low, 0), 26) * 100",前复权
+tech_indicator,joinquant,ti_032,能量型_PCNT_幅度比,"($close - Ref($close, 1)) / Ref($close, 1) * 100",前复权
+tech_indicator,joinquant,ti_035,成交量型_AMO_成交金额,$amount,前复权
+tech_indicator,joinquant,ti_036,成交量型_VOL_成交量,$vol,前复权
+tech_indicator,joinquant,ti_037,成交量型_LB_量比,"$vol / Mean($vol, 5)",前复权
+tech_indicator,joinquant,ti_038,成交量型_VRSI6_相对强弱量,"EMA(Greater($vol - Ref($vol, 1), 0), 6) / EMA(Abs($vol - Ref($vol, 1)), 6) * 100",前复权
+tech_indicator,joinquant,ti_039,成交量型_VRSI12_相对强弱量,"EMA(Greater($vol - Ref($vol, 1), 0), 12) / EMA(Abs($vol - Ref($vol, 1)), 12) * 100",前复权
+tech_indicator,joinquant,ti_040,成交量型_VRSI24_相对强弱量,"EMA(Greater($vol - Ref($vol, 1), 0), 24) / EMA(Abs($vol - Ref($vol, 1)), 24) * 100",前复权
+tech_indicator,joinquant,ti_041,成交量型_HSL_换手率,$vol / $close,前复权
+tech_indicator,joinquant,ti_042,均线型_BBI_多空均线,"(Mean($close, 3) + Mean($close, 6) + Mean($close, 12) + Mean($close, 24)) / 4",前复权
+tech_indicator,joinquant,ti_043,均线型_EXPMA12_指数平均线,"EMA($close, 12)",前复权
+tech_indicator,joinquant,ti_044,均线型_EXPMA50_指数平均线,"EMA($close, 50)",前复权
+tech_indicator,joinquant,ti_045,均线型_MA5_均线,"Mean($close, 5)",前复权
+tech_indicator,joinquant,ti_046,均线型_MA10_均线,"Mean($close, 10)",前复权
+tech_indicator,joinquant,ti_047,均线型_MA20_均线,"Mean($close, 20)",前复权
+tech_indicator,joinquant,ti_048,均线型_MA60_均线,"Mean($close, 60)",前复权
+tech_indicator,joinquant,ti_049,均线型_HMA_高价平均线,"Mean($high, 12)",前复权
+tech_indicator,joinquant,ti_050,均线型_LMA_低价平均线,"Mean($low, 12)",前复权
+tech_indicator,joinquant,ti_051,均线型_EMA_指数移动平均,"EMA($close, 30)",前复权
+tech_indicator,joinquant,ti_053,路径型_BOLL_UP,"Mean($close, 20) + 2 * Std($close, 20)",前复权
+tech_indicator,joinquant,ti_054,路径型_BOLL_DN,"Mean($close, 20) - 2 * Std($close, 20)",前复权
+tech_indicator,joinquant,ti_055,路径型_BOLL_WIDTH,"4 * Std($close, 20) / Mean($close, 20)",前复权
+tech_indicator,joinquant,ti_056,路径型_BOLL_PCT_B,"($close - (Mean($close, 20) - 2 * Std($close, 20))) / (4 * Std($close, 20))",前复权
+tech_indicator,joinquant,ti_057,路径型_ENE_UP_轨道线上轨,"Mean($close, 25) * 1.06",前复权
+tech_indicator,joinquant,ti_058,路径型_ENE_MID_轨道线中轨,"Mean($close, 25)",前复权
+tech_indicator,joinquant,ti_059,路径型_ENE_DN_轨道线下轨,"Mean($close, 25) * 0.94",前复权
+tech_indicator,joinquant,ti_060,路径型_MIKE_WR_初级压力,"($high + $low + $close) / 3 + (($high + $low + $close) / 3 - Min($low, 10))",前复权
+tech_indicator,joinquant,ti_061,路径型_MIKE_WS_初级支撑,"($high + $low + $close) / 3 - (Max($high, 10) - ($high + $low + $close) / 3)",前复权
+tech_indicator,joinquant,ti_064,超买超卖型_NATR_归一化真实波幅,"Mean(Greater(Greater($high - $low, Abs($high - Ref($close, 1))), Abs($low - Ref($close, 1))), 14) / $close * 100",前复权
+tech_indicator,joinquant,ti_065,超买超卖型_BIAS_ABS20,"Abs($close - Mean($close, 20)) / Mean($close, 20) * 100",前复权
+tech_indicator,joinquant,ti_066,超买超卖型_INTRA_POS_日内位置,($close - $low) / ($high - $low),前复权
+tech_indicator,joinquant,ti_067,能量型_INTRA_RANGE_日内波幅,($high - $low) / $close,前复权
+tech_indicator,joinquant,ti_068,成交量型_VP_CORR_量价相关,"Corr($close, $vol, 10)",前复权
+tech_indicator,joinquant,ti_069,成交量型_AMO_BIAS_成交额偏离,"($amount - Mean($amount, 20)) / Mean($amount, 20)",前复权
+tech_indicator,joinquant,ti_070,能量型_CV20_变异系数,"Std($close, 20) / Mean($close, 20)",前复权
+tech_indicator,joinquant,ti_071,趋势型_MTM_ACC_动量加速,"($close - Ref($close, 5)) - Ref($close - Ref($close, 5), 5)",前复权
+tech_indicator,joinquant,ti_072,均线型_MA_ALIGN_均线排列,"If(Mean($close, 5) > Mean($close, 10), 1, 0) + If(Mean($close, 10) > Mean($close, 20), 1, 0) + If(Mean($close, 20) > Mean($close, 60), 1, 0)",前复权
+tech_indicator,joinquant,ti_073,路径型_BOLL_ZSCORE,"($close - Mean($close, 20)) / Std($close, 20)",前复权
+tech_indicator,joinquant,ti_074,成交量型_VOL_SURGE_量能突破,"$vol / Mean($vol, 20)",前复权
+wide_cashflow_leverage,wide_table,wide_bps_bias20,每股净资产20日偏离,"($bps - Mean($bps, 20)) / (Std($bps, 20) + 1e-12)",不复权
+wide_cashflow_leverage,wide_table,wide_bps_chg20,每股净资产20日变化,"$bps / (Ref($bps, 20) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_bps_chg5,每股净资产5日变化,"$bps / (Ref($bps, 5) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_bps_chg60,每股净资产60日变化,"$bps / (Ref($bps, 60) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_bps_raw,每股净资产(原始),$bps,不复权
+wide_cashflow_leverage,wide_table,wide_current_ratio_bias20,流动比率20日偏离,"($current_ratio - Mean($current_ratio, 20)) / (Std($current_ratio, 20) + 1e-12)",不复权
+wide_cashflow_leverage,wide_table,wide_current_ratio_chg20,流动比率20日变化,"$current_ratio / (Ref($current_ratio, 20) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_current_ratio_chg5,流动比率5日变化,"$current_ratio / (Ref($current_ratio, 5) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_current_ratio_chg60,流动比率60日变化,"$current_ratio / (Ref($current_ratio, 60) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_current_ratio_raw,流动比率(原始),$current_ratio,不复权
+wide_cashflow_leverage,wide_table,wide_debt_to_assets_bias20,资产负债率20日偏离,"($debt_to_assets - Mean($debt_to_assets, 20)) / (Std($debt_to_assets, 20) + 1e-12)",不复权
+wide_cashflow_leverage,wide_table,wide_debt_to_assets_chg20,资产负债率20日变化,"$debt_to_assets / (Ref($debt_to_assets, 20) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_debt_to_assets_chg5,资产负债率5日变化,"$debt_to_assets / (Ref($debt_to_assets, 5) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_debt_to_assets_chg60,资产负债率60日变化,"$debt_to_assets / (Ref($debt_to_assets, 60) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_debt_to_assets_raw,资产负债率(原始),$debt_to_assets,不复权
+wide_cashflow_leverage,wide_table,wide_eps_bias20,每股收益20日偏离,"($eps - Mean($eps, 20)) / (Std($eps, 20) + 1e-12)",不复权
+wide_cashflow_leverage,wide_table,wide_eps_chg20,每股收益20日变化,"$eps / (Ref($eps, 20) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_eps_chg5,每股收益5日变化,"$eps / (Ref($eps, 5) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_eps_chg60,每股收益60日变化,"$eps / (Ref($eps, 60) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_eps_raw,每股收益(原始),$eps,不复权
+wide_cashflow_leverage,wide_table,wide_ocf_to_or_bias20,经营现金流/营收20日偏离,"($ocf_to_or - Mean($ocf_to_or, 20)) / (Std($ocf_to_or, 20) + 1e-12)",不复权
+wide_cashflow_leverage,wide_table,wide_ocf_to_or_chg20,经营现金流/营收20日变化,"$ocf_to_or / (Ref($ocf_to_or, 20) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_ocf_to_or_chg5,经营现金流/营收5日变化,"$ocf_to_or / (Ref($ocf_to_or, 5) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_ocf_to_or_chg60,经营现金流/营收60日变化,"$ocf_to_or / (Ref($ocf_to_or, 60) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_ocf_to_or_raw,经营现金流/营收(原始),$ocf_to_or,不复权
+wide_cashflow_leverage,wide_table,wide_ocf_to_profit_bias20,经营现金流/利润20日偏离,"($ocf_to_profit - Mean($ocf_to_profit, 20)) / (Std($ocf_to_profit, 20) + 1e-12)",不复权
+wide_cashflow_leverage,wide_table,wide_ocf_to_profit_chg20,经营现金流/利润20日变化,"$ocf_to_profit / (Ref($ocf_to_profit, 20) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_ocf_to_profit_chg5,经营现金流/利润5日变化,"$ocf_to_profit / (Ref($ocf_to_profit, 5) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_ocf_to_profit_chg60,经营现金流/利润60日变化,"$ocf_to_profit / (Ref($ocf_to_profit, 60) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_ocf_to_profit_raw,经营现金流/利润(原始),$ocf_to_profit,不复权
+wide_cashflow_leverage,wide_table,wide_ocfps_bias20,每股经营现金流20日偏离,"($ocfps - Mean($ocfps, 20)) / (Std($ocfps, 20) + 1e-12)",不复权
+wide_cashflow_leverage,wide_table,wide_ocfps_chg20,每股经营现金流20日变化,"$ocfps / (Ref($ocfps, 20) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_ocfps_chg5,每股经营现金流5日变化,"$ocfps / (Ref($ocfps, 5) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_ocfps_chg60,每股经营现金流60日变化,"$ocfps / (Ref($ocfps, 60) + 1e-12) - 1",不复权
+wide_cashflow_leverage,wide_table,wide_ocfps_raw,每股经营现金流(原始),$ocfps,不复权
+wide_chip,wide_table,wide_cost_50pct_bias20,50%成本20日偏离,"($cost_50pct - Mean($cost_50pct, 20)) / (Std($cost_50pct, 20) + 1e-12)",不复权
+wide_chip,wide_table,wide_cost_50pct_chg20,50%成本20日变化,"$cost_50pct / (Ref($cost_50pct, 20) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_cost_50pct_chg5,50%成本5日变化,"$cost_50pct / (Ref($cost_50pct, 5) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_cost_50pct_chg60,50%成本60日变化,"$cost_50pct / (Ref($cost_50pct, 60) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_cost_50pct_raw,50%成本(原始),$cost_50pct,不复权
+wide_chip,wide_table,wide_cost_5pct_bias20,5%成本20日偏离,"($cost_5pct - Mean($cost_5pct, 20)) / (Std($cost_5pct, 20) + 1e-12)",不复权
+wide_chip,wide_table,wide_cost_5pct_chg20,5%成本20日变化,"$cost_5pct / (Ref($cost_5pct, 20) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_cost_5pct_chg5,5%成本5日变化,"$cost_5pct / (Ref($cost_5pct, 5) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_cost_5pct_chg60,5%成本60日变化,"$cost_5pct / (Ref($cost_5pct, 60) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_cost_5pct_raw,5%成本(原始),$cost_5pct,不复权
+wide_chip,wide_table,wide_cost_95pct_bias20,95%成本20日偏离,"($cost_95pct - Mean($cost_95pct, 20)) / (Std($cost_95pct, 20) + 1e-12)",不复权
+wide_chip,wide_table,wide_cost_95pct_chg20,95%成本20日变化,"$cost_95pct / (Ref($cost_95pct, 20) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_cost_95pct_chg5,95%成本5日变化,"$cost_95pct / (Ref($cost_95pct, 5) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_cost_95pct_chg60,95%成本60日变化,"$cost_95pct / (Ref($cost_95pct, 60) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_cost_95pct_raw,95%成本(原始),$cost_95pct,不复权
+wide_chip,wide_table,wide_weight_avg_cost_bias20,加权成本20日偏离,"($weight_avg_cost - Mean($weight_avg_cost, 20)) / (Std($weight_avg_cost, 20) + 1e-12)",不复权
+wide_chip,wide_table,wide_weight_avg_cost_chg20,加权成本20日变化,"$weight_avg_cost / (Ref($weight_avg_cost, 20) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_weight_avg_cost_chg5,加权成本5日变化,"$weight_avg_cost / (Ref($weight_avg_cost, 5) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_weight_avg_cost_chg60,加权成本60日变化,"$weight_avg_cost / (Ref($weight_avg_cost, 60) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_weight_avg_cost_raw,加权成本(原始),$weight_avg_cost,不复权
+wide_chip,wide_table,wide_winner_rate_bias20,获利比例20日偏离,"($winner_rate - Mean($winner_rate, 20)) / (Std($winner_rate, 20) + 1e-12)",不复权
+wide_chip,wide_table,wide_winner_rate_chg20,获利比例20日变化,"$winner_rate / (Ref($winner_rate, 20) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_winner_rate_chg5,获利比例5日变化,"$winner_rate / (Ref($winner_rate, 5) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_winner_rate_chg60,获利比例60日变化,"$winner_rate / (Ref($winner_rate, 60) + 1e-12) - 1",不复权
+wide_chip,wide_table,wide_winner_rate_raw,获利比例(原始),$winner_rate,不复权
+wide_cross,wide_table,wide_attack_strength,攻击强度,$attack * $strength,不复权
+wide_cross,wide_table,wide_buy_sell_diff_norm,净买入归一化,($buying - $selling) / ($buying + $selling + 1e-12),不复权
+wide_cross,wide_table,wide_buy_sell_ratio,买卖比,$buying / ($selling + 1e-12),不复权
+wide_cross,wide_table,wide_buy_sell_trend,资金流趋势,"Mean($buying / ($selling + 1e-12), 5) / (Mean($buying / ($selling + 1e-12), 20) + 1e-12)",不复权
+wide_cross,wide_table,wide_cashflow_quality,现金流质量变化,"$ocf_to_profit - Ref($ocf_to_profit, 20)",不复权
+wide_cross,wide_table,wide_chip_pressure,筹码压力,($close - $cost_50pct) / ($cost_95pct - $cost_5pct + 1e-12),不复权
+wide_cross,wide_table,wide_chip_support,筹码支撑,($close - $cost_5pct) / ($close + 1e-12),不复权
+wide_cross,wide_table,wide_cost_converge,筹码集中度,($cost_95pct - $cost_5pct) / ($close + 1e-12),不复权
+wide_cross,wide_table,wide_cost_converge_chg,筹码集中度变化,"($cost_95pct - $cost_5pct) / ($close + 1e-12) - Ref(($cost_95pct - $cost_5pct) / ($close + 1e-12), 10)",不复权
+wide_cross,wide_table,wide_earning_yield,盈利收益率,1.0 / ($pe_ttm + 1e-12),不复权
+wide_cross,wide_table,wide_ep_roe,ROE/PE(盈利质量),$roe / ($pe_ttm + 1e-12),不复权
+wide_cross,wide_table,wide_growth_accel,成长加速度,"$q_netprofit_yoy - Ref($q_netprofit_yoy, 60)",不复权
+wide_cross,wide_table,wide_margin_trend,毛利率趋势,"$grossprofit_margin - Ref($grossprofit_margin, 60)",不复权
+wide_cross,wide_table,wide_momentum_quality,动量*质量,"($close / Ref($close, 20) - 1) * $roe / 100",不复权
+wide_cross,wide_table,wide_mv_ratio,流通市值占比,$circ_mv / ($total_mv + 1e-12),不复权
+wide_cross,wide_table,wide_pb_roe,ROE/PB(价值偏离),$roe / ($pb + 1e-12),不复权
+wide_cross,wide_table,wide_peg,PEG,$pe_ttm / ($netprofit_yoy + 1e-12),不复权
+wide_cross,wide_table,wide_ps_growth,PS/营收增速,$ps_ttm / ($or_yoy + 1e-12),不复权
+wide_cross,wide_table,wide_quality_score,质量评分(ROE*低杠杆),$roe * (1 - $debt_to_assets / 100),不复权
+wide_cross,wide_table,wide_size_ln,对数流通市值,Log($circ_mv + 1),不复权
+wide_cross,wide_table,wide_value_momentum,价值动量共振,"(1.0 / ($pe_ttm + 1e-12)) * ($close / Ref($close, 5) - 1)",不复权
+wide_cross,wide_table,wide_vol_price_sync,量价相关性10日,"Corr($close, $vol, 10)",前复权
+wide_cross,wide_table,wide_vol_swing,振幅量比乘积,$swing * $vol_ratio,不复权
+wide_cross,wide_table,wide_winner_chg20,获利比例20日变化,"$winner_rate - Ref($winner_rate, 20)",不复权
+wide_cross,wide_table,wide_winner_chg5,获利比例5日变化,"$winner_rate - Ref($winner_rate, 5)",不复权
+wide_growth,wide_table,wide_basic_eps_yoy_bias20,EPS同比20日偏离,"($basic_eps_yoy - Mean($basic_eps_yoy, 20)) / (Std($basic_eps_yoy, 20) + 1e-12)",不复权
+wide_growth,wide_table,wide_basic_eps_yoy_chg20,EPS同比20日变化,"$basic_eps_yoy / (Ref($basic_eps_yoy, 20) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_basic_eps_yoy_chg5,EPS同比5日变化,"$basic_eps_yoy / (Ref($basic_eps_yoy, 5) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_basic_eps_yoy_chg60,EPS同比60日变化,"$basic_eps_yoy / (Ref($basic_eps_yoy, 60) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_basic_eps_yoy_raw,EPS同比(原始),$basic_eps_yoy,不复权
+wide_growth,wide_table,wide_netprofit_yoy_bias20,净利同比20日偏离,"($netprofit_yoy - Mean($netprofit_yoy, 20)) / (Std($netprofit_yoy, 20) + 1e-12)",不复权
+wide_growth,wide_table,wide_netprofit_yoy_chg20,净利同比20日变化,"$netprofit_yoy / (Ref($netprofit_yoy, 20) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_netprofit_yoy_chg5,净利同比5日变化,"$netprofit_yoy / (Ref($netprofit_yoy, 5) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_netprofit_yoy_chg60,净利同比60日变化,"$netprofit_yoy / (Ref($netprofit_yoy, 60) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_netprofit_yoy_raw,净利同比(原始),$netprofit_yoy,不复权
+wide_growth,wide_table,wide_op_yoy_bias20,营利同比20日偏离,"($op_yoy - Mean($op_yoy, 20)) / (Std($op_yoy, 20) + 1e-12)",不复权
+wide_growth,wide_table,wide_op_yoy_chg20,营利同比20日变化,"$op_yoy / (Ref($op_yoy, 20) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_op_yoy_chg5,营利同比5日变化,"$op_yoy / (Ref($op_yoy, 5) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_op_yoy_chg60,营利同比60日变化,"$op_yoy / (Ref($op_yoy, 60) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_op_yoy_raw,营利同比(原始),$op_yoy,不复权
+wide_growth,wide_table,wide_or_yoy_bias20,营收同比20日偏离,"($or_yoy - Mean($or_yoy, 20)) / (Std($or_yoy, 20) + 1e-12)",不复权
+wide_growth,wide_table,wide_or_yoy_chg20,营收同比20日变化,"$or_yoy / (Ref($or_yoy, 20) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_or_yoy_chg5,营收同比5日变化,"$or_yoy / (Ref($or_yoy, 5) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_or_yoy_chg60,营收同比60日变化,"$or_yoy / (Ref($or_yoy, 60) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_or_yoy_raw,营收同比(原始),$or_yoy,不复权
+wide_growth,wide_table,wide_q_netprofit_yoy_bias20,单季净利同比20日偏离,"($q_netprofit_yoy - Mean($q_netprofit_yoy, 20)) / (Std($q_netprofit_yoy, 20) + 1e-12)",不复权
+wide_growth,wide_table,wide_q_netprofit_yoy_chg20,单季净利同比20日变化,"$q_netprofit_yoy / (Ref($q_netprofit_yoy, 20) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_q_netprofit_yoy_chg5,单季净利同比5日变化,"$q_netprofit_yoy / (Ref($q_netprofit_yoy, 5) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_q_netprofit_yoy_chg60,单季净利同比60日变化,"$q_netprofit_yoy / (Ref($q_netprofit_yoy, 60) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_q_netprofit_yoy_raw,单季净利同比(原始),$q_netprofit_yoy,不复权
+wide_growth,wide_table,wide_q_sales_yoy_bias20,单季营收同比20日偏离,"($q_sales_yoy - Mean($q_sales_yoy, 20)) / (Std($q_sales_yoy, 20) + 1e-12)",不复权
+wide_growth,wide_table,wide_q_sales_yoy_chg20,单季营收同比20日变化,"$q_sales_yoy / (Ref($q_sales_yoy, 20) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_q_sales_yoy_chg5,单季营收同比5日变化,"$q_sales_yoy / (Ref($q_sales_yoy, 5) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_q_sales_yoy_chg60,单季营收同比60日变化,"$q_sales_yoy / (Ref($q_sales_yoy, 60) + 1e-12) - 1",不复权
+wide_growth,wide_table,wide_q_sales_yoy_raw,单季营收同比(原始),$q_sales_yoy,不复权
+wide_profitability,wide_table,wide_grossprofit_margin_bias20,毛利率20日偏离,"($grossprofit_margin - Mean($grossprofit_margin, 20)) / (Std($grossprofit_margin, 20) + 1e-12)",不复权
+wide_profitability,wide_table,wide_grossprofit_margin_chg20,毛利率20日变化,"$grossprofit_margin / (Ref($grossprofit_margin, 20) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_grossprofit_margin_chg5,毛利率5日变化,"$grossprofit_margin / (Ref($grossprofit_margin, 5) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_grossprofit_margin_chg60,毛利率60日变化,"$grossprofit_margin / (Ref($grossprofit_margin, 60) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_grossprofit_margin_raw,毛利率(原始),$grossprofit_margin,不复权
+wide_profitability,wide_table,wide_netprofit_margin_bias20,净利率20日偏离,"($netprofit_margin - Mean($netprofit_margin, 20)) / (Std($netprofit_margin, 20) + 1e-12)",不复权
+wide_profitability,wide_table,wide_netprofit_margin_chg20,净利率20日变化,"$netprofit_margin / (Ref($netprofit_margin, 20) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_netprofit_margin_chg5,净利率5日变化,"$netprofit_margin / (Ref($netprofit_margin, 5) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_netprofit_margin_chg60,净利率60日变化,"$netprofit_margin / (Ref($netprofit_margin, 60) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_netprofit_margin_raw,净利率(原始),$netprofit_margin,不复权
+wide_profitability,wide_table,wide_roa_bias20,ROA20日偏离,"($roa - Mean($roa, 20)) / (Std($roa, 20) + 1e-12)",不复权
+wide_profitability,wide_table,wide_roa_chg20,ROA20日变化,"$roa / (Ref($roa, 20) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_roa_chg5,ROA5日变化,"$roa / (Ref($roa, 5) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_roa_chg60,ROA60日变化,"$roa / (Ref($roa, 60) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_roa_raw,ROA(原始),$roa,不复权
+wide_profitability,wide_table,wide_roe_bias20,ROE20日偏离,"($roe - Mean($roe, 20)) / (Std($roe, 20) + 1e-12)",不复权
+wide_profitability,wide_table,wide_roe_chg20,ROE20日变化,"$roe / (Ref($roe, 20) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_roe_chg5,ROE5日变化,"$roe / (Ref($roe, 5) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_roe_chg60,ROE60日变化,"$roe / (Ref($roe, 60) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_roe_raw,ROE(原始),$roe,不复权
+wide_profitability,wide_table,wide_roic_bias20,ROIC20日偏离,"($roic - Mean($roic, 20)) / (Std($roic, 20) + 1e-12)",不复权
+wide_profitability,wide_table,wide_roic_chg20,ROIC20日变化,"$roic / (Ref($roic, 20) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_roic_chg5,ROIC5日变化,"$roic / (Ref($roic, 5) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_roic_chg60,ROIC60日变化,"$roic / (Ref($roic, 60) + 1e-12) - 1",不复权
+wide_profitability,wide_table,wide_roic_raw,ROIC(原始),$roic,不复权
+wide_quarter,wide_table,wide_q_gsprofit_margin_bias20,单季毛利率20日偏离,"($q_gsprofit_margin - Mean($q_gsprofit_margin, 20)) / (Std($q_gsprofit_margin, 20) + 1e-12)",不复权
+wide_quarter,wide_table,wide_q_gsprofit_margin_chg20,单季毛利率20日变化,"$q_gsprofit_margin / (Ref($q_gsprofit_margin, 20) + 1e-12) - 1",不复权
+wide_quarter,wide_table,wide_q_gsprofit_margin_chg5,单季毛利率5日变化,"$q_gsprofit_margin / (Ref($q_gsprofit_margin, 5) + 1e-12) - 1",不复权
+wide_quarter,wide_table,wide_q_gsprofit_margin_chg60,单季毛利率60日变化,"$q_gsprofit_margin / (Ref($q_gsprofit_margin, 60) + 1e-12) - 1",不复权
+wide_quarter,wide_table,wide_q_gsprofit_margin_raw,单季毛利率(原始),$q_gsprofit_margin,不复权
+wide_quarter,wide_table,wide_q_roe_bias20,单季ROE20日偏离,"($q_roe - Mean($q_roe, 20)) / (Std($q_roe, 20) + 1e-12)",不复权
+wide_quarter,wide_table,wide_q_roe_chg20,单季ROE20日变化,"$q_roe / (Ref($q_roe, 20) + 1e-12) - 1",不复权
+wide_quarter,wide_table,wide_q_roe_chg5,单季ROE5日变化,"$q_roe / (Ref($q_roe, 5) + 1e-12) - 1",不复权
+wide_quarter,wide_table,wide_q_roe_chg60,单季ROE60日变化,"$q_roe / (Ref($q_roe, 60) + 1e-12) - 1",不复权
+wide_quarter,wide_table,wide_q_roe_raw,单季ROE(原始),$q_roe,不复权
+wide_sentiment,wide_table,wide_activity_bias20,活跃度20日偏离,"($activity - Mean($activity, 20)) / (Std($activity, 20) + 1e-12)",不复权
+wide_sentiment,wide_table,wide_activity_chg20,活跃度20日变化,"$activity / (Ref($activity, 20) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_activity_chg5,活跃度5日变化,"$activity / (Ref($activity, 5) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_activity_chg60,活跃度60日变化,"$activity / (Ref($activity, 60) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_activity_raw,活跃度(原始),$activity,不复权
+wide_sentiment,wide_table,wide_attack_bias20,攻击力20日偏离,"($attack - Mean($attack, 20)) / (Std($attack, 20) + 1e-12)",不复权
+wide_sentiment,wide_table,wide_attack_chg20,攻击力20日变化,"$attack / (Ref($attack, 20) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_attack_chg5,攻击力5日变化,"$attack / (Ref($attack, 5) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_attack_chg60,攻击力60日变化,"$attack / (Ref($attack, 60) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_attack_raw,攻击力(原始),$attack,不复权
+wide_sentiment,wide_table,wide_buying_bias20,买盘20日偏离,"($buying - Mean($buying, 20)) / (Std($buying, 20) + 1e-12)",不复权
+wide_sentiment,wide_table,wide_buying_chg20,买盘20日变化,"$buying / (Ref($buying, 20) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_buying_chg5,买盘5日变化,"$buying / (Ref($buying, 5) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_buying_chg60,买盘60日变化,"$buying / (Ref($buying, 60) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_buying_raw,买盘(原始),$buying,不复权
+wide_sentiment,wide_table,wide_selling_bias20,卖盘20日偏离,"($selling - Mean($selling, 20)) / (Std($selling, 20) + 1e-12)",不复权
+wide_sentiment,wide_table,wide_selling_chg20,卖盘20日变化,"$selling / (Ref($selling, 20) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_selling_chg5,卖盘5日变化,"$selling / (Ref($selling, 5) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_selling_chg60,卖盘60日变化,"$selling / (Ref($selling, 60) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_selling_raw,卖盘(原始),$selling,不复权
+wide_sentiment,wide_table,wide_strength_bias20,强弱度20日偏离,"($strength - Mean($strength, 20)) / (Std($strength, 20) + 1e-12)",不复权
+wide_sentiment,wide_table,wide_strength_chg20,强弱度20日变化,"$strength / (Ref($strength, 20) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_strength_chg5,强弱度5日变化,"$strength / (Ref($strength, 5) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_strength_chg60,强弱度60日变化,"$strength / (Ref($strength, 60) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_strength_raw,强弱度(原始),$strength,不复权
+wide_sentiment,wide_table,wide_swing_bias20,振幅20日偏离,"($swing - Mean($swing, 20)) / (Std($swing, 20) + 1e-12)",不复权
+wide_sentiment,wide_table,wide_swing_chg20,振幅20日变化,"$swing / (Ref($swing, 20) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_swing_chg5,振幅5日变化,"$swing / (Ref($swing, 5) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_swing_chg60,振幅60日变化,"$swing / (Ref($swing, 60) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_swing_raw,振幅(原始),$swing,不复权
+wide_sentiment,wide_table,wide_turnover_rate_f_bias20,换手率20日偏离,"($turnover_rate_f - Mean($turnover_rate_f, 20)) / (Std($turnover_rate_f, 20) + 1e-12)",不复权
+wide_sentiment,wide_table,wide_turnover_rate_f_chg20,换手率20日变化,"$turnover_rate_f / (Ref($turnover_rate_f, 20) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_turnover_rate_f_chg5,换手率5日变化,"$turnover_rate_f / (Ref($turnover_rate_f, 5) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_turnover_rate_f_chg60,换手率60日变化,"$turnover_rate_f / (Ref($turnover_rate_f, 60) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_turnover_rate_f_raw,换手率(原始),$turnover_rate_f,不复权
+wide_sentiment,wide_table,wide_vol_ratio_bias20,量比20日偏离,"($vol_ratio - Mean($vol_ratio, 20)) / (Std($vol_ratio, 20) + 1e-12)",不复权
+wide_sentiment,wide_table,wide_vol_ratio_chg20,量比20日变化,"$vol_ratio / (Ref($vol_ratio, 20) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_vol_ratio_chg5,量比5日变化,"$vol_ratio / (Ref($vol_ratio, 5) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_vol_ratio_chg60,量比60日变化,"$vol_ratio / (Ref($vol_ratio, 60) + 1e-12) - 1",不复权
+wide_sentiment,wide_table,wide_vol_ratio_raw,量比(原始),$vol_ratio,不复权
+wide_size,wide_table,wide_circ_mv_bias20,流通市值20日偏离,"($circ_mv - Mean($circ_mv, 20)) / (Std($circ_mv, 20) + 1e-12)",不复权
+wide_size,wide_table,wide_circ_mv_chg20,流通市值20日变化,"$circ_mv / (Ref($circ_mv, 20) + 1e-12) - 1",不复权
+wide_size,wide_table,wide_circ_mv_chg5,流通市值5日变化,"$circ_mv / (Ref($circ_mv, 5) + 1e-12) - 1",不复权
+wide_size,wide_table,wide_circ_mv_chg60,流通市值60日变化,"$circ_mv / (Ref($circ_mv, 60) + 1e-12) - 1",不复权
+wide_size,wide_table,wide_circ_mv_raw,流通市值(原始),$circ_mv,不复权
+wide_size,wide_table,wide_total_mv_bias20,总市值20日偏离,"($total_mv - Mean($total_mv, 20)) / (Std($total_mv, 20) + 1e-12)",不复权
+wide_size,wide_table,wide_total_mv_chg20,总市值20日变化,"$total_mv / (Ref($total_mv, 20) + 1e-12) - 1",不复权
+wide_size,wide_table,wide_total_mv_chg5,总市值5日变化,"$total_mv / (Ref($total_mv, 5) + 1e-12) - 1",不复权
+wide_size,wide_table,wide_total_mv_chg60,总市值60日变化,"$total_mv / (Ref($total_mv, 60) + 1e-12) - 1",不复权
+wide_size,wide_table,wide_total_mv_raw,总市值(原始),$total_mv,不复权
+wide_valuation,wide_table,wide_dv_ttm_bias20,股息率TTM20日偏离,"($dv_ttm - Mean($dv_ttm, 20)) / (Std($dv_ttm, 20) + 1e-12)",不复权
+wide_valuation,wide_table,wide_dv_ttm_chg20,股息率TTM20日变化,"$dv_ttm / (Ref($dv_ttm, 20) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_dv_ttm_chg5,股息率TTM5日变化,"$dv_ttm / (Ref($dv_ttm, 5) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_dv_ttm_chg60,股息率TTM60日变化,"$dv_ttm / (Ref($dv_ttm, 60) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_dv_ttm_raw,股息率TTM(原始),$dv_ttm,不复权
+wide_valuation,wide_table,wide_pb_bias20,市净率20日偏离,"($pb - Mean($pb, 20)) / (Std($pb, 20) + 1e-12)",不复权
+wide_valuation,wide_table,wide_pb_chg20,市净率20日变化,"$pb / (Ref($pb, 20) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_pb_chg5,市净率5日变化,"$pb / (Ref($pb, 5) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_pb_chg60,市净率60日变化,"$pb / (Ref($pb, 60) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_pb_raw,市净率(原始),$pb,不复权
+wide_valuation,wide_table,wide_pe_ttm_bias20,市盈率TTM20日偏离,"($pe_ttm - Mean($pe_ttm, 20)) / (Std($pe_ttm, 20) + 1e-12)",不复权
+wide_valuation,wide_table,wide_pe_ttm_chg20,市盈率TTM20日变化,"$pe_ttm / (Ref($pe_ttm, 20) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_pe_ttm_chg5,市盈率TTM5日变化,"$pe_ttm / (Ref($pe_ttm, 5) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_pe_ttm_chg60,市盈率TTM60日变化,"$pe_ttm / (Ref($pe_ttm, 60) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_pe_ttm_raw,市盈率TTM(原始),$pe_ttm,不复权
+wide_valuation,wide_table,wide_ps_ttm_bias20,市销率TTM20日偏离,"($ps_ttm - Mean($ps_ttm, 20)) / (Std($ps_ttm, 20) + 1e-12)",不复权
+wide_valuation,wide_table,wide_ps_ttm_chg20,市销率TTM20日变化,"$ps_ttm / (Ref($ps_ttm, 20) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_ps_ttm_chg5,市销率TTM5日变化,"$ps_ttm / (Ref($ps_ttm, 5) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_ps_ttm_chg60,市销率TTM60日变化,"$ps_ttm / (Ref($ps_ttm, 60) + 1e-12) - 1",不复权
+wide_valuation,wide_table,wide_ps_ttm_raw,市销率TTM(原始),$ps_ttm,不复权

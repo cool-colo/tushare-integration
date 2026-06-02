@@ -1,204 +1,259 @@
 已下载数据表清单（非 RAW 表）
 ============================================================
-生成时间：2026-05-12 15:19:21
+生成时间：2026-06-01 15:50:04
 数据库：clickhouse://127.0.0.1:8123/default
-统计范围：数据库中实际存在、表名不以 _raw 结尾、排除内部日志表、排除 0 行空表的数据表
-表数量：102 张
-总数据量：430,548,047 行
+统计范围：数据库中实际存在、表名不以 _raw 结尾、排除内部日志表、排除 DWS 层表、排除 0 行空表的数据表
+表数量：131 张
+总数据量：773,115,532 行
 
 一、表清单总览
 ------------------------------------------------------------
-01. dws_stock_factor_wide｜未在本地 schema 中匹配到表说明｜17,732,742 行
-02. dwd_future_eod_price｜期货日线行情标准层｜2,884,185 行
-03. dwd_index_eod_price｜指数日线行情标准层｜13,936,784 行
-04. dwd_security_master｜统一证券主数据标准层｜29,461 行
-05. dwd_stock_adj_factor｜股票复权因子标准层｜18,553,162 行
-06. dwd_stock_balance_sheet｜股票资产负债表标准层｜1,028,155 行
-07. dwd_stock_cashflow｜股票现金流量表标准层｜1,905,628 行
-08. dwd_stock_chip_distribution｜股票筹码分布表现标准层｜9,165,580 行
-09. dwd_stock_daily_basic｜股票每日指标标准层｜17,641,263 行
-10. dwd_stock_eod_price｜股票日线行情标准层｜17,732,742 行
-11. dwd_stock_eod_quote_metrics｜股票日频扩展行情指标标准层｜9,635,784 行
-12. dwd_stock_factor_bar｜未在本地 schema 中匹配到表说明｜17,629,192 行
-13. dwd_stock_financial_indicator｜股票财务指标标准层｜664,540 行
-14. dwd_stock_income｜股票利润表标准层｜2,144,979 行
-15. dwd_stock_margin_trading｜股票融资融券交易明细标准层｜6,432,110 行
-16. dwd_stock_northbound_holding｜股票北向持股标准层｜5,659,399 行
-17. dwd_stock_st｜股票ST状态标准层｜320,268 行
-18. dwd_trade_calendar｜交易日历标准层｜72,609 行
-19. adj_factor｜复权因子｜18,553,162 行
-20. bak_basic｜备用列表｜10,241,723 行
-21. bak_daily｜备用行情｜9,635,784 行
-22. balancesheet｜资产负债表｜4,053,625 行
-23. block_trade｜大宗交易｜186,788 行
-24. broker_recommend｜券商每月荐股｜17,006 行
-25. cashflow｜现金流量表｜3,934,336 行
-26. ccass_hold｜中央结算系统持股汇总｜3,342,277 行
-27. ccass_hold_detail｜中央结算系统持股明细｜3,279,755 行
-28. concept｜概念股分类｜879 行
-29. concept_detail｜概念股列表｜34,509 行
-30. cyq_chips｜每日筹码分布｜46,437,149 行
-31. cyq_chips_backup_before_price_key｜未在本地 schema 中匹配到表说明｜284,140 行
-32. cyq_perf｜每日筹码及胜率｜9,165,580 行
-33. daily｜日线行情｜17,732,742 行
-34. daily_basic｜每日指标｜17,641,263 行
-35. daily_info｜市场交易统计｜129,916 行
-36. dc_concept｜题材数据（东方财富）｜8,337 行
-37. dc_index｜东方财富概念板块｜196,141 行
-38. disclosure_date｜财报披露计划｜622,283 行
-39. dividend｜分红送股｜232,909 行
-40. express｜业绩快报｜35,614 行
-41. fina_audit｜财务审计意见｜174,926 行
-42. fina_indicator｜财务指标数据｜1,734,530 行
-43. fina_mainbz｜主营业务构成｜255,850 行
-44. forecast｜业绩预告｜342,630 行
-45. fut_basic｜期货合约信息表｜10,897 行
-46. fut_daily｜期货日线行情｜2,884,185 行
-47. fut_holding｜每日成交持仓排名｜24,060,250 行
-48. fut_mapping｜期货主力与连续合约｜543,669 行
-49. fut_settle｜结算参数｜843,999 行
-50. fut_wsr｜仓单日报｜139,130 行
-51. ggt_daily｜港股通每日成交统计｜2,614 行
-52. ggt_top10｜港股通十大成交股｜35,385 行
-53. hk_hold｜沪深股通持股明细｜5,659,208 行
-54. hs_const｜沪深股通成份股｜823 行
-55. hsgt_top10｜沪深股通十大成交股｜48,430 行
-56. income｜利润表｜8,812,962 行
-57. index_basic｜指数基本信息｜15,694 行
-58. index_daily｜指数日线行情｜13,936,784 行
-59. index_dailybasic｜大盘指数每日指标｜57,556 行
-60. index_global｜国际指数｜158,507 行
-61. index_monthly｜指数月线行情｜206,781 行
-62. index_weekly｜指数周线行情｜877,266 行
-63. index_weight｜指数成分和权重｜8,051,563 行
-64. margin｜融资融券交易汇总｜3,909 行
-65. margin_detail｜融资融券交易明细｜6,432,110 行
-66. margin_secs｜融资融券标的（新）｜7,609,177 行
-67. monthly｜月线行情｜894,626 行
-68. namechange｜股票曾用名｜12,910 行
-69. new_share｜IPO新股列表｜4,269 行
-70. pledge_detail｜股权质押明细｜244,214 行
-71. pledge_stat｜股权质押统计数据｜5,016,401 行
-72. report_rc｜卖方盈利预测数据｜1,987,993 行
-73. repurchase｜股票回购｜113,836 行
-74. share_float｜限售股解禁｜45,786 行
-75. slb_len｜转融资交易汇总｜2,811 行
-76. slb_len_mm｜做市借券交易汇总｜55,214 行
-77. slb_sec｜转融券交易汇总｜2,287,159 行
-78. slb_sec_detail｜转融券交易明细｜850,244 行
-79. stk_alert｜交易所重点提示证券｜67 行
-80. stk_factor｜股票技术因子｜17,987,612 行
-81. stk_high_shock｜个股严重异常波动｜22 行
-82. stk_holdernumber｜股东户数｜393,514 行
-83. stk_holdertrade｜股东增减持｜65,526 行
-84. stk_limit｜每日涨跌停价格｜17,441,905 行
-85. stk_managers｜上市公司管理层｜725,840 行
-86. stk_mins｜分钟线行情｜13,255 行
-87. stk_rewards｜管理层薪酬和持股｜4,038,219 行
-88. stk_shock｜个股异常波动｜500 行
-89. stk_surv｜机构调研表｜110,178 行
-90. stock_basic｜基础信息｜5,844 行
-91. stock_company｜上市公司基本信息｜12,544 行
-92. stock_hsgt｜沪深港通股票列表｜713,663 行
-93. stock_st｜ST股票列表｜320,268 行
-94. suspend_d｜每日停复牌信息｜640,395 行
-95. sz_daily_info｜深圳市场每日交易概况｜67,937 行
-96. tdx_index｜通达信板块信息｜150,635 行
-97. top10_floatholders｜前十大流通股东｜60,300 行
-98. top10_holders｜前十大股东｜126,590 行
-99. top_inst｜龙虎榜机构明细｜185,823 行
-100. top_list｜龙虎榜每日明细｜222,490 行
-101. trade_cal｜交易日历｜157,576 行
-102. weekly｜周线行情｜3,758,545 行
+01. dwd_dc_concept｜东方财富题材标准层｜11,349 行
+02. dwd_dc_concept_cons｜东方财富题材成分标准层｜374,446 行
+03. dwd_dc_index｜东方财富板块指数标准层｜201,206 行
+04. dwd_dc_member｜东方财富板块成分标准层｜21,955,776 行
+05. dwd_future_eod_price｜期货日线行情标准层｜2,884,185 行
+06. dwd_index_eod_price｜指数日线行情标准层｜12,245,965 行
+07. dwd_index_weight｜指数成分权重标准层｜17,325,687 行
+08. dwd_security_master｜统一证券主数据标准层｜29,563 行
+09. dwd_stock_adj_factor｜股票复权因子标准层｜18,569,725 行
+10. dwd_stock_balance_sheet｜股票资产负债表标准层｜1,028,155 行
+11. dwd_stock_cashflow｜股票现金流量表标准层｜1,905,628 行
+12. dwd_stock_chip_distribution｜股票筹码分布表现标准层｜9,248,063 行
+13. dwd_stock_daily_basic｜股票每日指标标准层｜13,872,357 行
+14. dwd_stock_dividend｜股票分红送股标准层｜174,864 行
+15. dwd_stock_eod_price｜股票日线行情标准层｜13,963,463 行
+16. dwd_stock_eod_quote_metrics｜股票日频扩展行情指标标准层｜9,718,650 行
+17. dwd_stock_factor_bar｜未在本地 schema 中匹配到表说明｜17,629,192 行
+18. dwd_stock_financial_indicator｜股票财务指标标准层｜665,275 行
+19. dwd_stock_income｜股票利润表标准层｜2,144,979 行
+20. dwd_stock_margin_trading｜股票融资融券交易明细标准层｜6,493,147 行
+21. dwd_stock_northbound_holding｜股票北向持股标准层｜5,671,562 行
+22. dwd_stock_st｜股票ST状态标准层｜320,799 行
+23. dwd_trade_calendar｜交易日历标准层｜72,609 行
+24. adj_factor｜复权因子｜18,636,002 行
+25. bak_basic｜备用列表｜10,319,067 行
+26. bak_daily｜备用行情｜9,718,650 行
+27. balancesheet｜资产负债表｜2,666,926 行
+28. block_trade｜大宗交易｜187,598 行
+29. broker_recommend｜券商每月荐股｜17,006 行
+30. bse_mapping｜北交所新旧代码对照｜248 行
+31. cashflow｜现金流量表｜6,857,752 行
+32. ccass_hold｜中央结算系统持股汇总｜3,353,665 行
+33. ccass_hold_detail｜中央结算系统持股明细｜3,291,051 行
+34. concept｜概念股分类｜879 行
+35. concept_detail｜概念股列表｜34,509 行
+36. cyq_chips｜每日筹码分布｜177,688,528 行
+37. cyq_chips_backup_before_price_key｜未在本地 schema 中匹配到表说明｜284,140 行
+38. cyq_perf｜每日筹码及胜率｜9,248,063 行
+39. daily｜日线行情｜17,815,226 行
+40. daily_basic｜每日指标｜17,723,747 行
+41. daily_info｜市场交易统计｜130,094 行
+42. dc_concept｜题材数据（东方财富）｜16,799 行
+43. dc_concept_cons｜题材成分（东方财富）｜552,383 行
+44. dc_daily｜东财概念和行业指数行情｜1,376,239 行
+45. dc_index｜东方财富概念板块｜210,323 行
+46. dc_member｜东方财富概念成分｜22,682,282 行
+47. disclosure_date｜财报披露计划｜956,729 行
+48. dividend｜分红送股｜428,825 行
+49. dq_dqc_consistency｜未在本地 schema 中匹配到表说明｜40 行
+50. dq_dqc_metric｜未在本地 schema 中匹配到表说明｜116,030 行
+51. dq_dqc_result｜未在本地 schema 中匹配到表说明｜528 行
+52. dq_dqc_run｜未在本地 schema 中匹配到表说明｜27 行
+53. dq_dqc_sample｜未在本地 schema 中匹配到表说明｜2,070 行
+54. dq_validation_metric｜未在本地 schema 中匹配到表说明｜2,923 行
+55. dq_validation_result｜未在本地 schema 中匹配到表说明｜2,923 行
+56. dq_validation_run｜未在本地 schema 中匹配到表说明｜310 行
+57. express｜业绩快报｜41,337 行
+58. fina_audit｜财务审计意见｜164,056 行
+59. fina_indicator｜财务指标数据｜1,660,248 行
+60. fina_mainbz｜主营业务构成｜192,550 行
+61. forecast｜业绩预告｜358,370 行
+62. fut_basic｜期货合约信息表｜10,897 行
+63. fut_daily｜期货日线行情｜2,884,185 行
+64. fut_holding｜每日成交持仓排名｜24,060,250 行
+65. fut_mapping｜期货主力与连续合约｜543,669 行
+66. fut_settle｜结算参数｜843,999 行
+67. fut_wsr｜仓单日报｜139,130 行
+68. ggt_daily｜港股通每日成交统计｜2,627 行
+69. ggt_monthly｜港股通每月成交统计｜74 行
+70. ggt_top10｜港股通十大成交股｜35,556 行
+71. hk_hold｜沪深股通持股明细｜5,671,367 行
+72. hs_const｜沪深股通成份股｜823 行
+73. hsgt_top10｜沪深股通十大成交股｜48,710 行
+74. income｜利润表｜8,153,087 行
+75. index_basic｜指数基本信息｜18,376 行
+76. index_daily｜指数日线行情｜51,953,369 行
+77. index_dailybasic｜大盘指数每日指标｜57,734 行
+78. index_global｜国际指数｜158,726 行
+79. index_monthly｜指数月线行情｜207,781 行
+80. index_weekly｜指数周线行情｜880,266 行
+81. index_weight｜指数成分和权重｜19,321,185 行
+82. margin｜融资融券交易汇总｜3,923 行
+83. margin_detail｜融资融券交易明细｜6,493,147 行
+84. margin_secs｜融资融券标的（新）｜7,670,519 行
+85. monthly｜月线行情｜900,214 行
+86. namechange｜股票曾用名｜12,946 行
+87. new_share｜IPO新股列表｜4,276 行
+88. pledge_detail｜股权质押明细｜238,379 行
+89. pledge_stat｜股权质押统计数据｜7,019,557 行
+90. report_rc｜卖方盈利预测数据｜1,207,978 行
+91. repurchase｜股票回购｜64,720 行
+92. share_float｜限售股解禁｜44,296 行
+93. slb_len｜转融资交易汇总｜2,811 行
+94. slb_len_mm｜做市借券交易汇总｜55,214 行
+95. slb_sec｜转融券交易汇总｜2,287,159 行
+96. slb_sec_detail｜转融券交易明细｜850,244 行
+97. st｜ST风险警示板股票｜3,834 行
+98. stk_account｜股票开户数据（停）｜188 行
+99. stk_account_old｜股票开户数据（旧）｜1 行
+100. stk_ah_comparison｜AH股比价｜30,578 行
+101. stk_alert｜交易所重点提示证券｜94 行
+102. stk_auction｜开盘竞价成交｜1,807,575 行
+103. stk_auction_c｜股票收盘集合竞价数据｜14,581,760 行
+104. stk_auction_o｜股票开盘集合竞价数据｜14,225,372 行
+105. stk_factor｜股票技术因子｜18,070,086 行
+106. stk_high_shock｜个股严重异常波动｜56 行
+107. stk_holdernumber｜股东户数｜394,718 行
+108. stk_holdertrade｜股东增减持｜65,808 行
+109. stk_limit｜每日涨跌停价格｜17,555,990 行
+110. stk_managers｜上市公司管理层｜1,056,304 行
+111. stk_mins｜分钟线行情｜13,255 行
+112. stk_nineturn｜神奇九转指标｜66,521,187 行
+113. stk_rewards｜管理层薪酬和持股｜1,833,197 行
+114. stk_shock｜个股异常波动｜926 行
+115. stk_surv｜机构调研表｜106,161 行
+116. stk_week_month_adj｜周/月线复权行情(每日更新)｜3,951,907 行
+117. stock_basic｜基础信息｜5,854 行
+118. stock_company｜上市公司基本信息｜18,814 行
+119. stock_hsgt｜沪深港通股票列表｜773,415 行
+120. stock_st｜ST股票列表｜323,883 行
+121. suspend_d｜每日停复牌信息｜640,795 行
+122. sz_daily_info｜深圳市场每日交易概况｜68,147 行
+123. tdx_daily｜通达信板块行情｜161,248 行
+124. tdx_index｜通达信板块信息｜159,161 行
+125. tdx_member｜通达信板块成分｜21,199,524 行
+126. top10_floatholders｜前十大流通股东｜54,352 行
+127. top10_holders｜前十大股东｜140,760 行
+128. top_inst｜龙虎榜机构明细｜187,016 行
+129. top_list｜龙虎榜每日明细｜223,683 行
+130. trade_cal｜交易日历｜72,609 行
+131. weekly｜周线行情｜3,775,292 行
 
 二、字段明细
 ============================================================
 
 ------------------------------------------------------------
-01. dws_stock_factor_wide
-表说明：未在本地 schema 中匹配到表说明
-数据量：17,732,742 行
-字段数量：75 个
-结构来源：database metadata
+01. dwd_dc_concept
+表说明：东方财富题材标准层
+数据量：11,349 行
+字段数量：20 个
+结构来源：dwd/dwd_dc_concept.yaml
 字段清单：
-    01. instrument_id：统一证券ID
-    02. instrument_type：证券类型
-    03. exchange：交易所
-    04. source_code：源侧证券代码
-    05. event_date：业务归属日期
-    06. trade_date：交易日期
-    07. available_trade_date：最早可用交易日
-    08. open：开盘价
-    09. high：最高价
-    10. low：最低价
-    11. close：收盘价
-    12. pre_close：昨收价
-    13. pct_chg：涨跌幅
-    14. vol：成交量
-    15. amount：成交额
-    16. buying：外盘
-    17. selling：内盘
-    18. vol_ratio：量比
-    19. turn_over：换手率
-    20. swing：振幅
-    21. avg_price：均价
-    22. strength：强弱度
-    23. activity：活跃度
-    24. avg_turnover：笔换手
-    25. attack：攻击波
-    26. pe_ttm：市盈率TTM
-    27. pb：市净率
-    28. ps_ttm：市销率TTM
-    29. dv_ttm：股息率TTM
-    30. turnover_rate_f：自由流通股换手率
-    31. volume_ratio_db：量比每日指标
-    32. circ_mv：流通市值
-    33. total_mv：总市值
-    34. total_share：总股本
-    35. float_share：流通股本
-    36. free_share：自由流通股本
-    37. roe：净资产收益率
-    38. roa：总资产报酬率
-    39. roic：投入资本回报率
-    40. grossprofit_margin：销售毛利率
-    41. netprofit_margin：销售净利率
-    42. or_yoy：营业收入同比增长率
-    43. netprofit_yoy：归母净利润同比增长率
-    44. op_yoy：营业利润同比增长率
-    45. basic_eps_yoy：基本每股收益同比增长率
-    46. q_roe：单季度净资产收益率
-    47. q_gsprofit_margin：单季度销售毛利率
-    48. q_netprofit_yoy：单季度归母净利润同比增长率
-    49. q_sales_yoy：单季度营业收入同比增长率
-    50. ocf_to_or：经营现金流营业收入比
-    51. ocf_to_profit：经营现金流营业利润比
-    52. debt_to_assets：资产负债率
-    53. current_ratio：流动比率
-    54. eps：基本每股收益
-    55. bps：每股净资产
-    56. ocfps：每股经营现金流
-    57. rd_exp：研发费用
-    58. hk_hold_vol：北向持股数量
-    59. hk_hold_ratio：北向持股占比
-    60. rzye：融资余额
-    61. rzmre：融资买入额
-    62. rzche：融资偿还额
-    63. rqye：融券余额
-    64. rqyl：融券余量
-    65. rqmcl：融券卖出量
-    66. winner_rate：获利比例
-    67. cost_5pct：5分位成本
-    68. cost_50pct：50分位成本
-    69. cost_95pct：95分位成本
-    70. weight_avg_cost：加权平均成本
-    71. build_time：汇总构建时间
-    72. source：来源系统
-    73. source_table：来源表
-    74. source_batch_id：来源批次ID
-    75. source_record_hash：来源记录哈希
+    01. theme_code：题材code
+    02. trade_date：交易日期
+    03. name：名称
+    04. pct_change：涨跌幅
+    05. hot：热度
+    06. sort：排名
+    07. strength：强度
+    08. z_t_num：涨停数量
+    09. main_change：主力净流入
+    10. lead_stock：领涨股票
+    11. lead_stock_code：领涨股票code
+    12. lead_stock_pct_change：领涨股票涨跌幅
+    13. event_date：业务归属日期
+    14. available_trade_date：最早可用交易日
+    15. sys_from：版本开始时间
+    16. sys_to：版本结束时间
+    17. source：来源系统
+    18. source_table：来源表
+    19. source_batch_id：来源批次ID
+    20. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-02. dwd_future_eod_price
+02. dwd_dc_concept_cons
+表说明：东方财富题材成分标准层
+数据量：374,446 行
+字段数量：20 个
+结构来源：dwd/dwd_dc_concept_cons.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. name：名称
+    04. theme_code：主题code
+    05. industry_code：所属行业code
+    06. industry：所属行业
+    07. reason：入选原因
+    08. hot_num：热点排行
+    09. instrument_id：统一证券ID
+    10. instrument_type：证券类型
+    11. exchange：交易所
+    12. source_code：源侧证券代码
+    13. event_date：业务归属日期
+    14. available_trade_date：最早可用交易日
+    15. sys_from：版本开始时间
+    16. sys_to：版本结束时间
+    17. source：来源系统
+    18. source_table：来源表
+    19. source_batch_id：来源批次ID
+    20. source_record_hash：来源记录哈希
+
+------------------------------------------------------------
+03. dwd_dc_index
+表说明：东方财富板块指数标准层
+数据量：201,206 行
+字段数量：21 个
+结构来源：dwd/dwd_dc_index.yaml
+字段清单：
+    01. ts_code：概念代码
+    02. trade_date：交易日期
+    03. name：概念名称
+    04. leading：领涨股票名称
+    05. leading_code：领涨股票代码
+    06. pct_change：涨跌幅
+    07. leading_pct：领涨股票涨跌幅
+    08. total_mv：总市值
+    09. turnover_rate：换手率
+    10. up_num：上涨家数
+    11. down_num：下降家数
+    12. idx_type：板块类型
+    13. level：行业层级
+    14. event_date：业务归属日期
+    15. available_trade_date：最早可用交易日
+    16. sys_from：版本开始时间
+    17. sys_to：版本结束时间
+    18. source：来源系统
+    19. source_table：来源表
+    20. source_batch_id：来源批次ID
+    21. source_record_hash：来源记录哈希
+
+------------------------------------------------------------
+04. dwd_dc_member
+表说明：东方财富板块成分标准层
+数据量：21,955,776 行
+字段数量：16 个
+结构来源：dwd/dwd_dc_member.yaml
+字段清单：
+    01. trade_date：交易日期
+    02. ts_code：概念代码
+    03. con_code：成分代码
+    04. name：成分股名称
+    05. instrument_id：统一证券ID
+    06. instrument_type：证券类型
+    07. exchange：交易所
+    08. source_code：源侧证券代码
+    09. event_date：业务归属日期
+    10. available_trade_date：最早可用交易日
+    11. sys_from：版本开始时间
+    12. sys_to：版本结束时间
+    13. source：来源系统
+    14. source_table：来源表
+    15. source_batch_id：来源批次ID
+    16. source_record_hash：来源记录哈希
+
+------------------------------------------------------------
+05. dwd_future_eod_price
 表说明：期货日线行情标准层
 数据量：2,884,185 行
 字段数量：28 个
@@ -234,9 +289,9 @@
     28. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-03. dwd_index_eod_price
+06. dwd_index_eod_price
 表说明：指数日线行情标准层
-数据量：13,936,784 行
+数据量：12,245,965 行
 字段数量：23 个
 结构来源：dwd/dwd_index_eod_price.yaml
 字段清单：
@@ -265,9 +320,33 @@
     23. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-04. dwd_security_master
+07. dwd_index_weight
+表说明：指数成分权重标准层
+数据量：17,325,687 行
+字段数量：16 个
+结构来源：dwd/dwd_index_weight.yaml
+字段清单：
+    01. index_code：指数代码
+    02. con_code：成分代码
+    03. trade_date：交易日期
+    04. weight：权重
+    05. instrument_id：统一证券ID
+    06. instrument_type：证券类型
+    07. exchange：交易所
+    08. source_code：源侧证券代码
+    09. event_date：业务归属日期
+    10. available_trade_date：最早可用交易日
+    11. sys_from：版本开始时间
+    12. sys_to：版本结束时间
+    13. source：来源系统
+    14. source_table：来源表
+    15. source_batch_id：来源批次ID
+    16. source_record_hash：来源记录哈希
+
+------------------------------------------------------------
+08. dwd_security_master
 表说明：统一证券主数据标准层
-数据量：29,461 行
+数据量：29,563 行
 字段数量：30 个
 结构来源：dwd/dwd_security_master.yaml
 字段清单：
@@ -303,9 +382,9 @@
     30. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-05. dwd_stock_adj_factor
+09. dwd_stock_adj_factor
 表说明：股票复权因子标准层
-数据量：18,553,162 行
+数据量：18,569,725 行
 字段数量：15 个
 结构来源：dwd/dwd_stock_adj_factor.yaml
 字段清单：
@@ -326,7 +405,7 @@
     15. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-06. dwd_stock_balance_sheet
+10. dwd_stock_balance_sheet
 表说明：股票资产负债表标准层
 数据量：1,028,155 行
 字段数量：170 个
@@ -504,7 +583,7 @@
     170. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-07. dwd_stock_cashflow
+11. dwd_stock_cashflow
 表说明：股票现金流量表标准层
 数据量：1,905,628 行
 字段数量：109 个
@@ -621,9 +700,9 @@
     109. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-08. dwd_stock_chip_distribution
+12. dwd_stock_chip_distribution
 表说明：股票筹码分布表现标准层
-数据量：9,165,580 行
+数据量：9,248,063 行
 字段数量：23 个
 结构来源：dwd/dwd_stock_chip_distribution.yaml
 字段清单：
@@ -652,9 +731,9 @@
     23. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-09. dwd_stock_daily_basic
+13. dwd_stock_daily_basic
 表说明：股票每日指标标准层
-数据量：17,641,263 行
+数据量：13,872,357 行
 字段数量：30 个
 结构来源：dwd/dwd_stock_daily_basic.yaml
 字段清单：
@@ -690,9 +769,45 @@
     30. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-10. dwd_stock_eod_price
+14. dwd_stock_dividend
+表说明：股票分红送股标准层
+数据量：174,864 行
+字段数量：28 个
+结构来源：dwd/dwd_stock_dividend.yaml
+字段清单：
+    01. ts_code：TS代码
+    02. end_date：分送年度
+    03. ann_date：预案公告日（董事会）
+    04. div_proc：实施进度
+    05. stk_div：每股送转
+    06. stk_bo_rate：每股送股比例
+    07. stk_co_rate：每股转增比例
+    08. cash_div：每股分红（税后）
+    09. cash_div_tax：每股分红（税前）
+    10. record_date：股权登记日
+    11. ex_date：除权除息日
+    12. pay_date：派息日
+    13. div_listdate：红股上市日
+    14. imp_ann_date：实施公告日
+    15. base_date：基准日
+    16. base_share：实施基准股本（万）
+    17. instrument_id：统一证券ID
+    18. instrument_type：证券类型
+    19. exchange：交易所
+    20. source_code：源侧证券代码
+    21. event_date：业务归属日期
+    22. available_trade_date：最早可用交易日
+    23. sys_from：版本开始时间
+    24. sys_to：版本结束时间
+    25. source：来源系统
+    26. source_table：来源表
+    27. source_batch_id：来源批次ID
+    28. source_record_hash：来源记录哈希
+
+------------------------------------------------------------
+15. dwd_stock_eod_price
 表说明：股票日线行情标准层
-数据量：17,732,742 行
+数据量：13,963,463 行
 字段数量：23 个
 结构来源：dwd/dwd_stock_eod_price.yaml
 字段清单：
@@ -721,9 +836,9 @@
     23. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-11. dwd_stock_eod_quote_metrics
+16. dwd_stock_eod_quote_metrics
 表说明：股票日频扩展行情指标标准层
-数据量：9,635,784 行
+数据量：9,718,650 行
 字段数量：43 个
 结构来源：dwd/dwd_stock_eod_quote_metrics.yaml
 字段清单：
@@ -772,7 +887,7 @@
     43. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-12. dwd_stock_factor_bar
+17. dwd_stock_factor_bar
 表说明：未在本地 schema 中匹配到表说明
 数据量：17,629,192 行
 字段数量：21 个
@@ -801,9 +916,9 @@
     21. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-13. dwd_stock_financial_indicator
+18. dwd_stock_financial_indicator
 表说明：股票财务指标标准层
-数据量：664,540 行
+数据量：665,275 行
 字段数量：179 个
 结构来源：dwd/dwd_stock_financial_indicator.yaml
 字段清单：
@@ -988,7 +1103,7 @@
     179. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-14. dwd_stock_income
+19. dwd_stock_income
 表说明：股票利润表标准层
 数据量：2,144,979 行
 字段数量：106 个
@@ -1102,9 +1217,9 @@
     106. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-15. dwd_stock_margin_trading
+20. dwd_stock_margin_trading
 表说明：股票融资融券交易明细标准层
-数据量：6,432,110 行
+数据量：6,493,147 行
 字段数量：23 个
 结构来源：dwd/dwd_stock_margin_trading.yaml
 字段清单：
@@ -1133,9 +1248,9 @@
     23. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-16. dwd_stock_northbound_holding
+21. dwd_stock_northbound_holding
 表说明：股票北向持股标准层
-数据量：5,659,399 行
+数据量：5,671,562 行
 字段数量：19 个
 结构来源：dwd/dwd_stock_northbound_holding.yaml
 字段清单：
@@ -1160,9 +1275,9 @@
     19. connect_channel：沪深股通通道
 
 ------------------------------------------------------------
-17. dwd_stock_st
+22. dwd_stock_st
 表说明：股票ST状态标准层
-数据量：320,268 行
+数据量：320,799 行
 字段数量：17 个
 结构来源：dwd/dwd_stock_st.yaml
 字段清单：
@@ -1185,7 +1300,7 @@
     17. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-18. dwd_trade_calendar
+23. dwd_trade_calendar
 表说明：交易日历标准层
 数据量：72,609 行
 字段数量：12 个
@@ -1205,9 +1320,9 @@
     12. source_record_hash：来源记录哈希
 
 ------------------------------------------------------------
-19. adj_factor
+24. adj_factor
 表说明：复权因子
-数据量：18,553,162 行
+数据量：18,636,002 行
 字段数量：8 个
 结构来源：stock/quotes/adj_factor.yaml
 字段清单：
@@ -1221,9 +1336,9 @@
     08. _record_hash：记录哈希
 
 ------------------------------------------------------------
-20. bak_basic
+25. bak_basic
 表说明：备用列表
-数据量：10,241,723 行
+数据量：10,319,067 行
 字段数量：29 个
 结构来源：stock/basic/bak_basic.yaml
 字段清单：
@@ -1258,9 +1373,9 @@
     29. _record_hash：记录哈希
 
 ------------------------------------------------------------
-21. bak_daily
+26. bak_daily
 表说明：备用行情
-数据量：9,635,784 行
+数据量：9,718,650 行
 字段数量：36 个
 结构来源：stock/quotes/bak_daily.yaml
 字段清单：
@@ -1302,9 +1417,9 @@
     36. _record_hash：记录哈希
 
 ------------------------------------------------------------
-22. balancesheet
+27. balancesheet
 表说明：资产负债表
-数据量：4,053,625 行
+数据量：2,666,926 行
 字段数量：163 个
 结构来源：stock/financial/balancesheet.yaml
 字段清单：
@@ -1473,9 +1588,9 @@
     163. _record_hash：记录哈希
 
 ------------------------------------------------------------
-23. block_trade
+28. block_trade
 表说明：大宗交易
-数据量：186,788 行
+数据量：187,598 行
 字段数量：12 个
 结构来源：stock/market/block_trade.yaml
 字段清单：
@@ -1493,7 +1608,7 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-24. broker_recommend
+29. broker_recommend
 表说明：券商每月荐股
 数据量：17,006 行
 字段数量：9 个
@@ -1510,9 +1625,26 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-25. cashflow
+30. bse_mapping
+表说明：北交所新旧代码对照
+数据量：248 行
+字段数量：9 个
+结构来源：stock/basic/bse_mapping.yaml
+字段清单：
+    01. name：股票名称
+    02. o_code：原代码
+    03. n_code：新代码
+    04. list_date：上市日期
+    05. _source：数据来源
+    06. _api_name：源接口名称
+    07. _batch_id：采集批次ID
+    08. _ingest_time：入库时间
+    09. _record_hash：记录哈希
+
+------------------------------------------------------------
+31. cashflow
 表说明：现金流量表
-数据量：3,934,336 行
+数据量：6,857,752 行
 字段数量：102 个
 结构来源：stock/financial/cashflow.yaml
 字段清单：
@@ -1620,9 +1752,9 @@
     102. _record_hash：记录哈希
 
 ------------------------------------------------------------
-26. ccass_hold
+32. ccass_hold
 表说明：中央结算系统持股汇总
-数据量：3,342,277 行
+数据量：3,353,665 行
 字段数量：11 个
 结构来源：stock/special/ccass_hold.yaml
 字段清单：
@@ -1639,9 +1771,9 @@
     11. _record_hash：记录哈希
 
 ------------------------------------------------------------
-27. ccass_hold_detail
+33. ccass_hold_detail
 表说明：中央结算系统持股明细
-数据量：3,279,755 行
+数据量：3,291,051 行
 字段数量：12 个
 结构来源：stock/special/ccass_hold_detail.yaml
 字段清单：
@@ -1659,7 +1791,7 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-28. concept
+34. concept
 表说明：概念股分类
 数据量：879 行
 字段数量：8 个
@@ -1675,7 +1807,7 @@
     08. _record_hash：记录哈希
 
 ------------------------------------------------------------
-29. concept_detail
+35. concept_detail
 表说明：概念股列表
 数据量：34,509 行
 字段数量：11 个
@@ -1694,9 +1826,9 @@
     11. _record_hash：记录哈希
 
 ------------------------------------------------------------
-30. cyq_chips
+36. cyq_chips
 表说明：每日筹码分布
-数据量：46,437,149 行
+数据量：177,688,528 行
 字段数量：9 个
 结构来源：stock/special/cyq_chips.yaml
 字段清单：
@@ -1711,7 +1843,7 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-31. cyq_chips_backup_before_price_key
+37. cyq_chips_backup_before_price_key
 表说明：未在本地 schema 中匹配到表说明
 数据量：284,140 行
 字段数量：9 个
@@ -1728,9 +1860,9 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-32. cyq_perf
+38. cyq_perf
 表说明：每日筹码及胜率
-数据量：9,165,580 行
+数据量：9,248,063 行
 字段数量：16 个
 结构来源：stock/special/cyq_perf.yaml
 字段清单：
@@ -1752,9 +1884,9 @@
     16. _record_hash：记录哈希
 
 ------------------------------------------------------------
-33. daily
+39. daily
 表说明：日线行情
-数据量：17,732,742 行
+数据量：17,815,226 行
 字段数量：16 个
 结构来源：stock/quotes/daily.yaml
 字段清单：
@@ -1776,9 +1908,9 @@
     16. _record_hash：记录哈希
 
 ------------------------------------------------------------
-34. daily_basic
+40. daily_basic
 表说明：每日指标
-数据量：17,641,263 行
+数据量：17,723,747 行
 字段数量：23 个
 结构来源：stock/quotes/daily_basic.yaml
 字段清单：
@@ -1807,9 +1939,9 @@
     23. _record_hash：记录哈希
 
 ------------------------------------------------------------
-35. daily_info
+41. daily_info
 表说明：市场交易统计
-数据量：129,916 行
+数据量：130,094 行
 字段数量：19 个
 结构来源：index/quotes/daily_info.yaml
 字段清单：
@@ -1834,9 +1966,9 @@
     19. _record_hash：记录哈希
 
 ------------------------------------------------------------
-36. dc_concept
+42. dc_concept
 表说明：题材数据（东方财富）
-数据量：8,337 行
+数据量：16,799 行
 字段数量：17 个
 结构来源：stock/market/dc_concept.yaml
 字段清单：
@@ -1859,9 +1991,55 @@
     17. _record_hash：记录哈希
 
 ------------------------------------------------------------
-37. dc_index
+43. dc_concept_cons
+表说明：题材成分（东方财富）
+数据量：552,383 行
+字段数量：13 个
+结构来源：stock/market/dc_concept_cons.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. name：名称
+    04. theme_code：主题code
+    05. industry_code：所属行业code
+    06. industry：所属行业
+    07. reason：入选原因
+    08. hot_num：热点排行
+    09. _source：数据来源
+    10. _api_name：源接口名称
+    11. _batch_id：采集批次ID
+    12. _ingest_time：入库时间
+    13. _record_hash：记录哈希
+
+------------------------------------------------------------
+44. dc_daily
+表说明：东财概念和行业指数行情
+数据量：1,376,239 行
+字段数量：17 个
+结构来源：stock/market/dc_daily.yaml
+字段清单：
+    01. ts_code：板块代码
+    02. trade_date：交易日
+    03. close：收盘点位
+    04. open：开盘点位
+    05. high：最高点位
+    06. low：最低点位
+    07. change：涨跌点位
+    08. pct_change：涨跌幅
+    09. vol：成交量
+    10. amount：成交额
+    11. swing：振幅
+    12. turnover_rate：换手率
+    13. _source：数据来源
+    14. _api_name：源接口名称
+    15. _batch_id：采集批次ID
+    16. _ingest_time：入库时间
+    17. _record_hash：记录哈希
+
+------------------------------------------------------------
+45. dc_index
 表说明：东方财富概念板块
-数据量：196,141 行
+数据量：210,323 行
 字段数量：18 个
 结构来源：stock/market/dc_index.yaml
 字段清单：
@@ -1885,9 +2063,26 @@
     18. _record_hash：记录哈希
 
 ------------------------------------------------------------
-38. disclosure_date
+46. dc_member
+表说明：东方财富概念成分
+数据量：22,682,282 行
+字段数量：9 个
+结构来源：stock/market/dc_member.yaml
+字段清单：
+    01. trade_date：交易日期
+    02. ts_code：概念代码
+    03. con_code：成分代码
+    04. name：成分股名称
+    05. _source：数据来源
+    06. _api_name：源接口名称
+    07. _batch_id：采集批次ID
+    08. _ingest_time：入库时间
+    09. _record_hash：记录哈希
+
+------------------------------------------------------------
+47. disclosure_date
 表说明：财报披露计划
-数据量：622,283 行
+数据量：956,729 行
 字段数量：11 个
 结构来源：stock/financial/disclosure_date.yaml
 字段清单：
@@ -1904,9 +2099,9 @@
     11. _record_hash：记录哈希
 
 ------------------------------------------------------------
-39. dividend
+48. dividend
 表说明：分红送股
-数据量：232,909 行
+数据量：428,825 行
 字段数量：21 个
 结构来源：stock/financial/dividend.yaml
 字段清单：
@@ -1933,9 +2128,166 @@
     21. _record_hash：记录哈希
 
 ------------------------------------------------------------
-40. express
+49. dq_dqc_consistency
+表说明：未在本地 schema 中匹配到表说明
+数据量：40 行
+字段数量：14 个
+结构来源：database metadata
+字段清单：
+    01. run_id：DQC run id
+    02. layer：Data layer
+    03. domain：DQC domain
+    04. suite_name：DQC suite name
+    05. left_table：Left table
+    06. right_table：Right table
+    07. as_of_date：DQC as-of date
+    08. trade_date：Observed trade date
+    09. check_name：Consistency check
+    10. left_value：Left value
+    11. right_value：Right value
+    12. ratio：Left/right ratio
+    13. status：Check status
+    14. created_at：Created time
+
+------------------------------------------------------------
+50. dq_dqc_metric
+表说明：未在本地 schema 中匹配到表说明
+数据量：116,030 行
+字段数量：12 个
+结构来源：database metadata
+字段清单：
+    01. run_id：DQC run id
+    02. layer：Data layer
+    03. domain：DQC domain
+    04. suite_name：DQC suite name
+    05. table_name：Logical table name
+    06. as_of_date：DQC as-of date
+    07. trade_date：Observed trade date
+    08. metric_scope：Metric scope
+    09. entity_name：Column or entity name
+    10. metric_name：Metric name
+    11. metric_value：Metric value
+    12. created_at：Created time
+
+------------------------------------------------------------
+51. dq_dqc_result
+表说明：未在本地 schema 中匹配到表说明
+数据量：528 行
+字段数量：21 个
+结构来源：database metadata
+字段清单：
+    01. run_id：DQC run id
+    02. layer：Data layer
+    03. domain：DQC domain
+    04. suite_name：DQC suite name
+    05. table_name：Logical table name
+    06. check_layer：DQC check layer
+    07. check_type：DQC check type
+    08. rule_id：DQC rule id
+    09. severity：Rule severity
+    10. status：Rule status
+    11. checked_count：Checked row or entity count
+    12. issue_count：Issue count
+    13. issue_rate：Issue count / checked count
+    14. observed_value：Observed value
+    15. expected_min：Expected minimum
+    16. expected_max：Expected maximum
+    17. baseline_mean：Baseline mean
+    18. baseline_std：Baseline stddev
+    19. z_score：Drift z-score
+    20. message：Rule message
+    21. created_at：Created time
+
+------------------------------------------------------------
+52. dq_dqc_run
+表说明：未在本地 schema 中匹配到表说明
+数据量：27 行
+字段数量：11 个
+结构来源：database metadata
+字段清单：
+    01. run_id：DQC run id
+    02. layer：Data layer
+    03. domain：DQC domain
+    04. suite_name：DQC suite name
+    05. table_name：Logical table or all
+    06. as_of_date：DQC as-of date
+    07. mode：DQC mode
+    08. status：DQC run status
+    09. started_at：Run start time
+    10. finished_at：Run finish time
+    11. baseline_window_days：Rolling baseline window in days
+
+------------------------------------------------------------
+53. dq_dqc_sample
+表说明：未在本地 schema 中匹配到表说明
+数据量：2,070 行
+字段数量：13 个
+结构来源：database metadata
+字段清单：
+    01. run_id：DQC run id
+    02. layer：Data layer
+    03. domain：DQC domain
+    04. suite_name：DQC suite name
+    05. table_name：Logical table name
+    06. rule_id：DQC rule id
+    07. as_of_date：DQC as-of date
+    08. trade_date：Observed trade date
+    09. instrument_id：Instrument id
+    10. entity_name：Column or factor id
+    11. sample_type：Sample type
+    12. sample_json：Sample JSON
+    13. created_at：Created time
+
+------------------------------------------------------------
+54. dq_validation_metric
+表说明：未在本地 schema 中匹配到表说明
+数据量：2,923 行
+字段数量：5 个
+结构来源：database metadata
+字段清单：
+    01. run_id：Validation run id
+    02. metric_name：Metric name
+    03. metric_value：Metric value
+    04. table_name：Logical table name
+    05. created_at：Created time
+
+------------------------------------------------------------
+55. dq_validation_result
+表说明：未在本地 schema 中匹配到表说明
+数据量：2,923 行
+字段数量：8 个
+结构来源：database metadata
+字段清单：
+    01. run_id：Validation run id
+    02. rule_id：Validation rule id
+    03. severity：Rule severity
+    04. status：Rule status
+    05. issue_count：Issue row count
+    06. description：Rule description
+    07. message：Rule message
+    08. created_at：Created time
+
+------------------------------------------------------------
+56. dq_validation_run
+表说明：未在本地 schema 中匹配到表说明
+数据量：310 行
+字段数量：9 个
+结构来源：database metadata
+字段清单：
+    01. run_id：Validation run id
+    02. layer：Data layer
+    03. stage：Validation stage
+    04. table_name：Logical table name
+    05. target_table_name：Physical target table
+    06. mode：Validation mode
+    07. status：Validation run status
+    08. started_at：Run start time
+    09. finished_at：Run finish time
+
+------------------------------------------------------------
+57. express
 表说明：业绩快报
-数据量：35,614 行
+数据量：41,337 行
 字段数量：37 个
 结构来源：stock/financial/express.yaml
 字段清单：
@@ -1978,9 +2330,9 @@
     37. _record_hash：记录哈希
 
 ------------------------------------------------------------
-41. fina_audit
+58. fina_audit
 表说明：财务审计意见
-数据量：174,926 行
+数据量：164,056 行
 字段数量：12 个
 结构来源：stock/financial/fina_audit.yaml
 字段清单：
@@ -1998,9 +2350,9 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-42. fina_indicator
+59. fina_indicator
 表说明：财务指标数据
-数据量：1,734,530 行
+数据量：1,660,248 行
 字段数量：172 个
 结构来源：stock/financial/fina_indicator.yaml
 字段清单：
@@ -2178,9 +2530,9 @@
     172. _record_hash：记录哈希
 
 ------------------------------------------------------------
-43. fina_mainbz
+60. fina_mainbz
 表说明：主营业务构成
-数据量：255,850 行
+数据量：192,550 行
 字段数量：13 个
 结构来源：stock/financial/fina_mainbz.yaml
 字段清单：
@@ -2199,9 +2551,9 @@
     13. _record_hash：记录哈希
 
 ------------------------------------------------------------
-44. forecast
+61. forecast
 表说明：业绩预告
-数据量：342,630 行
+数据量：358,370 行
 字段数量：17 个
 结构来源：stock/financial/forecast.yaml
 字段清单：
@@ -2224,7 +2576,7 @@
     17. _record_hash：记录哈希
 
 ------------------------------------------------------------
-45. fut_basic
+62. fut_basic
 表说明：期货合约信息表
 数据量：10,897 行
 字段数量：21 个
@@ -2253,7 +2605,7 @@
     21. _record_hash：记录哈希
 
 ------------------------------------------------------------
-46. fut_daily
+63. fut_daily
 表说明：期货日线行情
 数据量：2,884,185 行
 字段数量：21 个
@@ -2282,7 +2634,7 @@
     21. _record_hash：记录哈希
 
 ------------------------------------------------------------
-47. fut_holding
+64. fut_holding
 表说明：每日成交持仓排名
 数据量：24,060,250 行
 字段数量：15 个
@@ -2305,7 +2657,7 @@
     15. _record_hash：记录哈希
 
 ------------------------------------------------------------
-48. fut_mapping
+65. fut_mapping
 表说明：期货主力与连续合约
 数据量：543,669 行
 字段数量：8 个
@@ -2321,7 +2673,7 @@
     08. _record_hash：记录哈希
 
 ------------------------------------------------------------
-49. fut_settle
+66. fut_settle
 表说明：结算参数
 数据量：843,999 行
 字段数量：17 个
@@ -2346,7 +2698,7 @@
     17. _record_hash：记录哈希
 
 ------------------------------------------------------------
-50. fut_wsr
+67. fut_wsr
 表说明：仓单日报
 数据量：139,130 行
 字段数量：22 个
@@ -2376,9 +2728,9 @@
     22. _record_hash：记录哈希
 
 ------------------------------------------------------------
-51. ggt_daily
+68. ggt_daily
 表说明：港股通每日成交统计
-数据量：2,614 行
+数据量：2,627 行
 字段数量：10 个
 结构来源：stock/quotes/ggt_daily.yaml
 字段清单：
@@ -2394,9 +2746,31 @@
     10. _record_hash：记录哈希
 
 ------------------------------------------------------------
-52. ggt_top10
+69. ggt_monthly
+表说明：港股通每月成交统计
+数据量：74 行
+字段数量：14 个
+结构来源：stock/quotes/ggt_monthly.yaml
+字段清单：
+    01. month：月度
+    02. day_buy_amt：当月日均买入成交金额
+    03. day_buy_vol：当月日均买入成交笔数
+    04. day_sell_amt：当月日均卖出成交金额
+    05. day_sell_vol：当月日均卖出成交笔数
+    06. total_buy_amt：总买入成交金额
+    07. total_buy_vol：总买入成交笔数
+    08. total_sell_amt：总卖出成交金额
+    09. total_sell_vol：总卖出成交笔数
+    10. _source：数据来源
+    11. _api_name：源接口名称
+    12. _batch_id：采集批次ID
+    13. _ingest_time：入库时间
+    14. _record_hash：记录哈希
+
+------------------------------------------------------------
+70. ggt_top10
 表说明：港股通十大成交股
-数据量：35,385 行
+数据量：35,556 行
 字段数量：22 个
 结构来源：stock/quotes/ggt_top10.yaml
 字段清单：
@@ -2424,9 +2798,9 @@
     22. _record_hash：记录哈希
 
 ------------------------------------------------------------
-53. hk_hold
+71. hk_hold
 表说明：沪深股通持股明细
-数据量：5,659,208 行
+数据量：5,671,367 行
 字段数量：12 个
 结构来源：stock/special/hk_hold.yaml
 字段清单：
@@ -2444,7 +2818,7 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-54. hs_const
+72. hs_const
 表说明：沪深股通成份股
 数据量：823 行
 字段数量：10 个
@@ -2462,9 +2836,9 @@
     10. _record_hash：记录哈希
 
 ------------------------------------------------------------
-55. hsgt_top10
+73. hsgt_top10
 表说明：沪深股通十大成交股
-数据量：48,430 行
+数据量：48,710 行
 字段数量：16 个
 结构来源：stock/quotes/hsgt_top10.yaml
 字段清单：
@@ -2486,9 +2860,9 @@
     16. _record_hash：记录哈希
 
 ------------------------------------------------------------
-56. income
+74. income
 表说明：利润表
-数据量：8,812,962 行
+数据量：8,153,087 行
 字段数量：99 个
 结构来源：stock/financial/income.yaml
 字段清单：
@@ -2593,9 +2967,9 @@
     99. _record_hash：记录哈希
 
 ------------------------------------------------------------
-57. index_basic
+75. index_basic
 表说明：指数基本信息
-数据量：15,694 行
+数据量：18,376 行
 字段数量：18 个
 结构来源：index/basic/index_basic.yaml
 字段清单：
@@ -2619,9 +2993,9 @@
     18. _record_hash：记录哈希
 
 ------------------------------------------------------------
-58. index_daily
+76. index_daily
 表说明：指数日线行情
-数据量：13,936,784 行
+数据量：51,953,369 行
 字段数量：16 个
 结构来源：index/quotes/index_daily.yaml
 字段清单：
@@ -2643,9 +3017,9 @@
     16. _record_hash：记录哈希
 
 ------------------------------------------------------------
-59. index_dailybasic
+77. index_dailybasic
 表说明：大盘指数每日指标
-数据量：57,556 行
+数据量：57,734 行
 字段数量：17 个
 结构来源：index/quotes/index_dailybasic.yaml
 字段清单：
@@ -2668,9 +3042,9 @@
     17. _record_hash：记录哈希
 
 ------------------------------------------------------------
-60. index_global
+78. index_global
 表说明：国际指数
-数据量：158,507 行
+数据量：158,726 行
 字段数量：17 个
 结构来源：index/quotes/index_global.yaml
 字段清单：
@@ -2693,9 +3067,9 @@
     17. _record_hash：记录哈希
 
 ------------------------------------------------------------
-61. index_monthly
+79. index_monthly
 表说明：指数月线行情
-数据量：206,781 行
+数据量：207,781 行
 字段数量：16 个
 结构来源：index/quotes/index_monthly.yaml
 字段清单：
@@ -2717,9 +3091,9 @@
     16. _record_hash：记录哈希
 
 ------------------------------------------------------------
-62. index_weekly
+80. index_weekly
 表说明：指数周线行情
-数据量：877,266 行
+数据量：880,266 行
 字段数量：16 个
 结构来源：index/quotes/index_weekly.yaml
 字段清单：
@@ -2741,9 +3115,9 @@
     16. _record_hash：记录哈希
 
 ------------------------------------------------------------
-63. index_weight
+81. index_weight
 表说明：指数成分和权重
-数据量：8,051,563 行
+数据量：19,321,185 行
 字段数量：9 个
 结构来源：index/quotes/index_weight.yaml
 字段清单：
@@ -2758,9 +3132,9 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-64. margin
+82. margin
 表说明：融资融券交易汇总
-数据量：3,909 行
+数据量：3,923 行
 字段数量：14 个
 结构来源：stock/margin/margin.yaml
 字段清单：
@@ -2780,9 +3154,9 @@
     14. _record_hash：记录哈希
 
 ------------------------------------------------------------
-65. margin_detail
+83. margin_detail
 表说明：融资融券交易明细
-数据量：6,432,110 行
+数据量：6,493,147 行
 字段数量：16 个
 结构来源：stock/margin/margin_detail.yaml
 字段清单：
@@ -2804,9 +3178,9 @@
     16. _record_hash：记录哈希
 
 ------------------------------------------------------------
-66. margin_secs
+84. margin_secs
 表说明：融资融券标的（新）
-数据量：7,609,177 行
+数据量：7,670,519 行
 字段数量：9 个
 结构来源：stock/market/margin_secs.yaml
 字段清单：
@@ -2821,9 +3195,9 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-67. monthly
+85. monthly
 表说明：月线行情
-数据量：894,626 行
+数据量：900,214 行
 字段数量：16 个
 结构来源：stock/quotes/monthly.yaml
 字段清单：
@@ -2845,9 +3219,9 @@
     16. _record_hash：记录哈希
 
 ------------------------------------------------------------
-68. namechange
+86. namechange
 表说明：股票曾用名
-数据量：12,910 行
+数据量：12,946 行
 字段数量：11 个
 结构来源：stock/basic/namechange.yaml
 字段清单：
@@ -2864,9 +3238,9 @@
     11. _record_hash：记录哈希
 
 ------------------------------------------------------------
-69. new_share
+87. new_share
 表说明：IPO新股列表
-数据量：4,269 行
+数据量：4,276 行
 字段数量：17 个
 结构来源：stock/basic/new_share.yaml
 字段清单：
@@ -2889,9 +3263,9 @@
     17. _record_hash：记录哈希
 
 ------------------------------------------------------------
-70. pledge_detail
+88. pledge_detail
 表说明：股权质押明细
-数据量：244,214 行
+数据量：238,379 行
 字段数量：19 个
 结构来源：stock/market/pledge_detail.yaml
 字段清单：
@@ -2916,9 +3290,9 @@
     19. _record_hash：记录哈希
 
 ------------------------------------------------------------
-71. pledge_stat
+89. pledge_stat
 表说明：股权质押统计数据
-数据量：5,016,401 行
+数据量：7,019,557 行
 字段数量：12 个
 结构来源：stock/market/pledge_stat.yaml
 字段清单：
@@ -2936,9 +3310,9 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-72. report_rc
+90. report_rc
 表说明：卖方盈利预测数据
-数据量：1,987,993 行
+数据量：1,207,978 行
 字段数量：28 个
 结构来源：stock/special/report_rc.yaml
 字段清单：
@@ -2972,9 +3346,9 @@
     28. _record_hash：记录哈希
 
 ------------------------------------------------------------
-73. repurchase
+91. repurchase
 表说明：股票回购
-数据量：113,836 行
+数据量：64,720 行
 字段数量：14 个
 结构来源：stock/market/repurchase.yaml
 字段清单：
@@ -2994,9 +3368,9 @@
     14. _record_hash：记录哈希
 
 ------------------------------------------------------------
-74. share_float
+92. share_float
 表说明：限售股解禁
-数据量：45,786 行
+数据量：44,296 行
 字段数量：12 个
 结构来源：stock/market/share_float.yaml
 字段清单：
@@ -3014,7 +3388,7 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-75. slb_len
+93. slb_len
 表说明：转融资交易汇总
 数据量：2,811 行
 字段数量：11 个
@@ -3033,7 +3407,7 @@
     11. _record_hash：记录哈希
 
 ------------------------------------------------------------
-76. slb_len_mm
+94. slb_len_mm
 表说明：做市借券交易汇总
 数据量：55,214 行
 字段数量：12 个
@@ -3053,7 +3427,7 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-77. slb_sec
+95. slb_sec
 表说明：转融券交易汇总
 数据量：2,287,159 行
 字段数量：12 个
@@ -3073,7 +3447,7 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-78. slb_sec_detail
+96. slb_sec_detail
 表说明：转融券交易明细
 数据量：850,244 行
 字段数量：11 个
@@ -3092,9 +3466,93 @@
     11. _record_hash：记录哈希
 
 ------------------------------------------------------------
-79. stk_alert
+97. st
+表说明：ST风险警示板股票
+数据量：3,834 行
+字段数量：12 个
+结构来源：stock/basic/st.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. name：股票名称
+    03. pub_date：发布日期
+    04. imp_date：实施日期
+    05. st_tpye：类型
+    06. st_reason：st变更原因
+    07. st_explain：st变更详细原因
+    08. _source：数据来源
+    09. _api_name：源接口名称
+    10. _batch_id：采集批次ID
+    11. _ingest_time：入库时间
+    12. _record_hash：记录哈希
+
+------------------------------------------------------------
+98. stk_account
+表说明：股票开户数据（停）
+数据量：188 行
+字段数量：10 个
+结构来源：stock/market/stk_account.yaml
+字段清单：
+    01. date：统计周期
+    02. weekly_new：本周新增
+    03. total：期末总账户数
+    04. weekly_hold：本周持仓账户数
+    05. weekly_trade：本周参与交易账户数
+    06. _source：数据来源
+    07. _api_name：源接口名称
+    08. _batch_id：采集批次ID
+    09. _ingest_time：入库时间
+    10. _record_hash：记录哈希
+
+------------------------------------------------------------
+99. stk_account_old
+表说明：股票开户数据（旧）
+数据量：1 行
+字段数量：14 个
+结构来源：stock/market/stk_account_old.yaml
+字段清单：
+    01. date：统计周期
+    02. new_sh：本周新增（上海）
+    03. new_sz：本周新增（深圳）
+    04. active_sh：期末有效账户（上海）
+    05. active_sz：期末有效账户（深圳）
+    06. total_sh：期末账户数（上海）
+    07. total_sz：期末账户数（深圳）
+    08. trade_sh：参与交易账户数（上海）
+    09. trade_sz：参与交易账户数（深圳）
+    10. _source：数据来源
+    11. _api_name：源接口名称
+    12. _batch_id：采集批次ID
+    13. _ingest_time：入库时间
+    14. _record_hash：记录哈希
+
+------------------------------------------------------------
+100. stk_ah_comparison
+表说明：AH股比价
+数据量：30,578 行
+字段数量：16 个
+结构来源：stock/quotes/stk_ah_comparison.yaml
+字段清单：
+    01. hk_code：港股股票代码
+    02. ts_code：A股股票代码
+    03. trade_date：交易日期
+    04. hk_name：港股股票名称
+    05. hk_pct_chg：港股股票涨跌幅
+    06. hk_close：港股股票收盘价
+    07. name：A股股票名称
+    08. close：A股股票收盘价
+    09. pct_chg：A股股票涨跌幅
+    10. ah_comparison：比价
+    11. ah_premium：溢价
+    12. _source：数据来源
+    13. _api_name：源接口名称
+    14. _batch_id：采集批次ID
+    15. _ingest_time：入库时间
+    16. _record_hash：记录哈希
+
+------------------------------------------------------------
+101. stk_alert
 表说明：交易所重点提示证券
-数据量：67 行
+数据量：94 行
 字段数量：10 个
 结构来源：stock/market/stk_alert.yaml
 字段清单：
@@ -3110,9 +3568,75 @@
     10. _record_hash：记录哈希
 
 ------------------------------------------------------------
-80. stk_factor
+102. stk_auction
+表说明：开盘竞价成交
+数据量：1,807,575 行
+字段数量：14 个
+结构来源：stock/quotes/stk_auction.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：数据日期
+    03. vol：成交量
+    04. price：成交均价
+    05. amount：成交金额
+    06. pre_close：昨收价
+    07. turnover_rate：换手率
+    08. volume_ratio：量比
+    09. float_share：流通股本
+    10. _source：数据来源
+    11. _api_name：源接口名称
+    12. _batch_id：采集批次ID
+    13. _ingest_time：入库时间
+    14. _record_hash：记录哈希
+
+------------------------------------------------------------
+103. stk_auction_c
+表说明：股票收盘集合竞价数据
+数据量：14,581,760 行
+字段数量：14 个
+结构来源：stock/quotes/stk_auction_c.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. close：收盘集合竞价收盘价
+    04. open：收盘集合竞价开盘价
+    05. high：收盘集合竞价最高价
+    06. low：收盘集合竞价最低价
+    07. vol：收盘集合竞价成交量
+    08. amount：收盘集合竞价成交额
+    09. vwap：收盘集合竞价均价
+    10. _source：数据来源
+    11. _api_name：源接口名称
+    12. _batch_id：采集批次ID
+    13. _ingest_time：入库时间
+    14. _record_hash：记录哈希
+
+------------------------------------------------------------
+104. stk_auction_o
+表说明：股票开盘集合竞价数据
+数据量：14,225,372 行
+字段数量：14 个
+结构来源：stock/quotes/stk_auction_o.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. close：开盘集合竞价收盘价
+    04. open：开盘集合竞价开盘价
+    05. high：开盘集合竞价最高价
+    06. low：开盘集合竞价最低价
+    07. vol：开盘集合竞价成交量
+    08. amount：开盘集合竞价成交额
+    09. vwap：开盘集合竞价均价
+    10. _source：数据来源
+    11. _api_name：源接口名称
+    12. _batch_id：采集批次ID
+    13. _ingest_time：入库时间
+    14. _record_hash：记录哈希
+
+------------------------------------------------------------
+105. stk_factor
 表说明：股票技术因子
-数据量：17,987,612 行
+数据量：18,070,086 行
 字段数量：40 个
 结构来源：stock/special/stk_factor.yaml
 字段清单：
@@ -3158,9 +3682,9 @@
     40. _record_hash：记录哈希
 
 ------------------------------------------------------------
-81. stk_high_shock
+106. stk_high_shock
 表说明：个股严重异常波动
-数据量：22 行
+数据量：56 行
 字段数量：11 个
 结构来源：stock/market/stk_high_shock.yaml
 字段清单：
@@ -3177,9 +3701,9 @@
     11. _record_hash：记录哈希
 
 ------------------------------------------------------------
-82. stk_holdernumber
+107. stk_holdernumber
 表说明：股东户数
-数据量：393,514 行
+数据量：394,718 行
 字段数量：9 个
 结构来源：stock/market/stk_holdernumber.yaml
 字段清单：
@@ -3194,9 +3718,9 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-83. stk_holdertrade
+108. stk_holdertrade
 表说明：股东增减持
-数据量：65,526 行
+数据量：65,808 行
 字段数量：18 个
 结构来源：stock/market/stk_holdertrade.yaml
 字段清单：
@@ -3220,9 +3744,9 @@
     18. _record_hash：记录哈希
 
 ------------------------------------------------------------
-84. stk_limit
+109. stk_limit
 表说明：每日涨跌停价格
-数据量：17,441,905 行
+数据量：17,555,990 行
 字段数量：10 个
 结构来源：stock/quotes/stk_limit.yaml
 字段清单：
@@ -3238,9 +3762,9 @@
     10. _record_hash：记录哈希
 
 ------------------------------------------------------------
-85. stk_managers
+110. stk_managers
 表说明：上市公司管理层
-数据量：725,840 行
+数据量：1,056,304 行
 字段数量：17 个
 结构来源：stock/basic/stk_managers.yaml
 字段清单：
@@ -3263,7 +3787,7 @@
     17. _record_hash：记录哈希
 
 ------------------------------------------------------------
-86. stk_mins
+111. stk_mins
 表说明：分钟线行情
 数据量：13,255 行
 字段数量：13 个
@@ -3284,9 +3808,35 @@
     13. _record_hash：记录哈希
 
 ------------------------------------------------------------
-87. stk_rewards
+112. stk_nineturn
+表说明：神奇九转指标
+数据量：66,521,187 行
+字段数量：18 个
+结构来源：stock/quotes/stk_nineturn.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. freq：频率
+    04. open：开盘价
+    05. high：最高价
+    06. low：最低价
+    07. close：收盘价
+    08. vol：成交量
+    09. amount：成交额
+    10. up_count：上九转计数
+    11. down_count：下九转计数
+    12. nine_up_turn：是否上九转
+    13. nine_down_turn：是否下九转
+    14. _source：数据来源
+    15. _api_name：源接口名称
+    16. _batch_id：采集批次ID
+    17. _ingest_time：入库时间
+    18. _record_hash：记录哈希
+
+------------------------------------------------------------
+113. stk_rewards
 表说明：管理层薪酬和持股
-数据量：4,038,219 行
+数据量：1,833,197 行
 字段数量：12 个
 结构来源：stock/basic/stk_rewards.yaml
 字段清单：
@@ -3304,9 +3854,9 @@
     12. _record_hash：记录哈希
 
 ------------------------------------------------------------
-88. stk_shock
+114. stk_shock
 表说明：个股异常波动
-数据量：500 行
+数据量：926 行
 字段数量：11 个
 结构来源：stock/market/stk_shock.yaml
 字段清单：
@@ -3323,9 +3873,9 @@
     11. _record_hash：记录哈希
 
 ------------------------------------------------------------
-89. stk_surv
+115. stk_surv
 表说明：机构调研表
-数据量：110,178 行
+数据量：106,161 行
 字段数量：15 个
 结构来源：stock/special/stk_surv.yaml
 字段清单：
@@ -3346,9 +3896,43 @@
     15. _record_hash：记录哈希
 
 ------------------------------------------------------------
-90. stock_basic
+116. stk_week_month_adj
+表说明：周/月线复权行情(每日更新)
+数据量：3,951,907 行
+字段数量：26 个
+结构来源：stock/quotes/stk_week_month_adj.yaml
+字段清单：
+    01. ts_code：股票代码
+    02. trade_date：交易日期
+    03. end_date：计算截至日期
+    04. freq：频率
+    05. open：开盘价
+    06. high：最高价
+    07. low：最低价
+    08. close：收盘价
+    09. pre_close：上一周期收盘价
+    10. open_qfq：前复权开盘价
+    11. high_qfq：前复权最高价
+    12. low_qfq：前复权最低价
+    13. close_qfq：前复权收盘价
+    14. open_hfq：后复权开盘价
+    15. high_hfq：后复权最高价
+    16. low_hfq：后复权最低价
+    17. close_hfq：后复权收盘价
+    18. vol：成交量
+    19. amount：成交额
+    20. change：涨跌额
+    21. pct_chg：涨跌幅
+    22. _source：数据来源
+    23. _api_name：源接口名称
+    24. _batch_id：采集批次ID
+    25. _ingest_time：入库时间
+    26. _record_hash：记录哈希
+
+------------------------------------------------------------
+117. stock_basic
 表说明：基础信息
-数据量：5,844 行
+数据量：5,854 行
 字段数量：22 个
 结构来源：stock/basic/stock_basic.yaml
 字段清单：
@@ -3376,9 +3960,9 @@
     22. _record_hash：记录哈希
 
 ------------------------------------------------------------
-91. stock_company
+118. stock_company
 表说明：上市公司基本信息
-数据量：12,544 行
+数据量：18,814 行
 字段数量：23 个
 结构来源：stock/basic/stock_company.yaml
 字段清单：
@@ -3407,9 +3991,9 @@
     23. _record_hash：记录哈希
 
 ------------------------------------------------------------
-92. stock_hsgt
+119. stock_hsgt
 表说明：沪深港通股票列表
-数据量：713,663 行
+数据量：773,415 行
 字段数量：10 个
 结构来源：stock/basic/stock_hsgt.yaml
 字段清单：
@@ -3425,9 +4009,9 @@
     10. _record_hash：记录哈希
 
 ------------------------------------------------------------
-93. stock_st
+120. stock_st
 表说明：ST股票列表
-数据量：320,268 行
+数据量：323,883 行
 字段数量：10 个
 结构来源：stock/basic/stock_st.yaml
 字段清单：
@@ -3443,9 +4027,9 @@
     10. _record_hash：记录哈希
 
 ------------------------------------------------------------
-94. suspend_d
+121. suspend_d
 表说明：每日停复牌信息
-数据量：640,395 行
+数据量：640,795 行
 字段数量：9 个
 结构来源：stock/quotes/suspend_d.yaml
 字段清单：
@@ -3460,9 +4044,9 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-95. sz_daily_info
+122. sz_daily_info
 表说明：深圳市场每日交易概况
-数据量：67,937 行
+数据量：68,147 行
 字段数量：14 个
 结构来源：index/quotes/sz_daily_info.yaml
 字段清单：
@@ -3482,9 +4066,60 @@
     14. _record_hash：记录哈希
 
 ------------------------------------------------------------
-96. tdx_index
+123. tdx_daily
+表说明：通达信板块行情
+数据量：161,248 行
+字段数量：43 个
+结构来源：stock/market/tdx_daily.yaml
+字段清单：
+    01. ts_code：板块代码
+    02. trade_date：交易日期
+    03. close：收盘点位
+    04. open：开盘点位
+    05. high：最高点位
+    06. low：最低点位
+    07. pre_close：昨日收盘点
+    08. change：涨跌点位
+    09. pct_change：涨跌幅
+    10. vol：成交量
+    11. amount：成交额
+    12. rise：收盘涨速
+    13. vol_ratio：量比
+    14. turnover_rate：换手
+    15. swing：振幅
+    16. up_num：上涨家数
+    17. down_num：下跌家数
+    18. limit_up_num：涨停家数
+    19. limit_down_num：跌停家数
+    20. lu_days：连涨天数
+    21. 3day：3日涨幅
+    22. 5day：5日涨幅
+    23. 10day：10日涨幅
+    24. 20day：20日涨幅
+    25. 60day：60日涨幅
+    26. mtd：月初至今
+    27. ytd：年初至今
+    28. 1year：一年涨幅
+    29. pe：市盈率
+    30. pb：市净率
+    31. float_mv：流通市值
+    32. ab_total_mv：AB股总市值
+    33. float_share：流通股
+    34. total_share：总股本
+    35. bm_buy_net：主买净额
+    36. bm_buy_ratio：主买占比
+    37. bm_net：主力净额
+    38. bm_ratio：主力占比
+    39. _source：数据来源
+    40. _api_name：源接口名称
+    41. _batch_id：采集批次ID
+    42. _ingest_time：入库时间
+    43. _record_hash：记录哈希
+
+------------------------------------------------------------
+124. tdx_index
 表说明：通达信板块信息
-数据量：150,635 行
+数据量：159,161 行
 字段数量：14 个
 结构来源：stock/market/tdx_index.yaml
 字段清单：
@@ -3504,9 +4139,26 @@
     14. _record_hash：记录哈希
 
 ------------------------------------------------------------
-97. top10_floatholders
+125. tdx_member
+表说明：通达信板块成分
+数据量：21,199,524 行
+字段数量：9 个
+结构来源：stock/market/tdx_member.yaml
+字段清单：
+    01. ts_code：板块代码
+    02. trade_date：交易日期
+    03. con_code：成分股票代码
+    04. con_name：成分股票名称
+    05. _source：数据来源
+    06. _api_name：源接口名称
+    07. _batch_id：采集批次ID
+    08. _ingest_time：入库时间
+    09. _record_hash：记录哈希
+
+------------------------------------------------------------
+126. top10_floatholders
 表说明：前十大流通股东
-数据量：60,300 行
+数据量：54,352 行
 字段数量：14 个
 结构来源：stock/market/top10_floatholders.yaml
 字段清单：
@@ -3526,9 +4178,9 @@
     14. _record_hash：记录哈希
 
 ------------------------------------------------------------
-98. top10_holders
+127. top10_holders
 表说明：前十大股东
-数据量：126,590 行
+数据量：140,760 行
 字段数量：14 个
 结构来源：stock/market/top10_holders.yaml
 字段清单：
@@ -3548,9 +4200,9 @@
     14. _record_hash：记录哈希
 
 ------------------------------------------------------------
-99. top_inst
+128. top_inst
 表说明：龙虎榜机构明细
-数据量：185,823 行
+数据量：187,016 行
 字段数量：15 个
 结构来源：stock/market/top_inst.yaml
 字段清单：
@@ -3571,9 +4223,9 @@
     15. _record_hash：记录哈希
 
 ------------------------------------------------------------
-100. top_list
+129. top_list
 表说明：龙虎榜每日明细
-数据量：222,490 行
+数据量：223,683 行
 字段数量：20 个
 结构来源：stock/market/top_list.yaml
 字段清单：
@@ -3599,9 +4251,9 @@
     20. _record_hash：记录哈希
 
 ------------------------------------------------------------
-101. trade_cal
+130. trade_cal
 表说明：交易日历
-数据量：157,576 行
+数据量：72,609 行
 字段数量：9 个
 结构来源：stock/basic/trade_cal.yaml
 字段清单：
@@ -3616,9 +4268,9 @@
     09. _record_hash：记录哈希
 
 ------------------------------------------------------------
-102. weekly
+131. weekly
 表说明：周线行情
-数据量：3,758,545 行
+数据量：3,775,292 行
 字段数量：16 个
 结构来源：stock/quotes/weekly.yaml
 字段清单：

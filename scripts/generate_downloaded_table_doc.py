@@ -29,6 +29,7 @@ DEFAULT_OUTPUT = ROOT_DIR / "docs" / "downloaded_tables_report.txt"
 DEFAULT_STATS_MD_OUTPUT = ROOT_DIR / "docs" / "downloaded_tables_report_stats.md"
 DEFAULT_STATS_TXT_OUTPUT = ROOT_DIR / "docs" / "downloaded_tables_report_stats.txt"
 INTERNAL_TABLES = {"tushare_integration_log"}
+EXCLUDED_TABLE_PREFIXES = ("dws_",)
 
 LAYER_ORDER = ["DWS汇总层", "DWD标准层", "源表/同步表"]
 TOPIC_ORDER = ["股票", "指数/板块", "期货", "沪深港通", "两融/转融通", "日历/市场", "概念题材", "研报/预测", "其他"]
@@ -187,7 +188,11 @@ def query_table_names(db_engine, settings: TushareIntegrationSettings) -> list[s
         """
 
     table_names = db_engine.query_df(sql)["name"].tolist()
-    return [table_name for table_name in table_names if table_name not in INTERNAL_TABLES]
+    return [
+        table_name
+        for table_name in table_names
+        if table_name not in INTERNAL_TABLES and not table_name.startswith(EXCLUDED_TABLE_PREFIXES)
+    ]
 
 
 def count_rows(db_engine, settings: TushareIntegrationSettings, table_name: str) -> int:
@@ -306,7 +311,7 @@ def build_database_label(settings: TushareIntegrationSettings) -> str:
 
 def build_scope(include_empty: bool) -> str:
     empty_scope = "包含 0 行空表" if include_empty else "排除 0 行空表"
-    return f"数据库中实际存在、表名不以 _raw 结尾、排除内部日志表、{empty_scope}的数据表"
+    return f"数据库中实际存在、表名不以 _raw 结尾、排除内部日志表、排除 DWS 层表、{empty_scope}的数据表"
 
 
 def format_percent(value: int, total: int) -> str:
