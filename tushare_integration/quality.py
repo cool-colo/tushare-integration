@@ -30,6 +30,11 @@ DWD_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema" / "dwd"
 DWS_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema" / "dws"
 ODS_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema"
 FACTOR_MAPPING_CSV = ROOT_DIR / "docs" / "prd" / "factor_mapping_readable.csv"
+FACTOR_MAPPING_CSV_CANDIDATES = [
+    FACTOR_MAPPING_CSV,
+    ROOT_DIR / "docs" / "prd" / "factor" / "v1" / "factor_mapping_readable.csv",
+    ROOT_DIR / "docs" / "prd" / "factor" / "v2" / "factor_mapping_readable_v2.csv",
+]
 
 DWD_TRADE_RELEVANT_TABLES = {
     "dwd_trade_calendar",
@@ -77,6 +82,13 @@ DQC_FACTOR_FIELD_ALIASES = {
 
 class UnsupportedFactorExpression(ValueError):
     pass
+
+
+def _factor_mapping_csv_path() -> Path:
+    return next(
+        (candidate for candidate in FACTOR_MAPPING_CSV_CANDIDATES if candidate.exists()),
+        FACTOR_MAPPING_CSV,
+    )
 
 
 class _FactorExpressionReferenceEvaluator:
@@ -2295,7 +2307,7 @@ class DqcManager:
         ]
 
     def _dws_factor_count(self) -> int:
-        with open(FACTOR_MAPPING_CSV, "r", encoding="utf-8") as f:
+        with open(_factor_mapping_csv_path(), "r", encoding="utf-8") as f:
             rows = csv.DictReader(f)
             return len({row["factor_id"].strip() for row in rows if row.get("factor_id", "").strip()})
 
@@ -3096,7 +3108,7 @@ class DqcManager:
         ]
 
     def _load_factor_mapping(self) -> list[dict[str, str]]:
-        with open(FACTOR_MAPPING_CSV, "r", encoding="utf-8") as f:
+        with open(_factor_mapping_csv_path(), "r", encoding="utf-8") as f:
             rows = csv.DictReader(f)
             mapping: list[dict[str, str]] = []
             seen: set[str] = set()

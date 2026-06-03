@@ -7,7 +7,16 @@ from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_MAPPING = ROOT_DIR / "docs" / "prd" / "factor_mapping_readable.csv"
+DEFAULT_MAPPING_CANDIDATES = [
+    DEFAULT_MAPPING,
+    ROOT_DIR / "docs" / "prd" / "factor" / "v1" / "factor_mapping_readable.csv",
+    ROOT_DIR / "docs" / "prd" / "factor" / "v2" / "factor_mapping_readable_v2.csv",
+]
 DEFAULT_OUTPUT = ROOT_DIR / "tushare_integration" / "schema" / "dws" / "dws_stock_factor_wide_matrix.yaml"
+
+
+def _default_mapping() -> Path:
+    return next((candidate for candidate in DEFAULT_MAPPING_CANDIDATES if candidate.exists()), DEFAULT_MAPPING)
 
 
 def _load_factors(path: Path) -> list[tuple[str, str]]:
@@ -80,7 +89,7 @@ def render_schema(factors: list[tuple[str, str]]) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate dws_stock_factor_wide_matrix schema from factor CSV.")
-    parser.add_argument("--mapping", type=Path, default=DEFAULT_MAPPING)
+    parser.add_argument("--mapping", type=Path, default=_default_mapping())
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args()
 

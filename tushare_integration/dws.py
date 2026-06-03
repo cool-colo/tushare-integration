@@ -17,6 +17,11 @@ from tushare_integration.settings import TushareIntegrationSettings
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DWS_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema" / "dws"
 FACTOR_MAPPING_CSV = ROOT_DIR / "docs" / "prd" / "factor_mapping_readable.csv"
+FACTOR_MAPPING_CSV_CANDIDATES = [
+    FACTOR_MAPPING_CSV,
+    ROOT_DIR / "docs" / "prd" / "factor" / "v1" / "factor_mapping_readable.csv",
+    ROOT_DIR / "docs" / "prd" / "factor" / "v2" / "factor_mapping_readable_v2.csv",
+]
 DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT = 1200
 
 STOCK_FACTOR_WIDE_SOURCES = [
@@ -25,6 +30,9 @@ STOCK_FACTOR_WIDE_SOURCES = [
     "dwd_stock_daily_basic",
     "dwd_stock_eod_quote_metrics",
     "dwd_stock_financial_indicator",
+    "dwd_stock_income",
+    "dwd_stock_balance_sheet",
+    "dwd_stock_cashflow",
     "dwd_stock_northbound_holding",
     "dwd_stock_margin_trading",
     "dwd_stock_chip_distribution",
@@ -58,7 +66,11 @@ def _sql_string_literal(value: str) -> str:
 
 
 def _load_factor_ids() -> list[str]:
-    with open(FACTOR_MAPPING_CSV, "r", encoding="utf-8") as f:
+    mapping_csv = next(
+        (candidate for candidate in FACTOR_MAPPING_CSV_CANDIDATES if candidate.exists()),
+        FACTOR_MAPPING_CSV,
+    )
+    with open(mapping_csv, "r", encoding="utf-8") as f:
         rows = csv.DictReader(f)
         factor_ids = []
         seen = set()
@@ -164,7 +176,10 @@ financial_indicator AS (
         eps,
         bps,
         ocfps,
-        rd_exp
+        rd_exp,
+        assets_turn,
+        inv_turn,
+        ar_turn
     FROM (
         SELECT
             src.*,
@@ -179,6 +194,99 @@ financial_indicator AS (
         WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
     ) src
     WHERE financial_rank = 1
+),
+income AS (
+    SELECT
+        instrument_id,
+        event_date,
+        available_trade_date,
+        source_batch_id,
+        source_record_hash,
+        total_revenue,
+        revenue,
+        n_income,
+        n_income_attr_p,
+        compr_inc_attr_p,
+        compr_inc_attr_m_s,
+        oper_cost,
+        total_profit,
+        ebit,
+        ebitda,
+        admin_exp,
+        sell_exp,
+        fin_exp,
+        income_tax,
+        total_opcost
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY src.instrument_id, src.available_trade_date
+                ORDER BY
+                    src.event_date DESC,
+                    src.sys_from DESC,
+                    src.source_record_hash DESC
+            ) AS income_rank
+        FROM {db_name}.dwd_stock_income src
+        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
+    ) src
+    WHERE income_rank = 1
+),
+balance_sheet AS (
+    SELECT
+        instrument_id,
+        event_date,
+        available_trade_date,
+        source_batch_id,
+        source_record_hash,
+        total_assets,
+        total_liab,
+        total_cur_liab,
+        total_cur_assets,
+        money_cap,
+        total_hldr_eqy_exc_min_int
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY src.instrument_id, src.available_trade_date
+                ORDER BY
+                    src.event_date DESC,
+                    src.sys_from DESC,
+                    src.source_record_hash DESC
+            ) AS balance_sheet_rank
+        FROM {db_name}.dwd_stock_balance_sheet src
+        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
+    ) src
+    WHERE balance_sheet_rank = 1
+),
+cashflow AS (
+    SELECT
+        instrument_id,
+        event_date,
+        available_trade_date,
+        source_batch_id,
+        source_record_hash,
+        c_inf_fr_operate_a,
+        st_cash_out_act,
+        stot_out_inv_act,
+        stot_inflows_inv_act,
+        stot_cash_in_fnc_act,
+        stot_cashout_fnc_act
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY src.instrument_id, src.available_trade_date
+                ORDER BY
+                    src.event_date DESC,
+                    src.sys_from DESC,
+                    src.source_record_hash DESC
+            ) AS cashflow_rank
+        FROM {db_name}.dwd_stock_cashflow src
+        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
+    ) src
+    WHERE cashflow_rank = 1
 ),
 northbound_holding AS (
     SELECT *
@@ -212,6 +320,9 @@ wide_candidates AS (
             coalesce(daily_basic.available_trade_date, price.available_trade_date),
             coalesce(quote_metrics.available_trade_date, price.available_trade_date),
             coalesce(financial_indicator.available_trade_date, price.available_trade_date),
+            coalesce(income.available_trade_date, price.available_trade_date),
+            coalesce(balance_sheet.available_trade_date, price.available_trade_date),
+            coalesce(cashflow.available_trade_date, price.available_trade_date),
             coalesce(northbound_holding.available_trade_date, price.available_trade_date),
             coalesce(margin_trading.available_trade_date, price.available_trade_date),
             coalesce(chip_distribution.available_trade_date, price.available_trade_date)
@@ -267,6 +378,36 @@ wide_candidates AS (
         financial_indicator.bps AS bps,
         financial_indicator.ocfps AS ocfps,
         financial_indicator.rd_exp AS rd_exp,
+        financial_indicator.assets_turn AS assets_turn,
+        financial_indicator.inv_turn AS inv_turn,
+        financial_indicator.ar_turn AS ar_turn,
+        income.total_revenue AS total_revenue,
+        income.revenue AS revenue,
+        income.n_income AS n_income,
+        income.n_income_attr_p AS n_income_attr_p,
+        income.compr_inc_attr_p AS compr_inc_attr_p,
+        income.compr_inc_attr_m_s AS compr_inc_attr_m_s,
+        income.oper_cost AS oper_cost,
+        income.total_profit AS total_profit,
+        income.ebit AS ebit,
+        income.ebitda AS ebitda,
+        income.admin_exp AS admin_exp,
+        income.sell_exp AS sell_exp,
+        income.fin_exp AS fin_exp,
+        income.income_tax AS income_tax,
+        income.total_opcost AS total_opcost,
+        balance_sheet.total_assets AS total_assets,
+        balance_sheet.total_liab AS total_liab,
+        balance_sheet.total_cur_liab AS total_cur_liab,
+        balance_sheet.total_cur_assets AS total_cur_assets,
+        balance_sheet.money_cap AS money_cap,
+        balance_sheet.total_hldr_eqy_exc_min_int AS total_hldr_eqy_exc_min_int,
+        cashflow.c_inf_fr_operate_a AS c_inf_fr_operate_a,
+        cashflow.st_cash_out_act AS st_cash_out_act,
+        cashflow.stot_out_inv_act AS stot_out_inv_act,
+        cashflow.stot_inflows_inv_act AS stot_inflows_inv_act,
+        cashflow.stot_cash_in_fnc_act AS stot_cash_in_fnc_act,
+        cashflow.stot_cashout_fnc_act AS stot_cashout_fnc_act,
         northbound_holding.vol AS hk_hold_vol,
         northbound_holding.ratio AS hk_hold_ratio,
         margin_trading.rzye AS rzye,
@@ -289,6 +430,9 @@ wide_candidates AS (
             '|', coalesce(daily_basic.source_batch_id, ''),
             '|', coalesce(quote_metrics.source_batch_id, ''),
             '|', coalesce(financial_indicator.source_batch_id, ''),
+            '|', coalesce(income.source_batch_id, ''),
+            '|', coalesce(balance_sheet.source_batch_id, ''),
+            '|', coalesce(cashflow.source_batch_id, ''),
             '|', coalesce(northbound_holding.source_batch_id, ''),
             '|', coalesce(margin_trading.source_batch_id, ''),
             '|', coalesce(chip_distribution.source_batch_id, '')
@@ -299,6 +443,9 @@ wide_candidates AS (
             '|', coalesce(daily_basic.source_record_hash, ''),
             '|', coalesce(quote_metrics.source_record_hash, ''),
             '|', coalesce(financial_indicator.source_record_hash, ''),
+            '|', coalesce(income.source_record_hash, ''),
+            '|', coalesce(balance_sheet.source_record_hash, ''),
+            '|', coalesce(cashflow.source_record_hash, ''),
             '|', coalesce(northbound_holding.source_record_hash, ''),
             '|', coalesce(margin_trading.source_record_hash, ''),
             '|', coalesce(chip_distribution.source_record_hash, '')
@@ -316,6 +463,15 @@ wide_candidates AS (
     ASOF LEFT JOIN financial_indicator
         ON price.instrument_id = financial_indicator.instrument_id
        AND price.available_trade_date >= financial_indicator.available_trade_date
+    ASOF LEFT JOIN income
+        ON price.instrument_id = income.instrument_id
+       AND price.available_trade_date >= income.available_trade_date
+    ASOF LEFT JOIN balance_sheet
+        ON price.instrument_id = balance_sheet.instrument_id
+       AND price.available_trade_date >= balance_sheet.available_trade_date
+    ASOF LEFT JOIN cashflow
+        ON price.instrument_id = cashflow.instrument_id
+       AND price.available_trade_date >= cashflow.available_trade_date
     LEFT JOIN northbound_holding
         ON northbound_holding.instrument_id = price.instrument_id
        AND northbound_holding.event_date = price.event_date
@@ -385,6 +541,36 @@ SELECT
     bps,
     ocfps,
     rd_exp,
+    assets_turn,
+    inv_turn,
+    ar_turn,
+    total_revenue,
+    revenue,
+    n_income,
+    n_income_attr_p,
+    compr_inc_attr_p,
+    compr_inc_attr_m_s,
+    oper_cost,
+    total_profit,
+    ebit,
+    ebitda,
+    admin_exp,
+    sell_exp,
+    fin_exp,
+    income_tax,
+    total_opcost,
+    total_assets,
+    total_liab,
+    total_cur_liab,
+    total_cur_assets,
+    money_cap,
+    total_hldr_eqy_exc_min_int,
+    c_inf_fr_operate_a,
+    st_cash_out_act,
+    stot_out_inv_act,
+    stot_inflows_inv_act,
+    stot_cash_in_fnc_act,
+    stot_cashout_fnc_act,
     hk_hold_vol,
     hk_hold_ratio,
     rzye,

@@ -8,6 +8,7 @@ import pandas as pd
 
 from tushare_integration.settings import TushareIntegrationSettings
 from tushare_integration.db_engine import ClickhouseEngine
+from tushare_integration.dwd import DWDManager
 from tushare_integration.dws import DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT, DWSManager
 from tushare_integration.manager import CrawlManager
 from tushare_integration.spiders.index.quotes import IndexWeightSpider
@@ -107,6 +108,119 @@ class TushareResponseTest(unittest.TestCase):
         self.assertIn("|', coalesce(adj_factor.source_batch_id, '')", sql)
         self.assertIn("|', coalesce(adj_factor.source_record_hash, '')", sql)
         self.assertNotIn("ASOF LEFT JOIN adj_factor", sql)
+
+    def test_financial_source_and_dwd_schemas_include_requested_factor_fields(self):
+        manager = object.__new__(DWDManager)
+        requested_fields_by_table = {
+            "dwd_stock_income": {
+                "total_revenue",
+                "revenue",
+                "n_income",
+                "n_income_attr_p",
+                "compr_inc_attr_p",
+                "compr_inc_attr_m_s",
+                "oper_cost",
+                "total_profit",
+                "ebit",
+                "ebitda",
+                "admin_exp",
+                "sell_exp",
+                "fin_exp",
+                "income_tax",
+                "total_opcost",
+            },
+            "dwd_stock_balance_sheet": {
+                "total_assets",
+                "total_liab",
+                "total_cur_liab",
+                "total_cur_assets",
+                "money_cap",
+                "total_hldr_eqy_exc_min_int",
+            },
+            "dwd_stock_cashflow": {
+                "c_inf_fr_operate_a",
+                "st_cash_out_act",
+                "stot_out_inv_act",
+                "stot_inflows_inv_act",
+                "stot_cash_in_fnc_act",
+                "stot_cashout_fnc_act",
+            },
+            "dwd_stock_financial_indicator": {
+                "assets_turn",
+                "inv_turn",
+                "ar_turn",
+            },
+        }
+
+        for table_name, requested_fields in requested_fields_by_table.items():
+            spec = manager.load_spec(table_name)
+            dwd_schema = manager.build_schema(spec)
+            dwd_columns = {column["name"] for column in dwd_schema["columns"]}
+
+            self.assertTrue(
+                requested_fields.issubset(dwd_columns),
+                f"{table_name} missing {sorted(requested_fields - dwd_columns)}",
+            )
+
+    def test_dws_stock_factor_wide_includes_financial_statement_sources(self):
+        manager = object.__new__(DWSManager)
+        manager.settings = self._clickhouse_settings()
+
+        sql = manager.render_sync_sql("dws_stock_factor_wide")
+        spec = manager.load_spec("dws_stock_factor_wide")
+        column_names = {column["name"] for column in spec["schema"]["columns"]}
+        requested_columns = {
+            "assets_turn",
+            "inv_turn",
+            "ar_turn",
+            "total_revenue",
+            "revenue",
+            "n_income",
+            "n_income_attr_p",
+            "compr_inc_attr_p",
+            "compr_inc_attr_m_s",
+            "oper_cost",
+            "total_profit",
+            "ebit",
+            "ebitda",
+            "admin_exp",
+            "sell_exp",
+            "fin_exp",
+            "income_tax",
+            "total_opcost",
+            "total_assets",
+            "total_liab",
+            "total_cur_liab",
+            "total_cur_assets",
+            "money_cap",
+            "total_hldr_eqy_exc_min_int",
+            "c_inf_fr_operate_a",
+            "st_cash_out_act",
+            "stot_out_inv_act",
+            "stot_inflows_inv_act",
+            "stot_cash_in_fnc_act",
+            "stot_cashout_fnc_act",
+        }
+
+        self.assertTrue(requested_columns.issubset(column_names))
+        self.assertIn("dwd_stock_income", manager.get_required_source_tables(spec))
+        self.assertIn("dwd_stock_balance_sheet", manager.get_required_source_tables(spec))
+        self.assertIn("dwd_stock_cashflow", manager.get_required_source_tables(spec))
+        self.assertIn("FROM default.dwd_stock_income", sql)
+        self.assertIn("FROM default.dwd_stock_balance_sheet", sql)
+        self.assertIn("FROM default.dwd_stock_cashflow", sql)
+        self.assertIn("ASOF LEFT JOIN income", sql)
+        self.assertIn("ASOF LEFT JOIN balance_sheet", sql)
+        self.assertIn("ASOF LEFT JOIN cashflow", sql)
+        self.assertIn("price.available_trade_date >= income.available_trade_date", sql)
+        self.assertIn("price.available_trade_date >= balance_sheet.available_trade_date", sql)
+        self.assertIn("price.available_trade_date >= cashflow.available_trade_date", sql)
+        self.assertIn("income.total_revenue AS total_revenue", sql)
+        self.assertIn("balance_sheet.total_assets AS total_assets", sql)
+        self.assertIn("cashflow.c_inf_fr_operate_a AS c_inf_fr_operate_a", sql)
+        self.assertIn("|', coalesce(income.source_batch_id, '')", sql)
+        self.assertIn("|', coalesce(balance_sheet.source_record_hash, '')", sql)
+        self.assertIn("|', coalesce(cashflow.source_record_hash, '')", sql)
 
     def test_parse_response_treats_common_no_data_message_as_empty_item(self):
         spider = CyqChipsSpider()

@@ -16,6 +16,11 @@ import pandas as pd
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 DEFAULT_MAPPING_CSV = ROOT_DIR / "docs" / "prd" / "factor_mapping_readable.csv"
+DEFAULT_MAPPING_CSV_CANDIDATES = [
+    DEFAULT_MAPPING_CSV,
+    ROOT_DIR / "docs" / "prd" / "factor" / "v1" / "factor_mapping_readable.csv",
+    ROOT_DIR / "docs" / "prd" / "factor" / "v2" / "factor_mapping_readable_v2.csv",
+]
 FIELD_RE = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)")
 
 
@@ -267,7 +272,7 @@ def _default_mapping_csv() -> Path:
     if env_path:
         return Path(env_path)
     candidates = [
-        DEFAULT_MAPPING_CSV,
+        *DEFAULT_MAPPING_CSV_CANDIDATES,
         Path.cwd() / "factor_mapping_readable.csv",
         Path(__file__).resolve().parent / "factor_mapping_readable.csv",
     ]

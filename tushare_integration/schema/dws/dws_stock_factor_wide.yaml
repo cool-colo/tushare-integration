@@ -242,6 +242,126 @@ schema:
       data_type: float
       nullable: true
       comment: 研发费用
+    - name: assets_turn
+      data_type: float
+      nullable: true
+      comment: 总资产周转率
+    - name: inv_turn
+      data_type: float
+      nullable: true
+      comment: 存货周转率
+    - name: ar_turn
+      data_type: float
+      nullable: true
+      comment: 应收账款周转率
+    - name: total_revenue
+      data_type: float
+      nullable: true
+      comment: 营业总收入
+    - name: revenue
+      data_type: float
+      nullable: true
+      comment: 营业收入
+    - name: n_income
+      data_type: float
+      nullable: true
+      comment: 净利润
+    - name: n_income_attr_p
+      data_type: float
+      nullable: true
+      comment: 归属于母公司所有者的净利润
+    - name: compr_inc_attr_p
+      data_type: float
+      nullable: true
+      comment: 归属于母公司所有者的综合收益总额
+    - name: compr_inc_attr_m_s
+      data_type: float
+      nullable: true
+      comment: 归属于少数股东的综合收益总额
+    - name: oper_cost
+      data_type: float
+      nullable: true
+      comment: 营业成本
+    - name: total_profit
+      data_type: float
+      nullable: true
+      comment: 利润总额
+    - name: ebit
+      data_type: float
+      nullable: true
+      comment: 息税前利润
+    - name: ebitda
+      data_type: float
+      nullable: true
+      comment: 息税折旧摊销前利润
+    - name: admin_exp
+      data_type: float
+      nullable: true
+      comment: 管理费用
+    - name: sell_exp
+      data_type: float
+      nullable: true
+      comment: 销售费用
+    - name: fin_exp
+      data_type: float
+      nullable: true
+      comment: 财务费用
+    - name: income_tax
+      data_type: float
+      nullable: true
+      comment: 所得税费用
+    - name: total_opcost
+      data_type: float
+      nullable: true
+      comment: 营业总成本
+    - name: total_assets
+      data_type: float
+      nullable: true
+      comment: 资产总计
+    - name: total_liab
+      data_type: float
+      nullable: true
+      comment: 负债合计
+    - name: total_cur_liab
+      data_type: float
+      nullable: true
+      comment: 流动负债合计
+    - name: total_cur_assets
+      data_type: float
+      nullable: true
+      comment: 流动资产合计
+    - name: money_cap
+      data_type: float
+      nullable: true
+      comment: 货币资金
+    - name: total_hldr_eqy_exc_min_int
+      data_type: float
+      nullable: true
+      comment: 股东权益合计(不含少数股东权益)
+    - name: c_inf_fr_operate_a
+      data_type: float
+      nullable: true
+      comment: 经营活动现金流入小计
+    - name: st_cash_out_act
+      data_type: float
+      nullable: true
+      comment: 经营活动现金流出小计
+    - name: stot_out_inv_act
+      data_type: float
+      nullable: true
+      comment: 投资活动现金流出小计
+    - name: stot_inflows_inv_act
+      data_type: float
+      nullable: true
+      comment: 投资活动现金流入小计
+    - name: stot_cash_in_fnc_act
+      data_type: float
+      nullable: true
+      comment: 筹资活动现金流入小计
+    - name: stot_cashout_fnc_act
+      data_type: float
+      nullable: true
+      comment: 筹资活动现金流出小计
     - name: hk_hold_vol
       data_type: float
       nullable: true
@@ -303,7 +423,7 @@ schema:
       comment: 来源系统
     - name: source_table
       data_type: str
-      length: 255
+      length: 512
       comment: 来源表
     - name: source_batch_id
       data_type: str
