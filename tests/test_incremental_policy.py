@@ -1,9 +1,11 @@
 import json
 import unittest
+from unittest import mock
 from types import SimpleNamespace
 
 import pandas as pd
 
+from tushare_integration.spiders.index.quotes import IndexDailySpider
 from tushare_integration.spiders.stock.market import DCIndexSpider
 from tushare_integration.spiders.stock.quotes import StockDailySpider
 
@@ -46,7 +48,7 @@ class IncrementalPolicyTest(unittest.TestCase):
         requests = list(spider.start_requests())
 
         self.assertEqual([self._request_params(request) for request in requests], [{"trade_date": "20260511"}])
-        self.assertIn("cal_date >= '2026-05-01'", spider.db_engine.queries[-1])
+        self.assertTrue(any("cal_date >= '2026-05-01'" in query for query in spider.db_engine.queries))
         self.assertNotIn("1970-01-01", spider.db_engine.queries[-1])
 
     def test_empty_daily_table_uses_configured_default_when_min_cal_date_missing(self):
@@ -65,6 +67,34 @@ class IncrementalPolicyTest(unittest.TestCase):
         self.assertEqual([self._request_params(request) for request in requests], [{"trade_date": "20240102"}])
         self.assertIn("cal_date >= '2024-01-01'", spider.db_engine.queries[-1])
         self.assertNotIn("1970-01-01", spider.db_engine.queries[-1])
+
+    def test_index_daily_uses_daily_ts_code_trade_date_incremental_requests(self):
+        spider = IndexDailySpider()
+        spider.spider_settings = self._settings(backfill_days=7)
+        spider.db_engine = DummyDB(
+            [
+                pd.DataFrame({"row_count": [10], "latest_trade_date": [pd.Timestamp("2026-05-08")]}),
+                pd.DataFrame({"cal_date": pd.to_datetime(["2026-05-11"])}),
+                pd.DataFrame(
+                    {
+                        "ts_code": ["000001.SH", "000002.SH"],
+                        "base_date": [pd.Timestamp("1990-12-19"), pd.Timestamp("2026-05-12")],
+                        "list_date": [pd.Timestamp("1991-07-15"), pd.Timestamp("2026-05-12")],
+                        "exp_date": [pd.Timestamp("1970-01-01"), pd.Timestamp("1970-01-01")],
+                    }
+                ),
+                pd.DataFrame({"ts_code": ["000002.SH"], "trade_date": pd.to_datetime(["2026-05-11"])}),
+            ]
+        )
+
+        with mock.patch.object(spider, "get_request_end_date", return_value=pd.Timestamp("2026-05-11").date()):
+            requests = list(spider.start_requests())
+
+        self.assertEqual(
+            [self._request_params(request) for request in requests],
+            [{"ts_code": "000001.SH", "trade_date": "20260511"}],
+        )
+        self.assertTrue(any("cal_date >= '2026-05-01'" in query for query in spider.db_engine.queries))
 
     def test_daily_type_spider_uses_dimension_high_watermark_not_full_history(self):
         spider = DCIndexSpider()

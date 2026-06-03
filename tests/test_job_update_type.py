@@ -1,4 +1,7 @@
+from pathlib import Path
 import unittest
+
+import yaml
 
 from tushare_integration.manager import CrawlManager
 
@@ -47,3 +50,20 @@ class JobUpdateTypeTest(unittest.TestCase):
     def test_filter_job_spiders_rejects_unknown_update_type(self):
         with self.assertRaisesRegex(ValueError, "Unsupported update_type"):
             CrawlManager.normalize_update_type("nightly")
+
+    def test_index_daily_job_is_incremental(self):
+        jobs_path = Path(__file__).resolve().parents[1] / "jobs.yaml"
+        jobs = yaml.safe_load(jobs_path.read_text(encoding="utf-8"))
+        index_quotes_job = next(job for job in jobs["cronjob"] if job["name"] == "index/quotes")
+
+        incremental_spiders = [
+            spider["name"]
+            for spider in CrawlManager.filter_job_spiders_by_update_type(index_quotes_job, "incremental")
+        ]
+        full_spiders = [
+            spider["name"]
+            for spider in CrawlManager.filter_job_spiders_by_update_type(index_quotes_job, "full")
+        ]
+
+        self.assertIn("index/quotes/index_daily", incremental_spiders)
+        self.assertNotIn("index/quotes/index_daily", full_spiders)

@@ -22,7 +22,6 @@ cronjob:
     name: index/quotes
     spiders:
       - name: index/quotes/index_daily
-        update_type: full
       - name: index/quotes/daily_info
       - name: index/quotes/index_dailybasic
       - name: index/quotes/index_global
