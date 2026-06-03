@@ -95,6 +95,7 @@ class IncrementalPolicyTest(unittest.TestCase):
             [{"ts_code": "000001.SH", "trade_date": "20260511"}],
         )
         self.assertTrue(any("cal_date >= '2026-05-01'" in query for query in spider.db_engine.queries))
+        self.assertTrue(any("market IN ('CSI', 'SSE', 'SZSE')" in query for query in spider.db_engine.queries))
 
     def test_daily_type_spider_uses_dimension_high_watermark_not_full_history(self):
         spider = DCIndexSpider()

@@ -53,9 +53,10 @@ class IndexDailySpider(DailySpider):
 
         index_list = conn.query_df(
             f"""
-                SELECT ts_code, base_date, list_date, exp_date
+                SELECT DISTINCT ts_code, base_date, list_date, exp_date
                 FROM {db_name}.{self.custom_settings.get('BASIC_TABLE')}
                 WHERE ts_code != ''
+                  AND market IN ('CSI', 'SSE', 'SZSE')
                 ORDER BY ts_code
                 """
         )
