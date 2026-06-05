@@ -16,6 +16,11 @@ import pandas as pd
 import yaml
 
 from tushare_integration.db_engine import DatabaseEngineFactory, DBEngine
+from tushare_integration.factor_mapping import (
+    DEFAULT_FACTOR_MAPPING_CSV,
+    FACTOR_MAPPING_CSV_CANDIDATES as DEFAULT_FACTOR_MAPPING_CSV_CANDIDATES,
+    resolve_factor_mapping_csv,
+)
 from tushare_integration.settings import TushareIntegrationSettings
 
 
@@ -29,12 +34,8 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 DWD_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema" / "dwd"
 DWS_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema" / "dws"
 ODS_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema"
-FACTOR_MAPPING_CSV = ROOT_DIR / "docs" / "prd" / "factor_mapping_readable.csv"
-FACTOR_MAPPING_CSV_CANDIDATES = [
-    FACTOR_MAPPING_CSV,
-    ROOT_DIR / "docs" / "prd" / "factor" / "v1" / "factor_mapping_readable.csv",
-    ROOT_DIR / "docs" / "prd" / "factor" / "v2" / "factor_mapping_readable_v2.csv",
-]
+FACTOR_MAPPING_CSV = DEFAULT_FACTOR_MAPPING_CSV
+FACTOR_MAPPING_CSV_CANDIDATES = DEFAULT_FACTOR_MAPPING_CSV_CANDIDATES
 
 DWD_TRADE_RELEVANT_TABLES = {
     "dwd_trade_calendar",
@@ -85,10 +86,7 @@ class UnsupportedFactorExpression(ValueError):
 
 
 def _factor_mapping_csv_path() -> Path:
-    return next(
-        (candidate for candidate in FACTOR_MAPPING_CSV_CANDIDATES if candidate.exists()),
-        FACTOR_MAPPING_CSV,
-    )
+    return resolve_factor_mapping_csv(require_exists=True)
 
 
 class _FactorExpressionReferenceEvaluator:

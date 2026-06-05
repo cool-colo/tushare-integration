@@ -4,7 +4,6 @@ import ast
 import hashlib
 import json
 import math
-import os
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -13,14 +12,15 @@ from typing import Iterable
 import numpy as np
 import pandas as pd
 
+from tushare_integration.factor_mapping import (
+    DEFAULT_FACTOR_MAPPING_CSV,
+    FACTOR_MAPPING_CSV_CANDIDATES,
+    resolve_factor_mapping_csv,
+)
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-DEFAULT_MAPPING_CSV = ROOT_DIR / "docs" / "prd" / "factor_mapping_readable.csv"
-DEFAULT_MAPPING_CSV_CANDIDATES = [
-    DEFAULT_MAPPING_CSV,
-    ROOT_DIR / "docs" / "prd" / "factor" / "v1" / "factor_mapping_readable.csv",
-    ROOT_DIR / "docs" / "prd" / "factor" / "v2" / "factor_mapping_readable_v2.csv",
-]
+DEFAULT_MAPPING_CSV = DEFAULT_FACTOR_MAPPING_CSV
+DEFAULT_MAPPING_CSV_CANDIDATES = FACTOR_MAPPING_CSV_CANDIDATES
 FIELD_RE = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)")
 
 
@@ -268,18 +268,13 @@ def _compile_expression(expr: str):
 
 
 def _default_mapping_csv() -> Path:
-    env_path = os.environ.get("TUSHARE_FACTOR_MAPPING_CSV")
-    if env_path:
-        return Path(env_path)
-    candidates = [
-        *DEFAULT_MAPPING_CSV_CANDIDATES,
-        Path.cwd() / "factor_mapping_readable.csv",
-        Path(__file__).resolve().parent / "factor_mapping_readable.csv",
-    ]
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    return DEFAULT_MAPPING_CSV
+    return resolve_factor_mapping_csv(
+        [
+            Path.cwd() / "factor_mapping_readable.csv",
+            Path(__file__).resolve().parent / "factor_mapping_readable.csv",
+        ],
+        require_exists=True,
+    )
 
 
 class FactorEngine:

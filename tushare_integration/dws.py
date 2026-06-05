@@ -10,18 +10,19 @@ import yaml
 
 from tushare_integration.db_engine import DatabaseEngineFactory
 from tushare_integration.dwd import FAR_FUTURE_TS_SQL, MIN_LAYER_TRADE_DATE_SQL
+from tushare_integration.factor_mapping import (
+    DEFAULT_FACTOR_MAPPING_CSV,
+    FACTOR_MAPPING_CSV_CANDIDATES as DEFAULT_FACTOR_MAPPING_CSV_CANDIDATES,
+    resolve_factor_mapping_csv,
+)
 from tushare_integration.quality import DqcManager, QualityManager, ValidationMode
 from tushare_integration.settings import TushareIntegrationSettings
 
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DWS_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema" / "dws"
-FACTOR_MAPPING_CSV = ROOT_DIR / "docs" / "prd" / "factor_mapping_readable.csv"
-FACTOR_MAPPING_CSV_CANDIDATES = [
-    FACTOR_MAPPING_CSV,
-    ROOT_DIR / "docs" / "prd" / "factor" / "v1" / "factor_mapping_readable.csv",
-    ROOT_DIR / "docs" / "prd" / "factor" / "v2" / "factor_mapping_readable_v2.csv",
-]
+FACTOR_MAPPING_CSV = DEFAULT_FACTOR_MAPPING_CSV
+FACTOR_MAPPING_CSV_CANDIDATES = DEFAULT_FACTOR_MAPPING_CSV_CANDIDATES
 DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT = 1200
 
 STOCK_FACTOR_WIDE_SOURCES = [
@@ -54,6 +55,145 @@ STOCK_FACTOR_WIDE_MATRIX_ALIASES = {
     "vwap": "`avg_price`",
     "turnover": "coalesce(`turnover_rate_f`, `turn_over`)",
 }
+FINANCIAL_FEATURE_COLUMNS = [
+    ("balancesheet", "bond_payable", "ttm_0", "bond_payable_ttm_0"),
+    ("balancesheet", "bond_payable", "ttm_1", "bond_payable_ttm_1"),
+    ("balancesheet", "fix_assets", "lyr_0", "fix_assets_lyr_0"),
+    ("balancesheet", "fix_assets", "lyr_1", "fix_assets_lyr_1"),
+    ("balancesheet", "fix_assets", "ttm_0", "fix_assets_ttm_0"),
+    ("balancesheet", "fix_assets", "ttm_1", "fix_assets_ttm_1"),
+    ("balancesheet", "lt_borr", "ttm_0", "lt_borr_ttm_0"),
+    ("balancesheet", "lt_borr", "ttm_1", "lt_borr_ttm_1"),
+    ("balancesheet", "money_cap", "lyr_0", "money_cap_lyr_0"),
+    ("balancesheet", "money_cap", "lyr_1", "money_cap_lyr_1"),
+    ("balancesheet", "money_cap", "mrq_0", "money_cap_mrq_0"),
+    ("balancesheet", "money_cap", "ttm_0", "money_cap_ttm_0"),
+    ("balancesheet", "money_cap", "ttm_1", "money_cap_ttm_1"),
+    ("balancesheet", "non_cur_liab_due_1y", "lyr_0", "non_cur_liab_due_1y_lyr_0"),
+    ("balancesheet", "non_cur_liab_due_1y", "lyr_1", "non_cur_liab_due_1y_lyr_1"),
+    ("balancesheet", "non_cur_liab_due_1y", "ttm_0", "non_cur_liab_due_1y_ttm_0"),
+    ("balancesheet", "non_cur_liab_due_1y", "ttm_1", "non_cur_liab_due_1y_ttm_1"),
+    ("balancesheet", "notes_payable", "lyr_0", "notes_payable_lyr_0"),
+    ("balancesheet", "notes_payable", "lyr_1", "notes_payable_lyr_1"),
+    ("balancesheet", "notes_payable", "ttm_0", "notes_payable_ttm_0"),
+    ("balancesheet", "notes_payable", "ttm_1", "notes_payable_ttm_1"),
+    ("balancesheet", "st_borr", "ttm_0", "st_borr_ttm_0"),
+    ("balancesheet", "st_borr", "ttm_1", "st_borr_ttm_1"),
+    ("balancesheet", "total_assets", "lyr_0", "total_assets_lyr_0"),
+    ("balancesheet", "total_assets", "lyr_1", "total_assets_lyr_1"),
+    ("balancesheet", "total_assets", "mrq_0", "total_assets_mrq_0"),
+    ("balancesheet", "total_assets", "mrq_4", "total_assets_mrq_4"),
+    ("balancesheet", "total_assets", "ttm_0", "total_assets_ttm_0"),
+    ("balancesheet", "total_assets", "ttm_4", "total_assets_ttm_4"),
+    ("balancesheet", "total_cur_assets", "lyr_0", "total_cur_assets_lyr_0"),
+    ("balancesheet", "total_cur_assets", "lyr_1", "total_cur_assets_lyr_1"),
+    ("balancesheet", "total_cur_assets", "ttm_0", "total_cur_assets_ttm_0"),
+    ("balancesheet", "total_cur_assets", "ttm_1", "total_cur_assets_ttm_1"),
+    ("balancesheet", "total_cur_liab", "lyr_0", "total_cur_liab_lyr_0"),
+    ("balancesheet", "total_cur_liab", "lyr_1", "total_cur_liab_lyr_1"),
+    ("balancesheet", "total_cur_liab", "ttm_0", "total_cur_liab_ttm_0"),
+    ("balancesheet", "total_cur_liab", "ttm_1", "total_cur_liab_ttm_1"),
+    ("balancesheet", "total_hldr_eqy_exc_min_int", "lyr_0", "total_hldr_eqy_exc_min_int_lyr_0"),
+    ("balancesheet", "total_hldr_eqy_exc_min_int", "lyr_1", "total_hldr_eqy_exc_min_int_lyr_1"),
+    ("balancesheet", "total_hldr_eqy_exc_min_int", "mrq_0", "total_hldr_eqy_exc_min_int_mrq_0"),
+    ("balancesheet", "total_hldr_eqy_exc_min_int", "mrq_4", "total_hldr_eqy_exc_min_int_mrq_4"),
+    ("balancesheet", "total_hldr_eqy_exc_min_int", "ttm_0", "total_hldr_eqy_exc_min_int_ttm_0"),
+    ("balancesheet", "total_hldr_eqy_exc_min_int", "ttm_4", "total_hldr_eqy_exc_min_int_ttm_4"),
+    ("balancesheet", "total_hldr_eqy_inc_min_int", "lyr_0", "total_hldr_eqy_inc_min_int_lyr_0"),
+    ("balancesheet", "total_hldr_eqy_inc_min_int", "lyr_1", "total_hldr_eqy_inc_min_int_lyr_1"),
+    ("balancesheet", "total_hldr_eqy_inc_min_int", "ttm_0", "total_hldr_eqy_inc_min_int_ttm_0"),
+    ("balancesheet", "total_hldr_eqy_inc_min_int", "ttm_4", "total_hldr_eqy_inc_min_int_ttm_4"),
+    ("balancesheet", "total_liab", "lyr_0", "total_liab_lyr_0"),
+    ("balancesheet", "total_liab", "mrq_0", "total_liab_mrq_0"),
+    ("balancesheet", "total_liab", "ttm_0", "total_liab_ttm_0"),
+    ("cashflow", "amort_intang_assets", "lyr_0", "amort_intang_assets_lyr_0"),
+    ("cashflow", "amort_intang_assets", "ttm_0", "amort_intang_assets_ttm_0"),
+    ("cashflow", "depr_fa_coga_dpba", "lyr_0", "depr_fa_coga_dpba_lyr_0"),
+    ("cashflow", "depr_fa_coga_dpba", "ttm_0", "depr_fa_coga_dpba_ttm_0"),
+    ("cashflow", "n_cash_flows_fnc_act", "lyr_0", "n_cash_flows_fnc_act_lyr_0"),
+    ("cashflow", "n_cash_flows_fnc_act", "lyr_1", "n_cash_flows_fnc_act_lyr_1"),
+    ("cashflow", "n_cash_flows_fnc_act", "ttm_0", "n_cash_flows_fnc_act_ttm_0"),
+    ("cashflow", "n_cash_flows_fnc_act", "ttm_4", "n_cash_flows_fnc_act_ttm_4"),
+    ("cashflow", "n_cashflow_act", "lyr_0", "n_cashflow_act_lyr_0"),
+    ("cashflow", "n_cashflow_act", "lyr_1", "n_cashflow_act_lyr_1"),
+    ("cashflow", "n_cashflow_act", "ttm_0", "n_cashflow_act_ttm_0"),
+    ("cashflow", "n_cashflow_act", "ttm_4", "n_cashflow_act_ttm_4"),
+    ("cashflow", "n_cashflow_inv_act", "lyr_0", "n_cashflow_inv_act_lyr_0"),
+    ("cashflow", "n_cashflow_inv_act", "lyr_1", "n_cashflow_inv_act_lyr_1"),
+    ("cashflow", "n_cashflow_inv_act", "ttm_0", "n_cashflow_inv_act_ttm_0"),
+    ("cashflow", "n_cashflow_inv_act", "ttm_4", "n_cashflow_inv_act_ttm_4"),
+    ("cashflow", "n_incr_cash_cash_equ", "lyr_0", "n_incr_cash_cash_equ_lyr_0"),
+    ("cashflow", "n_incr_cash_cash_equ", "lyr_1", "n_incr_cash_cash_equ_lyr_1"),
+    ("cashflow", "n_incr_cash_cash_equ", "ttm_0", "n_incr_cash_cash_equ_ttm_0"),
+    ("cashflow", "n_incr_cash_cash_equ", "ttm_4", "n_incr_cash_cash_equ_ttm_4"),
+    ("cashflow", "prov_depr_assets", "lyr_0", "prov_depr_assets_lyr_0"),
+    ("cashflow", "prov_depr_assets", "ttm_0", "prov_depr_assets_ttm_0"),
+    ("income", "ebitda", "lyr", "ebitda_lyr"),
+    ("income", "ebitda", "ttm", "ebitda_ttm"),
+    ("income", "fin_exp_int_exp", "lyr_0", "fin_exp_int_exp_lyr_0"),
+    ("income", "fin_exp_int_exp", "ttm_0", "fin_exp_int_exp_ttm_0"),
+    ("income", "fin_exp_int_inc", "lyr_0", "fin_exp_int_inc_lyr_0"),
+    ("income", "fin_exp_int_inc", "ttm_0", "fin_exp_int_inc_ttm_0"),
+    ("income", "income_tax", "lyr_0", "income_tax_lyr_0"),
+    ("income", "income_tax", "ttm_0", "income_tax_ttm_0"),
+    ("income", "int_income", "ttm_0", "int_income_ttm_0"),
+    ("income", "n_income", "lyr_0", "n_income_lyr_0"),
+    ("income", "n_income", "lyr_1", "n_income_lyr_1"),
+    ("income", "n_income", "ttm_0", "n_income_ttm_0"),
+    ("income", "n_income", "ttm_1", "n_income_ttm_1"),
+    ("income", "n_income", "ttm_4", "n_income_ttm_4"),
+    ("income", "n_income_attr_p", "lyr_0", "n_income_attr_p_lyr_0"),
+    ("income", "n_income_attr_p", "lyr_1", "n_income_attr_p_lyr_1"),
+    ("income", "n_income_attr_p", "ttm_0", "n_income_attr_p_ttm_0"),
+    ("income", "n_income_attr_p", "ttm_4", "n_income_attr_p_ttm_4"),
+    ("income", "operate_profit", "lyr_0", "operate_profit_lyr_0"),
+    ("income", "operate_profit", "lyr_1", "operate_profit_lyr_1"),
+    ("income", "operate_profit", "ttm_0", "operate_profit_ttm_0"),
+    ("income", "operate_profit", "ttm_4", "operate_profit_ttm_4"),
+    ("income", "revenue", "lyr_0", "revenue_lyr_0"),
+    ("income", "revenue", "lyr_1", "revenue_lyr_1"),
+    ("income", "revenue", "ttm_0", "revenue_ttm_0"),
+    ("income", "revenue", "ttm_4", "revenue_ttm_4"),
+    ("income", "total_cogs", "lyr_0", "total_cogs_lyr_0"),
+    ("income", "total_cogs", "lyr_1", "total_cogs_lyr_1"),
+    ("income", "total_cogs", "ttm_0", "total_cogs_ttm_0"),
+    ("income", "total_cogs", "ttm_4", "total_cogs_ttm_4"),
+    ("income", "total_profit", "lyr_0", "total_profit_lyr_0"),
+    ("income", "total_profit", "lyr_1", "total_profit_lyr_1"),
+    ("income", "total_profit", "ttm_0", "total_profit_ttm_0"),
+    ("income", "total_profit", "ttm_4", "total_profit_ttm_4"),
+]
+FINANCIAL_FEATURE_SOURCE_CONFIG = {
+    "balancesheet": {
+        "table": "dwd_stock_balance_sheet",
+        "sql_alias": "balance_sheet",
+        "quarter_report_types": ("1", "4"),
+        "annual_report_types": ("1", "4"),
+        "ttm_aggregation": "avg",
+    },
+    "cashflow": {
+        "table": "dwd_stock_cashflow",
+        "sql_alias": "cashflow",
+        "quarter_report_types": ("2", "3"),
+        "annual_report_types": ("1", "4"),
+        "ttm_aggregation": "sum",
+    },
+    "income": {
+        "table": "dwd_stock_income",
+        "sql_alias": "income",
+        "quarter_report_types": ("2", "3"),
+        "annual_report_types": ("1", "4"),
+        "ttm_aggregation": "sum",
+    },
+}
+FINANCIAL_FEATURE_JOIN_ALIASES = [
+    "balance_sheet_quarter_features",
+    "balance_sheet_annual_features",
+    "cashflow_quarter_features",
+    "cashflow_annual_features",
+    "income_quarter_features",
+    "income_annual_features",
+]
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
@@ -66,10 +206,7 @@ def _sql_string_literal(value: str) -> str:
 
 
 def _load_factor_ids() -> list[str]:
-    mapping_csv = next(
-        (candidate for candidate in FACTOR_MAPPING_CSV_CANDIDATES if candidate.exists()),
-        FACTOR_MAPPING_CSV,
-    )
+    mapping_csv = resolve_factor_mapping_csv(require_exists=True)
     with open(mapping_csv, "r", encoding="utf-8") as f:
         rows = csv.DictReader(f)
         factor_ids = []
@@ -119,9 +256,244 @@ class DWSManager:
     def build_schema(self, spec: dict[str, Any]) -> dict[str, Any]:
         return deepcopy(spec["schema"])
 
+    @staticmethod
+    def _financial_feature_kind(suffix: str) -> str:
+        return suffix.split("_", 1)[0]
+
+    @staticmethod
+    def _financial_feature_offset(suffix: str) -> int:
+        parts = suffix.split("_", 1)
+        return int(parts[1]) if len(parts) == 2 else 0
+
+    @staticmethod
+    def _sql_in(values: tuple[str, ...]) -> str:
+        return ", ".join([_sql_string_literal(value) for value in values])
+
+    @staticmethod
+    def _financial_feature_entries(api: str, feature_group: str) -> list[tuple[str, str, str, str]]:
+        entries = []
+        for entry in FINANCIAL_FEATURE_COLUMNS:
+            entry_api, _, suffix, _ = entry
+            if entry_api != api:
+                continue
+            kind = DWSManager._financial_feature_kind(suffix)
+            if feature_group == "annual" and kind == "lyr":
+                entries.append(entry)
+            if feature_group == "quarter" and kind in {"mrq", "ttm"}:
+                entries.append(entry)
+        return entries
+
+    @staticmethod
+    def _financial_feature_fields(entries: list[tuple[str, str, str, str]]) -> list[str]:
+        return sorted({field for _, field, _, _ in entries})
+
+    @staticmethod
+    def _financial_feature_column_names() -> list[str]:
+        return [column for _, _, _, column in FINANCIAL_FEATURE_COLUMNS]
+
+    def _render_financial_report_cte(
+        self,
+        db_name: str,
+        api: str,
+        feature_group: str,
+        fields: list[str],
+    ) -> str:
+        config = FINANCIAL_FEATURE_SOURCE_CONFIG[api]
+        cte_prefix = config["sql_alias"]
+        cte_name = f"{cte_prefix}_{feature_group}_reports"
+        report_types = (
+            config["annual_report_types"] if feature_group == "annual" else config["quarter_report_types"]
+        )
+        annual_filter = "AND (src.end_type = '4' OR toMonth(src.event_date) = 12)" if feature_group == "annual" else ""
+        field_select = ",\n        ".join([f"`{field}`" for field in fields])
+        if field_select:
+            field_select = ",\n        " + field_select
+
+        return f"""
+{cte_name} AS (
+    SELECT
+        instrument_id,
+        event_date AS report_period,
+        available_trade_date,
+        source_batch_id,
+        source_record_hash{field_select}
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
+                ORDER BY
+                    multiIf(src.report_type IN ('3', '4'), 2, src.report_type IN ('2', '1'), 1, 0) DESC,
+                    src.sys_from DESC,
+                    src.source_record_hash DESC
+            ) AS report_rank
+        FROM {db_name}.{config['table']} src
+        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
+          AND src.report_type IN ({self._sql_in(report_types)})
+          {annual_filter}
+    ) src
+    WHERE report_rank = 1
+)"""
+
+    def _render_financial_feature_cte(
+        self,
+        api: str,
+        feature_group: str,
+        entries: list[tuple[str, str, str, str]],
+    ) -> str:
+        config = FINANCIAL_FEATURE_SOURCE_CONFIG[api]
+        cte_prefix = config["sql_alias"]
+        report_cte = f"{cte_prefix}_{feature_group}_reports"
+        dates_cte = f"{cte_prefix}_{feature_group}_dates"
+        asof_cte = f"{cte_prefix}_{feature_group}_asof"
+        latest_cte = f"{cte_prefix}_{feature_group}_latest"
+        ordered_cte = f"{cte_prefix}_{feature_group}_ordered"
+        features_cte = f"{cte_prefix}_{feature_group}_features"
+        fields = self._financial_feature_fields(entries)
+        max_offset = max(
+            self._financial_feature_offset(suffix) + (3 if self._financial_feature_kind(suffix) == "ttm" else 0)
+            for _, _, suffix, _ in entries
+        )
+        joined_field_select = ",\n        ".join([f"r.`{field}` AS `{field}`" for field in fields])
+        if joined_field_select:
+            joined_field_select = ",\n        " + joined_field_select
+
+        feature_exprs = []
+        for _, field, suffix, column in entries:
+            kind = self._financial_feature_kind(suffix)
+            offset = self._financial_feature_offset(suffix)
+            if kind == "ttm":
+                condition = f"report_offset >= {offset} AND report_offset < {offset + 4}"
+                aggregate = "sumIf" if config["ttm_aggregation"] == "sum" else "avgIf"
+                feature_exprs.append(
+                    f"if(countIf({condition} AND `{field}` IS NOT NULL) = 4, "
+                    f"{aggregate}(`{field}`, {condition}), CAST(NULL, 'Nullable(Float64)')) AS `{column}`"
+                )
+            else:
+                feature_exprs.append(f"anyIf(`{field}`, report_offset = {offset}) AS `{column}`")
+        feature_select = ",\n        ".join(feature_exprs)
+
+        return f"""
+{dates_cte} AS (
+    SELECT DISTINCT
+        instrument_id,
+        available_trade_date
+    FROM {report_cte}
+),
+{asof_cte} AS (
+    SELECT
+        d.instrument_id AS instrument_id,
+        d.available_trade_date AS available_trade_date,
+        r.report_period AS report_period,
+        r.available_trade_date AS report_available_trade_date,
+        r.source_batch_id AS source_batch_id,
+        r.source_record_hash AS source_record_hash{joined_field_select},
+        row_number() OVER (
+            PARTITION BY d.instrument_id, d.available_trade_date, r.report_period
+            ORDER BY
+                r.available_trade_date DESC,
+                r.source_record_hash DESC
+        ) AS revision_rank
+    FROM {dates_cte} d
+    INNER JOIN {report_cte} r
+        ON r.instrument_id = d.instrument_id
+    WHERE r.available_trade_date <= d.available_trade_date
+),
+{latest_cte} AS (
+    SELECT *
+    FROM {asof_cte}
+    WHERE revision_rank = 1
+),
+{ordered_cte} AS (
+    SELECT
+        *,
+        row_number() OVER (
+            PARTITION BY instrument_id, available_trade_date
+            ORDER BY report_period DESC
+        ) - 1 AS report_offset
+    FROM {latest_cte}
+),
+{features_cte} AS (
+    SELECT
+        instrument_id,
+        available_trade_date,
+        arrayStringConcat(
+            arrayDistinct(groupArrayIf(source_batch_id, report_offset <= {max_offset} AND source_batch_id != '')),
+            '|'
+        ) AS source_batch_id,
+        lower(hex(MD5(arrayStringConcat(
+            arrayDistinct(groupArrayIf(source_record_hash, report_offset <= {max_offset} AND source_record_hash != '')),
+            '|'
+        )))) AS source_record_hash,
+        {feature_select}
+    FROM {ordered_cte}
+    WHERE report_offset <= {max_offset}
+    GROUP BY
+        instrument_id,
+        available_trade_date
+)"""
+
+    def _render_financial_feature_ctes(self, db_name: str) -> str:
+        ctes = []
+        for api in ("balancesheet", "cashflow", "income"):
+            for feature_group in ("quarter", "annual"):
+                entries = self._financial_feature_entries(api, feature_group)
+                if not entries:
+                    continue
+                fields = self._financial_feature_fields(entries)
+                ctes.append(self._render_financial_report_cte(db_name, api, feature_group, fields))
+                ctes.append(self._render_financial_feature_cte(api, feature_group, entries))
+        return ",\n".join(ctes)
+
+    def _render_financial_feature_available_trade_dates(self) -> str:
+        return "".join(
+            [
+                f",\n            coalesce({alias}.available_trade_date, price.available_trade_date)"
+                for alias in FINANCIAL_FEATURE_JOIN_ALIASES
+            ]
+        )
+
+    def _render_financial_feature_wide_selects(self) -> str:
+        select_items = []
+        for api, _, suffix, column in FINANCIAL_FEATURE_COLUMNS:
+            feature_group = (
+                "annual" if self._financial_feature_kind(suffix) == "lyr" else "quarter"
+            )
+            alias = f"{FINANCIAL_FEATURE_SOURCE_CONFIG[api]['sql_alias']}_{feature_group}_features"
+            select_items.append(f"{alias}.`{column}` AS `{column}`")
+        return ",\n        ".join(select_items)
+
+    def _render_financial_feature_output_columns(self) -> str:
+        return ",\n    ".join([f"`{column}`" for column in self._financial_feature_column_names()])
+
+    def _render_financial_feature_joins(self) -> str:
+        joins = []
+        for alias in FINANCIAL_FEATURE_JOIN_ALIASES:
+            joins.append(
+                f"""    ASOF LEFT JOIN {alias}
+        ON price.instrument_id = {alias}.instrument_id
+       AND price.available_trade_date >= {alias}.available_trade_date"""
+            )
+        return "\n".join(joins)
+
+    def _render_financial_feature_lineage_concat(self, column: str) -> str:
+        return "".join(
+            [
+                f",\n            '|', coalesce({alias}.{column}, '')"
+                for alias in FINANCIAL_FEATURE_JOIN_ALIASES
+            ]
+        )
+
     def _render_stock_factor_wide_sync_sql(self, target_table_name: str) -> str:
         db_name = self.settings.database.db_name
         source_table_sql = ",".join(STOCK_FACTOR_WIDE_SOURCES)
+        financial_feature_ctes = self._render_financial_feature_ctes(db_name)
+        financial_feature_available_trade_dates = self._render_financial_feature_available_trade_dates()
+        financial_feature_wide_selects = self._render_financial_feature_wide_selects()
+        financial_feature_output_columns = self._render_financial_feature_output_columns()
+        financial_feature_joins = self._render_financial_feature_joins()
+        financial_feature_source_batch_id_concat = self._render_financial_feature_lineage_concat("source_batch_id")
+        financial_feature_source_record_hash_concat = self._render_financial_feature_lineage_concat("source_record_hash")
         return f"""
 INSERT INTO {db_name}.{target_table_name}
 WITH
@@ -288,6 +660,7 @@ cashflow AS (
     ) src
     WHERE cashflow_rank = 1
 ),
+{financial_feature_ctes},
 northbound_holding AS (
     SELECT *
     FROM {db_name}.dwd_stock_northbound_holding
@@ -322,7 +695,8 @@ wide_candidates AS (
             coalesce(financial_indicator.available_trade_date, price.available_trade_date),
             coalesce(income.available_trade_date, price.available_trade_date),
             coalesce(balance_sheet.available_trade_date, price.available_trade_date),
-            coalesce(cashflow.available_trade_date, price.available_trade_date),
+            coalesce(cashflow.available_trade_date, price.available_trade_date)
+            {financial_feature_available_trade_dates},
             coalesce(northbound_holding.available_trade_date, price.available_trade_date),
             coalesce(margin_trading.available_trade_date, price.available_trade_date),
             coalesce(chip_distribution.available_trade_date, price.available_trade_date)
@@ -408,6 +782,7 @@ wide_candidates AS (
         cashflow.stot_inflows_inv_act AS stot_inflows_inv_act,
         cashflow.stot_cash_in_fnc_act AS stot_cash_in_fnc_act,
         cashflow.stot_cashout_fnc_act AS stot_cashout_fnc_act,
+        {financial_feature_wide_selects},
         northbound_holding.vol AS hk_hold_vol,
         northbound_holding.ratio AS hk_hold_ratio,
         margin_trading.rzye AS rzye,
@@ -432,7 +807,8 @@ wide_candidates AS (
             '|', coalesce(financial_indicator.source_batch_id, ''),
             '|', coalesce(income.source_batch_id, ''),
             '|', coalesce(balance_sheet.source_batch_id, ''),
-            '|', coalesce(cashflow.source_batch_id, ''),
+            '|', coalesce(cashflow.source_batch_id, '')
+            {financial_feature_source_batch_id_concat},
             '|', coalesce(northbound_holding.source_batch_id, ''),
             '|', coalesce(margin_trading.source_batch_id, ''),
             '|', coalesce(chip_distribution.source_batch_id, '')
@@ -445,7 +821,8 @@ wide_candidates AS (
             '|', coalesce(financial_indicator.source_record_hash, ''),
             '|', coalesce(income.source_record_hash, ''),
             '|', coalesce(balance_sheet.source_record_hash, ''),
-            '|', coalesce(cashflow.source_record_hash, ''),
+            '|', coalesce(cashflow.source_record_hash, '')
+            {financial_feature_source_record_hash_concat},
             '|', coalesce(northbound_holding.source_record_hash, ''),
             '|', coalesce(margin_trading.source_record_hash, ''),
             '|', coalesce(chip_distribution.source_record_hash, '')
@@ -472,6 +849,7 @@ wide_candidates AS (
     ASOF LEFT JOIN cashflow
         ON price.instrument_id = cashflow.instrument_id
        AND price.available_trade_date >= cashflow.available_trade_date
+{financial_feature_joins}
     LEFT JOIN northbound_holding
         ON northbound_holding.instrument_id = price.instrument_id
        AND northbound_holding.event_date = price.event_date
@@ -571,6 +949,7 @@ SELECT
     stot_inflows_inv_act,
     stot_cash_in_fnc_act,
     stot_cashout_fnc_act,
+    {financial_feature_output_columns},
     hk_hold_vol,
     hk_hold_ratio,
     rzye,

@@ -11,7 +11,7 @@ USER root
 ENV VIRTUAL_ENV=/opt/tushare-integration/.venv
 ENV PATH="/opt/tushare-integration/.venv/bin:${PATH}"
 ENV PYTHONPATH=/opt/tushare-integration
-ENV TUSHARE_FACTOR_MAPPING_CSV=/opt/tushare-integration/docs/prd/factor_mapping_readable.csv
+ENV TUSHARE_FACTOR_MAPPING_CSV=/opt/tushare-integration/docs/prd/factor/v1/factor_mapping_readable.csv
 
 RUN set -eux; \
     if [ -n "${APT_MIRROR}" ]; then \
@@ -55,7 +55,7 @@ RUN python3 -m venv "${VIRTUAL_ENV}" \
         pip install ${UDF_PYTHON_PACKAGES} --index-url "${PIP_SOURCE}"; \
     fi \
     && pip install --no-deps -e . \
-    && python -c "from pathlib import Path; from tushare_integration.factors.clickhouse_udf import main; assert Path('/opt/tushare-integration/docs/prd/factor_mapping_readable.csv').exists()"
+    && python -c "from pathlib import Path; from tushare_integration.factors.clickhouse_udf import main; assert Path('/opt/tushare-integration/docs/prd/factor/v1/factor_mapping_readable.csv').exists()"
 
 COPY deploy/clickhouse/user_scripts/dws_stock_factor_rows.py /opt/clickhouse-udf/user_scripts/dws_stock_factor_rows.py
 COPY deploy/clickhouse/user_defined_functions/dws_stock_factor_rows.xml /opt/clickhouse-udf/user_defined_functions/dws_stock_factor_rows.xml

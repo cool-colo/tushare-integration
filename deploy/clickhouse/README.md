@@ -7,7 +7,7 @@ Deploy these files on every ClickHouse server:
 - Copy `deploy/clickhouse/user_scripts/dws_stock_factor_rows.py` to ClickHouse `user_scripts_path`.
 - Copy `deploy/clickhouse/user_defined_functions/dws_stock_factor_rows.xml` to the path included by `user_defined_executable_functions_config`.
 - Make sure the ClickHouse Python environment can import `tushare_integration` and has the project dependencies installed.
-- Put `factor_mapping_readable.csv` in the working directory or next to the factor package, or set `TUSHARE_FACTOR_MAPPING_CSV` for the UDF process.
+- Put `factor_mapping_readable.csv` in the working directory or next to the factor package, or set `TUSHARE_FACTOR_MAPPING_CSV` for the UDF process. The image defaults to `docs/prd/factor/v1/factor_mapping_readable.csv`.
 
 After deployment, reload ClickHouse executable functions before running:
 

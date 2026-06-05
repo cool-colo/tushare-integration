@@ -9,7 +9,11 @@ import pandas as pd
 from tushare_integration.settings import TushareIntegrationSettings
 from tushare_integration.db_engine import ClickhouseEngine
 from tushare_integration.dwd import DWDManager
-from tushare_integration.dws import DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT, DWSManager
+from tushare_integration.dws import (
+    DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT,
+    DWSManager,
+    FINANCIAL_FEATURE_COLUMNS,
+)
 from tushare_integration.manager import CrawlManager
 from tushare_integration.spiders.index.quotes import IndexWeightSpider
 from tushare_integration.spiders.stock.special import CyqChipsSpider
@@ -221,6 +225,48 @@ class TushareResponseTest(unittest.TestCase):
         self.assertIn("|', coalesce(income.source_batch_id, '')", sql)
         self.assertIn("|', coalesce(balance_sheet.source_record_hash, '')", sql)
         self.assertIn("|', coalesce(cashflow.source_record_hash, '')", sql)
+
+    def test_dws_stock_factor_wide_includes_single_quarter_financial_features(self):
+        manager = object.__new__(DWSManager)
+        manager.settings = self._clickhouse_settings()
+
+        sql = manager.render_sync_sql("dws_stock_factor_wide")
+        spec = manager.load_spec("dws_stock_factor_wide")
+        column_names = {column["name"] for column in spec["schema"]["columns"]}
+        feature_columns = {column for _, _, _, column in FINANCIAL_FEATURE_COLUMNS}
+        requested_columns = {
+            "revenue_ttm_0",
+            "revenue_ttm_4",
+            "n_income_lyr_1",
+            "money_cap_mrq_0",
+            "total_assets_mrq_4",
+            "ebitda_ttm",
+            "ebitda_lyr",
+        }
+
+        self.assertEqual(len(feature_columns), 106)
+        self.assertTrue(feature_columns.issubset(column_names))
+        self.assertTrue(requested_columns.issubset(column_names))
+        self.assertIn("income_quarter_features", sql)
+        self.assertIn("cashflow_quarter_features", sql)
+        self.assertIn("balance_sheet_quarter_features", sql)
+        self.assertIn("ASOF LEFT JOIN income_quarter_features", sql)
+        self.assertIn("ASOF LEFT JOIN balance_sheet_annual_features", sql)
+        self.assertIn("income_quarter_features.`revenue_ttm_0` AS `revenue_ttm_0`", sql)
+        self.assertIn("income_annual_features.`n_income_lyr_1` AS `n_income_lyr_1`", sql)
+        self.assertIn("balance_sheet_quarter_features.`money_cap_mrq_0` AS `money_cap_mrq_0`", sql)
+        self.assertIn(
+            "sumIf(`revenue`, report_offset >= 0 AND report_offset < 4)",
+            sql,
+        )
+        self.assertIn(
+            "avgIf(`total_assets`, report_offset >= 0 AND report_offset < 4)",
+            sql,
+        )
+        self.assertIn("income_quarter_features.`ebitda_ttm` AS `ebitda_ttm`", sql)
+        self.assertIn("income_annual_features.`ebitda_lyr` AS `ebitda_lyr`", sql)
+        self.assertIn("|', coalesce(income_quarter_features.source_batch_id, '')", sql)
+        self.assertIn("|', coalesce(cashflow_annual_features.source_record_hash, '')", sql)
 
     def test_parse_response_treats_common_no_data_message_as_empty_item(self):
         spider = CyqChipsSpider()
