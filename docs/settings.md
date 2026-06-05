@@ -53,6 +53,8 @@ python main.py run job stock/quotes --update-type full
 | `tushare_token`                   | `TUSHARE_TOKEN` | `str` | ""                      | Tushare账号Token                                           |
 | `tushare_max_concurrent_requests` | ``              | `int` | 基于积分计算            | 基于积分自动计算最大每分钟并行请求数，如果指定则会跳过计算 |
 | `tushare_rate_limit_ratio`        | `TUSHARE_RATE_LIMIT_RATIO` | `float` | 0.9          | 自动计算频次时使用的安全系数，避免贴近官方分钟频次上限     |
+| `cyq_chips_request_chunk_trade_days` | `CYQ_CHIPS_REQUEST_CHUNK_TRADE_DAYS` | `int` | 25 | 筹码分布接口每个请求最多覆盖的交易日数量 |
+| `cyq_chips_max_requests_per_run`  | `CYQ_CHIPS_MAX_REQUESTS_PER_RUN` | `int` | 50000 | 筹码分布接口单次运行最多请求数，0表示不限制 |
 
 #### 任务相关
 | 配置项          | 环境变量 | 类型   | 默认值 | 说明                                           |

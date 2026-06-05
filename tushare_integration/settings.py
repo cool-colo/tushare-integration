@@ -158,6 +158,20 @@ class TushareIntegrationSettings(BaseSettings):
         default='2010-01-01',
         description='未显式配置MIN_CAL_DATE的日频接口首次采集起始日期',
     )
+    cyq_chips_request_chunk_trade_days: Annotated[
+        int, env_variable('CYQ_CHIPS_REQUEST_CHUNK_TRADE_DAYS')
+    ] = Field(
+        default=25,
+        ge=1,
+        description='筹码分布接口每次请求覆盖的最多交易日数量，避免单次返回超过Tushare行数限制',
+    )
+    cyq_chips_max_requests_per_run: Annotated[
+        int, env_variable('CYQ_CHIPS_MAX_REQUESTS_PER_RUN')
+    ] = Field(
+        default=50000,
+        ge=0,
+        description='筹码分布接口单次运行最多请求数，0表示不限制',
+    )
 
     bot_name: str = Field(default='tushare_integration', description='爬虫名称')
     spider_modules: list[str] = Field(default=['tushare_integration.spiders'], description='爬虫模块')

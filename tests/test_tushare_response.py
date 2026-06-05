@@ -508,7 +508,74 @@ class TushareResponseTest(unittest.TestCase):
             requests = list(spider.start_requests())
 
         request_params = [json.loads(request.body.decode("utf-8"))["params"] for request in requests]
-        self.assertEqual(request_params, [{"ts_code": "000001.SZ", "trade_date": "20260511"}])
+        self.assertEqual(
+            request_params,
+            [{"ts_code": "000001.SZ", "start_date": "20260511", "end_date": "20260511"}],
+        )
+
+    def test_cyq_chips_chunks_trade_dates_into_range_requests(self):
+        spider = CyqChipsSpider()
+        spider.spider_settings = DummySpiderSettings(
+            database=SimpleNamespace(db_name="default"),
+            cyq_chips_request_chunk_trade_days=2,
+        )
+        fake_db = DummyDB(
+            [
+                pd.DataFrame(
+                    {
+                        "ts_code": ["000001.SZ"],
+                        "list_date": [pd.Timestamp("1991-04-03")],
+                        "delist_date": [pd.NaT],
+                    }
+                ),
+                pd.DataFrame({"latest_trade_date": [pd.Timestamp("2026-05-08")]}),
+                pd.DataFrame(
+                    {"trade_date": pd.to_datetime(["2026-05-11", "2026-05-12", "2026-05-13"])}
+                ),
+            ]
+        )
+
+        with mock.patch.object(spider, "get_db_engine", return_value=fake_db):
+            requests = list(spider.start_requests())
+
+        request_params = [json.loads(request.body.decode("utf-8"))["params"] for request in requests]
+        self.assertEqual(
+            request_params,
+            [
+                {"ts_code": "000001.SZ", "start_date": "20260511", "end_date": "20260512"},
+                {"ts_code": "000001.SZ", "start_date": "20260513", "end_date": "20260513"},
+            ],
+        )
+
+    def test_cyq_chips_respects_per_run_request_cap(self):
+        spider = CyqChipsSpider()
+        spider.spider_settings = DummySpiderSettings(
+            database=SimpleNamespace(db_name="default"),
+            cyq_chips_request_chunk_trade_days=1,
+            cyq_chips_max_requests_per_run=1,
+        )
+        fake_db = DummyDB(
+            [
+                pd.DataFrame(
+                    {
+                        "ts_code": ["000001.SZ"],
+                        "list_date": [pd.Timestamp("1991-04-03")],
+                        "delist_date": [pd.NaT],
+                    }
+                ),
+                pd.DataFrame({"latest_trade_date": [pd.Timestamp("2026-05-08")]}),
+                pd.DataFrame({"trade_date": pd.to_datetime(["2026-05-11", "2026-05-12"])}),
+            ]
+        )
+
+        with mock.patch.object(spider, "get_db_engine", return_value=fake_db):
+            requests = list(spider.start_requests())
+
+        request_params = [json.loads(request.body.decode("utf-8"))["params"] for request in requests]
+        self.assertEqual(
+            request_params,
+            [{"ts_code": "000001.SZ", "start_date": "20260511", "end_date": "20260511"}],
+        )
 
     def test_cyq_chips_primary_key_preserves_price_buckets(self):
         spider = CyqChipsSpider()

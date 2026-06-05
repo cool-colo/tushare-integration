@@ -24,6 +24,8 @@ class CyqChipsSpider(TushareSpider):
         "BASIC_TABLE": "stock_basic",
         "MIN_CAL_DATE": "2018-01-02",
         "BACKFILL_GAPS": False,
+        "REQUEST_CHUNK_TRADE_DAYS": 25,
+        "MAX_REQUESTS_PER_RUN": 50000,
     }
 
     @staticmethod
@@ -91,8 +93,37 @@ class CyqChipsSpider(TushareSpider):
             """
         )
 
+    def get_request_chunk_trade_days(self) -> int:
+        chunk_days = getattr(
+            self.spider_settings,
+            "cyq_chips_request_chunk_trade_days",
+            self.custom_settings.get("REQUEST_CHUNK_TRADE_DAYS", 25),
+        )
+        return max(1, int(chunk_days or 1))
+
+    def get_max_requests_per_run(self) -> int:
+        max_requests = getattr(
+            self.spider_settings,
+            "cyq_chips_max_requests_per_run",
+            self.custom_settings.get("MAX_REQUESTS_PER_RUN", 50000),
+        )
+        return max(0, int(max_requests or 0))
+
+    def iter_trade_date_ranges(self, trade_dates):
+        chunk_days = self.get_request_chunk_trade_days()
+        parsed_trade_dates = [DailySpider.parse_date_value(trade_date) for trade_date in trade_dates]
+        parsed_trade_dates = [trade_date for trade_date in parsed_trade_dates if trade_date is not None]
+
+        for start_index in range(0, len(parsed_trade_dates), chunk_days):
+            chunk = parsed_trade_dates[start_index : start_index + chunk_days]
+            if not chunk:
+                continue
+            yield chunk[0].strftime("%Y%m%d"), chunk[-1].strftime("%Y%m%d")
+
     def start_requests(self):
         conn = self.get_db_engine()
+        max_requests = self.get_max_requests_per_run()
+        request_count = 0
         stock_basic = conn.query_df(
             f"""
                 SELECT ts_code, list_date, delist_date
@@ -106,8 +137,18 @@ class CyqChipsSpider(TushareSpider):
             if trade_dates.empty:
                 continue
 
-            for trade_date in trade_dates['trade_date'].dt.date:
-                yield self.get_scrapy_request({"ts_code": row.ts_code, "trade_date": trade_date.strftime("%Y%m%d")})
+            for start_date, end_date in self.iter_trade_date_ranges(trade_dates["trade_date"]):
+                if max_requests and request_count >= max_requests:
+                    self.logger.warning(
+                        "Reached cyq_chips request cap (%s); remaining backlog will continue in the next run.",
+                        max_requests,
+                    )
+                    return
+
+                request_count += 1
+                yield self.get_scrapy_request(
+                    {"ts_code": row.ts_code, "start_date": start_date, "end_date": end_date}
+                )
 
 
 class StkFactorSpider(DailySpider):
