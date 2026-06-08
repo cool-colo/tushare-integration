@@ -70,6 +70,23 @@ class JobUpdateTypeTest(unittest.TestCase):
         self.assertIn("stock/market/dc_concept", incremental_spiders)
         self.assertIn("stock/market/dc_concept_cons", incremental_spiders)
 
+    def test_stock_quotes_job_skips_disabled_legacy_apis(self):
+        jobs_path = Path(__file__).resolve().parents[1] / "jobs.yaml"
+        jobs = yaml.safe_load(jobs_path.read_text(encoding="utf-8"))
+        stock_quotes_job = next(job for job in jobs["cronjob"] if job["name"] == "stock/quotes")
+
+        all_spiders = [
+            spider["name"]
+            for spider in CrawlManager.filter_job_spiders_by_update_type(stock_quotes_job, None)
+        ]
+        full_spiders = [
+            spider["name"]
+            for spider in CrawlManager.filter_job_spiders_by_update_type(stock_quotes_job, "full")
+        ]
+
+        self.assertNotIn("stock/quotes/ggt_monthly", all_spiders)
+        self.assertNotIn("stock/quotes/ggt_monthly", full_spiders)
+
     def test_filter_job_spiders_rejects_unknown_update_type(self):
         with self.assertRaisesRegex(ValueError, "Unsupported update_type"):
             CrawlManager.normalize_update_type("nightly")

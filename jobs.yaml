@@ -181,6 +181,8 @@ cronjob:
       - name: stock/quotes/ggt_daily
       - name: stock/quotes/ggt_monthly
         update_type: full
+        enabled: false
+        disabled_reason: "Tushare returns invalid API name for this legacy monthly Hong Kong Stock Connect endpoint."
       - name: stock/quotes/bak_daily
       - name: stock/quotes/stk_auction_o
       - name: stock/quotes/stk_auction_c
