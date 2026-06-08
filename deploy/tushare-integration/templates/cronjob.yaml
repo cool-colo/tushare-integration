@@ -1,6 +1,7 @@
 {{- if  .Values.configOverrides.parallel_mode }}
 {{- range $key, $job := .Values.cronjob }}
 {{- range $spider := $job.spiders }}
+{{- if or (not (hasKey $spider "enabled")) $spider.enabled }}
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -51,6 +52,7 @@ spec:
                     mountPath: /code/app/config.yaml
                     subPath: config.yaml
             restartPolicy: Never
+{{ end }}
 {{ end }}
 {{ end }}
 {{ else }}

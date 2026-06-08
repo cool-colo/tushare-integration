@@ -1,5 +1,10 @@
 import json
 
+DISABLED_SPIDERS = {
+    'stock/market/concept': 'Tushare returns invalid API name; use stock/market/dc_concept instead.',
+    'stock/market/concept_detail': 'Tushare returns invalid API name; use stock/market/dc_concept_cons instead.',
+}
+
 spiders = [
     'future/basic/fut_basic',
     'future/quotes/fut_daily',
@@ -105,7 +110,11 @@ for spider in spiders:
     group = spider.split('/')[0] + '/' + spider.split('/')[1]
     if group not in data_tmp:
         data_tmp[group] = []
-    data_tmp[group].append({'name': spider})
+    spider_config = {'name': spider}
+    if spider in DISABLED_SPIDERS:
+        spider_config['enabled'] = False
+        spider_config['disabled_reason'] = DISABLED_SPIDERS[spider]
+    data_tmp[group].append(spider_config)
 
 for group in data_tmp:
     if group == 'cronjob':

@@ -96,7 +96,11 @@ cronjob:
       - name: stock/market/repurchase
       - name: stock/market/share_float
       - name: stock/market/concept
+        enabled: false
+        disabled_reason: "Tushare returns invalid API name; use stock/market/dc_concept instead."
       - name: stock/market/concept_detail
+        enabled: false
+        disabled_reason: "Tushare returns invalid API name; use stock/market/dc_concept_cons instead."
       - name: stock/market/block_trade
       - name: stock/market/stk_holdernumber
       - name: stock/market/stk_holdertrade

@@ -21,6 +21,7 @@ class JobUpdateTypeTest(unittest.TestCase):
                 {"name": "stock/example/daily_spider"},
                 {"name": "stock/example/full_spider", "update_type": "full"},
                 {"name": "stock/example/both_spider", "update_types": ["incremental", "full"]},
+                {"name": "stock/example/disabled_spider", "enabled": False},
             ],
         }
 
@@ -46,6 +47,28 @@ class JobUpdateTypeTest(unittest.TestCase):
                 "stock/example/both_spider",
             ],
         )
+
+    def test_stock_market_job_skips_disabled_legacy_apis(self):
+        jobs_path = Path(__file__).resolve().parents[1] / "jobs.yaml"
+        jobs = yaml.safe_load(jobs_path.read_text(encoding="utf-8"))
+        stock_market_job = next(job for job in jobs["cronjob"] if job["name"] == "stock/market")
+
+        full_spiders = [
+            spider["name"]
+            for spider in CrawlManager.filter_job_spiders_by_update_type(stock_market_job, "full")
+        ]
+        incremental_spiders = [
+            spider["name"]
+            for spider in CrawlManager.filter_job_spiders_by_update_type(stock_market_job, "incremental")
+        ]
+
+        self.assertNotIn("stock/market/concept", full_spiders)
+        self.assertNotIn("stock/market/concept_detail", full_spiders)
+        self.assertNotIn("stock/market/stk_account_old", full_spiders)
+        self.assertNotIn("stock/market/concept", incremental_spiders)
+        self.assertNotIn("stock/market/concept_detail", incremental_spiders)
+        self.assertIn("stock/market/dc_concept", incremental_spiders)
+        self.assertIn("stock/market/dc_concept_cons", incremental_spiders)
 
     def test_filter_job_spiders_rejects_unknown_update_type(self):
         with self.assertRaisesRegex(ValueError, "Unsupported update_type"):

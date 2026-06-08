@@ -139,8 +139,12 @@ cronjob:
         update_type: full
       - name: stock/market/concept
         update_type: full
+        enabled: false
+        disabled_reason: "Tushare returns invalid API name; use stock/market/dc_concept instead."
       - name: stock/market/concept_detail
         update_type: full
+        enabled: false
+        disabled_reason: "Tushare returns invalid API name; use stock/market/dc_concept_cons instead."
       - name: stock/market/block_trade
       - name: stock/market/stk_holdernumber
       - name: stock/market/stk_holdertrade
@@ -151,6 +155,8 @@ cronjob:
         update_type: full
       - name: stock/market/stk_account_old
         update_type: full
+        enabled: false
+        disabled_reason: "Tushare returns invalid API name for this legacy historical endpoint."
       - name: stock/market/dc_index
       - name: stock/market/dc_member
       - name: stock/market/dc_daily

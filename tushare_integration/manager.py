@@ -170,6 +170,9 @@ class CrawlManager(object):
 
     @classmethod
     def spider_matches_update_type(cls, job: dict, spider: dict, update_type: str | None) -> bool:
+        if spider.get("enabled", True) is False:
+            return False
+
         normalized_update_type = cls.normalize_update_type(update_type)
         if normalized_update_type is None:
             return True
