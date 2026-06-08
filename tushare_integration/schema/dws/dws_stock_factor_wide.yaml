@@ -686,22 +686,6 @@ schema:
       data_type: float
       nullable: true
       comment: 利息收入ttm_0
-    - name: n_income_attr_p_lyr_0
-      data_type: float
-      nullable: true
-      comment: 净利润(不含少数股东损益)lyr_0
-    - name: n_income_attr_p_lyr_1
-      data_type: float
-      nullable: true
-      comment: 净利润(不含少数股东损益)lyr_1
-    - name: n_income_attr_p_ttm_0
-      data_type: float
-      nullable: true
-      comment: 净利润(不含少数股东损益)ttm_0
-    - name: n_income_attr_p_ttm_4
-      data_type: float
-      nullable: true
-      comment: 净利润(不含少数股东损益)ttm_4
     - name: n_income_lyr_0
       data_type: float
       nullable: true
@@ -722,6 +706,22 @@ schema:
       data_type: float
       nullable: true
       comment: 净利润(含少数股东损益)ttm_4
+    - name: n_income_attr_p_lyr_0
+      data_type: float
+      nullable: true
+      comment: 净利润(不含少数股东损益)lyr_0
+    - name: n_income_attr_p_lyr_1
+      data_type: float
+      nullable: true
+      comment: 净利润(不含少数股东损益)lyr_1
+    - name: n_income_attr_p_ttm_0
+      data_type: float
+      nullable: true
+      comment: 净利润(不含少数股东损益)ttm_0
+    - name: n_income_attr_p_ttm_4
+      data_type: float
+      nullable: true
+      comment: 净利润(不含少数股东损益)ttm_4
     - name: operate_profit_lyr_0
       data_type: float
       nullable: true
@@ -786,6 +786,702 @@ schema:
       data_type: float
       nullable: true
       comment: 利润总额ttm_4
+    - name: basic_eps_lyr_0
+      data_type: float
+      nullable: true
+      comment: 基本每股收益
+    - name: basic_eps_ttm_0
+      data_type: float
+      nullable: true
+      comment: 基本每股收益
+    - name: oper_cost_lyr_0
+      data_type: float
+      nullable: true
+      comment: 营业成本
+    - name: oper_cost_ttm_0
+      data_type: float
+      nullable: true
+      comment: 营业成本
+    - name: ebit_lyr
+      data_type: float
+      nullable: true
+      comment: 息税前利润(EBIT)（最近年报）
+    - name: ebit_ttm
+      data_type: float
+      nullable: true
+      comment: 息税前利润(EBIT)（TTM）
+    - name: fv_value_chg_gain_lyr_0
+      data_type: float
+      nullable: true
+      comment: 公允价值变动收益
+    - name: fv_value_chg_gain_ttm_0
+      data_type: float
+      nullable: true
+      comment: 公允价值变动收益
+    - name: fin_exp_lyr_0
+      data_type: float
+      nullable: true
+      comment: 财务费用（LYR，滞后0期）
+    - name: fin_exp_ttm_0
+      data_type: float
+      nullable: true
+      comment: 财务费用
+    - name: diluted_eps_lyr_0
+      data_type: float
+      nullable: true
+      comment: 稀释每股收益
+    - name: diluted_eps_ttm_0
+      data_type: float
+      nullable: true
+      comment: 稀释每股收益
+    - name: oth_impair_loss_assets_lyr_0
+      data_type: float
+      nullable: true
+      comment: 开发支出
+    - name: oth_impair_loss_assets_mrq_0
+      data_type: float
+      nullable: true
+      comment: 开发支出
+    - name: oth_impair_loss_assets_ttm_0
+      data_type: float
+      nullable: true
+      comment: 开发支出
+    - name: int_income_lyr_0
+      data_type: float
+      nullable: true
+      comment: 利息收入(财务费用)
+    - name: ass_invest_income_lyr_0
+      data_type: float
+      nullable: true
+      comment: 对联营合营公司的投资收益
+    - name: ass_invest_income_ttm_0
+      data_type: float
+      nullable: true
+      comment: 对联营合营公司的投资收益
+    - name: invest_income_lyr_0
+      data_type: float
+      nullable: true
+      comment: 投资收益（LYR，滞后0期）
+    - name: invest_income_ttm_0
+      data_type: float
+      nullable: true
+      comment: 投资收益（TTM）
+    - name: non_oper_exp_lyr_0
+      data_type: float
+      nullable: true
+      comment: 营业外支出（LYR，滞后0期）
+    - name: non_oper_exp_ttm_0
+      data_type: float
+      nullable: true
+      comment: 营业外支出（TTM）
+    - name: non_oper_income_lyr_0
+      data_type: float
+      nullable: true
+      comment: 营业外收入（LYR，滞后0期）
+    - name: non_oper_income_ttm_0
+      data_type: float
+      nullable: true
+      comment: 营业外收入（LYR，滞后0期）
+    - name: biz_tax_surchg_lyr_0
+      data_type: float
+      nullable: true
+      comment: 营业税金及附加
+    - name: biz_tax_surchg_ttm_0
+      data_type: float
+      nullable: true
+      comment: 营业税金及附加
+    - name: acc_exp_lyr_0
+      data_type: float
+      nullable: true
+      comment: 预提费用
+    - name: acc_exp_mrq_0
+      data_type: float
+      nullable: true
+      comment: 预提费用
+    - name: acc_exp_ttm_0
+      data_type: float
+      nullable: true
+      comment: 预提费用
+    - name: acct_payable_lyr_0
+      data_type: float
+      nullable: true
+      comment: 应付账款（LYR，滞后0期）
+    - name: acct_payable_mrq_0
+      data_type: float
+      nullable: true
+      comment: 应付账款（MRQ）
+    - name: acct_payable_ttm_0
+      data_type: float
+      nullable: true
+      comment: 应付账款（TTM）
+    - name: accounts_receiv_ttm_0
+      data_type: float
+      nullable: true
+      comment: 应收账款（TTM）
+    - name: adv_receipts_lyr_0
+      data_type: float
+      nullable: true
+      comment: 预收款项
+    - name: adv_receipts_mrq_0
+      data_type: float
+      nullable: true
+      comment: 预收款项
+    - name: adv_receipts_ttm_0
+      data_type: float
+      nullable: true
+      comment: 预收款项
+    - name: notes_receiv_lyr_0
+      data_type: float
+      nullable: true
+      comment: 应收票据
+    - name: notes_receiv_mrq_0
+      data_type: float
+      nullable: true
+      comment: 应收票据（MRQ）
+    - name: notes_receiv_ttm_0
+      data_type: float
+      nullable: true
+      comment: 应收票据（TTM）
+    - name: bond_payable_lyr_0
+      data_type: float
+      nullable: true
+      comment: 应付债券（LYR，滞后0期）
+    - name: bond_payable_mrq_0
+      data_type: float
+      nullable: true
+      comment: 应付债券（MRQ）
+    - name: cap_rese_lyr_0
+      data_type: float
+      nullable: true
+      comment: 资本公积金
+    - name: cap_rese_mrq_0
+      data_type: float
+      nullable: true
+      comment: 资本公积金
+    - name: cap_rese_ttm_0
+      data_type: float
+      nullable: true
+      comment: 资本公积金
+    - name: total_cur_assets_mrq_0
+      data_type: float
+      nullable: true
+      comment: 流动资产（MRQ）
+    - name: total_cur_liab_mrq_0
+      data_type: float
+      nullable: true
+      comment: 流动负债（MRQ）
+    - name: amor_exp_lyr_0
+      data_type: float
+      nullable: true
+      comment: 待摊费用
+    - name: amor_exp_mrq_0
+      data_type: float
+      nullable: true
+      comment: 待摊费用
+    - name: amor_exp_ttm_0
+      data_type: float
+      nullable: true
+      comment: 待摊费用
+    - name: deferred_inc_lyr_0
+      data_type: float
+      nullable: true
+      comment: 递延收益（LYR，滞后0期）
+    - name: deferred_inc_mrq_0
+      data_type: float
+      nullable: true
+      comment: 递延收益（MRQ）
+    - name: deferred_inc_ttm_0
+      data_type: float
+      nullable: true
+      comment: 递延收益（TTM）
+    - name: const_materials_lyr_0
+      data_type: float
+      nullable: true
+      comment: 工程物资
+    - name: const_materials_mrq_0
+      data_type: float
+      nullable: true
+      comment: 工程物资（MRQ）
+    - name: const_materials_ttm_0
+      data_type: float
+      nullable: true
+      comment: 工程物资（TTM）
+    - name: total_hldr_eqy_exc_min_int_ttm_1
+      data_type: float
+      nullable: true
+      comment: 归属于母公司股东权益（TTM（滞后1期））
+    - name: trad_asset_lyr_0
+      data_type: float
+      nullable: true
+      comment: 交易性金融资产
+    - name: trad_asset_mrq_0
+      data_type: float
+      nullable: true
+      comment: 交易性金融资产
+    - name: trad_asset_ttm_0
+      data_type: float
+      nullable: true
+      comment: 交易性金融资产
+    - name: goodwill_lyr_0
+      data_type: float
+      nullable: true
+      comment: 商誉
+    - name: goodwill_mrq_0
+      data_type: float
+      nullable: true
+      comment: 商誉（MRQ）
+    - name: goodwill_ttm_0
+      data_type: float
+      nullable: true
+      comment: 商誉（TTM）
+    - name: inventories_lyr_0
+      data_type: float
+      nullable: true
+      comment: 本期年报披露存货
+    - name: inventories_mrq_0
+      data_type: float
+      nullable: true
+      comment: 本期年报披露存货
+    - name: inventories_ttm_0
+      data_type: float
+      nullable: true
+      comment: 本期年报披露存货
+    - name: lt_borr_lyr_0
+      data_type: float
+      nullable: true
+      comment: 长期借款（LYR，滞后0期）
+    - name: lt_borr_mrq_0
+      data_type: float
+      nullable: true
+      comment: 长期借款（MRQ）
+    - name: accounts_receiv_lyr_0
+      data_type: float
+      nullable: true
+      comment: 应收账款净额（LYR，滞后0期）
+    - name: accounts_receiv_mrq_0
+      data_type: float
+      nullable: true
+      comment: 应收账款净额
+    - name: total_nca_lyr_0
+      data_type: float
+      nullable: true
+      comment: 非流动资产（LYR，滞后0期）
+    - name: total_nca_mrq_0
+      data_type: float
+      nullable: true
+      comment: 非流动资产（MRQ）
+    - name: total_nca_ttm_0
+      data_type: float
+      nullable: true
+      comment: 非流动资产（TTM）
+    - name: total_ncl_lyr_0
+      data_type: float
+      nullable: true
+      comment: 非流动负债（LYR，滞后0期）
+    - name: total_ncl_mrq_0
+      data_type: float
+      nullable: true
+      comment: 非流动负债（MRQ）
+    - name: total_ncl_ttm_0
+      data_type: float
+      nullable: true
+      comment: 非流动负债（TTM）
+    - name: oth_receiv_lyr_0
+      data_type: float
+      nullable: true
+      comment: 其他应收款（MRQ）
+    - name: oth_receiv_mrq_0
+      data_type: float
+      nullable: true
+      comment: 其他应收款（MRQ）
+    - name: oth_receiv_ttm_0
+      data_type: float
+      nullable: true
+      comment: 其他应收款（TTM）
+    - name: oth_cur_liab_lyr_0
+      data_type: float
+      nullable: true
+      comment: 其他流动负债
+    - name: oth_cur_liab_mrq_0
+      data_type: float
+      nullable: true
+      comment: 其他流动负债
+    - name: oth_cur_liab_ttm_0
+      data_type: float
+      nullable: true
+      comment: 其他流动负债
+    - name: oth_payable_lyr_0
+      data_type: float
+      nullable: true
+      comment: 其他应付款
+    - name: oth_payable_mrq_0
+      data_type: float
+      nullable: true
+      comment: 其他应付款（MRQ）
+    - name: oth_payable_ttm_0
+      data_type: float
+      nullable: true
+      comment: 其他应付款（TTM）
+    - name: payroll_payable_lyr_0
+      data_type: float
+      nullable: true
+      comment: 应付职工薪酬
+    - name: payroll_payable_mrq_0
+      data_type: float
+      nullable: true
+      comment: 应付职工薪酬（MRQ）
+    - name: payroll_payable_ttm_0
+      data_type: float
+      nullable: true
+      comment: 应付职工薪酬（TTM）
+    - name: prepayment_lyr_0
+      data_type: float
+      nullable: true
+      comment: 预付账款
+    - name: prepayment_mrq_0
+      data_type: float
+      nullable: true
+      comment: 预付款项（MRQ）
+    - name: prepayment_ttm_0
+      data_type: float
+      nullable: true
+      comment: 预付款项（TTM）
+    - name: st_borr_lyr_0
+      data_type: float
+      nullable: true
+      comment: 短期借款
+    - name: surplus_rese_lyr_0
+      data_type: float
+      nullable: true
+      comment: 盈余公积（LYR，滞后0期）
+    - name: surplus_rese_mrq_0
+      data_type: float
+      nullable: true
+      comment: 盈余公积（MRQ）
+    - name: surplus_rese_ttm_0
+      data_type: float
+      nullable: true
+      comment: 盈余公积（TTM）
+    - name: taxes_payable_lyr_0
+      data_type: float
+      nullable: true
+      comment: 应交税费
+    - name: taxes_payable_mrq_0
+      data_type: float
+      nullable: true
+      comment: 应交税费（MRQ）
+    - name: taxes_payable_ttm_0
+      data_type: float
+      nullable: true
+      comment: 应交税费（TTM）
+    - name: total_assets_mrq_1
+      data_type: float
+      nullable: true
+      comment: 资产总计（MRQ（滞后1期））
+    - name: total_assets_ttm_1
+      data_type: float
+      nullable: true
+      comment: 资产总计（TTM（滞后1期））
+    - name: fix_assets_mrq_0
+      data_type: float
+      nullable: true
+      comment: 固定资产合计（MRQ）
+    - name: undistr_porfit_lyr_0
+      data_type: float
+      nullable: true
+      comment: 未分配利润
+    - name: undistr_porfit_mrq_0
+      data_type: float
+      nullable: true
+      comment: 未分配利润
+    - name: undistr_porfit_ttm_0
+      data_type: float
+      nullable: true
+      comment: 未分配利润
+    - name: working_capital_lyr
+      data_type: float
+      nullable: true
+      comment: 营运资本
+    - name: cip_lyr_0
+      data_type: float
+      nullable: true
+      comment: 在建工程合计（LYR，滞后0期）
+    - name: cip_mrq_0
+      data_type: float
+      nullable: true
+      comment: 在建工程合计（MRQ）
+    - name: cip_ttm_0
+      data_type: float
+      nullable: true
+      comment: 在建工程合计（TTM）
+    - name: fix_assets_total_lyr_0
+      data_type: float
+      nullable: true
+      comment: 固定资产净额（LYR，滞后0期）
+    - name: fix_assets_total_ttm_0
+      data_type: float
+      nullable: true
+      comment: 固定资产净额
+    - name: cip_total_lyr_0
+      data_type: float
+      nullable: true
+      comment: 在建工程合计（LYR，滞后0期）
+    - name: cip_total_mrq_0
+      data_type: float
+      nullable: true
+      comment: 在建工程合计（MRQ）
+    - name: cip_total_ttm_0
+      data_type: float
+      nullable: true
+      comment: 在建工程合计（TTM）
+    - name: total_hldr_eqy_inc_min_int_mrq_0
+      data_type: float
+      nullable: true
+      comment: 股东权益合计
+    - name: total_hldr_eqy_inc_min_int_mrq_1
+      data_type: float
+      nullable: true
+      comment: 股东权益合计
+    - name: total_hldr_eqy_inc_min_int_ttm_1
+      data_type: float
+      nullable: true
+      comment: 股东权益合计
+    - name: lt_amort_deferred_exp_ttm_0
+      data_type: float
+      nullable: true
+      comment: 长期待摊费用摊销
+    - name: lt_amort_deferred_exp_mrq_0
+      data_type: float
+      nullable: true
+      comment: 长期待摊费用摊销
+    - name: eff_fx_flu_cash_lyr_0
+      data_type: float
+      nullable: true
+      comment: 汇兑损益（LYR，滞后0期）
+    - name: eff_fx_flu_cash_ttm_0
+      data_type: float
+      nullable: true
+      comment: 汇兑损益
+    - name: depr_fa_coga_dpba_mrq_0
+      data_type: float
+      nullable: true
+      comment: 固定资产折旧
+    - name: amort_intang_assets_mrq_0
+      data_type: float
+      nullable: true
+      comment: intangible asset amortization（MRQ）
+    - name: arturn_days_lyr
+      data_type: float
+      nullable: true
+      comment: 应付账款周转天数（最近年报）
+    - name: ar_turn_lyr
+      data_type: float
+      nullable: true
+      comment: 应付账款周转率（最近年报）
+    - name: ar_turn_ttm
+      data_type: float
+      nullable: true
+      comment: 应付账款周转率（TTM）
+    - name: arturn_days_ttm
+      data_type: float
+      nullable: true
+      comment: 应收账款周转天数（TTM）
+    - name: profit_dedt_lyr_0
+      data_type: float
+      nullable: true
+      comment: 扣除非经常性损益的净利润
+    - name: profit_dedt_ttm_0
+      data_type: float
+      nullable: true
+      comment: 扣除非经常性损益的净利润
+    - name: fcfe_lyr_0
+      data_type: float
+      nullable: true
+      comment: 股东自由现金流量
+    - name: fcfe_ttm_0
+      data_type: float
+      nullable: true
+      comment: 股东自由现金流量
+    - name: fcff_lyr_0
+      data_type: float
+      nullable: true
+      comment: 股东自由现金流量
+    - name: fcff_ttm_0
+      data_type: float
+      nullable: true
+      comment: 股东自由现金流量
+    - name: interestdebt_lf
+      data_type: float
+      nullable: true
+      comment: 带息债务
+    - name: interestdebt_lyr
+      data_type: float
+      nullable: true
+      comment: 带息债务
+    - name: interestdebt_ttm
+      data_type: float
+      nullable: true
+      comment: 带息债务
+    - name: inv_turn_lyr
+      data_type: float
+      nullable: true
+      comment: 存货周转率（最近年报）
+    - name: inv_turn_ttm
+      data_type: float
+      nullable: true
+      comment: 存货周转率（TTM）
+    - name: invest_capital_lf
+      data_type: float
+      nullable: true
+      comment: 投入资本（最新口径）
+    - name: invest_capital_lyr
+      data_type: float
+      nullable: true
+      comment: 投入资本（最近年报）
+    - name: invest_capital_ttm
+      data_type: float
+      nullable: true
+      comment: 投入资本（TTM）
+    - name: netdebt_lyr
+      data_type: float
+      nullable: true
+      comment: 净负债/净债务（LYR）
+    - name: netdebt_ttm
+      data_type: float
+      nullable: true
+      comment: 净负债（TTM）
+    - name: current_exint_lf
+      data_type: float
+      nullable: true
+      comment: 无息流动负债(口径)（最新口径）
+    - name: current_exint_lyr
+      data_type: float
+      nullable: true
+      comment: 无息流动负债/无息流动债务（LYR）
+    - name: current_exint_ttm
+      data_type: float
+      nullable: true
+      comment: 无息流动负债(口径)（TTM）
+    - name: noncurrent_exint_lf
+      data_type: float
+      nullable: true
+      comment: 无息非流动负债(口径)（最新口径）
+    - name: noncurrent_exint_lyr
+      data_type: float
+      nullable: true
+      comment: 无息非流动负债/无息非流动债务（LYR）
+    - name: noncurrent_exint_ttm
+      data_type: float
+      nullable: true
+      comment: 无息非流动负债(口径)（TTM）
+    - name: extra_item_lyr_0
+      data_type: float
+      nullable: true
+      comment: 非经常性损益（LYR，滞后0期）
+    - name: extra_item_ttm_0
+      data_type: float
+      nullable: true
+      comment: 非经常性损益（TTM）
+    - name: turn_days_lyr_0
+      data_type: float
+      nullable: true
+      comment: 营业周期（TTM）
+    - name: turn_days_ttm_0
+      data_type: float
+      nullable: true
+      comment: 营业周期（TTM）
+    - name: retained_earnings_lf
+      data_type: float
+      nullable: true
+      comment: 留存收益（最新口径）
+    - name: retained_earnings_lyr
+      data_type: float
+      nullable: true
+      comment: 留存收益（最近年报）
+    - name: retained_earnings_ttm
+      data_type: float
+      nullable: true
+      comment: 留存收益（TTM）
+    - name: assets_turn_lyr
+      data_type: float
+      nullable: true
+      comment: 总资产周转率（最近年报）
+    - name: assets_turn_ttm
+      data_type: float
+      nullable: true
+      comment: 总资产周转率（TTM）
+    - name: working_capital_lf
+      data_type: float
+      nullable: true
+      comment: 营运资本
+    - name: working_capital_ttm
+      data_type: float
+      nullable: true
+      comment: 营运资本
+    - name: volume_ratio
+      data_type: float
+      nullable: true
+      comment: 情绪/交易活跃因子(近似)
+    - name: assets_impair_loss
+      data_type: float
+      nullable: true
+      comment: 资产减值损失TTM
+    - name: int_exp
+      data_type: float
+      nullable: true
+      comment: 利息支出TTM
+    - name: div_receiv
+      data_type: float
+      nullable: true
+      comment: 应收股利
+    - name: fa_avail_for_sale
+      data_type: float
+      nullable: true
+      comment: 可供出售金融资产
+    - name: htm_invest
+      data_type: float
+      nullable: true
+      comment: 持有至到期投资
+    - name: int_receiv
+      data_type: float
+      nullable: true
+      comment: 应收利息
+    - name: intan_assets
+      data_type: float
+      nullable: true
+      comment: 无形资产
+    - name: r_and_d
+      data_type: float
+      nullable: true
+      comment: 研发支出
+    - name: c_cash_equ_end_period
+      data_type: float
+      nullable: true
+      comment: 期末现金及现金等价物余额
+    - name: c_fr_sale_sg
+      data_type: float
+      nullable: true
+      comment: 销售商品、提供劳务收到的现金TTM
+    - name: c_pay_acq_const_fiolta
+      data_type: float
+      nullable: true
+      comment: 投资能力(可用CAPEX强度等近似)
+    - name: ev_lyr
+      data_type: float
+      nullable: true
+      comment: 企业价值
+    - name: ev_no_cash_lyr
+      data_type: float
+      nullable: true
+      comment: 企业价值(剔除现金)（最近年报）
+    - name: ev_no_cash_ttm
+      data_type: float
+      nullable: true
+      comment: 企业价值(剔除现金)（TTM）
+    - name: ev_ttm
+      data_type: float
+      nullable: true
+      comment: 企业价值(EV)（TTM）
     - name: hk_hold_vol
       data_type: float
       nullable: true

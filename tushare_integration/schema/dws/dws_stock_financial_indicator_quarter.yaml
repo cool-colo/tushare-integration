@@ -58,6 +58,10 @@ schema:
       data_type: float
       nullable: true
       comment: 企业自由现金流量；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值，缺上一季度为空
+    - name: profit_dedt
+      data_type: float
+      nullable: true
+      comment: 扣除非经常性损益后的净利润；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值，缺上一季度为空
     - name: interestdebt
       data_type: float
       nullable: true

@@ -244,19 +244,33 @@ class TushareResponseTest(unittest.TestCase):
             "total_assets_mrq_4",
             "ebitda_ttm",
             "ebitda_lyr",
+            "basic_eps_lyr_0",
+            "total_assets_mrq_1",
+            "interestdebt_lf",
+            "working_capital_ttm",
+            "profit_dedt_ttm_0",
+            "volume_ratio",
+            "assets_impair_loss",
+            "ev_ttm",
         }
 
-        self.assertEqual(len(feature_columns), 106)
+        self.assertEqual(len(feature_columns), len(FINANCIAL_FEATURE_COLUMNS))
         self.assertTrue(feature_columns.issubset(column_names))
         self.assertTrue(requested_columns.issubset(column_names))
         self.assertIn("income_quarter_features", sql)
         self.assertIn("cashflow_quarter_features", sql)
         self.assertIn("balance_sheet_quarter_features", sql)
+        self.assertIn("financial_indicator_quarter_quarter_features", sql)
         self.assertIn("ASOF LEFT JOIN income_quarter_features", sql)
         self.assertIn("ASOF LEFT JOIN balance_sheet_annual_features", sql)
+        self.assertIn("ASOF LEFT JOIN financial_indicator_quarter_annual_features", sql)
         self.assertIn("income_quarter_features.`revenue_ttm_0` AS `revenue_ttm_0`", sql)
         self.assertIn("income_annual_features.`n_income_lyr_1` AS `n_income_lyr_1`", sql)
         self.assertIn("balance_sheet_quarter_features.`money_cap_mrq_0` AS `money_cap_mrq_0`", sql)
+        self.assertIn(
+            "financial_indicator_quarter_quarter_features.`interestdebt_lf` AS `interestdebt_lf`",
+            sql,
+        )
         self.assertIn(
             "sumIf(`revenue`, report_offset >= 0 AND report_offset < 4)",
             sql,
@@ -265,8 +279,21 @@ class TushareResponseTest(unittest.TestCase):
             "avgIf(`total_assets`, report_offset >= 0 AND report_offset < 4)",
             sql,
         )
+        self.assertIn(
+            "avgIf(`interestdebt`, report_offset >= 0 AND report_offset < 4)",
+            sql,
+        )
+        self.assertIn(
+            "sumIf(`profit_dedt`, report_offset >= 0 AND report_offset < 4)",
+            sql,
+        )
         self.assertIn("income_quarter_features.`ebitda_ttm` AS `ebitda_ttm`", sql)
         self.assertIn("income_annual_features.`ebitda_lyr` AS `ebitda_lyr`", sql)
+        self.assertIn("daily_basic.`volume_ratio` AS `volume_ratio`", sql)
+        self.assertIn(
+            "`total_mv` * 10000 + `interestdebt_ttm` - `money_cap_ttm_0` AS `ev_ttm`",
+            sql,
+        )
         self.assertIn("|', coalesce(income_quarter_features.source_batch_id, '')", sql)
         self.assertIn("|', coalesce(cashflow_annual_features.source_record_hash, '')", sql)
 
@@ -280,7 +307,7 @@ class TushareResponseTest(unittest.TestCase):
         comments = {column["name"]: column["comment"] for column in spec["schema"]["columns"]}
 
         self.assertTrue(set(STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS).issubset(column_names))
-        self.assertNotIn("profit_dedt", column_names)
+        self.assertIn("profit_dedt", column_names)
         self.assertEqual(manager.get_required_source_tables(spec), [STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE])
         self.assertIn("FROM default.dwd_stock_financial_indicator src", sql)
         self.assertIn("toMonth(src.event_date) IN (3, 6, 9, 12)", sql)
@@ -289,9 +316,11 @@ class TushareResponseTest(unittest.TestCase):
         self.assertIn("`extra_item` - `prev_extra_item`", sql)
         self.assertIn("`fcfe` - `prev_fcfe`", sql)
         self.assertIn("`fcff` - `prev_fcff`", sql)
+        self.assertIn("`profit_dedt` - `prev_profit_dedt`", sql)
         self.assertIn("toQuarter(event_date) = 1", sql)
         self.assertIn("curr.`ar_turn` AS `ar_turn`", sql)
         self.assertIn("当期累计值减上一季度累计值", comments["extra_item"])
+        self.assertIn("当期累计值减上一季度累计值", comments["profit_dedt"])
         self.assertIn("存量指标不做差分", comments["interestdebt"])
         self.assertIn("不可由累计值差分单季化", comments["ar_turn"])
 

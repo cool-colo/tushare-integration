@@ -24,6 +24,11 @@ DWS_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema" / "dws"
 FACTOR_MAPPING_CSV = DEFAULT_FACTOR_MAPPING_CSV
 FACTOR_MAPPING_CSV_CANDIDATES = DEFAULT_FACTOR_MAPPING_CSV_CANDIDATES
 DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT = 1200
+DWS_TABLE_BUILD_PRIORITY = {
+    "dws_stock_financial_indicator_quarter": 0,
+    "dws_stock_factor_wide": 10,
+    "dws_stock_factor_wide_matrix": 20,
+}
 
 STOCK_FACTOR_WIDE_SOURCES = [
     "dwd_stock_eod_price",
@@ -31,6 +36,7 @@ STOCK_FACTOR_WIDE_SOURCES = [
     "dwd_stock_daily_basic",
     "dwd_stock_eod_quote_metrics",
     "dwd_stock_financial_indicator",
+    "dws_stock_financial_indicator_quarter",
     "dwd_stock_income",
     "dwd_stock_balance_sheet",
     "dwd_stock_cashflow",
@@ -61,6 +67,7 @@ STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS = [
     "ar_turn",
     "fcfe",
     "fcff",
+    "profit_dedt",
     "interestdebt",
     "inv_turn",
     "invest_capital",
@@ -77,6 +84,7 @@ STOCK_FINANCIAL_INDICATOR_QUARTER_YTD_DIFF_FIELDS = {
     "extra_item",
     "fcfe",
     "fcff",
+    "profit_dedt",
 }
 FINANCIAL_FEATURE_COLUMNS = [
     ("balancesheet", "bond_payable", "ttm_0", "bond_payable_ttm_0"),
@@ -186,6 +194,167 @@ FINANCIAL_FEATURE_COLUMNS = [
     ("income", "total_profit", "ttm_0", "total_profit_ttm_0"),
     ("income", "total_profit", "ttm_4", "total_profit_ttm_4"),
 ]
+SUPPLEMENTAL_FINANCIAL_FEATURE_COLUMNS = [
+    ('income', 'basic_eps', 'lyr_0', 'basic_eps_lyr_0'),
+    ('income', 'basic_eps', 'ttm_0', 'basic_eps_ttm_0'),
+    ('income', 'oper_cost', 'lyr_0', 'oper_cost_lyr_0'),
+    ('income', 'oper_cost', 'ttm_0', 'oper_cost_ttm_0'),
+    ('income', 'ebit', 'lyr', 'ebit_lyr'),
+    ('income', 'ebit', 'ttm', 'ebit_ttm'),
+    ('income', 'fv_value_chg_gain', 'lyr_0', 'fv_value_chg_gain_lyr_0'),
+    ('income', 'fv_value_chg_gain', 'ttm_0', 'fv_value_chg_gain_ttm_0'),
+    ('income', 'fin_exp', 'lyr_0', 'fin_exp_lyr_0'),
+    ('income', 'fin_exp', 'ttm_0', 'fin_exp_ttm_0'),
+    ('income', 'diluted_eps', 'lyr_0', 'diluted_eps_lyr_0'),
+    ('income', 'diluted_eps', 'ttm_0', 'diluted_eps_ttm_0'),
+    ('income', 'oth_impair_loss_assets', 'lyr_0', 'oth_impair_loss_assets_lyr_0'),
+    ('income', 'oth_impair_loss_assets', 'mrq_0', 'oth_impair_loss_assets_mrq_0'),
+    ('income', 'oth_impair_loss_assets', 'ttm_0', 'oth_impair_loss_assets_ttm_0'),
+    ('income', 'int_income', 'lyr_0', 'int_income_lyr_0'),
+    ('income', 'ass_invest_income', 'lyr_0', 'ass_invest_income_lyr_0'),
+    ('income', 'ass_invest_income', 'ttm_0', 'ass_invest_income_ttm_0'),
+    ('income', 'invest_income', 'lyr_0', 'invest_income_lyr_0'),
+    ('income', 'invest_income', 'ttm_0', 'invest_income_ttm_0'),
+    ('income', 'non_oper_exp', 'lyr_0', 'non_oper_exp_lyr_0'),
+    ('income', 'non_oper_exp', 'ttm_0', 'non_oper_exp_ttm_0'),
+    ('income', 'non_oper_income', 'lyr_0', 'non_oper_income_lyr_0'),
+    ('income', 'non_oper_income', 'ttm_0', 'non_oper_income_ttm_0'),
+    ('income', 'biz_tax_surchg', 'lyr_0', 'biz_tax_surchg_lyr_0'),
+    ('income', 'biz_tax_surchg', 'ttm_0', 'biz_tax_surchg_ttm_0'),
+    ('balancesheet', 'acc_exp', 'lyr_0', 'acc_exp_lyr_0'),
+    ('balancesheet', 'acc_exp', 'mrq_0', 'acc_exp_mrq_0'),
+    ('balancesheet', 'acc_exp', 'ttm_0', 'acc_exp_ttm_0'),
+    ('balancesheet', 'acct_payable', 'lyr_0', 'acct_payable_lyr_0'),
+    ('balancesheet', 'acct_payable', 'mrq_0', 'acct_payable_mrq_0'),
+    ('balancesheet', 'acct_payable', 'ttm_0', 'acct_payable_ttm_0'),
+    ('balancesheet', 'accounts_receiv', 'ttm_0', 'accounts_receiv_ttm_0'),
+    ('balancesheet', 'adv_receipts', 'lyr_0', 'adv_receipts_lyr_0'),
+    ('balancesheet', 'adv_receipts', 'mrq_0', 'adv_receipts_mrq_0'),
+    ('balancesheet', 'adv_receipts', 'ttm_0', 'adv_receipts_ttm_0'),
+    ('balancesheet', 'notes_receiv', 'lyr_0', 'notes_receiv_lyr_0'),
+    ('balancesheet', 'notes_receiv', 'mrq_0', 'notes_receiv_mrq_0'),
+    ('balancesheet', 'notes_receiv', 'ttm_0', 'notes_receiv_ttm_0'),
+    ('balancesheet', 'bond_payable', 'lyr_0', 'bond_payable_lyr_0'),
+    ('balancesheet', 'bond_payable', 'mrq_0', 'bond_payable_mrq_0'),
+    ('balancesheet', 'cap_rese', 'lyr_0', 'cap_rese_lyr_0'),
+    ('balancesheet', 'cap_rese', 'mrq_0', 'cap_rese_mrq_0'),
+    ('balancesheet', 'cap_rese', 'ttm_0', 'cap_rese_ttm_0'),
+    ('balancesheet', 'total_cur_assets', 'mrq_0', 'total_cur_assets_mrq_0'),
+    ('balancesheet', 'total_cur_liab', 'mrq_0', 'total_cur_liab_mrq_0'),
+    ('balancesheet', 'amor_exp', 'lyr_0', 'amor_exp_lyr_0'),
+    ('balancesheet', 'amor_exp', 'mrq_0', 'amor_exp_mrq_0'),
+    ('balancesheet', 'amor_exp', 'ttm_0', 'amor_exp_ttm_0'),
+    ('balancesheet', 'deferred_inc', 'lyr_0', 'deferred_inc_lyr_0'),
+    ('balancesheet', 'deferred_inc', 'mrq_0', 'deferred_inc_mrq_0'),
+    ('balancesheet', 'deferred_inc', 'ttm_0', 'deferred_inc_ttm_0'),
+    ('balancesheet', 'const_materials', 'lyr_0', 'const_materials_lyr_0'),
+    ('balancesheet', 'const_materials', 'mrq_0', 'const_materials_mrq_0'),
+    ('balancesheet', 'const_materials', 'ttm_0', 'const_materials_ttm_0'),
+    ('balancesheet', 'total_hldr_eqy_exc_min_int', 'ttm_1', 'total_hldr_eqy_exc_min_int_ttm_1'),
+    ('balancesheet', 'trad_asset', 'lyr_0', 'trad_asset_lyr_0'),
+    ('balancesheet', 'trad_asset', 'mrq_0', 'trad_asset_mrq_0'),
+    ('balancesheet', 'trad_asset', 'ttm_0', 'trad_asset_ttm_0'),
+    ('balancesheet', 'goodwill', 'lyr_0', 'goodwill_lyr_0'),
+    ('balancesheet', 'goodwill', 'mrq_0', 'goodwill_mrq_0'),
+    ('balancesheet', 'goodwill', 'ttm_0', 'goodwill_ttm_0'),
+    ('balancesheet', 'inventories', 'lyr_0', 'inventories_lyr_0'),
+    ('balancesheet', 'inventories', 'mrq_0', 'inventories_mrq_0'),
+    ('balancesheet', 'inventories', 'ttm_0', 'inventories_ttm_0'),
+    ('balancesheet', 'lt_borr', 'lyr_0', 'lt_borr_lyr_0'),
+    ('balancesheet', 'lt_borr', 'mrq_0', 'lt_borr_mrq_0'),
+    ('balancesheet', 'accounts_receiv', 'lyr_0', 'accounts_receiv_lyr_0'),
+    ('balancesheet', 'accounts_receiv', 'mrq_0', 'accounts_receiv_mrq_0'),
+    ('balancesheet', 'total_nca', 'lyr_0', 'total_nca_lyr_0'),
+    ('balancesheet', 'total_nca', 'mrq_0', 'total_nca_mrq_0'),
+    ('balancesheet', 'total_nca', 'ttm_0', 'total_nca_ttm_0'),
+    ('balancesheet', 'total_ncl', 'lyr_0', 'total_ncl_lyr_0'),
+    ('balancesheet', 'total_ncl', 'mrq_0', 'total_ncl_mrq_0'),
+    ('balancesheet', 'total_ncl', 'ttm_0', 'total_ncl_ttm_0'),
+    ('balancesheet', 'oth_receiv', 'lyr_0', 'oth_receiv_lyr_0'),
+    ('balancesheet', 'oth_receiv', 'mrq_0', 'oth_receiv_mrq_0'),
+    ('balancesheet', 'oth_receiv', 'ttm_0', 'oth_receiv_ttm_0'),
+    ('balancesheet', 'oth_cur_liab', 'lyr_0', 'oth_cur_liab_lyr_0'),
+    ('balancesheet', 'oth_cur_liab', 'mrq_0', 'oth_cur_liab_mrq_0'),
+    ('balancesheet', 'oth_cur_liab', 'ttm_0', 'oth_cur_liab_ttm_0'),
+    ('balancesheet', 'oth_payable', 'lyr_0', 'oth_payable_lyr_0'),
+    ('balancesheet', 'oth_payable', 'mrq_0', 'oth_payable_mrq_0'),
+    ('balancesheet', 'oth_payable', 'ttm_0', 'oth_payable_ttm_0'),
+    ('balancesheet', 'payroll_payable', 'lyr_0', 'payroll_payable_lyr_0'),
+    ('balancesheet', 'payroll_payable', 'mrq_0', 'payroll_payable_mrq_0'),
+    ('balancesheet', 'payroll_payable', 'ttm_0', 'payroll_payable_ttm_0'),
+    ('balancesheet', 'prepayment', 'lyr_0', 'prepayment_lyr_0'),
+    ('balancesheet', 'prepayment', 'mrq_0', 'prepayment_mrq_0'),
+    ('balancesheet', 'prepayment', 'ttm_0', 'prepayment_ttm_0'),
+    ('balancesheet', 'st_borr', 'lyr_0', 'st_borr_lyr_0'),
+    ('balancesheet', 'surplus_rese', 'lyr_0', 'surplus_rese_lyr_0'),
+    ('balancesheet', 'surplus_rese', 'mrq_0', 'surplus_rese_mrq_0'),
+    ('balancesheet', 'surplus_rese', 'ttm_0', 'surplus_rese_ttm_0'),
+    ('balancesheet', 'taxes_payable', 'lyr_0', 'taxes_payable_lyr_0'),
+    ('balancesheet', 'taxes_payable', 'mrq_0', 'taxes_payable_mrq_0'),
+    ('balancesheet', 'taxes_payable', 'ttm_0', 'taxes_payable_ttm_0'),
+    ('balancesheet', 'total_assets', 'mrq_1', 'total_assets_mrq_1'),
+    ('balancesheet', 'total_assets', 'ttm_1', 'total_assets_ttm_1'),
+    ('balancesheet', 'fix_assets', 'mrq_0', 'fix_assets_mrq_0'),
+    ('balancesheet', 'undistr_porfit', 'lyr_0', 'undistr_porfit_lyr_0'),
+    ('balancesheet', 'undistr_porfit', 'mrq_0', 'undistr_porfit_mrq_0'),
+    ('balancesheet', 'undistr_porfit', 'ttm_0', 'undistr_porfit_ttm_0'),
+    ('fina_indicator', 'working_capital', 'lyr', 'working_capital_lyr'),
+    ('balancesheet', 'cip', 'lyr_0', 'cip_lyr_0'),
+    ('balancesheet', 'cip', 'mrq_0', 'cip_mrq_0'),
+    ('balancesheet', 'cip', 'ttm_0', 'cip_ttm_0'),
+    ('balancesheet', 'fix_assets_total', 'lyr_0', 'fix_assets_total_lyr_0'),
+    ('balancesheet', 'fix_assets_total', 'ttm_0', 'fix_assets_total_ttm_0'),
+    ('balancesheet', 'cip_total', 'lyr_0', 'cip_total_lyr_0'),
+    ('balancesheet', 'cip_total', 'mrq_0', 'cip_total_mrq_0'),
+    ('balancesheet', 'cip_total', 'ttm_0', 'cip_total_ttm_0'),
+    ('balancesheet', 'total_hldr_eqy_inc_min_int', 'mrq_0', 'total_hldr_eqy_inc_min_int_mrq_0'),
+    ('balancesheet', 'total_hldr_eqy_inc_min_int', 'mrq_1', 'total_hldr_eqy_inc_min_int_mrq_1'),
+    ('balancesheet', 'total_hldr_eqy_inc_min_int', 'ttm_1', 'total_hldr_eqy_inc_min_int_ttm_1'),
+    ('cashflow', 'lt_amort_deferred_exp', 'ttm_0', 'lt_amort_deferred_exp_ttm_0'),
+    ('cashflow', 'lt_amort_deferred_exp', 'mrq_0', 'lt_amort_deferred_exp_mrq_0'),
+    ('cashflow', 'eff_fx_flu_cash', 'lyr_0', 'eff_fx_flu_cash_lyr_0'),
+    ('cashflow', 'eff_fx_flu_cash', 'ttm_0', 'eff_fx_flu_cash_ttm_0'),
+    ('cashflow', 'depr_fa_coga_dpba', 'mrq_0', 'depr_fa_coga_dpba_mrq_0'),
+    ('cashflow', 'amort_intang_assets', 'mrq_0', 'amort_intang_assets_mrq_0'),
+    ('fina_indicator', 'arturn_days', 'lyr', 'arturn_days_lyr'),
+    ('fina_indicator', 'ar_turn', 'lyr', 'ar_turn_lyr'),
+    ('fina_indicator', 'ar_turn', 'ttm', 'ar_turn_ttm'),
+    ('fina_indicator', 'arturn_days', 'ttm', 'arturn_days_ttm'),
+    ('fina_indicator', 'profit_dedt', 'lyr_0', 'profit_dedt_lyr_0'),
+    ('fina_indicator', 'profit_dedt', 'ttm_0', 'profit_dedt_ttm_0'),
+    ('fina_indicator', 'fcfe', 'lyr_0', 'fcfe_lyr_0'),
+    ('fina_indicator', 'fcfe', 'ttm_0', 'fcfe_ttm_0'),
+    ('fina_indicator', 'fcff', 'lyr_0', 'fcff_lyr_0'),
+    ('fina_indicator', 'fcff', 'ttm_0', 'fcff_ttm_0'),
+    ('fina_indicator', 'interestdebt', 'lf', 'interestdebt_lf'),
+    ('fina_indicator', 'interestdebt', 'lyr', 'interestdebt_lyr'),
+    ('fina_indicator', 'interestdebt', 'ttm', 'interestdebt_ttm'),
+    ('fina_indicator', 'inv_turn', 'lyr', 'inv_turn_lyr'),
+    ('fina_indicator', 'inv_turn', 'ttm', 'inv_turn_ttm'),
+    ('fina_indicator', 'invest_capital', 'lf', 'invest_capital_lf'),
+    ('fina_indicator', 'invest_capital', 'lyr', 'invest_capital_lyr'),
+    ('fina_indicator', 'invest_capital', 'ttm', 'invest_capital_ttm'),
+    ('fina_indicator', 'netdebt', 'lyr', 'netdebt_lyr'),
+    ('fina_indicator', 'netdebt', 'ttm', 'netdebt_ttm'),
+    ('fina_indicator', 'current_exint', 'lf', 'current_exint_lf'),
+    ('fina_indicator', 'current_exint', 'lyr', 'current_exint_lyr'),
+    ('fina_indicator', 'current_exint', 'ttm', 'current_exint_ttm'),
+    ('fina_indicator', 'noncurrent_exint', 'lf', 'noncurrent_exint_lf'),
+    ('fina_indicator', 'noncurrent_exint', 'lyr', 'noncurrent_exint_lyr'),
+    ('fina_indicator', 'noncurrent_exint', 'ttm', 'noncurrent_exint_ttm'),
+    ('fina_indicator', 'extra_item', 'lyr_0', 'extra_item_lyr_0'),
+    ('fina_indicator', 'extra_item', 'ttm_0', 'extra_item_ttm_0'),
+    ('fina_indicator', 'turn_days', 'lyr_0', 'turn_days_lyr_0'),
+    ('fina_indicator', 'turn_days', 'ttm_0', 'turn_days_ttm_0'),
+    ('fina_indicator', 'retained_earnings', 'lf', 'retained_earnings_lf'),
+    ('fina_indicator', 'retained_earnings', 'lyr', 'retained_earnings_lyr'),
+    ('fina_indicator', 'retained_earnings', 'ttm', 'retained_earnings_ttm'),
+    ('fina_indicator', 'assets_turn', 'lyr', 'assets_turn_lyr'),
+    ('fina_indicator', 'assets_turn', 'ttm', 'assets_turn_ttm'),
+    ('fina_indicator', 'working_capital', 'lf', 'working_capital_lf'),
+    ('fina_indicator', 'working_capital', 'ttm', 'working_capital_ttm'),
+]
+FINANCIAL_FEATURE_COLUMNS.extend(SUPPLEMENTAL_FINANCIAL_FEATURE_COLUMNS)
 FINANCIAL_FEATURE_SOURCE_CONFIG = {
     "balancesheet": {
         "table": "dwd_stock_balance_sheet",
@@ -208,6 +377,18 @@ FINANCIAL_FEATURE_SOURCE_CONFIG = {
         "annual_report_types": ("1", "4"),
         "ttm_aggregation": "sum",
     },
+    "fina_indicator": {
+        "table": "dws_stock_financial_indicator_quarter",
+        "sql_alias": "financial_indicator_quarter",
+        "source_kind": "quarter_dws",
+        "ttm_aggregation": {
+            "__default__": "avg",
+            "extra_item": "sum",
+            "fcfe": "sum",
+            "fcff": "sum",
+            "profit_dedt": "sum",
+        },
+    },
 }
 FINANCIAL_FEATURE_JOIN_ALIASES = [
     "balance_sheet_quarter_features",
@@ -216,6 +397,28 @@ FINANCIAL_FEATURE_JOIN_ALIASES = [
     "cashflow_annual_features",
     "income_quarter_features",
     "income_annual_features",
+    "financial_indicator_quarter_quarter_features",
+    "financial_indicator_quarter_annual_features",
+]
+DIRECT_EXTRA_FEATURE_COLUMNS = [
+    ("daily_basic", "volume_ratio", "volume_ratio"),
+    ("income", "assets_impair_loss", "assets_impair_loss"),
+    ("income", "int_exp", "int_exp"),
+    ("balance_sheet", "div_receiv", "div_receiv"),
+    ("balance_sheet", "fa_avail_for_sale", "fa_avail_for_sale"),
+    ("balance_sheet", "htm_invest", "htm_invest"),
+    ("balance_sheet", "int_receiv", "int_receiv"),
+    ("balance_sheet", "intan_assets", "intan_assets"),
+    ("balance_sheet", "r_and_d", "r_and_d"),
+    ("cashflow", "c_cash_equ_end_period", "c_cash_equ_end_period"),
+    ("cashflow", "c_fr_sale_sg", "c_fr_sale_sg"),
+    ("cashflow", "c_pay_acq_const_fiolta", "c_pay_acq_const_fiolta"),
+]
+CALCULATED_FACTOR_COLUMNS = [
+    ("ev_lyr", "`total_mv` * 10000 + `interestdebt_lyr` - `money_cap_lyr_0`"),
+    ("ev_no_cash_lyr", "`total_mv` * 10000 + `interestdebt_lyr` - `money_cap_lyr_0`"),
+    ("ev_no_cash_ttm", "`total_mv` * 10000 + `interestdebt_ttm` - `money_cap_ttm_0`"),
+    ("ev_ttm", "`total_mv` * 10000 + `interestdebt_ttm` - `money_cap_ttm_0`"),
 ]
 
 
@@ -267,7 +470,7 @@ class DWSManager:
         for path in sorted(DWS_SCHEMA_DIR.glob("*.yaml")):
             spec = _load_yaml(path)
             table_names.append(spec["name"])
-        return table_names
+        return sorted(table_names, key=lambda name: (DWS_TABLE_BUILD_PRIORITY.get(name, 100), name))
 
     def load_spec(self, table_name: str) -> dict[str, Any]:
         for path in DWS_SCHEMA_DIR.glob("*.yaml"):
@@ -289,6 +492,13 @@ class DWSManager:
         return int(parts[1]) if len(parts) == 2 else 0
 
     @staticmethod
+    def _financial_feature_ttm_aggregation(api: str, field: str) -> str:
+        aggregation = FINANCIAL_FEATURE_SOURCE_CONFIG[api]["ttm_aggregation"]
+        if isinstance(aggregation, dict):
+            return aggregation.get(field, aggregation.get("__default__", "sum"))
+        return aggregation
+
+    @staticmethod
     def _sql_in(values: tuple[str, ...]) -> str:
         return ", ".join([_sql_string_literal(value) for value in values])
 
@@ -302,7 +512,7 @@ class DWSManager:
             kind = DWSManager._financial_feature_kind(suffix)
             if feature_group == "annual" and kind == "lyr":
                 entries.append(entry)
-            if feature_group == "quarter" and kind in {"mrq", "ttm"}:
+            if feature_group == "quarter" and kind in {"lf", "mrq", "ttm"}:
                 entries.append(entry)
         return entries
 
@@ -324,6 +534,39 @@ class DWSManager:
         config = FINANCIAL_FEATURE_SOURCE_CONFIG[api]
         cte_prefix = config["sql_alias"]
         cte_name = f"{cte_prefix}_{feature_group}_reports"
+        if config.get("source_kind") == "quarter_dws":
+            period_filter = (
+                "AND toMonth(src.event_date) = 12"
+                if feature_group == "annual"
+                else "AND toMonth(src.event_date) IN (3, 6, 9, 12)"
+            )
+            field_select = ",\n        ".join([f"`{field}`" for field in fields])
+            if field_select:
+                field_select = ",\n        " + field_select
+
+            return f"""
+{cte_name} AS (
+    SELECT
+        instrument_id,
+        event_date AS report_period,
+        available_trade_date,
+        source_batch_id,
+        source_record_hash{field_select}
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
+                ORDER BY
+                    src.build_time DESC,
+                    src.source_record_hash DESC
+            ) AS report_rank
+        FROM {db_name}.{config['table']} src
+        WHERE src.event_date >= {MIN_LAYER_TRADE_DATE_SQL}
+          {period_filter}
+    ) src
+    WHERE report_rank = 1
+)"""
         report_types = (
             config["annual_report_types"] if feature_group == "annual" else config["quarter_report_types"]
         )
@@ -387,7 +630,7 @@ class DWSManager:
             offset = self._financial_feature_offset(suffix)
             if kind == "ttm":
                 condition = f"report_offset >= {offset} AND report_offset < {offset + 4}"
-                aggregate = "sumIf" if config["ttm_aggregation"] == "sum" else "avgIf"
+                aggregate = "sumIf" if self._financial_feature_ttm_aggregation(api, field) == "sum" else "avgIf"
                 feature_exprs.append(
                     f"if(countIf({condition} AND `{field}` IS NOT NULL) = 4, "
                     f"{aggregate}(`{field}`, {condition}), CAST(NULL, 'Nullable(Float64)')) AS `{column}`"
@@ -458,7 +701,7 @@ class DWSManager:
 
     def _render_financial_feature_ctes(self, db_name: str) -> str:
         ctes = []
-        for api in ("balancesheet", "cashflow", "income"):
+        for api in ("balancesheet", "cashflow", "income", "fina_indicator"):
             for feature_group in ("quarter", "annual"):
                 entries = self._financial_feature_entries(api, feature_group)
                 if not entries:
@@ -489,6 +732,19 @@ class DWSManager:
     def _render_financial_feature_output_columns(self) -> str:
         return ",\n    ".join([f"`{column}`" for column in self._financial_feature_column_names()])
 
+    def _render_direct_extra_feature_wide_selects(self) -> str:
+        return ",\n        ".join(
+            [f"{alias}.`{field}` AS `{column}`" for alias, field, column in DIRECT_EXTRA_FEATURE_COLUMNS]
+        )
+
+    def _render_direct_extra_feature_output_columns(self) -> str:
+        return ",\n    ".join([f"`{column}`" for _, _, column in DIRECT_EXTRA_FEATURE_COLUMNS])
+
+    def _render_calculated_factor_output_columns(self) -> str:
+        return ",\n    ".join(
+            [f"{expression} AS `{column}`" for column, expression in CALCULATED_FACTOR_COLUMNS]
+        )
+
     def _render_financial_feature_joins(self) -> str:
         joins = []
         for alias in FINANCIAL_FEATURE_JOIN_ALIASES:
@@ -514,6 +770,9 @@ class DWSManager:
         financial_feature_available_trade_dates = self._render_financial_feature_available_trade_dates()
         financial_feature_wide_selects = self._render_financial_feature_wide_selects()
         financial_feature_output_columns = self._render_financial_feature_output_columns()
+        direct_extra_feature_wide_selects = self._render_direct_extra_feature_wide_selects()
+        direct_extra_feature_output_columns = self._render_direct_extra_feature_output_columns()
+        calculated_factor_output_columns = self._render_calculated_factor_output_columns()
         financial_feature_joins = self._render_financial_feature_joins()
         financial_feature_source_batch_id_concat = self._render_financial_feature_lineage_concat("source_batch_id")
         financial_feature_source_record_hash_concat = self._render_financial_feature_lineage_concat("source_record_hash")
@@ -611,7 +870,9 @@ income AS (
         sell_exp,
         fin_exp,
         income_tax,
-        total_opcost
+        total_opcost,
+        assets_impair_loss,
+        int_exp
     FROM (
         SELECT
             src.*,
@@ -639,7 +900,13 @@ balance_sheet AS (
         total_cur_liab,
         total_cur_assets,
         money_cap,
-        total_hldr_eqy_exc_min_int
+        total_hldr_eqy_exc_min_int,
+        div_receiv,
+        fa_avail_for_sale,
+        htm_invest,
+        int_receiv,
+        intan_assets,
+        r_and_d
     FROM (
         SELECT
             src.*,
@@ -667,7 +934,10 @@ cashflow AS (
         stot_out_inv_act,
         stot_inflows_inv_act,
         stot_cash_in_fnc_act,
-        stot_cashout_fnc_act
+        stot_cashout_fnc_act,
+        c_cash_equ_end_period,
+        c_fr_sale_sg,
+        c_pay_acq_const_fiolta
     FROM (
         SELECT
             src.*,
@@ -806,6 +1076,7 @@ wide_candidates AS (
         cashflow.stot_cash_in_fnc_act AS stot_cash_in_fnc_act,
         cashflow.stot_cashout_fnc_act AS stot_cashout_fnc_act,
         {financial_feature_wide_selects},
+        {direct_extra_feature_wide_selects},
         northbound_holding.vol AS hk_hold_vol,
         northbound_holding.ratio AS hk_hold_ratio,
         margin_trading.rzye AS rzye,
@@ -973,6 +1244,8 @@ SELECT
     stot_cash_in_fnc_act,
     stot_cashout_fnc_act,
     {financial_feature_output_columns},
+    {direct_extra_feature_output_columns},
+    {calculated_factor_output_columns},
     hk_hold_vol,
     hk_hold_ratio,
     rzye,
