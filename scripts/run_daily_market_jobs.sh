@@ -282,6 +282,7 @@ main() {
     "tushare-job-${UPDATE_TYPE}-market|$IMAGE_DEFAULT|stock/market"
     "tushare-job-${UPDATE_TYPE}-quotes|$IMAGE_DEFAULT|stock/quotes"
     "tushare-job-${UPDATE_TYPE}-index-quotes|$IMAGE_DEFAULT|index/quotes"
+    "tushare-job-daily-index-sw|$IMAGE_DEFAULT|index/sw|all"
     "tushare-job-${UPDATE_TYPE}-special|$IMAGE_DEFAULT|stock/special"
   )
 
@@ -289,6 +290,7 @@ main() {
   local dwd_sync_tasks=(
     "tushare-dwd-sync-stock-eod-price|$DWD_SYNC_IMAGE|dwd_stock_eod_price"
     "tushare-dwd-sync-index-eod-price|$DWD_SYNC_IMAGE|dwd_index_eod_price"
+    "tushare-dwd-sync-index-classify|$DWD_SYNC_IMAGE|dwd_index_classify"
     "tushare-dwd-sync-stock-daily-basic|$DWD_SYNC_IMAGE|dwd_stock_daily_basic"
     "tushare-dwd-sync-stock-eod-quote-metrics|$DWD_SYNC_IMAGE|dwd_stock_eod_quote_metrics"
     "tushare-dwd-sync-stock-financial-indicator|$DWD_SYNC_IMAGE|dwd_stock_financial_indicator"
@@ -308,9 +310,10 @@ main() {
   local container
   local image
   local job
+  local job_update_type
   for entry in "${jobs[@]}"; do
-    IFS="|" read -r container image job <<< "$entry"
-    run_job "$container" "$image" "$job" "$UPDATE_TYPE"
+    IFS="|" read -r container image job job_update_type <<< "$entry"
+    run_job "$container" "$image" "$job" "${job_update_type:-$UPDATE_TYPE}"
   done
 
   if [[ "$NORMAL_JOBS_HAD_FAILURE" != "0" ]]; then

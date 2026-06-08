@@ -36,6 +36,9 @@ cronjob:
         update_type: full
       - name: index/sw/index_member
         update_type: full
+      - name: index/sw/index_member_all
+        update_type: full
+      - name: index/sw/sw_daily
   - cron_expr: UnSupported
     name: index/ths
     spiders:

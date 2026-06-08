@@ -55,6 +55,29 @@ STOCK_FACTOR_WIDE_MATRIX_ALIASES = {
     "vwap": "`avg_price`",
     "turnover": "coalesce(`turnover_rate_f`, `turn_over`)",
 }
+STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE = "dwd_stock_financial_indicator"
+STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS = [
+    "arturn_days",
+    "ar_turn",
+    "fcfe",
+    "fcff",
+    "interestdebt",
+    "inv_turn",
+    "invest_capital",
+    "netdebt",
+    "current_exint",
+    "noncurrent_exint",
+    "extra_item",
+    "turn_days",
+    "retained_earnings",
+    "assets_turn",
+    "working_capital",
+]
+STOCK_FINANCIAL_INDICATOR_QUARTER_YTD_DIFF_FIELDS = {
+    "extra_item",
+    "fcfe",
+    "fcff",
+}
 FINANCIAL_FEATURE_COLUMNS = [
     ("balancesheet", "bond_payable", "ttm_0", "bond_payable_ttm_0"),
     ("balancesheet", "bond_payable", "ttm_1", "bond_payable_ttm_1"),
@@ -1066,6 +1089,118 @@ SELECT
 FROM factor_rows
 """
 
+    @staticmethod
+    def _stock_financial_indicator_quarter_value_expr(field: str) -> str:
+        if field not in STOCK_FINANCIAL_INDICATOR_QUARTER_YTD_DIFF_FIELDS:
+            return f"`{field}`"
+
+        return (
+            f"if(toQuarter(event_date) = 1, `{field}`, "
+            f"if(coalesce(prev_instrument_id, '') = '' OR `{field}` IS NULL OR `prev_{field}` IS NULL, "
+            f"CAST(NULL, 'Nullable(Float64)'), `{field}` - `prev_{field}`))"
+        )
+
+    def _render_stock_financial_indicator_quarter_sync_sql(self, target_table_name: str) -> str:
+        db_name = self.settings.database.db_name
+        source_table = STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE
+        field_selects = ",\n        ".join([f"`{field}`" for field in STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS])
+        curr_selects = ",\n        ".join([f"curr.`{field}` AS `{field}`" for field in STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS])
+        prev_selects = ",\n        ".join(
+            [
+                f"prev.`{field}` AS `prev_{field}`"
+                for field in sorted(STOCK_FINANCIAL_INDICATOR_QUARTER_YTD_DIFF_FIELDS)
+            ]
+        )
+        value_selects = ",\n    ".join(
+            [
+                f"{self._stock_financial_indicator_quarter_value_expr(field)} AS `{field}`"
+                for field in STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS
+            ]
+        )
+
+        return f"""
+INSERT INTO {db_name}.{target_table_name}
+WITH
+reports AS (
+    SELECT
+        instrument_id,
+        instrument_type,
+        exchange,
+        source_code,
+        event_date,
+        available_trade_date,
+        source_batch_id,
+        source_record_hash,
+        {field_selects}
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
+                ORDER BY
+                    src.sys_from DESC,
+                    src.source_record_hash DESC
+            ) AS report_rank
+        FROM {db_name}.{source_table} src
+        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
+          AND src.event_date >= {MIN_LAYER_TRADE_DATE_SQL}
+          AND toMonth(src.event_date) IN (3, 6, 9, 12)
+    ) src
+    WHERE report_rank = 1
+),
+quarter_candidates AS (
+    SELECT
+        curr.instrument_id AS instrument_id,
+        curr.instrument_type AS instrument_type,
+        curr.exchange AS exchange,
+        curr.source_code AS source_code,
+        curr.event_date AS event_date,
+        toUInt16(toYear(curr.event_date)) AS fiscal_year,
+        toUInt8(toQuarter(curr.event_date)) AS fiscal_quarter,
+        curr.available_trade_date AS available_trade_date,
+        curr.source_batch_id AS source_batch_id,
+        curr.source_record_hash AS source_record_hash,
+        prev.instrument_id AS prev_instrument_id,
+        prev.source_batch_id AS prev_source_batch_id,
+        prev.source_record_hash AS prev_source_record_hash,
+        {curr_selects},
+        {prev_selects},
+        row_number() OVER (
+            PARTITION BY curr.instrument_id, curr.event_date, curr.available_trade_date
+            ORDER BY
+                prev.available_trade_date DESC,
+                prev.source_record_hash DESC
+        ) AS prev_rank
+    FROM reports curr
+    LEFT JOIN reports prev
+        ON prev.instrument_id = curr.instrument_id
+       AND toQuarter(curr.event_date) != 1
+       AND prev.event_date = addMonths(curr.event_date, -3)
+       AND prev.available_trade_date <= curr.available_trade_date
+)
+SELECT
+    instrument_id,
+    instrument_type,
+    exchange,
+    source_code,
+    event_date,
+    fiscal_year,
+    fiscal_quarter,
+    available_trade_date,
+    {value_selects},
+    now64(3) AS build_time,
+    'derived' AS source,
+    '{source_table}' AS source_table,
+    concat(source_batch_id, '|', coalesce(prev_source_batch_id, '')) AS source_batch_id,
+    lower(hex(MD5(concat(
+        source_record_hash,
+        '|',
+        coalesce(prev_source_record_hash, '')
+    )))) AS source_record_hash
+FROM quarter_candidates
+WHERE prev_rank = 1
+"""
+
     def render_sync_sql(self, table_name: str, target_table_name: str | None = None) -> str:
         spec = self.load_spec(table_name)
         target_table_name = target_table_name or spec["name"]
@@ -1073,6 +1208,8 @@ FROM factor_rows
             return self._render_stock_factor_wide_sync_sql(target_table_name)
         if spec.get("builder") == "stock_factor_wide_matrix":
             return self._render_stock_factor_wide_matrix_sync_sql(target_table_name)
+        if spec.get("builder") == "stock_financial_indicator_quarter":
+            return self._render_stock_financial_indicator_quarter_sync_sql(target_table_name)
         raise ValueError(f"Unsupported DWS builder for {table_name}: {spec.get('builder')}")
 
     def get_required_source_tables(self, spec: dict[str, Any]) -> list[str]:
@@ -1080,6 +1217,8 @@ FROM factor_rows
             return STOCK_FACTOR_WIDE_SOURCES
         if spec.get("builder") == "stock_factor_wide_matrix":
             return STOCK_FACTOR_WIDE_MATRIX_SOURCES
+        if spec.get("builder") == "stock_financial_indicator_quarter":
+            return [STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE]
         return []
 
     def ensure_source_tables(self, spec: dict[str, Any]) -> None:
@@ -1207,6 +1346,9 @@ FROM factor_rows
             self.sync_table(table_name, validation_mode=validation_mode, skip_validation=skip_validation)
 
     def _run_post_publish_dqc(self, table_name: str, db_engine) -> None:
+        if table_name not in {"dws_stock_factor_wide", "dws_stock_factor_wide_matrix"}:
+            return
+
         dqc_table_name = None if table_name == "dws_stock_factor_wide_matrix" else table_name
         DqcManager(settings=self.settings, db_engine=db_engine).run(
             layer="dws",

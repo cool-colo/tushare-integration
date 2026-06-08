@@ -1,0 +1,123 @@
+id: 3003
+name: dws_stock_financial_indicator_quarter
+comment: 股票财务指标季度口径汇总层
+builder: stock_financial_indicator_quarter
+schema:
+  comment: 股票财务指标季度口径汇总层
+  primary_key: []
+  partition_key:
+    - toYear(available_trade_date)
+  indexes:
+    - name: dws_stock_financial_indicator_quarter_idx
+      columns:
+        - instrument_id
+        - event_date
+        - available_trade_date
+  columns:
+    - name: instrument_id
+      data_type: str
+      length: 64
+      comment: 统一证券ID
+    - name: instrument_type
+      data_type: str
+      length: 32
+      comment: 证券类型
+    - name: exchange
+      data_type: str
+      length: 32
+      comment: 交易所
+    - name: source_code
+      data_type: str
+      length: 64
+      comment: 源侧证券代码
+    - name: event_date
+      data_type: date
+      comment: 报告期日期；来自dwd_stock_financial_indicator.event_date，仅保留3/6/9/12月季报期
+    - name: fiscal_year
+      data_type: int
+      comment: 财年；toYear(event_date)
+    - name: fiscal_quarter
+      data_type: int
+      comment: 财季；toQuarter(event_date)
+    - name: available_trade_date
+      data_type: date
+      comment: 最早可用交易日；继承fin_indicator DWD的公告日交易日映射结果
+    - name: arturn_days
+      data_type: float
+      nullable: true
+      comment: 应收账款周转天数；季度口径取fin_indicator当期报告值，周转天数不可由累计值差分单季化
+    - name: ar_turn
+      data_type: float
+      nullable: true
+      comment: 应收账款周转率；季度口径取fin_indicator当期报告值，周转率不可由累计值差分单季化
+    - name: fcfe
+      data_type: float
+      nullable: true
+      comment: 股权自由现金流量；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值，缺上一季度为空
+    - name: fcff
+      data_type: float
+      nullable: true
+      comment: 企业自由现金流量；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值，缺上一季度为空
+    - name: interestdebt
+      data_type: float
+      nullable: true
+      comment: 带息债务；季度口径取fin_indicator当期报告期末值，存量指标不做差分
+    - name: inv_turn
+      data_type: float
+      nullable: true
+      comment: 存货周转率；季度口径取fin_indicator当期报告值，周转率不可由累计值差分单季化
+    - name: invest_capital
+      data_type: float
+      nullable: true
+      comment: 全部投入资本；季度口径取fin_indicator当期报告期末值，存量指标不做差分
+    - name: netdebt
+      data_type: float
+      nullable: true
+      comment: 净债务；季度口径取fin_indicator当期报告期末值，存量指标不做差分
+    - name: current_exint
+      data_type: float
+      nullable: true
+      comment: 无息流动负债；季度口径取fin_indicator当期报告期末值，存量指标不做差分
+    - name: noncurrent_exint
+      data_type: float
+      nullable: true
+      comment: 无息非流动负债；季度口径取fin_indicator当期报告期末值，存量指标不做差分
+    - name: extra_item
+      data_type: float
+      nullable: true
+      comment: 非经常性损益；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值，缺上一季度为空
+    - name: turn_days
+      data_type: float
+      nullable: true
+      comment: 营业周期；季度口径取fin_indicator当期报告值，天数指标不可由累计值差分单季化
+    - name: retained_earnings
+      data_type: float
+      nullable: true
+      comment: 留存收益；季度口径取fin_indicator当期报告期末值，存量指标不做差分
+    - name: assets_turn
+      data_type: float
+      nullable: true
+      comment: 总资产周转率；季度口径取fin_indicator当期报告值，周转率不可由累计值差分单季化
+    - name: working_capital
+      data_type: float
+      nullable: true
+      comment: 营运资金；季度口径取fin_indicator当期报告期末值，存量指标不做差分
+    - name: build_time
+      data_type: datetime
+      comment: 汇总构建时间
+    - name: source
+      data_type: str
+      length: 32
+      comment: 来源系统；固定为derived
+    - name: source_table
+      data_type: str
+      length: 128
+      comment: 来源表；固定为dwd_stock_financial_indicator
+    - name: source_batch_id
+      data_type: str
+      length: 512
+      comment: 来源批次ID；当期记录与用于差分的上一季度记录批次拼接
+    - name: source_record_hash
+      data_type: str
+      length: 32
+      comment: 来源记录哈希；当期记录与用于差分的上一季度记录哈希拼接后MD5

@@ -688,6 +688,20 @@ class QualityValidationTest(unittest.TestCase):
         self.assertIn("src.`trade_date` >= toDate32('2010-01-01')", sql)
         self.assertIn("coalesce(calendar_map.next_trade_date, src.trade_date)", sql)
 
+    def test_dwd_index_classify_sql_uses_index_key_and_ingest_visibility(self):
+        manager = DWDManager()
+        schema = manager.build_schema(manager.load_spec("dwd_index_classify"))
+        columns = {column["name"]: column for column in schema["columns"]}
+        sql = manager.render_sync_sql("dwd_index_classify")
+
+        self.assertNotIn("nullable", columns["index_code"])
+        self.assertIn("nullable", columns["parent_code"])
+        self.assertIn("FROM default.index_classify_raw raw", sql)
+        self.assertIn("concat('index:', raw.index_code) AS `instrument_id`", sql)
+        self.assertIn("PARTITION BY raw.`index_code`", sql)
+        self.assertIn("toDate(raw._ingest_time) AS `event_date`", sql)
+        self.assertIn("coalesce(calendar_map.next_trade_date, toDate(raw._ingest_time))", sql)
+
     def test_dwd_index_weight_quality_rules_include_domain_checks(self):
         manager = QualityManager(settings=self._settings(), db_engine=DummyDB())
 

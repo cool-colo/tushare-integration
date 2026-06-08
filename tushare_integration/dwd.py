@@ -153,6 +153,7 @@ calendar_map AS (
 
     def _render_generic_sync_sql(self, spec: dict[str, Any], target_table_name: str) -> str:
         db_name = self.settings.database.db_name
+        source_alias = spec.get("source_alias", "src")
         source_schema = self.load_source_schema(spec["source"]["schema_name"])
         business_key = spec.get("business_key") or source_schema.get("primary_key", [])
         if not business_key:
@@ -164,12 +165,12 @@ calendar_map AS (
             for column in source_schema["columns"]
             if column["name"] not in source_column_excludes
         ]
-        business_key_partition = ", ".join([f"src.{_quote_column(column)}" for column in business_key])
-        source_filters = [f"src.{_quote_column(column)} IS NOT NULL" for column in business_key]
+        business_key_partition = ", ".join([f"{source_alias}.{_quote_column(column)}" for column in business_key])
+        source_filters = [f"{source_alias}.{_quote_column(column)} IS NOT NULL" for column in business_key]
         if _schema_has_column(source_schema, "trade_date"):
-            source_filters.append(f"src.`trade_date` >= {MIN_LAYER_TRADE_DATE_SQL}")
+            source_filters.append(f"{source_alias}.`trade_date` >= {MIN_LAYER_TRADE_DATE_SQL}")
         source_filter_sql = " AND ".join(source_filters)
-        source_column_select = ",\n    ".join([f"src.{_quote_column(column)}" for column in source_columns])
+        source_column_select = ",\n    ".join([f"{source_alias}.{_quote_column(column)}" for column in source_columns])
 
         derived_selects: list[str] = []
         if spec.get("with_instrument", True):
@@ -186,12 +187,12 @@ calendar_map AS (
             [
                 f"{spec['event_date_expr']} AS `event_date`",
                 f"{spec['available_trade_date_expr']} AS `available_trade_date`",
-                "src._ingest_time AS `sys_from`",
-                "src._next_sys_from AS `sys_to`",
-                "src._source AS `source`",
+                f"{source_alias}._ingest_time AS `sys_from`",
+                f"{source_alias}._next_sys_from AS `sys_to`",
+                f"{source_alias}._source AS `source`",
                 f"'{spec['source']['table_name']}' AS `source_table`",
-                "src._batch_id AS `source_batch_id`",
-                "src._record_hash AS `source_record_hash`",
+                f"{source_alias}._batch_id AS `source_batch_id`",
+                f"{source_alias}._record_hash AS `source_record_hash`",
             ]
         )
 
@@ -206,7 +207,7 @@ calendar_map AS (
         with_item_sql = ",\n".join(with_items)
         with_clause = f"WITH\n{with_item_sql}" if with_items else ""
         calendar_join = (
-            "LEFT JOIN calendar_map ON calendar_map.calendar_date = src._calendar_lookup_date"
+            f"LEFT JOIN calendar_map ON calendar_map.calendar_date = {source_alias}._calendar_lookup_date"
             if spec.get("calendar_date_expr")
             else ""
         )
@@ -222,26 +223,26 @@ SELECT
     {derived_column_select}
 FROM (
     SELECT
-        src.*,
-        leadInFrame(src._ingest_time, 1, {FAR_FUTURE_TS_SQL}) OVER (
+        {source_alias}.*,
+        leadInFrame({source_alias}._ingest_time, 1, {FAR_FUTURE_TS_SQL}) OVER (
             PARTITION BY {business_key_partition}
-            ORDER BY src._ingest_time, src._batch_id, src._record_hash
+            ORDER BY {source_alias}._ingest_time, {source_alias}._batch_id, {source_alias}._record_hash
             ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
         ) AS _next_sys_from
         {calendar_lookup_select}
     FROM (
         SELECT
-            src.*,
-            lagInFrame(src._record_hash) OVER (
+            {source_alias}.*,
+            lagInFrame({source_alias}._record_hash) OVER (
                 PARTITION BY {business_key_partition}
-                ORDER BY src._ingest_time, src._batch_id, src._record_hash
+                ORDER BY {source_alias}._ingest_time, {source_alias}._batch_id, {source_alias}._record_hash
                 ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
             ) AS _prev_record_hash
-        FROM {db_name}.{spec['source']['table_name']} src
+        FROM {db_name}.{spec['source']['table_name']} {source_alias}
         WHERE {source_filter_sql}
-    ) src
-    WHERE src._prev_record_hash IS NULL OR src._prev_record_hash != src._record_hash
-) src
+    ) {source_alias}
+    WHERE {source_alias}._prev_record_hash IS NULL OR {source_alias}._prev_record_hash != {source_alias}._record_hash
+) {source_alias}
 {calendar_join}
 """
 

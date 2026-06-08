@@ -1,0 +1,23 @@
+id: 2024
+name: dwd_index_classify
+comment: 申万行业分类标准层
+builder: raw_versioned
+source_alias: raw
+source:
+  table_name: index_classify_raw
+  schema_name: index/sw/index_classify
+instrument_type: index
+instrument_id_expr: "concat('index:', raw.index_code)"
+source_code_expr: raw.index_code
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(raw.index_code)), 2)"
+event_date_expr: toDate(raw._ingest_time)
+calendar_date_expr: toDate(raw._ingest_time)
+available_trade_date_expr: coalesce(calendar_map.next_trade_date, toDate(raw._ingest_time))
+partition_key:
+  - toYear(available_trade_date)
+indexes:
+  - name: dwd_index_classify_idx
+    columns:
+      - instrument_id
+      - index_code
+      - sys_from

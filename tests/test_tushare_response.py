@@ -13,6 +13,8 @@ from tushare_integration.dws import (
     DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT,
     DWSManager,
     FINANCIAL_FEATURE_COLUMNS,
+    STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS,
+    STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE,
 )
 from tushare_integration.manager import CrawlManager
 from tushare_integration.spiders.index.quotes import IndexWeightSpider
@@ -267,6 +269,31 @@ class TushareResponseTest(unittest.TestCase):
         self.assertIn("income_annual_features.`ebitda_lyr` AS `ebitda_lyr`", sql)
         self.assertIn("|', coalesce(income_quarter_features.source_batch_id, '')", sql)
         self.assertIn("|', coalesce(cashflow_annual_features.source_record_hash, '')", sql)
+
+    def test_dws_stock_financial_indicator_quarter_table_derives_requested_fields(self):
+        manager = object.__new__(DWSManager)
+        manager.settings = self._clickhouse_settings()
+
+        sql = manager.render_sync_sql("dws_stock_financial_indicator_quarter")
+        spec = manager.load_spec("dws_stock_financial_indicator_quarter")
+        column_names = {column["name"] for column in spec["schema"]["columns"]}
+        comments = {column["name"]: column["comment"] for column in spec["schema"]["columns"]}
+
+        self.assertTrue(set(STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS).issubset(column_names))
+        self.assertNotIn("profit_dedt", column_names)
+        self.assertEqual(manager.get_required_source_tables(spec), [STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE])
+        self.assertIn("FROM default.dwd_stock_financial_indicator src", sql)
+        self.assertIn("toMonth(src.event_date) IN (3, 6, 9, 12)", sql)
+        self.assertIn("AND toQuarter(curr.event_date) != 1", sql)
+        self.assertIn("prev.event_date = addMonths(curr.event_date, -3)", sql)
+        self.assertIn("`extra_item` - `prev_extra_item`", sql)
+        self.assertIn("`fcfe` - `prev_fcfe`", sql)
+        self.assertIn("`fcff` - `prev_fcff`", sql)
+        self.assertIn("toQuarter(event_date) = 1", sql)
+        self.assertIn("curr.`ar_turn` AS `ar_turn`", sql)
+        self.assertIn("当期累计值减上一季度累计值", comments["extra_item"])
+        self.assertIn("存量指标不做差分", comments["interestdebt"])
+        self.assertIn("不可由累计值差分单季化", comments["ar_turn"])
 
     def test_parse_response_treats_common_no_data_message_as_empty_item(self):
         spider = CyqChipsSpider()
