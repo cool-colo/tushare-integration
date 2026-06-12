@@ -1,0 +1,57 @@
+id: 3006
+api_name: query_profit_data
+name: baostock_stock_profit
+comment: Baostock季度利润数据
+dependencies:
+  - baostock/stock/basic
+primary_key:
+  - code
+  - pubDate
+  - statDate
+indexes: []
+columns:
+  - name: code
+    data_type: str
+    length: 16
+    default: ""
+    comment: Baostock股票代码
+  - name: pubDate
+    data_type: date
+    default: "1970-01-01"
+    comment: 发布日期
+  - name: statDate
+    data_type: date
+    default: "1970-01-01"
+    comment: 报告期
+  - name: roeAvg
+    data_type: float
+    default: "0.0"
+    comment: 平均净资产收益率
+  - name: npMargin
+    data_type: float
+    default: "0.0"
+    comment: 销售净利率
+  - name: gpMargin
+    data_type: float
+    default: "0.0"
+    comment: 销售毛利率
+  - name: netProfit
+    data_type: float
+    default: "0.0"
+    comment: 净利润
+  - name: epsTTM
+    data_type: float
+    default: "0.0"
+    comment: 每股收益TTM
+  - name: MBRevenue
+    data_type: float
+    default: "0.0"
+    comment: 主营业务收入
+  - name: totalShare
+    data_type: float
+    default: "0.0"
+    comment: 总股本
+  - name: liqaShare
+    data_type: float
+    default: "0.0"
+    comment: 流通股本

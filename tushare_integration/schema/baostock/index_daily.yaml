@@ -1,0 +1,53 @@
+id: 3004
+api_name: query_history_k_data_plus
+name: baostock_index_daily
+comment: Baostock指数日线行情
+dependencies:
+  - baostock/stock/trade_dates
+  - baostock/stock/basic
+primary_key:
+  - code
+  - date
+indexes: []
+columns:
+  - name: date
+    data_type: date
+    default: "1970-01-01"
+    comment: 交易日期
+  - name: code
+    data_type: str
+    length: 16
+    default: ""
+    comment: Baostock指数代码
+  - name: open
+    data_type: float
+    default: "0.0"
+    comment: 开盘价
+  - name: high
+    data_type: float
+    default: "0.0"
+    comment: 最高价
+  - name: low
+    data_type: float
+    default: "0.0"
+    comment: 最低价
+  - name: close
+    data_type: float
+    default: "0.0"
+    comment: 收盘价
+  - name: preclose
+    data_type: float
+    default: "0.0"
+    comment: 前收盘价
+  - name: volume
+    data_type: float
+    default: "0.0"
+    comment: 成交量
+  - name: amount
+    data_type: float
+    default: "0.0"
+    comment: 成交额
+  - name: pctChg
+    data_type: float
+    default: "0.0"
+    comment: 涨跌幅

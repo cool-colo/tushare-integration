@@ -1,0 +1,141 @@
+id: 3104
+name: dwd_baostock_security_master
+comment: Baostock证券主数据标准层
+builder: mapped_versioned
+source:
+  table_name: baostock_stock_basic_raw
+  schema_name: baostock/stock_basic
+source_filters:
+  - "src.`type` = '1'"
+extra_source_tables:
+  - baostock_stock_industry_raw
+source_joins:
+  - "LEFT JOIN (SELECT code, anyLast(industry) AS industry FROM {db_name}.baostock_stock_industry_raw GROUP BY code) ind ON ind.code = {source_alias}.code"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))))"
+source_code_expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+exchange_expr: "multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))"
+event_date_expr: "coalesce(nullIf(src.ipoDate, toDate32('1970-01-01')), toDate(src._ingest_time))"
+calendar_date_expr: "toDate(src._ingest_time)"
+available_trade_date_expr: "coalesce(nullIf(src.ipoDate, toDate32('1970-01-01')), calendar_map.next_trade_date, toDate(src._ingest_time))"
+business_key:
+  - ts_code
+partition_key:
+  - toYear(available_trade_date)
+indexes:
+  - name: dwd_baostock_security_master_idx
+    columns:
+      - instrument_id
+      - event_date
+      - sys_from
+columns:
+  - name: ts_code
+    data_type: str
+    length: 16
+    comment: 标准证券代码
+    expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+  - name: symbol
+    data_type: str
+    length: 64
+    nullable: true
+    comment: 交易代码
+    expr: "arrayElement(splitByChar('.', assumeNotNull(src.code)), 2)"
+  - name: instrument_name
+    data_type: str
+    length: 255
+    nullable: true
+    comment: 证券简称
+    expr: src.code_name
+  - name: full_name
+    data_type: str
+    length: 255
+    nullable: true
+    comment: 全称
+    expr: CAST(NULL, 'Nullable(String)')
+  - name: english_name
+    data_type: str
+    length: 255
+    nullable: true
+    comment: 英文名称
+    expr: CAST(NULL, 'Nullable(String)')
+  - name: market
+    data_type: str
+    length: 64
+    nullable: true
+    comment: 市场类型
+    expr: "multiIf(src.type = '2', 'index', 'stock')"
+  - name: category
+    data_type: str
+    length: 128
+    nullable: true
+    comment: 分类
+    expr: src.type
+  - name: publisher
+    data_type: str
+    length: 255
+    nullable: true
+    comment: 发布方
+    expr: CAST(NULL, 'Nullable(String)')
+  - name: currency
+    data_type: str
+    length: 32
+    nullable: true
+    comment: 交易货币
+    expr: "'CNY'"
+  - name: list_status
+    data_type: str
+    length: 32
+    nullable: true
+    comment: 上市状态
+    expr: src.status
+  - name: list_date
+    data_type: date
+    nullable: true
+    comment: 上市日期
+    expr: "nullIf(src.ipoDate, toDate32('1970-01-01'))"
+  - name: delist_date
+    data_type: date
+    nullable: true
+    comment: 退市日期
+    expr: "nullIf(src.outDate, toDate32('1970-01-01'))"
+  - name: area
+    data_type: str
+    length: 128
+    nullable: true
+    comment: 所属地域
+    expr: CAST(NULL, 'Nullable(String)')
+  - name: industry
+    data_type: str
+    length: 128
+    nullable: true
+    comment: 所属行业
+    expr: ind.industry
+  - name: is_hs
+    data_type: str
+    length: 32
+    nullable: true
+    comment: 沪深港通标识
+    expr: CAST(NULL, 'Nullable(String)')
+  - name: underlying_code
+    data_type: str
+    length: 64
+    nullable: true
+    comment: 标的代码
+    expr: CAST(NULL, 'Nullable(String)')
+  - name: contract_multiplier
+    data_type: float
+    nullable: true
+    comment: 合约乘数
+    expr: CAST(NULL, 'Nullable(Float64)')
+  - name: trade_unit
+    data_type: str
+    length: 64
+    nullable: true
+    comment: 交易单位
+    expr: CAST(NULL, 'Nullable(String)')
+  - name: quote_unit
+    data_type: str
+    length: 64
+    nullable: true
+    comment: 报价单位
+    expr: CAST(NULL, 'Nullable(String)')

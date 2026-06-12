@@ -5,6 +5,7 @@ description = ""
 authors = [{ "name" = "zhangbingchen", "email" = "1731259685@qq.com" }]
 readme = "README.md"
 dependencies = [
+"baostock==0.9.2",
 "clickhouse-connect==0.8.8",
 "click<8.2",
 "cryptography==44.0.0",

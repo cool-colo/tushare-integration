@@ -107,3 +107,31 @@ class JobUpdateTypeTest(unittest.TestCase):
 
         self.assertIn("index/quotes/index_daily", incremental_spiders)
         self.assertNotIn("index/quotes/index_daily", full_spiders)
+
+    def test_baostock_financial_job_supports_incremental(self):
+        jobs_path = Path(__file__).resolve().parents[1] / "jobs.yaml"
+        jobs = yaml.safe_load(jobs_path.read_text(encoding="utf-8"))
+        baostock_financial_job = next(job for job in jobs["cronjob"] if job["name"] == "baostock/stock/financial")
+
+        incremental_spiders = [
+            spider["name"]
+            for spider in CrawlManager.filter_job_spiders_by_update_type(baostock_financial_job, "incremental")
+        ]
+        full_spiders = [
+            spider["name"]
+            for spider in CrawlManager.filter_job_spiders_by_update_type(baostock_financial_job, "full")
+        ]
+
+        expected_spiders = {
+            "baostock/stock/balance",
+            "baostock/stock/profit",
+            "baostock/stock/cash_flow",
+            "baostock/stock/operation",
+            "baostock/stock/growth",
+            "baostock/stock/debt",
+            "baostock/stock/dupont",
+            "baostock/stock/financial_indicator",
+            "baostock/stock/express",
+        }
+        self.assertTrue(expected_spiders.issubset(set(incremental_spiders)))
+        self.assertTrue(expected_spiders.issubset(set(full_spiders)))

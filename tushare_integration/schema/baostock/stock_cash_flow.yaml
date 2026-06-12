@@ -1,0 +1,53 @@
+id: 3007
+api_name: query_cash_flow_data
+name: baostock_stock_cash_flow
+comment: Baostock季度现金流指标
+dependencies:
+  - baostock/stock/basic
+primary_key:
+  - code
+  - pubDate
+  - statDate
+indexes: []
+columns:
+  - name: code
+    data_type: str
+    length: 16
+    default: ""
+    comment: Baostock股票代码
+  - name: pubDate
+    data_type: date
+    default: "1970-01-01"
+    comment: 发布日期
+  - name: statDate
+    data_type: date
+    default: "1970-01-01"
+    comment: 报告期
+  - name: CAToAsset
+    data_type: float
+    default: "0.0"
+    comment: 流动资产除以总资产
+  - name: NCAToAsset
+    data_type: float
+    default: "0.0"
+    comment: 非流动资产除以总资产
+  - name: tangibleAssetToAsset
+    data_type: float
+    default: "0.0"
+    comment: 有形资产除以总资产
+  - name: ebitToInterest
+    data_type: float
+    default: "0.0"
+    comment: 已获利息倍数
+  - name: CFOToOR
+    data_type: float
+    default: "0.0"
+    comment: 经营现金净流量除以营业收入
+  - name: CFOToNP
+    data_type: float
+    default: "0.0"
+    comment: 经营现金净流量除以净利润
+  - name: CFOToGr
+    data_type: float
+    default: "0.0"
+    comment: 经营现金净流量除以营业总收入

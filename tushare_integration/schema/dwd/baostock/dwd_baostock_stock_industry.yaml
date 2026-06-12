@@ -1,0 +1,48 @@
+id: 3105
+name: dwd_baostock_stock_industry
+comment: Baostock股票行业标准层
+builder: mapped_versioned
+source:
+  table_name: baostock_stock_industry_raw
+  schema_name: baostock/stock_industry
+instrument_type: stock
+instrument_id_expr: "concat('stock:', concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))))"
+source_code_expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+exchange_expr: "multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))"
+event_date_expr: toDate(src._ingest_time)
+available_trade_date_expr: toDate(src._ingest_time)
+business_key:
+  - ts_code
+  - industry_classification
+partition_key:
+  - toYear(available_trade_date)
+indexes:
+  - name: dwd_baostock_stock_industry_idx
+    columns:
+      - instrument_id
+      - event_date
+      - sys_from
+columns:
+  - name: ts_code
+    data_type: str
+    length: 16
+    comment: 标准股票代码
+    expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+  - name: name
+    data_type: str
+    length: 255
+    nullable: true
+    comment: 股票简称
+    expr: src.code_name
+  - name: industry
+    data_type: str
+    length: 255
+    nullable: true
+    comment: 行业名称
+    expr: src.industry
+  - name: industry_classification
+    data_type: str
+    length: 255
+    nullable: true
+    comment: 行业分类标准
+    expr: src.industryClassification

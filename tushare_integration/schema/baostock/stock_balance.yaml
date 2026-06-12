@@ -1,0 +1,65 @@
+id: 3005
+api_name: query_balance_data
+name: baostock_stock_balance
+comment: Baostock季度资产负债表
+dependencies:
+  - baostock/stock/basic
+primary_key:
+  - code
+  - pubDate
+  - statDate
+indexes: []
+columns:
+  - name: code
+    data_type: str
+    length: 16
+    default: ""
+    comment: Baostock股票代码
+  - name: pubDate
+    data_type: date
+    default: "1970-01-01"
+    comment: 发布日期
+  - name: statDate
+    data_type: date
+    default: "1970-01-01"
+    comment: 报告期
+  - name: cash
+    data_type: float
+    default: "0.0"
+    comment: 货币资金
+  - name: commercialPaper
+    data_type: float
+    default: "0.0"
+    comment: 应收票据
+  - name: accountReceivable
+    data_type: float
+    default: "0.0"
+    comment: 应收账款
+  - name: inventory
+    data_type: float
+    default: "0.0"
+    comment: 存货
+  - name: currentAssets
+    data_type: float
+    default: "0.0"
+    comment: 流动资产
+  - name: fixedAssets
+    data_type: float
+    default: "0.0"
+    comment: 固定资产
+  - name: totalAssets
+    data_type: float
+    default: "0.0"
+    comment: 总资产
+  - name: currentLiability
+    data_type: float
+    default: "0.0"
+    comment: 流动负债
+  - name: totalLiability
+    data_type: float
+    default: "0.0"
+    comment: 总负债
+  - name: shareholderEquity
+    data_type: float
+    default: "0.0"
+    comment: 股东权益

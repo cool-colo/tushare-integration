@@ -40,9 +40,12 @@ FACTOR_MAPPING_CSV_CANDIDATES = DEFAULT_FACTOR_MAPPING_CSV_CANDIDATES
 DWD_TRADE_RELEVANT_TABLES = {
     "dwd_trade_calendar",
     "dwd_stock_eod_price",
+    "dwd_baostock_stock_eod_price",
     "dwd_index_eod_price",
+    "dwd_baostock_index_eod_price",
     "dwd_future_eod_price",
     "dwd_stock_daily_basic",
+    "dwd_baostock_stock_daily_basic",
     "dwd_stock_eod_quote_metrics",
     "dwd_stock_adj_factor",
     "dwd_stock_margin_trading",
@@ -687,6 +690,37 @@ class DqcSample:
 
 
 @dataclass(frozen=True)
+class CrossSourceResult:
+    rule_id: str
+    domain: str
+    left_table: str
+    right_table: str
+    severity: ValidationSeverity
+    status: str
+    checked_count: int = 0
+    issue_count: int = 0
+    message: str = ""
+
+
+@dataclass(frozen=True)
+class CrossSourceRun:
+    run_id: str
+    domain: str
+    as_of_date: datetime.date
+    mode: ValidationMode
+    status: str
+    started_at: datetime.datetime
+    finished_at: datetime.datetime
+    results: list[CrossSourceResult]
+
+    @property
+    def should_block(self) -> bool:
+        return self.mode == "strict" and any(
+            result.severity == "BLOCKER" and result.status == "FAIL" for result in self.results
+        )
+
+
+@dataclass(frozen=True)
 class DqcRun:
     run_id: str
     layer: str
@@ -733,6 +767,20 @@ class DqcValidationError(RuntimeError):
         ]
         super().__init__(
             f"DQC failed for {run.layer}.{run.suite_name} table={run.table_name} in strict mode: "
+            f"{', '.join(failed_rules)}"
+        )
+        self.run = run
+
+
+class CrossSourceValidationError(RuntimeError):
+    def __init__(self, run: CrossSourceRun):
+        failed_rules = [
+            f"{result.rule_id}({result.issue_count})"
+            for result in run.results
+            if result.severity == "BLOCKER" and result.status == "FAIL"
+        ]
+        super().__init__(
+            f"Cross-source validation failed for {run.domain} as_of_date={run.as_of_date}: "
             f"{', '.join(failed_rules)}"
         )
         self.run = run
@@ -1173,7 +1221,7 @@ class QualityManager:
             return yaml.safe_load(f.read())
 
     def _load_dwd_spec(self, table_name: str) -> dict[str, Any]:
-        for path in DWD_SCHEMA_DIR.glob("*.yaml"):
+        for path in DWD_SCHEMA_DIR.glob("**/*.yaml"):
             spec = self._load_yaml(path)
             if spec["name"] == table_name:
                 return spec
@@ -1252,9 +1300,15 @@ class QualityManager:
         validation_filter: str | None = None,
     ) -> list[ValidationRule]:
         rules: list[ValidationRule] = []
-        if table_name in {"dwd_stock_eod_price", "dwd_index_eod_price", "dwd_future_eod_price"}:
+        if table_name in {
+            "dwd_stock_eod_price",
+            "dwd_baostock_stock_eod_price",
+            "dwd_index_eod_price",
+            "dwd_baostock_index_eod_price",
+            "dwd_future_eod_price",
+        }:
             rules.extend(self._market_price_rules(table_name, qualified, validation_filter))
-        if table_name == "dwd_stock_daily_basic":
+        if table_name in {"dwd_stock_daily_basic", "dwd_baostock_stock_daily_basic"}:
             rules.extend(self._daily_basic_rules(qualified, validation_filter))
         if table_name == "dwd_stock_eod_quote_metrics":
             rules.extend(self._quote_metric_rules(qualified, validation_filter))
@@ -1273,10 +1327,16 @@ class QualityManager:
             )
         if table_name in {
             "dwd_stock_financial_indicator",
+            "dwd_baostock_stock_financial_indicator",
             "dwd_stock_income",
+            "dwd_baostock_stock_income",
             "dwd_stock_balance_sheet",
+            "dwd_baostock_stock_balance_sheet",
             "dwd_stock_cashflow",
+            "dwd_baostock_stock_cashflow",
             "dwd_stock_dividend",
+            "dwd_stock_express",
+            "dwd_baostock_stock_express",
         }:
             rules.extend(self._financial_rules(table_name, qualified))
         if table_name == "dwd_stock_dividend":
@@ -1289,7 +1349,7 @@ class QualityManager:
             rules.extend(self._chip_rules(qualified, validation_filter))
         if table_name == "dwd_index_weight":
             rules.extend(self._index_weight_rules(qualified, validation_filter))
-        if table_name == "dwd_security_master":
+        if table_name in {"dwd_security_master", "dwd_baostock_security_master"}:
             rules.extend(self._security_master_rules(qualified))
         return rules
 
@@ -1493,7 +1553,7 @@ class QualityManager:
                 """,
             ),
         ]
-        if table_name == "dwd_stock_balance_sheet":
+        if table_name in {"dwd_stock_balance_sheet", "dwd_baostock_stock_balance_sheet"}:
             rules.append(
                 ValidationRule(
                     rule_id="balance_sheet_assets_equation",
@@ -1510,7 +1570,7 @@ class QualityManager:
                     """,
                 )
             )
-        if table_name == "dwd_stock_cashflow":
+        if table_name in {"dwd_stock_cashflow", "dwd_baostock_stock_cashflow"}:
             rules.append(
                 ValidationRule(
                     rule_id="cashflow_operating_net_flow",
@@ -1842,6 +1902,432 @@ class QualityManager:
                 "stage": run.stage,
                 "table_name": run.table_name,
                 "target_table_name": run.target_table_name,
+                "mode": run.mode,
+                "status": run.status,
+                "results": [result.__dict__ for result in run.results],
+            },
+            ensure_ascii=False,
+            indent=2,
+            default=str,
+        )
+
+
+class CrossSourceQualityManager:
+    PRICE_ABS_TOLERANCE = 0.01
+    PRICE_REL_TOLERANCE = 0.001
+    NUMBER_ABS_TOLERANCE = 1e-6
+    NUMBER_REL_TOLERANCE = 1e-4
+
+    DOMAIN_SPECS = {
+        "stock_eod_price": {
+            "left_table": "dwd_stock_eod_price",
+            "right_table": "dwd_baostock_stock_eod_price",
+            "key_columns": ["instrument_id", "event_date"],
+            "fields": ["open", "high", "low", "close", "pre_close", "vol", "amount"],
+            "price_fields": ["open", "high", "low", "close", "pre_close"],
+        },
+        "stock_daily_basic": {
+            "left_table": "dwd_stock_daily_basic",
+            "right_table": "dwd_baostock_stock_daily_basic",
+            "key_columns": ["instrument_id", "event_date"],
+            "fields": ["close", "turnover_rate", "pe_ttm", "pb", "ps_ttm"],
+        },
+        "security_master": {
+            "left_table": "dwd_security_master",
+            "right_table": "dwd_baostock_security_master",
+            "key_columns": ["instrument_id"],
+            "fields": ["instrument_name", "list_date", "delist_date", "industry"],
+        },
+        "stock_financial_statement": {
+            "left_table": "dwd_stock_income",
+            "right_table": "dwd_baostock_stock_income",
+            "key_columns": ["instrument_id", "event_date"],
+            "fields": ["ann_date", "revenue", "n_income", "total_profit"],
+        },
+        "stock_financial_indicator": {
+            "left_table": "dwd_stock_financial_indicator",
+            "right_table": "dwd_baostock_stock_financial_indicator",
+            "key_columns": ["instrument_id", "event_date"],
+            "fields": ["roe", "grossprofit_margin", "assets_turn", "debt_to_assets"],
+        },
+        "index_eod_price": {
+            "left_table": "dwd_index_eod_price",
+            "right_table": "dwd_baostock_index_eod_price",
+            "key_columns": ["instrument_id", "event_date"],
+            "fields": ["open", "high", "low", "close", "pre_close", "vol", "amount"],
+            "price_fields": ["open", "high", "low", "close", "pre_close"],
+        },
+    }
+
+    def __init__(self, settings: TushareIntegrationSettings | None = None, db_engine: DBEngine | None = None):
+        self.settings = settings or TushareIntegrationSettings.model_validate(
+            yaml.safe_load(open("config.yaml", "r", encoding="utf-8").read())
+        )
+        self.db_engine = db_engine
+
+    def get_db_engine(self) -> DBEngine:
+        if self.db_engine is None:
+            self.db_engine = DatabaseEngineFactory.create(self.settings)
+        return self.db_engine
+
+    @staticmethod
+    def _sql_date(value: datetime.date | str) -> str:
+        if isinstance(value, str):
+            parsed = datetime.date.fromisoformat(value)
+        else:
+            parsed = value
+        return f"toDate32('{parsed.isoformat()}')"
+
+    @staticmethod
+    def _first_int(data: pd.DataFrame, default: int = 0) -> int:
+        if data.empty:
+            return default
+        value = data.iloc[0, 0]
+        if pd.isna(value):
+            return default
+        return int(value)
+
+    def _qualified(self, table_name: str) -> str:
+        return f"{self.settings.database.db_name}.{table_name}"
+
+    def _key_join(self, key_columns: list[str]) -> str:
+        return " AND ".join([f"t.{column} = b.{column}" for column in key_columns])
+
+    def _key_not_null(self, alias: str, key_columns: list[str]) -> str:
+        prefix = f"{alias}." if alias else ""
+        return " AND ".join([f"{prefix}{column} IS NOT NULL" for column in key_columns])
+
+    def _latest_cte(self, alias: str, table_name: str, key_columns: list[str], as_of_date: datetime.date) -> str:
+        partition = ", ".join(key_columns)
+        return f"""
+{alias} AS (
+    SELECT *
+    FROM (
+        SELECT
+            *,
+            row_number() OVER (
+                PARTITION BY {partition}
+                ORDER BY sys_from DESC, source_batch_id DESC, source_record_hash DESC
+            ) AS _rn
+        FROM {self._qualified(table_name)}
+        WHERE available_trade_date <= {self._sql_date(as_of_date)}
+          AND sys_from <= now()
+          AND sys_to > now()
+          AND {self._key_not_null('', key_columns)}
+    )
+    WHERE _rn = 1
+)"""
+
+    def _field_compare_condition(self, field: str, price_field: bool) -> str:
+        abs_tolerance = self.PRICE_ABS_TOLERANCE if price_field else self.NUMBER_ABS_TOLERANCE
+        rel_tolerance = self.PRICE_REL_TOLERANCE if price_field else self.NUMBER_REL_TOLERANCE
+        return f"""
+            t.{field} IS NOT NULL AND b.{field} IS NOT NULL
+            AND abs(toFloat64(t.{field}) - toFloat64(b.{field}))
+                > greatest(abs(toFloat64(t.{field})) * {rel_tolerance}, {abs_tolerance})
+        """
+
+    def build_rules(self, domain: str, as_of_date: datetime.date | str) -> list[ValidationRule]:
+        if self.settings.database.db_type != "clickhouse":
+            raise NotImplementedError("Cross-source validation currently supports ClickHouse SQL only")
+        spec = self.DOMAIN_SPECS.get(domain)
+        if spec is None:
+            valid_domains = ", ".join(sorted(self.DOMAIN_SPECS))
+            raise ValueError(f"Unsupported cross-source domain {domain!r}; expected one of: {valid_domains}")
+
+        as_of = datetime.date.fromisoformat(as_of_date) if isinstance(as_of_date, str) else as_of_date
+        left_table = spec["left_table"]
+        right_table = spec["right_table"]
+        key_columns = spec["key_columns"]
+        price_fields = set(spec.get("price_fields", []))
+        join_sql = self._key_join(key_columns)
+        with_sql = f"""
+WITH
+{self._latest_cte('t', left_table, key_columns, as_of)},
+{self._latest_cte('b', right_table, key_columns, as_of)}
+"""
+        rules = [
+            ValidationRule(
+                rule_id=f"{domain}_key_coverage_loss",
+                description="Baostock comparable rows should cover Tushare keys at the validation date",
+                severity="WARN",
+                issue_count_sql=f"""
+                    {with_sql}
+                    SELECT count() AS issue_count
+                    FROM t
+                    LEFT JOIN b ON {join_sql}
+                    WHERE b.{key_columns[0]} IS NULL
+                """,
+            ),
+            ValidationRule(
+                rule_id=f"{domain}_extra_baostock_keys",
+                description="Baostock rows without a Tushare counterpart are monitored",
+                severity="MONITOR",
+                issue_count_sql=f"""
+                    {with_sql}
+                    SELECT count() AS issue_count
+                    FROM b
+                    LEFT JOIN t ON {join_sql}
+                    WHERE t.{key_columns[0]} IS NULL
+                """,
+            ),
+        ]
+
+        if domain == "stock_eod_price":
+            rules.append(
+                ValidationRule(
+                    rule_id="stock_eod_price_baostock_unadjusted",
+                    description="Baostock stock prices used for validation must be unadjusted",
+                    severity="BLOCKER",
+                    issue_count_sql=f"""
+                        SELECT count() AS issue_count
+                        FROM {self._qualified(right_table)}
+                        WHERE available_trade_date <= {self._sql_date(as_of)}
+                          AND adjustflag != '3'
+                    """,
+                )
+            )
+
+        for field in spec["fields"]:
+            if field == "industry":
+                comparable = "t.industry != '' AND b.industry != '' AND t.industry != b.industry"
+                severity: ValidationSeverity = "MONITOR"
+            elif field in {"instrument_name", "ann_date", "list_date", "delist_date"}:
+                comparable = f"t.{field} IS NOT NULL AND b.{field} IS NOT NULL AND t.{field} != b.{field}"
+                severity = "WARN"
+            else:
+                comparable = self._field_compare_condition(field, price_field=field in price_fields)
+                severity = "BLOCKER" if field in price_fields else "WARN"
+
+            rules.append(
+                ValidationRule(
+                    rule_id=f"{domain}_{field}_diff",
+                    description=f"Comparable field {field} should stay within cross-source tolerance",
+                    severity=severity,
+                    issue_count_sql=f"""
+                        {with_sql}
+                        SELECT count() AS issue_count
+                        FROM t
+                        INNER JOIN b ON {join_sql}
+                        WHERE {comparable}
+                    """,
+                )
+            )
+        return rules
+
+    def run(
+        self,
+        domain: str,
+        as_of_date: datetime.date | str | None = None,
+        mode: ValidationMode | None = None,
+    ) -> CrossSourceRun:
+        resolved_mode = mode or self.settings.quality.dqc_mode or "warn_only"
+        as_of = (
+            datetime.date.fromisoformat(as_of_date)
+            if isinstance(as_of_date, str)
+            else as_of_date or datetime.date.today()
+        )
+        started_at = datetime.datetime.now()
+        run_id = uuid.uuid4().hex
+
+        if resolved_mode == "skip":
+            run = CrossSourceRun(
+                run_id=run_id,
+                domain=domain,
+                as_of_date=as_of,
+                mode=resolved_mode,
+                status="SKIPPED",
+                started_at=started_at,
+                finished_at=datetime.datetime.now(),
+                results=[],
+            )
+            self._record_run(run)
+            return run
+
+        spec = self.DOMAIN_SPECS.get(domain)
+        if spec is None:
+            valid_domains = ", ".join(sorted(self.DOMAIN_SPECS))
+            raise ValueError(f"Unsupported cross-source domain {domain!r}; expected one of: {valid_domains}")
+
+        results = []
+        db_engine = self.get_db_engine()
+        for rule in self.build_rules(domain, as_of):
+            issue_count = self._first_int(db_engine.query_df(rule.issue_count_sql))
+            results.append(
+                CrossSourceResult(
+                    rule_id=rule.rule_id,
+                    domain=domain,
+                    left_table=spec["left_table"],
+                    right_table=spec["right_table"],
+                    severity=rule.severity,
+                    status="FAIL" if issue_count > 0 else "PASS",
+                    issue_count=issue_count,
+                    message=rule.description,
+                )
+            )
+
+        run = CrossSourceRun(
+            run_id=run_id,
+            domain=domain,
+            as_of_date=as_of,
+            mode=resolved_mode,
+            status="FAIL" if any(result.status == "FAIL" for result in results) else "PASS",
+            started_at=started_at,
+            finished_at=datetime.datetime.now(),
+            results=results,
+        )
+        self._record_run(run)
+        if run.should_block:
+            raise CrossSourceValidationError(run)
+        return run
+
+    def _metadata_table_schemas(self) -> dict[str, dict[str, Any]]:
+        common_indexes = [{"name": "cross_source_idx", "columns": ["run_id"]}]
+        return {
+            "dq_cross_source_run": {
+                "comment": "Cross-source validation run",
+                "primary_key": [],
+                "partition_key": ["toYYYYMM(started_at)"],
+                "indexes": common_indexes,
+                "columns": [
+                    {"name": "run_id", "data_type": "str", "length": 64, "comment": "Run id"},
+                    {"name": "domain", "data_type": "str", "length": 128, "comment": "Validation domain"},
+                    {"name": "as_of_date", "data_type": "date", "comment": "As-of date"},
+                    {"name": "mode", "data_type": "str", "length": 32, "comment": "Validation mode"},
+                    {"name": "status", "data_type": "str", "length": 32, "comment": "Run status"},
+                    {"name": "started_at", "data_type": "datetime", "comment": "Run start time"},
+                    {"name": "finished_at", "data_type": "datetime", "comment": "Run finish time"},
+                ],
+            },
+            "dq_cross_source_result": {
+                "comment": "Cross-source validation rule result",
+                "primary_key": [],
+                "partition_key": ["toYYYYMM(created_at)"],
+                "indexes": common_indexes,
+                "columns": [
+                    {"name": "run_id", "data_type": "str", "length": 64, "comment": "Run id"},
+                    {"name": "rule_id", "data_type": "str", "length": 128, "comment": "Rule id"},
+                    {"name": "domain", "data_type": "str", "length": 128, "comment": "Validation domain"},
+                    {"name": "left_table", "data_type": "str", "length": 128, "comment": "Primary source table"},
+                    {"name": "right_table", "data_type": "str", "length": 128, "comment": "Secondary source table"},
+                    {"name": "severity", "data_type": "str", "length": 32, "comment": "Severity"},
+                    {"name": "status", "data_type": "str", "length": 32, "comment": "Status"},
+                    {"name": "checked_count", "data_type": "int", "comment": "Checked row count"},
+                    {"name": "issue_count", "data_type": "int", "comment": "Issue row count"},
+                    {"name": "message", "data_type": "str", "length": 1024, "comment": "Message"},
+                    {"name": "created_at", "data_type": "datetime", "comment": "Created time"},
+                ],
+            },
+            "dq_cross_source_diff": {
+                "comment": "Cross-source validation sampled differences",
+                "primary_key": [],
+                "partition_key": ["toYYYYMM(created_at)"],
+                "indexes": common_indexes,
+                "columns": [
+                    {"name": "run_id", "data_type": "str", "length": 64, "comment": "Run id"},
+                    {"name": "domain", "data_type": "str", "length": 128, "comment": "Validation domain"},
+                    {"name": "rule_id", "data_type": "str", "length": 128, "comment": "Rule id"},
+                    {"name": "business_key", "data_type": "str", "length": 512, "comment": "Business key"},
+                    {"name": "field_name", "data_type": "str", "length": 128, "comment": "Field name"},
+                    {"name": "left_value", "data_type": "str", "length": 255, "comment": "Primary source value"},
+                    {"name": "right_value", "data_type": "str", "length": 255, "comment": "Secondary source value"},
+                    {"name": "created_at", "data_type": "datetime", "comment": "Created time"},
+                ],
+            },
+            "dq_source_quality_metric": {
+                "comment": "Source quality metric",
+                "primary_key": [],
+                "partition_key": ["toYYYYMM(created_at)"],
+                "indexes": common_indexes,
+                "columns": [
+                    {"name": "run_id", "data_type": "str", "length": 64, "comment": "Run id"},
+                    {"name": "domain", "data_type": "str", "length": 128, "comment": "Validation domain"},
+                    {"name": "source", "data_type": "str", "length": 32, "comment": "Source"},
+                    {"name": "metric_name", "data_type": "str", "length": 128, "comment": "Metric name"},
+                    {"name": "metric_value", "data_type": "float", "comment": "Metric value"},
+                    {"name": "created_at", "data_type": "datetime", "comment": "Created time"},
+                ],
+            },
+        }
+
+    def ensure_result_tables(self) -> None:
+        db_engine = self.get_db_engine()
+        for table_name, schema in self._metadata_table_schemas().items():
+            db_engine.create_table(table_name, schema)
+
+    def _record_run(self, run: CrossSourceRun) -> None:
+        try:
+            if self.settings.quality.create_result_tables:
+                self.ensure_result_tables()
+            db_engine = self.get_db_engine()
+            schemas = self._metadata_table_schemas()
+            db_engine.insert(
+                "dq_cross_source_run",
+                schemas["dq_cross_source_run"],
+                pd.DataFrame(
+                    [
+                        {
+                            "run_id": run.run_id,
+                            "domain": run.domain,
+                            "as_of_date": run.as_of_date,
+                            "mode": run.mode,
+                            "status": run.status,
+                            "started_at": run.started_at,
+                            "finished_at": run.finished_at,
+                        }
+                    ]
+                ),
+            )
+            if run.results:
+                db_engine.insert(
+                    "dq_cross_source_result",
+                    schemas["dq_cross_source_result"],
+                    pd.DataFrame(
+                        [
+                            {
+                                "run_id": run.run_id,
+                                "rule_id": result.rule_id,
+                                "domain": result.domain,
+                                "left_table": result.left_table,
+                                "right_table": result.right_table,
+                                "severity": result.severity,
+                                "status": result.status,
+                                "checked_count": result.checked_count,
+                                "issue_count": result.issue_count,
+                                "message": result.message,
+                                "created_at": run.finished_at,
+                            }
+                            for result in run.results
+                        ]
+                    ),
+                )
+                metric_rows = []
+                for result in run.results:
+                    metric_rows.append(
+                        {
+                            "run_id": run.run_id,
+                            "domain": result.domain,
+                            "source": "cross_source",
+                            "metric_name": f"{result.rule_id}.issue_count",
+                            "metric_value": float(result.issue_count),
+                            "created_at": run.finished_at,
+                        }
+                    )
+                db_engine.insert(
+                    "dq_source_quality_metric",
+                    schemas["dq_source_quality_metric"],
+                    pd.DataFrame(metric_rows),
+                )
+        except Exception:
+            logging.exception("Failed to record cross-source validation run %s", run.run_id)
+
+    @staticmethod
+    def run_to_json(run: CrossSourceRun) -> str:
+        return json.dumps(
+            {
+                "run_id": run.run_id,
+                "domain": run.domain,
+                "as_of_date": run.as_of_date,
                 "mode": run.mode,
                 "status": run.status,
                 "results": [result.__dict__ for result in run.results],

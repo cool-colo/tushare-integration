@@ -15,6 +15,7 @@ DWD_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema" / "dwd"
 ODS_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema"
 FAR_FUTURE_TS_SQL = "toDateTime64('9999-12-31 00:00:00', 3)"
 CALENDAR_SOURCE_TABLE = "trade_cal"
+BAOSTOCK_CALENDAR_SOURCE_TABLE = "baostock_trade_dates"
 MIN_LAYER_TRADE_DATE = "2010-01-01"
 MIN_LAYER_TRADE_DATE_SQL = f"toDate32('{MIN_LAYER_TRADE_DATE}')"
 
@@ -75,11 +76,14 @@ def _schema_has_column(schema: dict[str, Any], column_name: str) -> bool:
     return any(column["name"] == column_name for column in schema.get("columns", []))
 
 
+def _iter_dwd_schema_paths() -> list[Path]:
+    return sorted(DWD_SCHEMA_DIR.glob("**/*.yaml"))
+
+
 class DWDManager:
     def __init__(self):
-        self.settings = TushareIntegrationSettings.model_validate(
-            yaml.safe_load(open("config.yaml", "r", encoding="utf-8").read())
-        )
+        with open("config.yaml", "r", encoding="utf-8") as f:
+            self.settings = TushareIntegrationSettings.model_validate(yaml.safe_load(f.read()))
         self.db_engine = None
 
     def get_db_engine(self):
@@ -89,13 +93,13 @@ class DWDManager:
 
     def list_tables(self) -> list[str]:
         table_names = []
-        for path in sorted(DWD_SCHEMA_DIR.glob("*.yaml")):
+        for path in _iter_dwd_schema_paths():
             spec = _load_yaml(path)
             table_names.append(spec["name"])
         return table_names
 
     def load_spec(self, table_name: str) -> dict[str, Any]:
-        for path in DWD_SCHEMA_DIR.glob("*.yaml"):
+        for path in _iter_dwd_schema_paths():
             spec = _load_yaml(path)
             if spec["name"] == table_name:
                 return spec
@@ -116,6 +120,8 @@ class DWDManager:
             schema = deepcopy(spec["schema"])
             schema["primary_key"] = []
             return schema
+        if spec.get("builder", "raw_versioned") == "mapped_versioned":
+            return self._build_mapped_schema(spec)
 
         source_schema = self.load_source_schema(spec["source"]["schema_name"])
         business_key = set(spec.get("business_key") or source_schema.get("primary_key", []))
@@ -135,8 +141,47 @@ class DWDManager:
             "columns": source_columns + common_columns,
         }
 
-    def _calendar_map_sql(self) -> str:
+    def _build_mapped_schema(self, spec: dict[str, Any]) -> dict[str, Any]:
+        mapped_columns = []
+        for column in spec.get("columns", []):
+            schema_column = deepcopy(column)
+            schema_column.pop("expr", None)
+            mapped_columns.append(schema_column)
+
+        return {
+            "comment": spec["comment"],
+            "primary_key": [],
+            "partition_key": spec["partition_key"],
+            "indexes": spec["indexes"],
+            "columns": mapped_columns + self._build_common_columns(spec),
+        }
+
+    @staticmethod
+    def _uses_baostock_calendar(spec: dict[str, Any] | None = None) -> bool:
+        if not spec:
+            return False
+        source_table = spec.get("source", {}).get("table_name", "")
+        return spec.get("name", "").startswith("dwd_baostock_") or source_table.startswith("baostock_")
+
+    def _calendar_source_table(self, spec: dict[str, Any] | None = None) -> str:
+        if self._uses_baostock_calendar(spec):
+            return BAOSTOCK_CALENDAR_SOURCE_TABLE
+        return CALENDAR_SOURCE_TABLE
+
+    def _calendar_map_sql(self, spec: dict[str, Any] | None = None) -> str:
         db_name = self.settings.database.db_name
+        if self._uses_baostock_calendar(spec):
+            return f"""
+calendar_map AS (
+    SELECT
+        c.calendar_date AS calendar_date,
+        min(o.calendar_date) AS next_trade_date
+    FROM {db_name}.{BAOSTOCK_CALENDAR_SOURCE_TABLE} c
+    LEFT JOIN {db_name}.{BAOSTOCK_CALENDAR_SOURCE_TABLE} o
+        ON o.is_trading_day = 1
+       AND o.calendar_date > c.calendar_date
+    GROUP BY c.calendar_date
+)"""
         return f"""
 calendar_map AS (
     SELECT
@@ -169,6 +214,7 @@ calendar_map AS (
         source_filters = [f"{source_alias}.{_quote_column(column)} IS NOT NULL" for column in business_key]
         if _schema_has_column(source_schema, "trade_date"):
             source_filters.append(f"{source_alias}.`trade_date` >= {MIN_LAYER_TRADE_DATE_SQL}")
+        source_filters.extend(spec.get("source_filters", []))
         source_filter_sql = " AND ".join(source_filters)
         source_column_select = ",\n    ".join([f"{source_alias}.{_quote_column(column)}" for column in source_columns])
 
@@ -202,7 +248,7 @@ calendar_map AS (
         derived_column_select = ",\n    ".join(derived_selects)
         with_items = []
         if spec.get("calendar_date_expr"):
-            with_items.append(self._calendar_map_sql())
+            with_items.append(self._calendar_map_sql(spec))
 
         with_item_sql = ",\n".join(with_items)
         with_clause = f"WITH\n{with_item_sql}" if with_items else ""
@@ -210,6 +256,9 @@ calendar_map AS (
             f"LEFT JOIN calendar_map ON calendar_map.calendar_date = {source_alias}._calendar_lookup_date"
             if spec.get("calendar_date_expr")
             else ""
+        )
+        source_joins = "\n".join(
+            [join_sql.format(db_name=db_name, source_alias=source_alias) for join_sql in spec.get("source_joins", [])]
         )
         calendar_lookup_select = (
             f",\n        {spec['calendar_date_expr']} AS _calendar_lookup_date" if spec.get("calendar_date_expr") else ""
@@ -243,6 +292,95 @@ FROM (
     ) {source_alias}
     WHERE {source_alias}._prev_record_hash IS NULL OR {source_alias}._prev_record_hash != {source_alias}._record_hash
 ) {source_alias}
+{source_joins}
+{calendar_join}
+"""
+
+    def _render_mapped_versioned_sync_sql(self, spec: dict[str, Any], target_table_name: str) -> str:
+        db_name = self.settings.database.db_name
+        source_alias = spec.get("source_alias", "src")
+        source_schema = self.load_source_schema(spec["source"]["schema_name"])
+        business_key = spec.get("source_business_key") or source_schema.get("primary_key", [])
+        if not business_key:
+            raise ValueError(f"{spec['name']} requires source_business_key or source primary_key")
+
+        business_key_partition = ", ".join([f"{source_alias}.{_quote_column(column)}" for column in business_key])
+        source_filters = [f"{source_alias}.{_quote_column(column)} IS NOT NULL" for column in business_key]
+        source_filters.extend(spec.get("source_filters", []))
+        source_filter_sql = " AND ".join(source_filters)
+
+        mapped_selects = [f"{column['expr']} AS `{column['name']}`" for column in spec.get("columns", [])]
+        if spec.get("with_instrument", True):
+            mapped_selects.extend(
+                [
+                    f"{spec['instrument_id_expr']} AS `instrument_id`",
+                    f"'{spec['instrument_type']}' AS `instrument_type`",
+                    f"{spec['exchange_expr']} AS `exchange`",
+                    f"{spec['source_code_expr']} AS `source_code`",
+                ]
+            )
+
+        mapped_selects.extend(
+            [
+                f"{spec['event_date_expr']} AS `event_date`",
+                f"{spec['available_trade_date_expr']} AS `available_trade_date`",
+                f"{source_alias}._ingest_time AS `sys_from`",
+                f"{source_alias}._next_sys_from AS `sys_to`",
+                f"{source_alias}._source AS `source`",
+                f"'{spec['source']['table_name']}' AS `source_table`",
+                f"{source_alias}._batch_id AS `source_batch_id`",
+                f"{source_alias}._record_hash AS `source_record_hash`",
+            ]
+        )
+        for column in spec.get("extra_columns", []):
+            mapped_selects.append(f"{column['expr']} AS `{column['name']}`")
+        mapped_column_select = ",\n    ".join(mapped_selects)
+
+        with_items = []
+        if spec.get("calendar_date_expr"):
+            with_items.append(self._calendar_map_sql(spec))
+        with_item_sql = ",\n".join(with_items)
+        with_clause = f"WITH\n{with_item_sql}" if with_items else ""
+        calendar_join = (
+            f"LEFT JOIN calendar_map ON calendar_map.calendar_date = {source_alias}._calendar_lookup_date"
+            if spec.get("calendar_date_expr")
+            else ""
+        )
+        source_joins = "\n".join(
+            [join_sql.format(db_name=db_name, source_alias=source_alias) for join_sql in spec.get("source_joins", [])]
+        )
+        calendar_lookup_select = (
+            f",\n        {spec['calendar_date_expr']} AS _calendar_lookup_date" if spec.get("calendar_date_expr") else ""
+        )
+
+        return f"""
+INSERT INTO {db_name}.{target_table_name}
+{with_clause}
+SELECT
+    {mapped_column_select}
+FROM (
+    SELECT
+        {source_alias}.*,
+        leadInFrame({source_alias}._ingest_time, 1, {FAR_FUTURE_TS_SQL}) OVER (
+            PARTITION BY {business_key_partition}
+            ORDER BY {source_alias}._ingest_time, {source_alias}._batch_id, {source_alias}._record_hash
+            ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+        ) AS _next_sys_from
+        {calendar_lookup_select}
+    FROM (
+        SELECT
+            {source_alias}.*,
+            lagInFrame({source_alias}._record_hash) OVER (
+                PARTITION BY {business_key_partition}
+                ORDER BY {source_alias}._ingest_time, {source_alias}._batch_id, {source_alias}._record_hash
+                ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+            ) AS _prev_record_hash
+        FROM {db_name}.{spec['source']['table_name']} {source_alias}
+        WHERE {source_filter_sql}
+    ) {source_alias}
+    WHERE {source_alias}._prev_record_hash IS NULL OR {source_alias}._prev_record_hash != {source_alias}._record_hash
+) {source_alias}
+{source_joins}
 {calendar_join}
 """
 
@@ -418,6 +556,8 @@ FROM versioned
         target_table_name = target_table_name or spec["name"]
         if spec.get("builder", "raw_versioned") == "security_master":
             return self._render_security_master_sync_sql(spec, target_table_name)
+        if spec.get("builder", "raw_versioned") == "mapped_versioned":
+            return self._render_mapped_versioned_sync_sql(spec, target_table_name)
         return self._render_generic_sync_sql(spec, target_table_name)
 
     def get_required_source_tables(self, spec: dict[str, Any]) -> list[str]:
@@ -425,8 +565,9 @@ FROM versioned
             return ["stock_basic_raw", "index_basic_raw", "fut_basic_raw", CALENDAR_SOURCE_TABLE]
 
         required_tables = [spec["source"]["table_name"]]
+        required_tables.extend(spec.get("extra_source_tables", []))
         if spec.get("calendar_date_expr"):
-            required_tables.append(CALENDAR_SOURCE_TABLE)
+            required_tables.append(self._calendar_source_table(spec))
         return sorted(set(required_tables))
 
     def ensure_source_tables(self, spec: dict[str, Any]) -> None:

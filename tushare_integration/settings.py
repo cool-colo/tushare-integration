@@ -158,6 +158,43 @@ class TushareIntegrationSettings(BaseSettings):
         default='2010-01-01',
         description='未显式配置MIN_CAL_DATE的日频接口首次采集起始日期',
     )
+    baostock_start_date: Annotated[str, env_variable('BAOSTOCK_START_DATE')] = Field(
+        default='2015-01-01',
+        description='Baostock采集和DWD同步默认起始日期',
+    )
+    baostock_incremental_backfill_days: Annotated[
+        int, env_variable('BAOSTOCK_INCREMENTAL_BACKFILL_DAYS')
+    ] = Field(
+        default=7,
+        ge=0,
+        description='Baostock增量采集时从最新已入库日期向前回看的自然日天数',
+    )
+    baostock_socket_timeout_seconds: Annotated[
+        int, env_variable('BAOSTOCK_SOCKET_TIMEOUT_SECONDS')
+    ] = Field(
+        default=20,
+        ge=1,
+        description='Baostock socket连接和接收超时时间，避免源站不可达时长时间阻塞',
+    )
+    baostock_request_retry_attempts: Annotated[
+        int, env_variable('BAOSTOCK_REQUEST_RETRY_ATTEMPTS')
+    ] = Field(
+        default=3,
+        ge=1,
+        description='Baostock API请求失败后的最大尝试次数',
+    )
+    baostock_request_retry_delay_seconds: Annotated[
+        float, env_variable('BAOSTOCK_REQUEST_RETRY_DELAY_SECONDS')
+    ] = Field(
+        default=1.0,
+        ge=0,
+        description='Baostock API请求重试基础间隔秒数，实际等待时间随重试次数线性增加',
+    )
+    baostock_daily_request_limit: Annotated[int, env_variable('BAOSTOCK_DAILY_REQUEST_LIMIT')] = Field(
+        default=50000,
+        ge=0,
+        description='Baostock每日API请求上限，0表示不限制',
+    )
     cyq_chips_request_chunk_trade_days: Annotated[
         int, env_variable('CYQ_CHIPS_REQUEST_CHUNK_TRADE_DAYS')
     ] = Field(

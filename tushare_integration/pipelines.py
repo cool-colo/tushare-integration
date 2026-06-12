@@ -318,6 +318,7 @@ class RecordLogPipeline(BasePipeline):
         self.start_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def close_spider(self, spider):
+        logging.info("Spider %s scraped %s data rows", spider.name, self.count)
         statistics_data = pd.DataFrame(
             [
                 {
@@ -336,5 +337,8 @@ class RecordLogPipeline(BasePipeline):
         self.db_engine.insert(self.table_name, self.schema, statistics_data)
 
     def process_item(self, item, spider):
-        self.count += len(item["data"])
+        row_count = len(item["data"])
+        self.count += row_count
+        if getattr(spider, "crawler", None) is not None:
+            spider.crawler.stats.inc_value("item_scraped_row_count", row_count)
         return item

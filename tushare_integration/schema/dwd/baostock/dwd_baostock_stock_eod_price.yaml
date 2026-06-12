@@ -1,0 +1,89 @@
+id: 3101
+name: dwd_baostock_stock_eod_price
+comment: Baostock股票日线行情标准层
+builder: mapped_versioned
+source:
+  table_name: baostock_stock_daily_raw
+  schema_name: baostock/stock_daily
+source_filters:
+  - "src.`date` >= toDate32('2015-01-01')"
+  - "src.`adjustflag` = '3'"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))))"
+source_code_expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+exchange_expr: "multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))"
+event_date_expr: src.date
+calendar_date_expr: src.date
+available_trade_date_expr: coalesce(calendar_map.next_trade_date, src.date)
+business_key:
+  - ts_code
+  - trade_date
+partition_key:
+  - toYear(available_trade_date)
+indexes:
+  - name: dwd_baostock_stock_eod_price_idx
+    columns:
+      - instrument_id
+      - event_date
+      - sys_from
+columns:
+  - name: ts_code
+    data_type: str
+    length: 16
+    comment: 标准股票代码
+    expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+  - name: trade_date
+    data_type: date
+    comment: 交易日期
+    expr: src.date
+  - name: open
+    data_type: float
+    nullable: true
+    comment: 开盘价
+    expr: src.open
+  - name: high
+    data_type: float
+    nullable: true
+    comment: 最高价
+    expr: src.high
+  - name: low
+    data_type: float
+    nullable: true
+    comment: 最低价
+    expr: src.low
+  - name: close
+    data_type: float
+    nullable: true
+    comment: 收盘价
+    expr: src.close
+  - name: pre_close
+    data_type: float
+    nullable: true
+    comment: 昨收价
+    expr: src.preclose
+  - name: change
+    data_type: float
+    nullable: true
+    comment: 涨跌额
+    expr: "src.close - src.preclose"
+  - name: pct_chg
+    data_type: float
+    nullable: true
+    comment: 涨跌幅
+    expr: src.pctChg
+  - name: vol
+    data_type: float
+    nullable: true
+    comment: 成交量
+    expr: src.volume
+  - name: amount
+    data_type: float
+    nullable: true
+    comment: 成交额
+    expr: src.amount
+  - name: adjustflag
+    data_type: str
+    length: 8
+    nullable: true
+    comment: Baostock复权标志
+    expr: src.adjustflag

@@ -1,0 +1,90 @@
+id: 3107
+name: dwd_baostock_stock_balance_sheet
+comment: Baostock股票资产负债表标准层
+builder: mapped_versioned
+source:
+  table_name: baostock_stock_balance_raw
+  schema_name: baostock/stock_balance
+source_filters:
+  - "src.`statDate` >= toDate32('2015-01-01')"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))))"
+source_code_expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+exchange_expr: "multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))"
+event_date_expr: src.statDate
+calendar_date_expr: "nullIf(src.pubDate, toDate32('1970-01-01'))"
+available_trade_date_expr: "coalesce(calendar_map.next_trade_date, nullIf(src.pubDate, toDate32('1970-01-01')), src.statDate)"
+business_key:
+  - ts_code
+  - end_date
+source_business_key:
+  - code
+  - statDate
+partition_key:
+  - toYear(available_trade_date)
+indexes:
+  - name: dwd_baostock_stock_balance_sheet_idx
+    columns:
+      - instrument_id
+      - event_date
+      - sys_from
+columns:
+  - name: ts_code
+    data_type: str
+    length: 16
+    comment: 标准股票代码
+    expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+  - name: ann_date
+    data_type: date
+    nullable: true
+    comment: 公告日期
+    expr: "nullIf(src.pubDate, toDate32('1970-01-01'))"
+  - name: end_date
+    data_type: date
+    comment: 报告期
+    expr: src.statDate
+  - name: total_assets
+    data_type: float
+    nullable: true
+    comment: 总资产
+    expr: src.totalAssets
+  - name: total_liab
+    data_type: float
+    nullable: true
+    comment: 总负债
+    expr: src.totalLiability
+  - name: total_cur_liab
+    data_type: float
+    nullable: true
+    comment: 流动负债
+    expr: src.currentLiability
+  - name: total_cur_assets
+    data_type: float
+    nullable: true
+    comment: 流动资产
+    expr: src.currentAssets
+  - name: money_cap
+    data_type: float
+    nullable: true
+    comment: 货币资金
+    expr: src.cash
+  - name: inventories
+    data_type: float
+    nullable: true
+    comment: 存货
+    expr: src.inventory
+  - name: fix_assets
+    data_type: float
+    nullable: true
+    comment: 固定资产
+    expr: src.fixedAssets
+  - name: total_hldr_eqy_inc_min_int
+    data_type: float
+    nullable: true
+    comment: 股东权益合计
+    expr: src.shareholderEquity
+  - name: total_hldr_eqy_exc_min_int
+    data_type: float
+    nullable: true
+    comment: 归母股东权益
+    expr: src.shareholderEquity

@@ -1,0 +1,57 @@
+id: 3013
+api_name: query_dupont_data
+name: baostock_stock_dupont
+comment: Baostock季度杜邦指标
+dependencies:
+  - baostock/stock/basic
+primary_key:
+  - code
+  - pubDate
+  - statDate
+indexes: []
+columns:
+  - name: code
+    data_type: str
+    length: 16
+    default: ""
+    comment: Baostock股票代码
+  - name: pubDate
+    data_type: date
+    default: "1970-01-01"
+    comment: 发布日期
+  - name: statDate
+    data_type: date
+    default: "1970-01-01"
+    comment: 报告期
+  - name: dupontROE
+    data_type: float
+    default: "0.0"
+    comment: 杜邦ROE
+  - name: dupontAssetStoEquity
+    data_type: float
+    default: "0.0"
+    comment: 杜邦权益乘数
+  - name: dupontAssetTurn
+    data_type: float
+    default: "0.0"
+    comment: 杜邦总资产周转率
+  - name: dupontPnitoni
+    data_type: float
+    default: "0.0"
+    comment: 归母净利率
+  - name: dupontNitogr
+    data_type: float
+    default: "0.0"
+    comment: 净利率
+  - name: dupontTaxBurden
+    data_type: float
+    default: "0.0"
+    comment: 税负影响
+  - name: dupontIntburden
+    data_type: float
+    default: "0.0"
+    comment: 利息负担
+  - name: dupontEbittogr
+    data_type: float
+    default: "0.0"
+    comment: 息税前利润率

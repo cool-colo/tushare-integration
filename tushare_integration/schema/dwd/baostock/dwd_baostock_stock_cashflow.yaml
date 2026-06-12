@@ -1,0 +1,75 @@
+id: 3108
+name: dwd_baostock_stock_cashflow
+comment: Baostock股票现金流量表标准层
+builder: mapped_versioned
+source:
+  table_name: baostock_stock_cash_flow_raw
+  schema_name: baostock/stock_cash_flow
+source_filters:
+  - "src.`statDate` >= toDate32('2015-01-01')"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))))"
+source_code_expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+exchange_expr: "multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))"
+event_date_expr: src.statDate
+calendar_date_expr: "nullIf(src.pubDate, toDate32('1970-01-01'))"
+available_trade_date_expr: "coalesce(calendar_map.next_trade_date, nullIf(src.pubDate, toDate32('1970-01-01')), src.statDate)"
+business_key:
+  - ts_code
+  - end_date
+source_business_key:
+  - code
+  - statDate
+partition_key:
+  - toYear(available_trade_date)
+indexes:
+  - name: dwd_baostock_stock_cashflow_idx
+    columns:
+      - instrument_id
+      - event_date
+      - sys_from
+columns:
+  - name: ts_code
+    data_type: str
+    length: 16
+    comment: 标准股票代码
+    expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+  - name: ann_date
+    data_type: date
+    nullable: true
+    comment: 公告日期
+    expr: "nullIf(src.pubDate, toDate32('1970-01-01'))"
+  - name: end_date
+    data_type: date
+    comment: 报告期
+    expr: src.statDate
+  - name: c_inf_fr_operate_a
+    data_type: float
+    nullable: true
+    comment: 经营活动现金流入小计
+    expr: CAST(NULL, 'Nullable(Float64)')
+  - name: st_cash_out_act
+    data_type: float
+    nullable: true
+    comment: 经营活动现金流出小计
+    expr: CAST(NULL, 'Nullable(Float64)')
+  - name: n_cashflow_act
+    data_type: float
+    nullable: true
+    comment: 经营活动现金流量净额
+    expr: CAST(NULL, 'Nullable(Float64)')
+  - name: cfo_to_or
+    data_type: float
+    nullable: true
+    comment: 经营现金净流量除以营业收入
+    expr: src.CFOToOR
+  - name: cfo_to_np
+    data_type: float
+    nullable: true
+    comment: 经营现金净流量除以净利润
+    expr: src.CFOToNP
+  - name: cfo_to_gr
+    data_type: float
+    nullable: true
+    comment: 经营现金净流量除以营业总收入
+    expr: src.CFOToGr

@@ -3,6 +3,7 @@ import logging
 import re
 import signal
 import uuid
+from pathlib import Path
 
 import scrapy.crawler
 import scrapy.signals
@@ -27,6 +28,13 @@ UPDATE_TYPE_ALIASES = {
     "fully": "full",
 }
 VALID_UPDATE_TYPES = set(UPDATE_TYPE_ALIASES.values())
+LOCAL_FIRST_DEPENDENCY_TABLES = {
+    "baostock/stock/basic": "baostock_stock_basic",
+}
+BAOSTOCK_BASIC_REQUIRED_CODE_TYPES = {
+    "baostock/index/daily": {"2"},
+}
+DEFAULT_BAOSTOCK_BASIC_CODE_TYPES = {"1"}
 
 
 class CrawlManager(object):
@@ -140,14 +148,90 @@ class CrawlManager(object):
         settings['BATCH_ID'] = self.batch_id
         return settings
 
+    def get_dependency_db_engine(self):
+        if not hasattr(self, "_dependency_db_engine"):
+            self._dependency_db_engine = DatabaseEngineFactory.create(self.settings)
+        return self._dependency_db_engine
+
+    @classmethod
+    def get_required_baostock_basic_code_types(cls, spiders: list[str]) -> set[str]:
+        required_code_types: set[str] = set()
+        for spider in spiders:
+            required_code_types.update(
+                BAOSTOCK_BASIC_REQUIRED_CODE_TYPES.get(spider, DEFAULT_BAOSTOCK_BASIC_CODE_TYPES)
+            )
+        return required_code_types
+
+    def local_dependency_has_rows(self, dependency: str, spiders: list[str] | None = None) -> bool:
+        table_name = LOCAL_FIRST_DEPENDENCY_TABLES.get(dependency)
+        if table_name is None:
+            return False
+        required_code_types = (
+            self.get_required_baostock_basic_code_types(spiders)
+            if spiders
+            else set(DEFAULT_BAOSTOCK_BASIC_CODE_TYPES)
+        )
+        code_types_sql = ", ".join(f"'{code_type}'" for code_type in sorted(required_code_types))
+
+        db_name = self.settings.database.db_name
+        table_expr = f"{db_name}.{table_name}"
+        if self.settings.database.db_type == "clickhouse":
+            table_expr = f"{table_expr} FINAL"
+
+        try:
+            data = self.get_dependency_db_engine().query_df(
+                f"""
+                SELECT `type`, count(*) AS row_count
+                FROM {table_expr}
+                WHERE `type` IN ({code_types_sql})
+                  AND code != ''
+                GROUP BY `type`
+                """
+            )
+        except Exception as exc:
+            logging.info("Local dependency %s is unavailable; keeping dependency crawl: %s", dependency, exc)
+            return False
+
+        if data.empty or "type" not in data.columns or "row_count" not in data.columns:
+            return False
+        row_count_by_type = {
+            str(row["type"]): int(row["row_count"] or 0)
+            for row in data[["type", "row_count"]].to_dict("records")
+        }
+        missing_code_types = [
+            code_type for code_type in sorted(required_code_types) if row_count_by_type.get(code_type, 0) <= 0
+        ]
+        if missing_code_types:
+            return False
+
+        logging.info(
+            "Skipping dependency %s because local table %s has rows for code types %s",
+            dependency,
+            table_name,
+            ",".join(sorted(required_code_types)),
+        )
+        return True
+
     @staticmethod
     def get_dependencies(spiders: list[str]) -> list[str]:
         dependencies = []
         for spider in spiders:
-            with open(f"tushare_integration/schema/{spider}.yaml", 'r', encoding='utf8') as f:
+            schema_path = Path(f"tushare_integration/schema/{spider}.yaml")
+            if not schema_path.exists() and spider.startswith("baostock/"):
+                parts = spider.split("/")
+                if len(parts) == 3:
+                    schema_path = Path(f"tushare_integration/schema/{parts[0]}/{parts[1]}_{parts[2]}.yaml")
+            with open(schema_path, 'r', encoding='utf8') as f:
                 schema = yaml.safe_load(f.read())
             dependencies.extend(schema.get('dependencies', []))
-        return list(set(dependencies))
+        return list(dict.fromkeys(dependencies))
+
+    def get_required_dependencies(self, spiders: list[str]) -> list[str]:
+        return [
+            dependency
+            for dependency in self.get_dependencies(spiders)
+            if not self.local_dependency_has_rows(dependency, spiders)
+        ]
 
     @staticmethod
     def normalize_update_type(update_type: str | None) -> str | None:
@@ -200,7 +284,7 @@ class CrawlManager(object):
         raise ValueError(f"Job {job_name} not found")
 
     def run_spiders_in_sequence(self, spiders: list[str]):
-        logging.error(spiders)
+        logging.info("Running spiders in sequence: %s", spiders)
 
         if len(spiders) == 0:
             return
@@ -239,8 +323,11 @@ class CrawlManager(object):
         dependencies = [spiders]
         # 采集服务不是并发安全的，开启依赖解析的情况下可能会导致数据出现重复等问题
         if not self.settings.parallel_mode:
-            while self.get_dependencies(dependencies[-1]):
-                dependencies.append(self.get_dependencies(dependencies[-1]))
+            while True:
+                required_dependencies = self.get_required_dependencies(dependencies[-1])
+                if not required_dependencies:
+                    break
+                dependencies.append(required_dependencies)
         all_spiders = []
         # 从列表最后一个开始，因为最后一个是最底层的依赖
         for dependency in reversed(dependencies):

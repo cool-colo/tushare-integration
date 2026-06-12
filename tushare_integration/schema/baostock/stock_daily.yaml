@@ -1,0 +1,88 @@
+id: 3003
+api_name: query_history_k_data_plus
+name: baostock_stock_daily
+comment: Baostock股票日线行情及每日指标
+dependencies:
+  - baostock/stock/trade_dates
+  - baostock/stock/basic
+primary_key:
+  - code
+  - date
+indexes: []
+columns:
+  - name: date
+    data_type: date
+    default: "1970-01-01"
+    comment: 交易日期
+  - name: code
+    data_type: str
+    length: 16
+    default: ""
+    comment: Baostock股票代码
+  - name: open
+    data_type: float
+    default: "0.0"
+    comment: 开盘价
+  - name: high
+    data_type: float
+    default: "0.0"
+    comment: 最高价
+  - name: low
+    data_type: float
+    default: "0.0"
+    comment: 最低价
+  - name: close
+    data_type: float
+    default: "0.0"
+    comment: 收盘价
+  - name: preclose
+    data_type: float
+    default: "0.0"
+    comment: 前收盘价
+  - name: volume
+    data_type: float
+    default: "0.0"
+    comment: 成交量
+  - name: amount
+    data_type: float
+    default: "0.0"
+    comment: 成交额
+  - name: adjustflag
+    data_type: str
+    length: 8
+    default: ""
+    comment: 复权状态 3不复权
+  - name: turn
+    data_type: float
+    default: "0.0"
+    comment: 换手率
+  - name: tradestatus
+    data_type: str
+    length: 8
+    default: ""
+    comment: 交易状态
+  - name: pctChg
+    data_type: float
+    default: "0.0"
+    comment: 涨跌幅
+  - name: peTTM
+    data_type: float
+    default: "0.0"
+    comment: 市盈率TTM
+  - name: pbMRQ
+    data_type: float
+    default: "0.0"
+    comment: 市净率MRQ
+  - name: psTTM
+    data_type: float
+    default: "0.0"
+    comment: 市销率TTM
+  - name: pcfNcfTTM
+    data_type: float
+    default: "0.0"
+    comment: 市现率TTM
+  - name: isST
+    data_type: str
+    length: 8
+    default: ""
+    comment: 是否ST

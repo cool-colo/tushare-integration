@@ -1,0 +1,30 @@
+id: 3002
+api_name: query_stock_industry
+name: baostock_stock_industry
+comment: Baostock股票行业分类
+dependencies: []
+primary_key:
+  - code
+  - industryClassification
+indexes: []
+columns:
+  - name: code
+    data_type: str
+    length: 16
+    default: ""
+    comment: Baostock证券代码
+  - name: code_name
+    data_type: str
+    length: 255
+    default: ""
+    comment: 证券简称
+  - name: industry
+    data_type: str
+    length: 255
+    default: ""
+    comment: 行业名称
+  - name: industryClassification
+    data_type: str
+    length: 255
+    default: ""
+    comment: 行业分类标准

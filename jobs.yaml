@@ -1,5 +1,43 @@
 cronjob:
   - cron_expr: UnSupported
+    name: baostock/stock/basic
+    spiders:
+      - name: baostock/stock/basic
+        update_type: full
+      - name: baostock/stock/industry
+        update_type: full
+      - name: baostock/stock/trade_dates
+        update_type: full
+  - cron_expr: UnSupported
+    name: baostock/stock/quotes
+    spiders:
+      - name: baostock/stock/daily
+  - cron_expr: UnSupported
+    name: baostock/stock/financial
+    spiders:
+      - name: baostock/stock/balance
+        update_types: [incremental, full]
+      - name: baostock/stock/profit
+        update_types: [incremental, full]
+      - name: baostock/stock/cash_flow
+        update_types: [incremental, full]
+      - name: baostock/stock/operation
+        update_types: [incremental, full]
+      - name: baostock/stock/growth
+        update_types: [incremental, full]
+      - name: baostock/stock/debt
+        update_types: [incremental, full]
+      - name: baostock/stock/dupont
+        update_types: [incremental, full]
+      - name: baostock/stock/financial_indicator
+        update_types: [incremental, full]
+      - name: baostock/stock/express
+        update_types: [incremental, full]
+  - cron_expr: UnSupported
+    name: baostock/index/quotes
+    spiders:
+      - name: baostock/index/daily
+  - cron_expr: UnSupported
     name: future/basic
     spiders:
       - name: future/basic/fut_basic

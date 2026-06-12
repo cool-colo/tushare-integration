@@ -1,0 +1,141 @@
+id: 3109
+name: dwd_baostock_stock_financial_indicator
+comment: Baostock股票财务指标标准层
+builder: mapped_versioned
+source:
+  table_name: baostock_stock_financial_indicator_raw
+  schema_name: baostock/stock_financial_indicator
+source_filters:
+  - "src.`statDate` >= toDate32('2015-01-01')"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))))"
+source_code_expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+exchange_expr: "multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))"
+event_date_expr: src.statDate
+calendar_date_expr: "nullIf(src.pubDate, toDate32('1970-01-01'))"
+available_trade_date_expr: "coalesce(calendar_map.next_trade_date, nullIf(src.pubDate, toDate32('1970-01-01')), src.statDate)"
+business_key:
+  - ts_code
+  - end_date
+source_business_key:
+  - code
+  - statDate
+partition_key:
+  - toYear(available_trade_date)
+indexes:
+  - name: dwd_baostock_stock_financial_indicator_idx
+    columns:
+      - instrument_id
+      - event_date
+      - sys_from
+columns:
+  - name: ts_code
+    data_type: str
+    length: 16
+    comment: 标准股票代码
+    expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+  - name: ann_date
+    data_type: date
+    nullable: true
+    comment: 公告日期
+    expr: "nullIf(src.pubDate, toDate32('1970-01-01'))"
+  - name: end_date
+    data_type: date
+    comment: 报告期
+    expr: src.statDate
+  - name: eps
+    data_type: float
+    nullable: true
+    comment: 每股收益
+    expr: src.epsTTM
+  - name: roe
+    data_type: float
+    nullable: true
+    comment: 净资产收益率
+    expr: "coalesce(src.roeAvg, src.dupontROE)"
+  - name: grossprofit_margin
+    data_type: float
+    nullable: true
+    comment: 销售毛利率
+    expr: src.gpMargin
+  - name: netprofit_margin
+    data_type: float
+    nullable: true
+    comment: 销售净利率
+    expr: src.npMargin
+  - name: assets_turn
+    data_type: float
+    nullable: true
+    comment: 总资产周转率
+    expr: "coalesce(src.AssetTurnRatio, src.dupontAssetTurn)"
+  - name: inv_turn
+    data_type: float
+    nullable: true
+    comment: 存货周转率
+    expr: src.INVTurnRatio
+  - name: ar_turn
+    data_type: float
+    nullable: true
+    comment: 应收账款周转率
+    expr: src.NRTurnRatio
+  - name: current_ratio
+    data_type: float
+    nullable: true
+    comment: 流动比率
+    expr: src.currentRatio
+  - name: quick_ratio
+    data_type: float
+    nullable: true
+    comment: 速动比率
+    expr: src.quickRatio
+  - name: cash_ratio
+    data_type: float
+    nullable: true
+    comment: 现金比率
+    expr: src.cashRatio
+  - name: debt_to_assets
+    data_type: float
+    nullable: true
+    comment: 资产负债率
+    expr: src.liabilityToAsset
+  - name: assets_to_eqt
+    data_type: float
+    nullable: true
+    comment: 权益乘数
+    expr: "coalesce(src.assetToEquity, src.dupontAssetStoEquity)"
+  - name: ocf_to_or
+    data_type: float
+    nullable: true
+    comment: 经营现金净流量除以营业收入
+    expr: src.CFOToOR
+  - name: ocf_to_profit
+    data_type: float
+    nullable: true
+    comment: 经营现金净流量除以净利润
+    expr: src.CFOToNP
+  - name: assets_yoy
+    data_type: float
+    nullable: true
+    comment: 总资产同比增长率
+    expr: src.YOYAsset
+  - name: eqt_yoy
+    data_type: float
+    nullable: true
+    comment: 净资产同比增长率
+    expr: src.YOYEquity
+  - name: netprofit_yoy
+    data_type: float
+    nullable: true
+    comment: 净利润同比增长率
+    expr: src.YOYNI
+  - name: basic_eps_yoy
+    data_type: float
+    nullable: true
+    comment: 基本每股收益同比增长率
+    expr: src.YOYEPSBasic
+  - name: update_flag
+    data_type: str
+    length: 16
+    nullable: true
+    comment: 更新标识
+    expr: "'baostock'"

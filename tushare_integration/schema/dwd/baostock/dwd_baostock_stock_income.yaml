@@ -1,0 +1,85 @@
+id: 3106
+name: dwd_baostock_stock_income
+comment: Baostock股票利润表标准层
+builder: mapped_versioned
+source:
+  table_name: baostock_stock_profit_raw
+  schema_name: baostock/stock_profit
+source_filters:
+  - "src.`statDate` >= toDate32('2015-01-01')"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))))"
+source_code_expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+exchange_expr: "multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)))"
+event_date_expr: src.statDate
+calendar_date_expr: "nullIf(src.pubDate, toDate32('1970-01-01'))"
+available_trade_date_expr: "coalesce(calendar_map.next_trade_date, nullIf(src.pubDate, toDate32('1970-01-01')), src.statDate)"
+business_key:
+  - ts_code
+  - end_date
+source_business_key:
+  - code
+  - statDate
+partition_key:
+  - toYear(available_trade_date)
+indexes:
+  - name: dwd_baostock_stock_income_idx
+    columns:
+      - instrument_id
+      - event_date
+      - sys_from
+columns:
+  - name: ts_code
+    data_type: str
+    length: 16
+    comment: 标准股票代码
+    expr: "concat(arrayElement(splitByChar('.', assumeNotNull(src.code)), 2), '.', multiIf(lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sh', 'SH', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'sz', 'SZ', lower(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1)) = 'bj', 'BJ', upper(arrayElement(splitByChar('.', assumeNotNull(src.code)), 1))))"
+  - name: ann_date
+    data_type: date
+    nullable: true
+    comment: 公告日期
+    expr: "nullIf(src.pubDate, toDate32('1970-01-01'))"
+  - name: end_date
+    data_type: date
+    comment: 报告期
+    expr: src.statDate
+  - name: revenue
+    data_type: float
+    nullable: true
+    comment: 营业收入
+    expr: src.MBRevenue
+  - name: total_revenue
+    data_type: float
+    nullable: true
+    comment: 营业总收入
+    expr: src.MBRevenue
+  - name: n_income
+    data_type: float
+    nullable: true
+    comment: 净利润
+    expr: src.netProfit
+  - name: n_income_attr_p
+    data_type: float
+    nullable: true
+    comment: 归母净利润
+    expr: src.netProfit
+  - name: total_profit
+    data_type: float
+    nullable: true
+    comment: 利润总额
+    expr: CAST(NULL, 'Nullable(Float64)')
+  - name: basic_eps
+    data_type: float
+    nullable: true
+    comment: 基本每股收益
+    expr: src.epsTTM
+  - name: total_share
+    data_type: float
+    nullable: true
+    comment: 总股本
+    expr: src.totalShare
+  - name: float_share
+    data_type: float
+    nullable: true
+    comment: 流通股本
+    expr: src.liqaShare

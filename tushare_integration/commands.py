@@ -8,7 +8,15 @@ import yaml
 from tushare_integration.dwd import DWDManager
 from tushare_integration.dws import DWSManager
 from tushare_integration.manager import CrawlManager
-from tushare_integration.quality import DqcManager, DqcValidationError, QualityManager, QualityValidationError, ValidationMode
+from tushare_integration.quality import (
+    CrossSourceQualityManager,
+    CrossSourceValidationError,
+    DqcManager,
+    DqcValidationError,
+    QualityManager,
+    QualityValidationError,
+    ValidationMode,
+)
 
 try:
     from rich import print
@@ -221,6 +229,27 @@ def _dqc_run_summary(run) -> dict:
     }
 
 
+def _cross_source_run_summary(run) -> dict:
+    return {
+        "run_id": run.run_id,
+        "domain": run.domain,
+        "as_of_date": str(run.as_of_date),
+        "mode": run.mode,
+        "status": run.status,
+        "result_count": len(run.results),
+        "failed_results": [
+            {
+                "rule_id": result.rule_id,
+                "severity": result.severity,
+                "issue_count": result.issue_count,
+                "message": result.message,
+            }
+            for result in run.results
+            if result.status == "FAIL"
+        ],
+    }
+
+
 @query_app.command('list', help="List spiders")
 def list_spiders():
     manager = CrawlManager()
@@ -409,6 +438,28 @@ def run_dqc(
         print(json.dumps(_dqc_run_summary(exc.run), ensure_ascii=False, indent=2, default=str))
         raise typer.Exit(1)
     print(json.dumps(_dqc_run_summary(run), ensure_ascii=False, indent=2, default=str))
+
+
+@quality_app.command('cross-source', help="Run cross-source validation checks", no_args_is_help=True)
+def run_cross_source(
+    domain: str = typer.Argument(
+        ...,
+        help=(
+            "Validation domain: stock_eod_price, stock_daily_basic, security_master, "
+            "stock_financial_statement, stock_financial_indicator, or index_eod_price"
+        ),
+    ),
+    as_of_date: str | None = typer.Option(None, "--as-of-date", help="As-of date, YYYY-MM-DD"),
+    mode: str | None = typer.Option(None, "--mode", help="Override mode: strict, warn_only, or skip"),
+):
+    resolved_mode = _resolve_validation_mode(False, mode)
+    manager = CrossSourceQualityManager()
+    try:
+        run = manager.run(domain=domain, as_of_date=as_of_date, mode=resolved_mode)
+    except CrossSourceValidationError as exc:
+        print(json.dumps(_cross_source_run_summary(exc.run), ensure_ascii=False, indent=2, default=str))
+        raise typer.Exit(1)
+    print(json.dumps(_cross_source_run_summary(run), ensure_ascii=False, indent=2, default=str))
 
 
 @crawl_app.command('job', help="Run a job", no_args_is_help=True)

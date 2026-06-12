@@ -1,0 +1,37 @@
+id: 3001
+api_name: query_stock_basic
+name: baostock_stock_basic
+comment: Baostock证券基础信息
+dependencies: []
+primary_key:
+  - code
+indexes: []
+columns:
+  - name: code
+    data_type: str
+    length: 16
+    default: ""
+    comment: Baostock证券代码
+  - name: code_name
+    data_type: str
+    length: 255
+    default: ""
+    comment: 证券简称
+  - name: ipoDate
+    data_type: date
+    default: "1970-01-01"
+    comment: 上市日期
+  - name: outDate
+    data_type: date
+    default: "1970-01-01"
+    comment: 退市日期
+  - name: type
+    data_type: str
+    length: 16
+    default: ""
+    comment: 证券类型 1股票 2指数
+  - name: status
+    data_type: str
+    length: 16
+    default: ""
+    comment: 上市状态
