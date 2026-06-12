@@ -1,0 +1,99 @@
+id: 3005
+name: dws_stock_cashflow_quarter
+comment: 股票现金流量表单季口径汇总层
+builder: stock_cashflow_quarter
+schema:
+  comment: 股票现金流量表单季口径汇总层
+  primary_key: []
+  partition_key:
+    - toYear(available_trade_date)
+  indexes:
+    - name: dws_stock_cashflow_quarter_idx
+      columns:
+        - instrument_id
+        - event_date
+        - available_trade_date
+  columns:
+    - name: instrument_id
+      data_type: str
+      length: 64
+      comment: 统一证券ID
+    - name: instrument_type
+      data_type: str
+      length: 32
+      comment: 证券类型
+    - name: exchange
+      data_type: str
+      length: 32
+      comment: 交易所
+    - name: source_code
+      data_type: str
+      length: 64
+      comment: 源侧证券代码
+    - name: event_date
+      data_type: date
+      comment: 报告期日期；来自dwd_stock_cashflow.event_date，仅保留3/6/9/12月季报期
+    - name: fiscal_year
+      data_type: int
+      comment: 财年；toYear(event_date)
+    - name: fiscal_quarter
+      data_type: int
+      comment: 财季；toQuarter(event_date)
+    - name: available_trade_date
+      data_type: date
+      comment: 最早可用交易日；继承cashflow DWD的公告日交易日映射结果
+    - name: amort_intang_assets
+      data_type: float
+      nullable: true
+      comment: 无形资产摊销；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: depr_fa_coga_dpba
+      data_type: float
+      nullable: true
+      comment: 固定资产折旧、油气资产折耗、生产性生物资产折旧；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: eff_fx_flu_cash
+      data_type: float
+      nullable: true
+      comment: 汇率变动对现金的影响；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: lt_amort_deferred_exp
+      data_type: float
+      nullable: true
+      comment: 长期待摊费用摊销；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: n_cash_flows_fnc_act
+      data_type: float
+      nullable: true
+      comment: 筹资活动产生的现金流量净额；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: n_cashflow_act
+      data_type: float
+      nullable: true
+      comment: 经营活动产生的现金流量净额；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: n_cashflow_inv_act
+      data_type: float
+      nullable: true
+      comment: 投资活动产生的现金流量净额；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: n_incr_cash_cash_equ
+      data_type: float
+      nullable: true
+      comment: 现金及现金等价物净增加额；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: prov_depr_assets
+      data_type: float
+      nullable: true
+      comment: 资产减值准备；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: build_time
+      data_type: datetime
+      comment: 汇总构建时间
+    - name: source
+      data_type: str
+      length: 32
+      comment: 来源系统；固定为derived
+    - name: source_table
+      data_type: str
+      length: 128
+      comment: 来源表；固定为dwd_stock_cashflow
+    - name: source_batch_id
+      data_type: str
+      length: 512
+      comment: 来源批次ID；当期记录与用于差分的上一季度记录批次拼接
+    - name: source_record_hash
+      data_type: str
+      length: 32
+      comment: 来源记录哈希；当期记录与用于差分的上一季度记录哈希拼接后MD5

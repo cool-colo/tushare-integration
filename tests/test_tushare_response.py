@@ -13,8 +13,12 @@ from tushare_integration.dws import (
     DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT,
     DWSManager,
     FINANCIAL_FEATURE_COLUMNS,
+    STOCK_CASHFLOW_QUARTER_FIELDS,
+    STOCK_CASHFLOW_QUARTER_SOURCE,
     STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS,
     STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE,
+    STOCK_INCOME_QUARTER_FIELDS,
+    STOCK_INCOME_QUARTER_SOURCE,
 )
 from tushare_integration.manager import CrawlManager
 from tushare_integration.spiders.index.quotes import IndexWeightSpider
@@ -155,6 +159,8 @@ class TushareResponseTest(unittest.TestCase):
                 "assets_turn",
                 "inv_turn",
                 "ar_turn",
+                "ebit",
+                "ebitda",
             },
         }
 
@@ -210,8 +216,10 @@ class TushareResponseTest(unittest.TestCase):
 
         self.assertTrue(requested_columns.issubset(column_names))
         self.assertIn("dwd_stock_income", manager.get_required_source_tables(spec))
+        self.assertIn("dws_stock_income_quarter", manager.get_required_source_tables(spec))
         self.assertIn("dwd_stock_balance_sheet", manager.get_required_source_tables(spec))
         self.assertIn("dwd_stock_cashflow", manager.get_required_source_tables(spec))
+        self.assertIn("dws_stock_cashflow_quarter", manager.get_required_source_tables(spec))
         self.assertIn("FROM default.dwd_stock_income", sql)
         self.assertIn("FROM default.dwd_stock_balance_sheet", sql)
         self.assertIn("FROM default.dwd_stock_cashflow", sql)
@@ -272,6 +280,10 @@ class TushareResponseTest(unittest.TestCase):
             sql,
         )
         self.assertIn(
+            "financial_indicator_quarter_quarter_features.`ebit_ttm` AS `ebit_ttm`",
+            sql,
+        )
+        self.assertIn(
             "sumIf(`revenue`, report_offset >= 0 AND report_offset < 4)",
             sql,
         )
@@ -287,8 +299,14 @@ class TushareResponseTest(unittest.TestCase):
             "sumIf(`profit_dedt`, report_offset >= 0 AND report_offset < 4)",
             sql,
         )
-        self.assertIn("income_quarter_features.`ebitda_ttm` AS `ebitda_ttm`", sql)
-        self.assertIn("income_annual_features.`ebitda_lyr` AS `ebitda_lyr`", sql)
+        self.assertIn(
+            "financial_indicator_quarter_quarter_features.`ebitda_ttm` AS `ebitda_ttm`",
+            sql,
+        )
+        self.assertIn(
+            "financial_indicator_quarter_annual_features.`ebitda_lyr` AS `ebitda_lyr`",
+            sql,
+        )
         self.assertIn("daily_basic.`volume_ratio` AS `volume_ratio`", sql)
         self.assertIn(
             "`total_mv` * 10000 + `interestdebt_ttm` - `money_cap_ttm_0` AS `ev_ttm`",
@@ -308,11 +326,15 @@ class TushareResponseTest(unittest.TestCase):
 
         self.assertTrue(set(STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS).issubset(column_names))
         self.assertIn("profit_dedt", column_names)
+        self.assertIn("ebit", column_names)
+        self.assertIn("ebitda", column_names)
         self.assertEqual(manager.get_required_source_tables(spec), [STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE])
         self.assertIn("FROM default.dwd_stock_financial_indicator src", sql)
         self.assertIn("toMonth(src.event_date) IN (3, 6, 9, 12)", sql)
         self.assertIn("AND toQuarter(curr.event_date) != 1", sql)
-        self.assertIn("prev.event_date = addMonths(curr.event_date, -3)", sql)
+        self.assertIn("prev.event_date = toLastDayOfMonth(addMonths(curr.event_date, -3))", sql)
+        self.assertIn("`ebit` - `prev_ebit`", sql)
+        self.assertIn("`ebitda` - `prev_ebitda`", sql)
         self.assertIn("`extra_item` - `prev_extra_item`", sql)
         self.assertIn("`fcfe` - `prev_fcfe`", sql)
         self.assertIn("`fcff` - `prev_fcff`", sql)
@@ -320,9 +342,37 @@ class TushareResponseTest(unittest.TestCase):
         self.assertIn("toQuarter(event_date) = 1", sql)
         self.assertIn("curr.`ar_turn` AS `ar_turn`", sql)
         self.assertIn("当期累计值减上一季度累计值", comments["extra_item"])
+        self.assertIn("当期累计值减上一季度累计值", comments["ebit"])
+        self.assertIn("当期累计值减上一季度累计值", comments["ebitda"])
         self.assertIn("当期累计值减上一季度累计值", comments["profit_dedt"])
         self.assertIn("存量指标不做差分", comments["interestdebt"])
         self.assertIn("不可由累计值差分单季化", comments["ar_turn"])
+
+    def test_dws_stock_income_and_cashflow_quarter_tables_derive_cumulative_reports(self):
+        manager = object.__new__(DWSManager)
+        manager.settings = self._clickhouse_settings()
+
+        income_sql = manager.render_sync_sql("dws_stock_income_quarter")
+        income_spec = manager.load_spec("dws_stock_income_quarter")
+        income_columns = {column["name"] for column in income_spec["schema"]["columns"]}
+        cashflow_sql = manager.render_sync_sql("dws_stock_cashflow_quarter")
+        cashflow_spec = manager.load_spec("dws_stock_cashflow_quarter")
+        cashflow_columns = {column["name"] for column in cashflow_spec["schema"]["columns"]}
+
+        self.assertTrue(set(STOCK_INCOME_QUARTER_FIELDS).issubset(income_columns))
+        self.assertEqual(manager.get_required_source_tables(income_spec), [STOCK_INCOME_QUARTER_SOURCE])
+        self.assertIn("FROM default.dwd_stock_income src", income_sql)
+        self.assertIn("src.report_type IN ('1', '4')", income_sql)
+        self.assertIn("prev.event_date = toLastDayOfMonth(addMonths(curr.event_date, -3))", income_sql)
+        self.assertIn("`revenue` - `prev_revenue`", income_sql)
+        self.assertIn("`diluted_eps` - `prev_diluted_eps`", income_sql)
+
+        self.assertTrue(set(STOCK_CASHFLOW_QUARTER_FIELDS).issubset(cashflow_columns))
+        self.assertEqual(manager.get_required_source_tables(cashflow_spec), [STOCK_CASHFLOW_QUARTER_SOURCE])
+        self.assertIn("FROM default.dwd_stock_cashflow src", cashflow_sql)
+        self.assertIn("src.report_type IN ('1', '4')", cashflow_sql)
+        self.assertIn("prev.event_date = toLastDayOfMonth(addMonths(curr.event_date, -3))", cashflow_sql)
+        self.assertIn("`depr_fa_coga_dpba` - `prev_depr_fa_coga_dpba`", cashflow_sql)
 
     def test_parse_response_treats_common_no_data_message_as_empty_item(self):
         spider = CyqChipsSpider()

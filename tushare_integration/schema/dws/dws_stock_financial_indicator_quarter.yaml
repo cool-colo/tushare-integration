@@ -50,6 +50,14 @@ schema:
       data_type: float
       nullable: true
       comment: 应收账款周转率；季度口径取fin_indicator当期报告值，周转率不可由累计值差分单季化
+    - name: ebit
+      data_type: float
+      nullable: true
+      comment: 息税前利润；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值，缺上一季度为空
+    - name: ebitda
+      data_type: float
+      nullable: true
+      comment: 息税折旧摊销前利润；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值，缺上一季度为空
     - name: fcfe
       data_type: float
       nullable: true

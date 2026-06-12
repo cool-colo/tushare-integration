@@ -1,0 +1,147 @@
+id: 3004
+name: dws_stock_income_quarter
+comment: 股票利润表单季口径汇总层
+builder: stock_income_quarter
+schema:
+  comment: 股票利润表单季口径汇总层
+  primary_key: []
+  partition_key:
+    - toYear(available_trade_date)
+  indexes:
+    - name: dws_stock_income_quarter_idx
+      columns:
+        - instrument_id
+        - event_date
+        - available_trade_date
+  columns:
+    - name: instrument_id
+      data_type: str
+      length: 64
+      comment: 统一证券ID
+    - name: instrument_type
+      data_type: str
+      length: 32
+      comment: 证券类型
+    - name: exchange
+      data_type: str
+      length: 32
+      comment: 交易所
+    - name: source_code
+      data_type: str
+      length: 64
+      comment: 源侧证券代码
+    - name: event_date
+      data_type: date
+      comment: 报告期日期；来自dwd_stock_income.event_date，仅保留3/6/9/12月季报期
+    - name: fiscal_year
+      data_type: int
+      comment: 财年；toYear(event_date)
+    - name: fiscal_quarter
+      data_type: int
+      comment: 财季；toQuarter(event_date)
+    - name: available_trade_date
+      data_type: date
+      comment: 最早可用交易日；继承income DWD的公告日交易日映射结果
+    - name: ass_invest_income
+      data_type: float
+      nullable: true
+      comment: 对联营企业和合营企业的投资收益；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: basic_eps
+      data_type: float
+      nullable: true
+      comment: 基本每股收益；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: biz_tax_surchg
+      data_type: float
+      nullable: true
+      comment: 营业税金及附加；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: diluted_eps
+      data_type: float
+      nullable: true
+      comment: 稀释每股收益；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: fin_exp
+      data_type: float
+      nullable: true
+      comment: 财务费用；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: fin_exp_int_exp
+      data_type: float
+      nullable: true
+      comment: 利息支出；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: fin_exp_int_inc
+      data_type: float
+      nullable: true
+      comment: 利息收入；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: fv_value_chg_gain
+      data_type: float
+      nullable: true
+      comment: 公允价值变动收益；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: income_tax
+      data_type: float
+      nullable: true
+      comment: 所得税费用；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: int_income
+      data_type: float
+      nullable: true
+      comment: 利息收入；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: invest_income
+      data_type: float
+      nullable: true
+      comment: 投资收益；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: n_income
+      data_type: float
+      nullable: true
+      comment: 净利润；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: n_income_attr_p
+      data_type: float
+      nullable: true
+      comment: 归母净利润；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: non_oper_exp
+      data_type: float
+      nullable: true
+      comment: 营业外支出；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: non_oper_income
+      data_type: float
+      nullable: true
+      comment: 营业外收入；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: oper_cost
+      data_type: float
+      nullable: true
+      comment: 营业成本；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: operate_profit
+      data_type: float
+      nullable: true
+      comment: 营业利润；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: oth_impair_loss_assets
+      data_type: float
+      nullable: true
+      comment: 其他资产减值损失；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: revenue
+      data_type: float
+      nullable: true
+      comment: 营业收入；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: total_cogs
+      data_type: float
+      nullable: true
+      comment: 营业总成本；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: total_profit
+      data_type: float
+      nullable: true
+      comment: 利润总额；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: build_time
+      data_type: datetime
+      comment: 汇总构建时间
+    - name: source
+      data_type: str
+      length: 32
+      comment: 来源系统；固定为derived
+    - name: source_table
+      data_type: str
+      length: 128
+      comment: 来源表；固定为dwd_stock_income
+    - name: source_batch_id
+      data_type: str
+      length: 512
+      comment: 来源批次ID；当期记录与用于差分的上一季度记录批次拼接
+    - name: source_record_hash
+      data_type: str
+      length: 32
+      comment: 来源记录哈希；当期记录与用于差分的上一季度记录哈希拼接后MD5

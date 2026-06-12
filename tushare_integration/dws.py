@@ -26,6 +26,8 @@ FACTOR_MAPPING_CSV_CANDIDATES = DEFAULT_FACTOR_MAPPING_CSV_CANDIDATES
 DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT = 1200
 DWS_TABLE_BUILD_PRIORITY = {
     "dws_stock_financial_indicator_quarter": 0,
+    "dws_stock_income_quarter": 0,
+    "dws_stock_cashflow_quarter": 0,
     "dws_stock_factor_wide": 10,
     "dws_stock_factor_wide_matrix": 20,
 }
@@ -37,6 +39,8 @@ STOCK_FACTOR_WIDE_SOURCES = [
     "dwd_stock_eod_quote_metrics",
     "dwd_stock_financial_indicator",
     "dws_stock_financial_indicator_quarter",
+    "dws_stock_income_quarter",
+    "dws_stock_cashflow_quarter",
     "dwd_stock_income",
     "dwd_stock_balance_sheet",
     "dwd_stock_cashflow",
@@ -65,6 +69,8 @@ STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE = "dwd_stock_financial_indicator"
 STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS = [
     "arturn_days",
     "ar_turn",
+    "ebit",
+    "ebitda",
     "fcfe",
     "fcff",
     "profit_dedt",
@@ -81,11 +87,51 @@ STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS = [
     "working_capital",
 ]
 STOCK_FINANCIAL_INDICATOR_QUARTER_YTD_DIFF_FIELDS = {
+    "ebit",
+    "ebitda",
     "extra_item",
     "fcfe",
     "fcff",
     "profit_dedt",
 }
+STOCK_INCOME_QUARTER_SOURCE = "dwd_stock_income"
+STOCK_INCOME_QUARTER_FIELDS = [
+    "ass_invest_income",
+    "basic_eps",
+    "biz_tax_surchg",
+    "diluted_eps",
+    "fin_exp",
+    "fin_exp_int_exp",
+    "fin_exp_int_inc",
+    "fv_value_chg_gain",
+    "income_tax",
+    "int_income",
+    "invest_income",
+    "n_income",
+    "n_income_attr_p",
+    "non_oper_exp",
+    "non_oper_income",
+    "oper_cost",
+    "operate_profit",
+    "oth_impair_loss_assets",
+    "revenue",
+    "total_cogs",
+    "total_profit",
+]
+STOCK_INCOME_QUARTER_YTD_DIFF_FIELDS = set(STOCK_INCOME_QUARTER_FIELDS)
+STOCK_CASHFLOW_QUARTER_SOURCE = "dwd_stock_cashflow"
+STOCK_CASHFLOW_QUARTER_FIELDS = [
+    "amort_intang_assets",
+    "depr_fa_coga_dpba",
+    "eff_fx_flu_cash",
+    "lt_amort_deferred_exp",
+    "n_cash_flows_fnc_act",
+    "n_cashflow_act",
+    "n_cashflow_inv_act",
+    "n_incr_cash_cash_equ",
+    "prov_depr_assets",
+]
+STOCK_CASHFLOW_QUARTER_YTD_DIFF_FIELDS = set(STOCK_CASHFLOW_QUARTER_FIELDS)
 FINANCIAL_FEATURE_COLUMNS = [
     ("balancesheet", "bond_payable", "ttm_0", "bond_payable_ttm_0"),
     ("balancesheet", "bond_payable", "ttm_1", "bond_payable_ttm_1"),
@@ -159,8 +205,8 @@ FINANCIAL_FEATURE_COLUMNS = [
     ("cashflow", "n_incr_cash_cash_equ", "ttm_4", "n_incr_cash_cash_equ_ttm_4"),
     ("cashflow", "prov_depr_assets", "lyr_0", "prov_depr_assets_lyr_0"),
     ("cashflow", "prov_depr_assets", "ttm_0", "prov_depr_assets_ttm_0"),
-    ("income", "ebitda", "lyr", "ebitda_lyr"),
-    ("income", "ebitda", "ttm", "ebitda_ttm"),
+    ("fina_indicator", "ebitda", "lyr", "ebitda_lyr"),
+    ("fina_indicator", "ebitda", "ttm", "ebitda_ttm"),
     ("income", "fin_exp_int_exp", "lyr_0", "fin_exp_int_exp_lyr_0"),
     ("income", "fin_exp_int_exp", "ttm_0", "fin_exp_int_exp_ttm_0"),
     ("income", "fin_exp_int_inc", "lyr_0", "fin_exp_int_inc_lyr_0"),
@@ -199,8 +245,8 @@ SUPPLEMENTAL_FINANCIAL_FEATURE_COLUMNS = [
     ('income', 'basic_eps', 'ttm_0', 'basic_eps_ttm_0'),
     ('income', 'oper_cost', 'lyr_0', 'oper_cost_lyr_0'),
     ('income', 'oper_cost', 'ttm_0', 'oper_cost_ttm_0'),
-    ('income', 'ebit', 'lyr', 'ebit_lyr'),
-    ('income', 'ebit', 'ttm', 'ebit_ttm'),
+    ('fina_indicator', 'ebit', 'lyr', 'ebit_lyr'),
+    ('fina_indicator', 'ebit', 'ttm', 'ebit_ttm'),
     ('income', 'fv_value_chg_gain', 'lyr_0', 'fv_value_chg_gain_lyr_0'),
     ('income', 'fv_value_chg_gain', 'ttm_0', 'fv_value_chg_gain_ttm_0'),
     ('income', 'fin_exp', 'lyr_0', 'fin_exp_lyr_0'),
@@ -365,6 +411,8 @@ FINANCIAL_FEATURE_SOURCE_CONFIG = {
     },
     "cashflow": {
         "table": "dwd_stock_cashflow",
+        "quarter_table": "dws_stock_cashflow_quarter",
+        "quarter_source_kind": "quarter_dws",
         "sql_alias": "cashflow",
         "quarter_report_types": ("2", "3"),
         "annual_report_types": ("1", "4"),
@@ -372,6 +420,8 @@ FINANCIAL_FEATURE_SOURCE_CONFIG = {
     },
     "income": {
         "table": "dwd_stock_income",
+        "quarter_table": "dws_stock_income_quarter",
+        "quarter_source_kind": "quarter_dws",
         "sql_alias": "income",
         "quarter_report_types": ("2", "3"),
         "annual_report_types": ("1", "4"),
@@ -499,6 +549,14 @@ class DWSManager:
         return aggregation
 
     @staticmethod
+    def _financial_feature_source_config(api: str, feature_group: str) -> dict[str, Any]:
+        config = dict(FINANCIAL_FEATURE_SOURCE_CONFIG[api])
+        if feature_group == "quarter" and "quarter_table" in config:
+            config["table"] = config["quarter_table"]
+            config["source_kind"] = config.get("quarter_source_kind", "quarter_dws")
+        return config
+
+    @staticmethod
     def _sql_in(values: tuple[str, ...]) -> str:
         return ", ".join([_sql_string_literal(value) for value in values])
 
@@ -531,7 +589,7 @@ class DWSManager:
         feature_group: str,
         fields: list[str],
     ) -> str:
-        config = FINANCIAL_FEATURE_SOURCE_CONFIG[api]
+        config = self._financial_feature_source_config(api, feature_group)
         cte_prefix = config["sql_alias"]
         cte_name = f"{cte_prefix}_{feature_group}_reports"
         if config.get("source_kind") == "quarter_dws":
@@ -833,7 +891,9 @@ financial_indicator AS (
         rd_exp,
         assets_turn,
         inv_turn,
-        ar_turn
+        ar_turn,
+        ebit,
+        ebitda
     FROM (
         SELECT
             src.*,
@@ -1056,8 +1116,8 @@ wide_candidates AS (
         income.compr_inc_attr_m_s AS compr_inc_attr_m_s,
         income.oper_cost AS oper_cost,
         income.total_profit AS total_profit,
-        income.ebit AS ebit,
-        income.ebitda AS ebitda,
+        financial_indicator.ebit AS ebit,
+        financial_indicator.ebitda AS ebitda,
         income.admin_exp AS admin_exp,
         income.sell_exp AS sell_exp,
         income.fin_exp AS fin_exp,
@@ -1363,8 +1423,8 @@ FROM factor_rows
 """
 
     @staticmethod
-    def _stock_financial_indicator_quarter_value_expr(field: str) -> str:
-        if field not in STOCK_FINANCIAL_INDICATOR_QUARTER_YTD_DIFF_FIELDS:
+    def _stock_cumulative_quarter_value_expr(field: str, ytd_diff_fields: set[str]) -> str:
+        if field not in ytd_diff_fields:
             return f"`{field}`"
 
         return (
@@ -1373,23 +1433,39 @@ FROM factor_rows
             f"CAST(NULL, 'Nullable(Float64)'), `{field}` - `prev_{field}`))"
         )
 
-    def _render_stock_financial_indicator_quarter_sync_sql(self, target_table_name: str) -> str:
+    def _render_stock_cumulative_quarter_sync_sql(
+        self,
+        target_table_name: str,
+        source_table: str,
+        fields: list[str],
+        ytd_diff_fields: set[str],
+        report_types: tuple[str, ...] | None = None,
+    ) -> str:
         db_name = self.settings.database.db_name
-        source_table = STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE
-        field_selects = ",\n        ".join([f"`{field}`" for field in STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS])
-        curr_selects = ",\n        ".join([f"curr.`{field}` AS `{field}`" for field in STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS])
+        field_selects = ",\n        ".join([f"`{field}`" for field in fields])
+        curr_selects = ",\n        ".join([f"curr.`{field}` AS `{field}`" for field in fields])
         prev_selects = ",\n        ".join(
             [
                 f"prev.`{field}` AS `prev_{field}`"
-                for field in sorted(STOCK_FINANCIAL_INDICATOR_QUARTER_YTD_DIFF_FIELDS)
+                for field in sorted(ytd_diff_fields)
             ]
         )
         value_selects = ",\n    ".join(
             [
-                f"{self._stock_financial_indicator_quarter_value_expr(field)} AS `{field}`"
-                for field in STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS
+                f"{self._stock_cumulative_quarter_value_expr(field, ytd_diff_fields)} AS `{field}`"
+                for field in fields
             ]
         )
+        if report_types:
+            report_type_filter = f"AND src.report_type IN ({self._sql_in(report_types)})"
+            report_rank_order = (
+                "multiIf(src.report_type = '4', 2, src.report_type = '1', 1, 0) DESC,\n"
+                "                    src.sys_from DESC,\n"
+                "                    src.source_record_hash DESC"
+            )
+        else:
+            report_type_filter = ""
+            report_rank_order = "src.sys_from DESC,\n                    src.source_record_hash DESC"
 
         return f"""
 INSERT INTO {db_name}.{target_table_name}
@@ -1411,13 +1487,13 @@ reports AS (
             row_number() OVER (
                 PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
                 ORDER BY
-                    src.sys_from DESC,
-                    src.source_record_hash DESC
+                    {report_rank_order}
             ) AS report_rank
         FROM {db_name}.{source_table} src
         WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
           AND src.event_date >= {MIN_LAYER_TRADE_DATE_SQL}
           AND toMonth(src.event_date) IN (3, 6, 9, 12)
+          {report_type_filter}
     ) src
     WHERE report_rank = 1
 ),
@@ -1448,7 +1524,7 @@ quarter_candidates AS (
     LEFT JOIN reports prev
         ON prev.instrument_id = curr.instrument_id
        AND toQuarter(curr.event_date) != 1
-       AND prev.event_date = addMonths(curr.event_date, -3)
+       AND prev.event_date = toLastDayOfMonth(addMonths(curr.event_date, -3))
        AND prev.available_trade_date <= curr.available_trade_date
 )
 SELECT
@@ -1474,6 +1550,32 @@ FROM quarter_candidates
 WHERE prev_rank = 1
 """
 
+    def _render_stock_financial_indicator_quarter_sync_sql(self, target_table_name: str) -> str:
+        return self._render_stock_cumulative_quarter_sync_sql(
+            target_table_name,
+            STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE,
+            STOCK_FINANCIAL_INDICATOR_QUARTER_FIELDS,
+            STOCK_FINANCIAL_INDICATOR_QUARTER_YTD_DIFF_FIELDS,
+        )
+
+    def _render_stock_income_quarter_sync_sql(self, target_table_name: str) -> str:
+        return self._render_stock_cumulative_quarter_sync_sql(
+            target_table_name,
+            STOCK_INCOME_QUARTER_SOURCE,
+            STOCK_INCOME_QUARTER_FIELDS,
+            STOCK_INCOME_QUARTER_YTD_DIFF_FIELDS,
+            report_types=("1", "4"),
+        )
+
+    def _render_stock_cashflow_quarter_sync_sql(self, target_table_name: str) -> str:
+        return self._render_stock_cumulative_quarter_sync_sql(
+            target_table_name,
+            STOCK_CASHFLOW_QUARTER_SOURCE,
+            STOCK_CASHFLOW_QUARTER_FIELDS,
+            STOCK_CASHFLOW_QUARTER_YTD_DIFF_FIELDS,
+            report_types=("1", "4"),
+        )
+
     def render_sync_sql(self, table_name: str, target_table_name: str | None = None) -> str:
         spec = self.load_spec(table_name)
         target_table_name = target_table_name or spec["name"]
@@ -1483,6 +1585,10 @@ WHERE prev_rank = 1
             return self._render_stock_factor_wide_matrix_sync_sql(target_table_name)
         if spec.get("builder") == "stock_financial_indicator_quarter":
             return self._render_stock_financial_indicator_quarter_sync_sql(target_table_name)
+        if spec.get("builder") == "stock_income_quarter":
+            return self._render_stock_income_quarter_sync_sql(target_table_name)
+        if spec.get("builder") == "stock_cashflow_quarter":
+            return self._render_stock_cashflow_quarter_sync_sql(target_table_name)
         raise ValueError(f"Unsupported DWS builder for {table_name}: {spec.get('builder')}")
 
     def get_required_source_tables(self, spec: dict[str, Any]) -> list[str]:
@@ -1492,6 +1598,10 @@ WHERE prev_rank = 1
             return STOCK_FACTOR_WIDE_MATRIX_SOURCES
         if spec.get("builder") == "stock_financial_indicator_quarter":
             return [STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE]
+        if spec.get("builder") == "stock_income_quarter":
+            return [STOCK_INCOME_QUARTER_SOURCE]
+        if spec.get("builder") == "stock_cashflow_quarter":
+            return [STOCK_CASHFLOW_QUARTER_SOURCE]
         return []
 
     def ensure_source_tables(self, spec: dict[str, Any]) -> None:
