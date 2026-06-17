@@ -277,6 +277,8 @@ main() {
 
   local jobs=(
     "tushare-job-${UPDATE_TYPE}-basic|$IMAGE_BASIC|stock/basic"
+    "tushare-job-${UPDATE_TYPE}-index-basic|$IMAGE_DEFAULT|index/basic|full"
+    "tushare-job-${UPDATE_TYPE}-future-basic|$IMAGE_DEFAULT|future/basic|full"
     "tushare-job-${UPDATE_TYPE}-financial|$IMAGE_DEFAULT|stock/financial"
     "tushare-job-${UPDATE_TYPE}-margin|$IMAGE_DEFAULT|stock/margin"
     "tushare-job-${UPDATE_TYPE}-market|$IMAGE_DEFAULT|stock/market"
@@ -291,6 +293,7 @@ main() {
     "tushare-dwd-sync-stock-eod-price|$DWD_SYNC_IMAGE|dwd_stock_eod_price"
     "tushare-dwd-sync-index-eod-price|$DWD_SYNC_IMAGE|dwd_index_eod_price"
     "tushare-dwd-sync-index-classify|$DWD_SYNC_IMAGE|dwd_index_classify"
+    "tushare-dwd-sync-security-master|$DWD_SYNC_IMAGE|dwd_security_master"
     "tushare-dwd-sync-stock-daily-basic|$DWD_SYNC_IMAGE|dwd_stock_daily_basic"
     "tushare-dwd-sync-stock-eod-quote-metrics|$DWD_SYNC_IMAGE|dwd_stock_eod_quote_metrics"
     "tushare-dwd-sync-stock-financial-indicator|$DWD_SYNC_IMAGE|dwd_stock_financial_indicator"
