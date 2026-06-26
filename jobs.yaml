@@ -192,7 +192,7 @@ cronjob:
       - name: stock/quotes/stk_nineturn
         update_type: full
       - name: stock/quotes/stk_ah_comparison
-      - name: stock/quotes/stk_auction
+        #  - name: stock/quotes/stk_auction
     #- name: stock/quotes/stk_mins
   - cron_expr: UnSupported
     name: stock/special
