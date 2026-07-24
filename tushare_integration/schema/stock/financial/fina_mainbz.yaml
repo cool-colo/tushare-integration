@@ -7,6 +7,7 @@ dependencies:
 primary_key:
 - ts_code
 - end_date
+- bz_code
 - bz_item
 - update_flag
 indexes: []
@@ -26,6 +27,11 @@ columns:
   length: 255
   default: ''
   comment: 主营业务项目
+- name: bz_code
+  data_type: str
+  length: 255
+  default: ''
+  comment: 主营业务来源类型（P按产品 D按地区 I按行业）
 - name: bz_sales
   data_type: float
   length: 0

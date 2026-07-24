@@ -700,7 +700,21 @@ class TushareResponseTest(unittest.TestCase):
     def test_fina_mainbz_primary_key_preserves_business_items(self):
         spider = FinaMainBZSpider()
 
-        self.assertEqual(spider.schema["primary_key"], ["ts_code", "end_date", "bz_item", "update_flag"])
+        self.assertEqual(spider.schema["primary_key"], ["ts_code", "end_date", "bz_code", "bz_item", "update_flag"])
+        self.assertEqual(
+            [column["name"] for column in spider.schema["columns"]],
+            [
+                "ts_code",
+                "end_date",
+                "bz_item",
+                "bz_code",
+                "bz_sales",
+                "bz_profit",
+                "bz_cost",
+                "curr_type",
+                "update_flag",
+            ],
+        )
 
     def test_index_weight_start_requests_uses_documented_monthly_index_code_params(self):
         spider = IndexWeightSpider()
