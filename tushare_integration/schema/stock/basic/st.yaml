@@ -8,7 +8,7 @@ primary_key:
   - ts_code
   - pub_date
   - imp_date
-  - st_tpye
+  - st_type
 indexes: []
 columns:
   - name: ts_code
@@ -31,7 +31,7 @@ columns:
     length: 0
     default: "1970-01-01"
     comment: 实施日期
-  - name: st_tpye
+  - name: st_type
     data_type: str
     length: 64
     default: ""

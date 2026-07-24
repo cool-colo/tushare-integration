@@ -22,6 +22,7 @@ from tushare_integration.dws import (
 )
 from tushare_integration.manager import CrawlManager
 from tushare_integration.spiders.index.quotes import IndexWeightSpider
+from tushare_integration.spiders.stock.basic import STSpider
 from tushare_integration.spiders.stock.special import CyqChipsSpider
 
 
@@ -687,6 +688,13 @@ class TushareResponseTest(unittest.TestCase):
         spider = CyqChipsSpider()
 
         self.assertEqual(spider.schema["primary_key"], ["ts_code", "trade_date", "price"])
+
+    def test_st_schema_uses_tushare_st_type_field(self):
+        spider = STSpider()
+
+        self.assertEqual(spider.schema["primary_key"], ["ts_code", "pub_date", "imp_date", "st_type"])
+        self.assertIn("st_type", [column["name"] for column in spider.schema["columns"]])
+        self.assertNotIn("st_tpye", [column["name"] for column in spider.schema["columns"]])
 
     def test_index_weight_start_requests_uses_documented_monthly_index_code_params(self):
         spider = IndexWeightSpider()
