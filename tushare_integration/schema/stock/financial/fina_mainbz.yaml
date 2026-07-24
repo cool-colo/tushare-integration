@@ -7,6 +7,7 @@ dependencies:
 primary_key:
 - ts_code
 - end_date
+- bz_item
 - update_flag
 indexes: []
 columns:
