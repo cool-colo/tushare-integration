@@ -3476,7 +3476,7 @@
     02. name：股票名称
     03. pub_date：发布日期
     04. imp_date：实施日期
-    05. st_tpye：类型
+    05. st_type：类型
     06. st_reason：st变更原因
     07. st_explain：st变更详细原因
     08. _source：数据来源

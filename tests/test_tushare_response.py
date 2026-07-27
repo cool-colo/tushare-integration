@@ -74,6 +74,34 @@ class TushareResponseTest(unittest.TestCase):
 
         self.assertEqual(get_client.call_args.kwargs["send_receive_timeout"], 1200)
 
+    def test_clickhouse_create_table_adds_missing_schema_columns(self):
+        settings = self._clickhouse_settings()
+        schema = {
+            "primary_key": [],
+            "indexes": [],
+            "columns": [
+                {"name": "ts_code", "data_type": "str", "comment": "股票代码"},
+                {"name": "st_type", "data_type": "str", "nullable": True, "comment": "类型"},
+            ],
+        }
+
+        with mock.patch("tushare_integration.db_engine.clickhouse_connect.get_client") as get_client:
+            client = get_client.return_value
+            client.query_df.return_value = pd.DataFrame({"name": ["ts_code"]})
+            engine = ClickhouseEngine(settings)
+
+            engine.create_table("st_raw", schema)
+
+        executed_sql = [call.args[0] for call in client.query.call_args_list]
+        self.assertTrue(any("CREATE TABLE IF NOT EXISTS default.st_raw" in sql for sql in executed_sql))
+        self.assertTrue(
+            any(
+                "ALTER TABLE `default`.`st_raw` ADD COLUMN IF NOT EXISTS `st_type` Nullable(String) COMMENT '类型'"
+                in sql
+                for sql in executed_sql
+            )
+        )
+
     def test_dws_clickhouse_sync_uses_extended_timeout(self):
         manager = object.__new__(DWSManager)
         manager.settings = self._clickhouse_settings()

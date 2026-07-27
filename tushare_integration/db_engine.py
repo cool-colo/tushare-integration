@@ -152,6 +152,76 @@ class ClickhouseEngine(DBEngine):
                 template_params=self.settings.database.template_params,
             )
         )
+        self.sync_missing_columns(table_name, schema)
+
+    @staticmethod
+    def quote_identifier(identifier: str) -> str:
+        return f"`{identifier.replace('`', '``')}`"
+
+    @staticmethod
+    def quote_string(value: str) -> str:
+        return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'"
+
+    @classmethod
+    def column_type_sql(cls, column: dict) -> str:
+        data_type = column["data_type"]
+        match data_type:
+            case "str" | "json":
+                type_sql = "String"
+            case "int":
+                type_sql = "Int64"
+            case "float" | "number":
+                type_sql = "Float64"
+            case "date":
+                type_sql = "Date32"
+            case "datetime":
+                type_sql = "DateTime64"
+            case _:
+                raise ValueError(f"Unsupported ClickHouse data type: {data_type}")
+
+        if column.get("nullable"):
+            return f"Nullable({type_sql})"
+        return type_sql
+
+    @classmethod
+    def default_value_sql(cls, column: dict) -> str:
+        data_type = column["data_type"]
+        match data_type:
+            case "str" | "json":
+                return cls.quote_string("")
+            case "int" | "float" | "number":
+                return "0"
+            case "date":
+                return cls.quote_string("1970-01-01")
+            case "datetime":
+                return cls.quote_string("1970-01-01 00:00:00")
+            case _:
+                raise ValueError(f"Unsupported ClickHouse data type: {data_type}")
+
+    @classmethod
+    def add_column_sql(cls, db_name: str, table_name: str, column: dict) -> str:
+        column_sql = (
+            f"ALTER TABLE {cls.quote_identifier(db_name)}.{cls.quote_identifier(table_name)} "
+            f"ADD COLUMN IF NOT EXISTS {cls.quote_identifier(column['name'])} {cls.column_type_sql(column)}"
+        )
+        if not column.get("nullable"):
+            column_sql += f" DEFAULT {cls.default_value_sql(column)}"
+        if column.get("comment"):
+            column_sql += f" COMMENT {cls.quote_string(column['comment'])}"
+        return column_sql
+
+    def sync_missing_columns(self, table_name: str, schema: dict) -> None:
+        db_name = self.settings.database.db_name
+        existing_columns = self.client.query_df(
+            "SELECT name FROM system.columns "
+            f"WHERE database = {self.quote_string(db_name)} "
+            f"AND table = {self.quote_string(table_name)}"
+        )
+        existing_column_names = set(existing_columns["name"].tolist()) if "name" in existing_columns else set()
+
+        for column in schema.get("columns", []):
+            if column["name"] not in existing_column_names:
+                self.client.query(self.add_column_sql(db_name, table_name, column))
 
     def query_df(self, sql: str) -> pd.DataFrame:
         return self.client.query_df(sql)
