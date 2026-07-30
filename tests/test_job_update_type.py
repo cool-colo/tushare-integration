@@ -87,6 +87,46 @@ class JobUpdateTypeTest(unittest.TestCase):
         self.assertNotIn("stock/quotes/ggt_monthly", all_spiders)
         self.assertNotIn("stock/quotes/ggt_monthly", full_spiders)
 
+    def test_price_pre_batch_spiders_are_not_in_default_jobs(self):
+        jobs_path = Path(__file__).resolve().parents[1] / "jobs.yaml"
+        jobs = yaml.safe_load(jobs_path.read_text(encoding="utf-8"))
+        configured_spiders = {
+            spider["name"]
+            for job in jobs["cronjob"]
+            for spider in job["spiders"]
+        }
+
+        self.assertFalse(
+            configured_spiders
+            & {
+                "stock/basic/stock_basic",
+                "stock/basic/trade_cal",
+                "stock/quotes/daily",
+            }
+        )
+
+    def test_price_pre_batch_declares_ordered_incremental_spiders(self):
+        jobs_path = Path(__file__).resolve().parents[1] / "pre_job.yaml"
+        jobs = yaml.safe_load(jobs_path.read_text(encoding="utf-8"))
+        pre_job = next(job for job in jobs["cronjob"] if job["name"] == "pre/stock-eod-price")
+
+        self.assertEqual(
+            [spider["name"] for spider in pre_job["spiders"]],
+            [
+                "stock/basic/stock_basic",
+                "stock/basic/trade_cal",
+                "stock/quotes/daily",
+            ],
+        )
+        self.assertEqual(
+            [spider["name"] for spider in CrawlManager.filter_job_spiders_by_update_type(pre_job, "incremental")],
+            [
+                "stock/basic/stock_basic",
+                "stock/basic/trade_cal",
+                "stock/quotes/daily",
+            ],
+        )
+
     def test_filter_job_spiders_rejects_unknown_update_type(self):
         with self.assertRaisesRegex(ValueError, "Unsupported update_type"):
             CrawlManager.normalize_update_type("nightly")

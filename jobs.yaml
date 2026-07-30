@@ -54,8 +54,6 @@ cronjob:
   - cron_expr: UnSupported
     name: stock/basic
     spiders:
-      - name: stock/basic/stock_basic
-        update_type: full
       - name: stock/basic/namechange
         update_type: full
       - name: stock/basic/hs_const
@@ -64,8 +62,6 @@ cronjob:
       - name: stock/basic/st
         update_type: full
       - name: stock/basic/stock_hsgt
-      - name: stock/basic/trade_cal
-        update_type: full
       - name: stock/basic/stock_company
         update_type: full
       - name: stock/basic/stk_managers
@@ -171,7 +167,6 @@ cronjob:
   - cron_expr: UnSupported
     name: stock/quotes
     spiders:
-      - name: stock/quotes/daily
       - name: stock/quotes/weekly
       - name: stock/quotes/monthly
       - name: stock/quotes/stk_week_month_adj

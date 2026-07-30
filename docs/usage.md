@@ -169,6 +169,16 @@ python main.py run job stock/quotes --update-type full
 UPDATE_TYPE=full scripts/run_daily_market_jobs.sh
 ```
 
+### 股票日线提前批
+
+`pre_job.yaml` 独立维护股票日线行情所需的 `stock_basic`、`trade_cal` 和 `daily` 三个增量 spider。提前批脚本会在采集成功后立即同步 `dwd_stock_eod_price`：
+
+```shell
+scripts/run_pre_market_jobs.sh
+```
+
+请由外部调度器先运行提前批，再运行 `scripts/run_daily_market_jobs.sh`。两个脚本默认共享锁文件，避免并发执行；可用 `PRE_JOBS_FILE`（或 `JOBS_FILE`）、`CONFIG_FILE`、镜像和日志相关环境变量覆盖默认配置。
+
 ```yaml
 # config.yaml
 # TUSHARE相关配置

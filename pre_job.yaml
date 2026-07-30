@@ -1,0 +1,7 @@
+cronjob:
+  - cron_expr: UnSupported
+    name: pre/stock-eod-price
+    spiders:
+      - name: stock/basic/stock_basic
+      - name: stock/basic/trade_cal
+      - name: stock/quotes/daily

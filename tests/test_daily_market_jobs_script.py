@@ -27,3 +27,16 @@ class DailyMarketJobsScriptTest(unittest.TestCase):
         )
 
         self.assertEqual(expected_tables, scheduled_tables)
+
+    def test_daily_script_uses_shared_runner(self):
+        self.assertIn('source "$SCRIPT_DIR/lib/market_job_runner.sh"', self.script)
+
+    def test_pre_market_script_runs_price_batch_then_dwd_sync(self):
+        script_path = self.root_dir / "scripts" / "run_pre_market_jobs.sh"
+        script = script_path.read_text(encoding="utf-8")
+
+        self.assertIn('PRE_JOBS_FILE="${PRE_JOBS_FILE:-$PROJECT_DIR/pre_job.yaml}"', script)
+        self.assertIn('source "$SCRIPT_DIR/lib/market_job_runner.sh"', script)
+        self.assertIn('"pre/stock-eod-price"', script)
+        self.assertIn('"dwd_stock_eod_price"', script)
+        self.assertLess(script.index('"pre/stock-eod-price"'), script.index('"dwd_stock_eod_price"'))
