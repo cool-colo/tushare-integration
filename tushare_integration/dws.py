@@ -433,6 +433,8 @@ FINANCIAL_FEATURE_SOURCE_CONFIG = {
         "source_kind": "quarter_dws",
         "ttm_aggregation": {
             "__default__": "avg",
+            "ebit": "sum",
+            "ebitda": "sum",
             "extra_item": "sum",
             "fcfe": "sum",
             "fcff": "sum",

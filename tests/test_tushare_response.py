@@ -330,6 +330,14 @@ class TushareResponseTest(unittest.TestCase):
             sql,
         )
         self.assertIn(
+            "sumIf(`ebitda`, report_offset >= 0 AND report_offset < 4)",
+            sql,
+        )
+        self.assertIn(
+            "sumIf(`ebit`, report_offset >= 0 AND report_offset < 4)",
+            sql,
+        )
+        self.assertIn(
             "financial_indicator_quarter_quarter_features.`ebitda_ttm` AS `ebitda_ttm`",
             sql,
         )

@@ -7,7 +7,7 @@
 - 文档刻意跳过 DWD 字段名，直接写 Tushare 原始 API 与原始字段。
 - `PIT/as-of` 只表示按公告日可见性选择历史版本，不作为业务计算逻辑展开；字段表中的计算说明只保留会改变业务数值含义的加工。
 - 财务历史窗口字段后缀约定：`lyr_N` 表示最近年度报告向前第 N 期；`mrq_N` 表示最近季度报告向前第 N 期；`lf` 等同最新报告期；`ttm_N` 表示从第 N 期开始连续 4 个季度的 TTM 窗口。
-- TTM 聚合规则来自当前实现：利润表与现金流量表默认求和；资产负债表默认求平均；财务指标默认求平均，但 `extra_item`、`fcfe`、`fcff`、`profit_dedt` 求和。
+- TTM 聚合规则来自当前实现：利润表与现金流量表默认求和；资产负债表默认求平均；财务指标默认求平均，但 `ebit`、`ebitda`、`extra_item`、`fcfe`、`fcff`、`profit_dedt` 求和。
 - 利润表、现金流量表以及部分财务指标的季度口径会先做单季化：Q1 取当期值，Q2-Q4 取当期累计值减上一季度累计值；缺上一季度时为空。
 - `ev_lyr`、`ev_no_cash_lyr` 当前公式一致；`ev_ttm`、`ev_no_cash_ttm` 当前公式一致，这是代码实现现状。
 - 当前本地 Tushare schema 中 `bak_daily.buying` 注释为“内盘”、`bak_daily.selling` 注释为“外盘”，但宽表字段注释分别写为“外盘/内盘”；字段来源按代码实现原样记录，建议业务侧确认注释口径。
@@ -177,7 +177,7 @@
 | `prov_depr_assets_lyr_0` | 资产减值准备lyr_0 | cashflow（现金流量表） | prov_depr_assets | prov_depr_assets: 加:资产减值准备 | 最近年度报告口径，report_offset=0；先按公告可见日期选取可见版本，再取对应年度报告字段。 |
 | `prov_depr_assets_ttm_0` | 资产减值准备ttm_0 | cashflow（现金流量表） | prov_depr_assets | prov_depr_assets: 加:资产减值准备 | TTM窗口口径，report_offset 从 0 到 3 共4个报告期；4期均非空时对原始字段求和，否则为空；利润表/现金流量表季度值先由累计口径单季化。 |
 | `ebitda_lyr` | EBITDAlyr | fina_indicator（财务指标数据） | ebitda | ebitda: 息税折旧摊销前利润 | 最近年度报告口径，report_offset=0；先按公告可见日期选取可见版本，再取对应年度报告字段。 |
-| `ebitda_ttm` | EBITDAttm | fina_indicator（财务指标数据） | ebitda | ebitda: 息税折旧摊销前利润 | TTM窗口口径，report_offset 从 0 到 3 共4个报告期；4期均非空时对原始字段求平均，否则为空；该财务指标先由累计口径单季化。 |
+| `ebitda_ttm` | EBITDAttm | fina_indicator（财务指标数据） | ebitda | ebitda: 息税折旧摊销前利润 | TTM窗口口径，report_offset 从 0 到 3 共4个报告期；4期均非空时对单季化后的字段求和，否则为空；该财务指标先由累计口径单季化。 |
 | `fin_exp_int_exp_lyr_0` | 利息支出lyr_0 | income（利润表） | fin_exp_int_exp | fin_exp_int_exp: 财务费用:利息费用 | 最近年度报告口径，report_offset=0；先按公告可见日期选取可见版本，再取对应年度报告字段。 |
 | `fin_exp_int_exp_ttm_0` | 利息支出ttm_0 | income（利润表） | fin_exp_int_exp | fin_exp_int_exp: 财务费用:利息费用 | TTM窗口口径，report_offset 从 0 到 3 共4个报告期；4期均非空时对原始字段求和，否则为空；利润表/现金流量表季度值先由累计口径单季化。 |
 | `fin_exp_int_inc_lyr_0` | 利息收入lyr_0 | income（利润表） | fin_exp_int_inc | fin_exp_int_inc: 财务费用:利息收入 | 最近年度报告口径，report_offset=0；先按公告可见日期选取可见版本，再取对应年度报告字段。 |
@@ -215,7 +215,7 @@
 | `oper_cost_lyr_0` | 营业成本 | income（利润表） | oper_cost | oper_cost: 减:营业成本 | 最近年度报告口径，report_offset=0；先按公告可见日期选取可见版本，再取对应年度报告字段。 |
 | `oper_cost_ttm_0` | 营业成本 | income（利润表） | oper_cost | oper_cost: 减:营业成本 | TTM窗口口径，report_offset 从 0 到 3 共4个报告期；4期均非空时对原始字段求和，否则为空；利润表/现金流量表季度值先由累计口径单季化。 |
 | `ebit_lyr` | 息税前利润(EBIT)（最近年报） | fina_indicator（财务指标数据） | ebit | ebit: 息税前利润 | 最近年度报告口径，report_offset=0；先按公告可见日期选取可见版本，再取对应年度报告字段。 |
-| `ebit_ttm` | 息税前利润(EBIT)（TTM） | fina_indicator（财务指标数据） | ebit | ebit: 息税前利润 | TTM窗口口径，report_offset 从 0 到 3 共4个报告期；4期均非空时对原始字段求平均，否则为空；该财务指标先由累计口径单季化。 |
+| `ebit_ttm` | 息税前利润(EBIT)（TTM） | fina_indicator（财务指标数据） | ebit | ebit: 息税前利润 | TTM窗口口径，report_offset 从 0 到 3 共4个报告期；4期均非空时对单季化后的字段求和，否则为空；该财务指标先由累计口径单季化。 |
 | `fv_value_chg_gain_lyr_0` | 公允价值变动收益 | income（利润表） | fv_value_chg_gain | fv_value_chg_gain: 加:公允价值变动净收益 | 最近年度报告口径，report_offset=0；先按公告可见日期选取可见版本，再取对应年度报告字段。 |
 | `fv_value_chg_gain_ttm_0` | 公允价值变动收益 | income（利润表） | fv_value_chg_gain | fv_value_chg_gain: 加:公允价值变动净收益 | TTM窗口口径，report_offset 从 0 到 3 共4个报告期；4期均非空时对原始字段求和，否则为空；利润表/现金流量表季度值先由累计口径单季化。 |
 | `fin_exp_lyr_0` | 财务费用（LYR，滞后0期） | income（利润表） | fin_exp | fin_exp: 减:财务费用 | 最近年度报告口径，report_offset=0；先按公告可见日期选取可见版本，再取对应年度报告字段。 |
