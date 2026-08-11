@@ -51,6 +51,8 @@ cronjob:
     name: index/zx
     spiders:
       - name: index/zx/ci_daily
+      - name: index/zx/ci_index_member
+        update_type: full
   - cron_expr: UnSupported
     name: stock/basic
     spiders:

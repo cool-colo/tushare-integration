@@ -28,6 +28,8 @@ ValidationMode = Literal["strict", "warn_only", "skip"]
 ValidationSeverity = Literal["BLOCKER", "WARN", "MONITOR"]
 
 FAR_FUTURE_TS = "toDateTime64('9999-12-31 00:00:00', 3)"
+# Date32上限约2299-12-31,与dwd.py的FAR_FUTURE_DATE_SQL保持一致
+FAR_FUTURE_DATE = "toDate32('2299-12-31')"
 VALIDATION_SYSTEM_ERROR = "VALIDATION_SYSTEM_ERROR"
 TRADE_VALIDATION_MIN_DATE_SQL = "toDate32('2010-01-01')"
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -944,6 +946,10 @@ class QualityManager:
         db_name = self.settings.database.db_name
         qualified = self._quote_table(db_name, target_table_name)
         validation_filter = self._dwd_validation_filter(table_name)
+        if self._load_dwd_spec(table_name).get("builder", "raw_versioned") == "business_interval":
+            return self._build_business_interval_dwd_rules(
+                table_name, db_name, target_table_name, qualified, validation_filter
+            )
         rules = [
             self._row_count_rule(qualified, validation_filter),
             self._required_columns_rule(
@@ -994,6 +1000,96 @@ class QualityManager:
         rules.extend(self._dwd_open_version_rules(table_name, qualified, validation_filter))
         rules.extend(self._dwd_business_rules(table_name, qualified, validation_filter))
         return rules
+
+    def _build_business_interval_dwd_rules(
+        self,
+        table_name: str,
+        db_name: str,
+        target_table_name: str,
+        qualified: str,
+        validation_filter: str | None,
+    ) -> list[ValidationRule]:
+        # business_interval表用业务时间轴(in_date/out_date -> available_date/end_date),
+        # 没有raw_versioned的sys_from/sys_to,故用一套贴合其列的校验规则。
+        key_columns = self._dwd_business_key_columns(table_name)
+        key_select = ", ".join(key_columns)
+        return [
+            self._row_count_rule(qualified, validation_filter),
+            self._required_columns_rule(
+                db_name,
+                target_table_name,
+                [
+                    "event_date",
+                    "available_date",
+                    "end_date",
+                    "source",
+                    "source_table",
+                    "source_batch_id",
+                    "source_record_hash",
+                ],
+            ),
+            ValidationRule(
+                rule_id="dwd_business_pit_dates_not_null",
+                description="业务时间PIT列不得为空",
+                severity="BLOCKER",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("event_date IS NULL OR available_date IS NULL OR end_date IS NULL", validation_filter)}
+                """,
+            ),
+            ValidationRule(
+                rule_id="dwd_business_available_after_event",
+                description="available_date必须>=event_date(生效日),防未来函数下限",
+                severity="BLOCKER",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("available_date < event_date", validation_filter)}
+                """,
+            ),
+            ValidationRule(
+                rule_id="dwd_business_interval_order",
+                description="区间必须满足 available_date < end_date",
+                severity="BLOCKER",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("available_date >= end_date", validation_filter)}
+                """,
+            ),
+            ValidationRule(
+                rule_id="dwd_business_no_overlap",
+                description="同一业务键的区间不得重叠",
+                severity="BLOCKER",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM (
+                        SELECT
+                            {key_select},
+                            end_date,
+                            leadInFrame(available_date, 1, {FAR_FUTURE_DATE}) OVER (
+                                PARTITION BY {key_select}
+                                ORDER BY available_date, end_date
+                                ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+                            ) AS next_available_date
+                        FROM {qualified}
+                        {self._where_sql(validation_filter=validation_filter)}
+                    )
+                    WHERE end_date > next_available_date
+                """,
+            ),
+            ValidationRule(
+                rule_id="dwd_lineage_not_empty",
+                description="DWD行必须保留来源血缘",
+                severity="BLOCKER",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("source = '' OR source_table = '' OR source_batch_id = '' OR source_record_hash = ''", validation_filter)}
+                """,
+            ),
+        ]
 
     def _build_dws_rules(self, table_name: str, target_table_name: str) -> list[ValidationRule]:
         db_name = self.settings.database.db_name

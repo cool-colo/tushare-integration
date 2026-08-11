@@ -1,7 +1,7 @@
-id: 119
-api_name: index_member_all
-name: index_member_all
-comment: 申万行业成分构成
+id: 373
+api_name: ci_index_member
+name: ci_index_member
+comment: 中信行业成分构成
 dependencies: []
 primary_key:
 - l1_code

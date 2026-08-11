@@ -28,6 +28,7 @@ spiders = [
     'index/ths/ths_index',
     'index/ths/ths_member',
     'index/zx/ci_daily',
+    'index/zx/ci_index_member',
     'stock/basic/stock_basic',
     'stock/basic/namechange',
     'stock/basic/hs_const',

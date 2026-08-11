@@ -29,6 +29,8 @@ main() {
     "tushare-dwd-sync-index-eod-price|$DWD_SYNC_IMAGE|dwd_index_eod_price"
     "tushare-dwd-sync-future-eod-price|$DWD_SYNC_IMAGE|dwd_future_eod_price"
     "tushare-dwd-sync-index-classify|$DWD_SYNC_IMAGE|dwd_index_classify"
+    "tushare-dwd-sync-sw-industry-member|$DWD_SYNC_IMAGE|dwd_sw_industry_member"
+    "tushare-dwd-sync-ci-industry-member|$DWD_SYNC_IMAGE|dwd_ci_industry_member"
     "tushare-dwd-sync-index-weight|$DWD_SYNC_IMAGE|dwd_index_weight"
     "tushare-dwd-sync-security-master|$DWD_SYNC_IMAGE|dwd_security_master"
     "tushare-dwd-sync-stock-daily-basic|$DWD_SYNC_IMAGE|dwd_stock_daily_basic"

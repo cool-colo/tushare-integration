@@ -1,0 +1,92 @@
+id: 2025
+name: dwd_sw_industry_member
+comment: 申万行业成分PIT表(基于业务时间in_date/out_date,防未来函数)
+builder: business_interval
+# 业务时间轴驱动的PIT:available_date = >= in_date 的最近SSE交易日(on_or_after口径)
+# 数据源为append-only的raw表,按业务键去重后取最新采集
+source:
+  table_name: index_member_all_raw
+  schema_name: index/sw/index_member_all
+business_key:
+  - ts_code
+  - l3_code
+  - in_date
+# available_offset: on_or_after(默认) | next
+available_offset: on_or_after
+partition_key: []
+indexes:
+  - name: dwd_sw_industry_member_idx
+    columns:
+      - ts_code
+      - available_date
+      - end_date
+schema:
+  comment: 申万行业成分PIT表(基于业务时间in_date/out_date,防未来函数)
+  primary_key:
+    - ts_code
+    - l3_code
+    - in_date
+  columns:
+    - name: ts_code
+      data_type: str
+      length: 16
+      comment: 成分股票代码
+    - name: name
+      data_type: str
+      length: 255
+      comment: 成分股票名称(快照)
+    - name: l1_code
+      data_type: str
+      length: 32
+      comment: 申万一级代码
+    - name: l1_name
+      data_type: str
+      length: 255
+      comment: 申万一级名称
+    - name: l2_code
+      data_type: str
+      length: 32
+      comment: 申万二级代码
+    - name: l2_name
+      data_type: str
+      length: 255
+      comment: 申万二级名称
+    - name: l3_code
+      data_type: str
+      length: 32
+      comment: 申万三级代码
+    - name: l3_name
+      data_type: str
+      length: 255
+      comment: 申万三级名称
+    - name: in_date
+      data_type: date
+      comment: 纳入日(业务生效日)
+    - name: event_date
+      data_type: date
+      comment: 业务归属日期(=in_date)
+    - name: available_date
+      data_type: date
+      comment: 最早可用交易日(>=in_date的最近SSE交易日)
+    - name: end_date
+      data_type: date
+      comment: 区间右端;is_new=Y时为9999-12-31哨兵
+    - name: is_current
+      data_type: int
+      comment: 是否当前有效成分(is_new=Y->1)
+    - name: source
+      data_type: str
+      length: 32
+      comment: 来源系统
+    - name: source_table
+      data_type: str
+      length: 64
+      comment: 来源表
+    - name: source_batch_id
+      data_type: str
+      length: 64
+      comment: 来源批次ID
+    - name: source_record_hash
+      data_type: str
+      length: 32
+      comment: 来源记录哈希

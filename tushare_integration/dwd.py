@@ -14,6 +14,8 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 DWD_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema" / "dwd"
 ODS_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema"
 FAR_FUTURE_TS_SQL = "toDateTime64('9999-12-31 00:00:00', 3)"
+# Date32上限约2299-12-31,9999会被静默截断,故区间右端哨兵用Date32可表达的远期日
+FAR_FUTURE_DATE_SQL = "toDate32('2299-12-31')"
 CALENDAR_SOURCE_TABLE = "trade_cal"
 MIN_LAYER_TRADE_DATE = "2010-01-01"
 MIN_LAYER_TRADE_DATE_SQL = f"toDate32('{MIN_LAYER_TRADE_DATE}')"
@@ -112,9 +114,17 @@ class DWDManager:
         return common_columns + extra_columns
 
     def build_schema(self, spec: dict[str, Any]) -> dict[str, Any]:
-        if spec.get("builder", "raw_versioned") == "security_master":
+        builder = spec.get("builder", "raw_versioned")
+        if builder == "security_master":
             schema = deepcopy(spec["schema"])
             schema["primary_key"] = []
+            return schema
+        if builder == "business_interval":
+            # 业务时间轴驱动:schema在spec中显式声明,主键含业务时间维度(如in_date),
+            # 不清空primary_key —— ClickHouse ORDER BY需保留in_date避免折叠历史进出。
+            schema = deepcopy(spec["schema"])
+            schema["partition_key"] = spec.get("partition_key", [])
+            schema["indexes"] = spec.get("indexes", [])
             return schema
 
         source_schema = self.load_source_schema(spec["source"]["schema_name"])
@@ -413,16 +423,108 @@ SELECT
 FROM versioned
 """
 
+    def _on_or_after_calendar_map_sql(self) -> str:
+        # 与_calendar_map_sql不同:这里算 >= 生效日的当日或之后最近交易日(on_or_after),
+        # 而_calendar_map_sql算的是严格大于的next_trade_date。语义不可混用。
+        # 关键:effective_date枚举全历史日期(而非仅trade_cal内的日期),否则早于
+        # 日历起始日(1990-12-19)的in_date会join不到、平移落空。这里对每个in_date
+        # 直接算 >= 它的最早交易日;若无(极晚的未来日)则回退in_date本身。
+        db_name = self.settings.database.db_name
+        return f"""
+on_or_after_map AS (
+    SELECT
+        d.effective_date AS effective_date,
+        o.cal_date AS on_or_after_trade_date
+    FROM (
+        SELECT DISTINCT 1 AS _jk, in_date AS effective_date
+        FROM {db_name}.{{source_table}}
+        WHERE in_date IS NOT NULL
+    ) d
+    ASOF LEFT JOIN (
+        SELECT 1 AS _jk, cal_date
+        FROM {db_name}.{CALENDAR_SOURCE_TABLE}
+        WHERE exchange = 'SSE' AND is_open = 1
+    ) o
+        ON o._jk = d._jk AND o.cal_date >= d.effective_date
+)"""
+
+    def _render_business_interval_sync_sql(self, spec: dict[str, Any], target_table_name: str) -> str:
+        db_name = self.settings.database.db_name
+        source_table = spec["source"]["table_name"]
+        business_key = spec.get("business_key") or ["ts_code", "l3_code", "in_date"]
+        business_key_partition = ", ".join([_quote_column(column) for column in business_key])
+
+        available_offset = spec.get("available_offset", "on_or_after")
+        if available_offset not in ("on_or_after", "next"):
+            raise ValueError(f"{spec['name']} unsupported available_offset: {available_offset}")
+
+        if available_offset == "on_or_after":
+            calendar_map_sql = self._on_or_after_calendar_map_sql().replace("{source_table}", source_table)
+            calendar_join = "LEFT JOIN on_or_after_map ON on_or_after_map.effective_date = d.in_date"
+            available_expr = "coalesce(on_or_after_map.on_or_after_trade_date, d.in_date)"
+        else:
+            calendar_map_sql = self._calendar_map_sql()
+            calendar_join = "LEFT JOIN calendar_map ON calendar_map.calendar_date = d.in_date"
+            available_expr = "coalesce(calendar_map.next_trade_date, d.in_date)"
+
+        return f"""
+INSERT INTO {db_name}.{target_table_name}
+WITH
+{calendar_map_sql},
+dedup AS (
+    SELECT *
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY {business_key_partition}
+                ORDER BY src._ingest_time DESC, src._batch_id DESC, src._record_hash DESC
+            ) AS _rn
+        FROM {db_name}.{source_table} src
+        WHERE src.ts_code IS NOT NULL
+          AND src.l3_code IS NOT NULL
+          AND src.in_date IS NOT NULL
+    ) src
+    WHERE src._rn = 1
+)
+SELECT
+    d.ts_code,
+    d.name,
+    d.l1_code,
+    d.l1_name,
+    d.l2_code,
+    d.l2_name,
+    d.l3_code,
+    d.l3_name,
+    d.in_date,
+    d.in_date AS event_date,
+    {available_expr} AS available_date,
+    if(d.is_new = 'Y', {FAR_FUTURE_DATE_SQL}, d.out_date) AS end_date,
+    if(d.is_new = 'Y', 1, 0) AS is_current,
+    d._source AS source,
+    '{source_table}' AS source_table,
+    d._batch_id AS source_batch_id,
+    d._record_hash AS source_record_hash
+FROM dedup d
+{calendar_join}
+"""
+
     def render_sync_sql(self, table_name: str, target_table_name: str | None = None) -> str:
         spec = self.load_spec(table_name)
         target_table_name = target_table_name or spec["name"]
-        if spec.get("builder", "raw_versioned") == "security_master":
+        builder = spec.get("builder", "raw_versioned")
+        if builder == "security_master":
             return self._render_security_master_sync_sql(spec, target_table_name)
+        if builder == "business_interval":
+            return self._render_business_interval_sync_sql(spec, target_table_name)
         return self._render_generic_sync_sql(spec, target_table_name)
 
     def get_required_source_tables(self, spec: dict[str, Any]) -> list[str]:
-        if spec.get("builder", "raw_versioned") == "security_master":
+        builder = spec.get("builder", "raw_versioned")
+        if builder == "security_master":
             return ["stock_basic_raw", "index_basic_raw", "fut_basic_raw", CALENDAR_SOURCE_TABLE]
+        if builder == "business_interval":
+            return sorted({spec["source"]["table_name"], CALENDAR_SOURCE_TABLE})
 
         required_tables = [spec["source"]["table_name"]]
         if spec.get("calendar_date_expr"):
