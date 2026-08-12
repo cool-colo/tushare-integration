@@ -35,6 +35,7 @@ main() {
     "tushare-dwd-sync-security-master|$DWD_SYNC_IMAGE|dwd_security_master"
     "tushare-dwd-sync-stock-daily-basic|$DWD_SYNC_IMAGE|dwd_stock_daily_basic"
     "tushare-dwd-sync-stock-eod-quote-metrics|$DWD_SYNC_IMAGE|dwd_stock_eod_quote_metrics"
+    "tushare-dwd-sync-stock-limit|$DWD_SYNC_IMAGE|dwd_stock_limit"
     "tushare-dwd-sync-stock-st|$DWD_SYNC_IMAGE|dwd_stock_st"
     "tushare-dwd-sync-stock-financial-indicator|$DWD_SYNC_IMAGE|dwd_stock_financial_indicator"
     "tushare-dwd-sync-stock-income|$DWD_SYNC_IMAGE|dwd_stock_income"

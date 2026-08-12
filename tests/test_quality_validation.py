@@ -210,6 +210,40 @@ class QualityValidationTest(unittest.TestCase):
         self.assertIn("market_positive_prices_when_traded", rule_ids)
         self.assertIn("dwd_single_open_version", rule_ids)
 
+    def test_dwd_stock_limit_schema_and_rules(self):
+        dwd = DWDManager.__new__(DWDManager)
+        dwd.settings = self._settings()
+        dwd.db_engine = None
+
+        self.assertIn("dwd_stock_limit", dwd.list_tables())
+        spec = dwd.load_spec("dwd_stock_limit")
+        schema = dwd.build_schema(spec)
+        columns = {column["name"] for column in schema["columns"]}
+        for expected in ("up_limit", "down_limit", "pre_close", "instrument_id", "event_date"):
+            self.assertIn(expected, columns)
+
+        sql = dwd.render_sync_sql("dwd_stock_limit", target_table_name="dwd_stock_limit_tmp")
+        self.assertIn("stk_limit_raw", sql)
+        self.assertIn("stock:", sql)
+
+        manager = QualityManager(settings=self._settings(), db_engine=DummyDB())
+        rules = {
+            rule.rule_id: rule
+            for rule in manager.list_rules(
+                layer="dwd",
+                table_name="dwd_stock_limit",
+                target_table_name="dwd_stock_limit_tmp",
+            )
+        }
+        self.assertIn("stock_limit_positive_prices", rules)
+        self.assertIn("stock_limit_up_not_below_down", rules)
+        self.assertIn("stock_limit_brackets_pre_close", rules)
+        # trade-date keyed → scoped to rows since 2010
+        self.assertIn(
+            "event_date >= toDate32('2010-01-01')",
+            rules["stock_limit_positive_prices"].issue_count_sql,
+        )
+
     def test_checked_count_sql_uses_trade_date_scope(self):
         manager = QualityManager(settings=self._settings(), db_engine=DummyDB())
 

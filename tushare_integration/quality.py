@@ -46,6 +46,7 @@ DWD_TRADE_RELEVANT_TABLES = {
     "dwd_future_eod_price",
     "dwd_stock_daily_basic",
     "dwd_stock_eod_quote_metrics",
+    "dwd_stock_limit",
     "dwd_stock_adj_factor",
     "dwd_stock_margin_trading",
     "dwd_stock_northbound_holding",
@@ -1354,6 +1355,8 @@ class QualityManager:
             rules.extend(self._daily_basic_rules(qualified, validation_filter))
         if table_name == "dwd_stock_eod_quote_metrics":
             rules.extend(self._quote_metric_rules(qualified, validation_filter))
+        if table_name == "dwd_stock_limit":
+            rules.extend(self._stock_limit_rules(qualified, validation_filter))
         if table_name == "dwd_stock_adj_factor":
             rules.append(
                 ValidationRule(
@@ -1482,6 +1485,40 @@ class QualityManager:
                     SELECT count() AS issue_count
                     FROM {qualified}
                     {self._where_sql("turnover_rate < 0 OR turnover_rate_f < 0 OR volume_ratio < 0", validation_filter)}
+                """,
+            ),
+        ]
+
+    def _stock_limit_rules(self, qualified: str, validation_filter: str | None = None) -> list[ValidationRule]:
+        return [
+            ValidationRule(
+                rule_id="stock_limit_positive_prices",
+                description="Up/down limit and pre-close prices must be positive",
+                severity="BLOCKER",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("up_limit <= 0 OR down_limit <= 0 OR pre_close <= 0", validation_filter)}
+                """,
+            ),
+            ValidationRule(
+                rule_id="stock_limit_up_not_below_down",
+                description="Up limit price must not be below the down limit price",
+                severity="BLOCKER",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("up_limit < down_limit", validation_filter)}
+                """,
+            ),
+            ValidationRule(
+                rule_id="stock_limit_brackets_pre_close",
+                description="Limit band should bracket the pre-close price",
+                severity="WARN",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("pre_close > 0 AND (up_limit < pre_close OR down_limit > pre_close)", validation_filter)}
                 """,
             ),
         ]
