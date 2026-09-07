@@ -8,6 +8,8 @@ primary_key:
 - ts_code
 - ann_date
 - float_date
+- holder_name
+- share_type
 indexes: []
 columns:
 - name: ts_code

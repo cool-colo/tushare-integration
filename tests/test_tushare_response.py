@@ -24,6 +24,7 @@ from tushare_integration.manager import CrawlManager
 from tushare_integration.spiders.index.quotes import IndexWeightSpider
 from tushare_integration.spiders.stock.basic import STSpider
 from tushare_integration.spiders.stock.financial import FinaMainBZSpider
+from tushare_integration.spiders.stock.market import ShareFloatSpider
 from tushare_integration.spiders.stock.special import CyqChipsSpider
 
 
@@ -750,6 +751,57 @@ class TushareResponseTest(unittest.TestCase):
                 "curr_type",
                 "update_flag",
             ],
+        )
+
+    def test_share_float_primary_key_preserves_shareholder_rows(self):
+        spider = ShareFloatSpider()
+
+        self.assertEqual(
+            spider.schema["primary_key"],
+            ["ts_code", "ann_date", "float_date", "holder_name", "share_type"],
+        )
+
+    def test_share_float_start_requests_enables_pagination(self):
+        spider = ShareFloatSpider()
+        spider.spider_settings = DummySpiderSettings(database=SimpleNamespace(db_name="default"))
+        fake_db = DummyDB([pd.DataFrame({"ts_code": ["688795.SH"]})])
+
+        with mock.patch.object(spider, "get_db_engine", return_value=fake_db):
+            requests = list(spider.start_requests())
+
+        request_params = json.loads(requests[0].body.decode("utf-8"))["params"]
+        self.assertEqual(
+            request_params,
+            {"ts_code": "688795.SH", "offset": 0, "limit": ShareFloatSpider.PAGE_LIMIT},
+        )
+
+    def test_share_float_parse_fetches_all_pages(self):
+        spider = ShareFloatSpider()
+        spider.PAGE_LIMIT = 2
+        spider.spider_settings = DummySpiderSettings(database=SimpleNamespace(db_name="default"))
+        fields = ["ts_code", "ann_date", "float_date", "float_share", "float_ratio", "holder_name", "share_type"]
+        first_page = [
+            ["688795.SH", "20260829", "20260907", 100, 0.1, "holder-a", "type-a"],
+            ["688795.SH", "20260829", "20260907", 200, 0.2, "holder-b", "type-a"],
+        ]
+        final_page = {
+            "data": pd.DataFrame(
+                [["688795.SH", "20260529", "20260605", 300, 0.3, "holder-c", "type-b"]],
+                columns=fields,
+            )
+        }
+        response = DummyResponse(
+            {"code": 0, "msg": "", "data": {"fields": fields, "items": first_page}},
+            params={"ts_code": "688795.SH", "offset": 0, "limit": 2},
+        )
+
+        with mock.patch.object(spider, "request_with_requests", return_value=final_page) as request_page:
+            item = spider.parse(response)
+
+        self.assertEqual(len(item["data"]), 3)
+        self.assertEqual(item["data"]["holder_name"].tolist(), ["holder-a", "holder-b", "holder-c"])
+        request_page.assert_called_once_with(
+            params={"ts_code": "688795.SH", "offset": 2, "limit": 2}
         )
 
     def test_index_weight_start_requests_uses_documented_monthly_index_code_params(self):

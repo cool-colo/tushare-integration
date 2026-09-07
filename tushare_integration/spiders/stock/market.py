@@ -1,5 +1,8 @@
 import datetime
 
+import pandas as pd
+
+from tushare_integration.items import TushareIntegrationItem
 from tushare_integration.spiders.tushare import DailySpider, FinancialReportSpider, TSCodeSpider, TushareSpider
 
 # 这玩意儿后面停用了
@@ -61,6 +64,46 @@ class ShareFloatSpider(TSCodeSpider):
     name = "stock/market/share_float"
     api_name = "share_float"
     custom_settings = {"TABLE_NAME": "share_float", "BASIC_TABLE": "stock_basic"}
+
+    # The endpoint silently caps a response at 6,000 rows. A single IPO can
+    # exceed that limit because it returns one row per restricted shareholder.
+    PAGE_LIMIT = 6000
+
+    def start_requests(self):
+        table_name = self.custom_settings.get("BASIC_TABLE")
+        db_name = self.spider_settings.database.db_name
+        ts_codes = self.get_db_engine().query_df(
+            f"SELECT ts_code FROM {db_name}.{table_name}"
+        )
+
+        for ts_code in ts_codes["ts_code"]:
+            yield self.get_scrapy_request(
+                params={"ts_code": ts_code, "offset": 0, "limit": self.PAGE_LIMIT}
+            )
+
+    def parse(self, response, **kwargs):
+        params = response.meta.get("params", {})
+        ts_code = params["ts_code"]
+        limit = int(params.get("limit", self.PAGE_LIMIT))
+        offset = int(params.get("offset", 0))
+
+        page = self.parse_response(response, **kwargs)
+        all_data = []
+
+        while not page["data"].empty:
+            all_data.append(page["data"])
+            if len(page["data"]) < limit:
+                break
+
+            offset += limit
+            page = self.request_with_requests(
+                params={"ts_code": ts_code, "offset": offset, "limit": limit}
+            )
+
+        if not all_data:
+            return None
+
+        return TushareIntegrationItem(data=pd.concat(all_data, ignore_index=True))
 
 
 class ConceptSpider(TushareSpider):
