@@ -179,6 +179,8 @@ calendar_map AS (
         source_filters = [f"{source_alias}.{_quote_column(column)} IS NOT NULL" for column in business_key]
         if _schema_has_column(source_schema, "trade_date"):
             source_filters.append(f"{source_alias}.`trade_date` >= {MIN_LAYER_TRADE_DATE_SQL}")
+        for extra_filter in spec.get("source_filters", []):
+            source_filters.append(f"({extra_filter})")
         source_filter_sql = " AND ".join(source_filters)
         source_column_select = ",\n    ".join([f"{source_alias}.{_quote_column(column)}" for column in source_columns])
 

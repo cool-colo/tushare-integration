@@ -45,6 +45,7 @@ main() {
     "tushare-dwd-sync-stock-northbound-holding|$DWD_SYNC_IMAGE|dwd_stock_northbound_holding"
     "tushare-dwd-sync-stock-margin-trading|$DWD_SYNC_IMAGE|dwd_stock_margin_trading"
     "tushare-dwd-sync-stock-chip-distribution|$DWD_SYNC_IMAGE|dwd_stock_chip_distribution"
+    "tushare-dwd-sync-stock-share-float|$DWD_SYNC_IMAGE|dwd_stock_share_float"
     "tushare-dwd-sync-dc-concept|$DWD_SYNC_IMAGE|dwd_dc_concept"
     "tushare-dwd-sync-dc-concept-cons|$DWD_SYNC_IMAGE|dwd_dc_concept_cons"
     "tushare-dwd-sync-dc-index|$DWD_SYNC_IMAGE|dwd_dc_index"
