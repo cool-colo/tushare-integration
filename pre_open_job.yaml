@@ -1,0 +1,7 @@
+cronjob:
+  - cron_expr: UnSupported
+    name: pre/stock-adj-factor
+    spiders:
+      - name: stock/basic/stock_basic
+      - name: stock/basic/trade_cal
+      - name: stock/quotes/adj_factor
