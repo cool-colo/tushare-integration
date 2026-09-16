@@ -60,6 +60,7 @@ RUN python3 -m venv "${VIRTUAL_ENV}" \
 COPY deploy/clickhouse/user_scripts/dws_stock_factor_rows.py /opt/clickhouse-udf/user_scripts/dws_stock_factor_rows.py
 COPY deploy/clickhouse/user_defined_functions/dws_stock_factor_rows.xml /opt/clickhouse-udf/user_defined_functions/dws_stock_factor_rows.xml
 COPY deploy/clickhouse/config.d/executable-udf.xml /etc/clickhouse-server/config.d/executable-udf.xml
+COPY deploy/clickhouse/users.d/network-access.xml /etc/clickhouse-server/users.d/network-access.xml
 COPY deploy/clickhouse/docker-entrypoint-udf.sh /usr/local/bin/docker-entrypoint-udf.sh
 
 RUN mkdir -p /etc/clickhouse-server/user_defined_functions /var/lib/clickhouse/user_scripts \
@@ -69,6 +70,7 @@ RUN mkdir -p /etc/clickhouse-server/user_defined_functions /var/lib/clickhouse/u
         /var/lib/clickhouse/user_scripts/dws_stock_factor_rows.py \
         /usr/local/bin/docker-entrypoint-udf.sh \
     && chmod 644 /opt/clickhouse-udf/user_defined_functions/dws_stock_factor_rows.xml \
-        /etc/clickhouse-server/user_defined_functions/dws_stock_factor_rows.xml
+        /etc/clickhouse-server/user_defined_functions/dws_stock_factor_rows.xml \
+        /etc/clickhouse-server/users.d/network-access.xml
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint-udf.sh"]

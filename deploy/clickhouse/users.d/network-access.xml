@@ -1,0 +1,22 @@
+<clickhouse>
+    <!--
+      Widen the `default` user's allowed source networks so peer machines on the
+      internal LAN can connect over 8123/9000.
+
+      The base image ships /etc/clickhouse-server/users.d/default-user.xml that
+      restricts `default` to 127.0.0.1 / ::1. Files in users.d/ are overlay-merged
+      onto users.xml, and the later-loaded override wins for the <networks> block,
+      so this file replaces that whitelist. `default` has no password, so keep this
+      scoped to trusted internal subnets rather than opening ::/0.
+    -->
+    <users>
+        <default>
+            <networks replace="replace">
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+                <!-- client machine subnet: 172.18.192.108/25 -> 172.18.192.0/25 -->
+                <ip>172.18.192.0/25</ip>
+            </networks>
+        </default>
+    </users>
+</clickhouse>

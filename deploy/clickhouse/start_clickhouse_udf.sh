@@ -49,5 +49,6 @@ fi
     --name "${container_name}" \
     -v "${clickhouse_data_dir}:/var/lib/clickhouse" \
     --net=host \
+    --restart unless-stopped \
     --ulimit nofile=262144:262144 \
     "${image_name}"
