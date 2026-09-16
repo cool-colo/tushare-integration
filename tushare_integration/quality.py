@@ -2324,7 +2324,11 @@ class DqcManager:
             results.extend(self._dws_table_results(domain, suite_name, table_name, as_of_date))
             table_metrics = self._dws_table_metrics(domain, suite_name, table_name, as_of_date)
             metrics.extend(table_metrics)
-            results.extend(self._dws_drift_results(domain, suite_name, table_name, as_of_date, table_metrics))
+            drift_results, drift_samples = self._dws_drift_results(
+                domain, suite_name, table_name, as_of_date, table_metrics
+            )
+            results.extend(drift_results)
+            samples.extend(drift_samples)
             samples.extend(self._dws_spot_samples(domain, suite_name, table_name, as_of_date))
 
         if "dws_stock_factor_wide_matrix" in tables:
@@ -2892,7 +2896,7 @@ class DqcManager:
         table_name: str,
         as_of_date: datetime.date,
         metrics: list[DqcMetric],
-    ) -> list[DqcResult]:
+    ) -> tuple[list[DqcResult], list[DqcSample]]:
         drift_metric_names = {"row_count", "instrument_count", "null_ratio", "zero_ratio", "mean", "stddev", "q50"}
         current = [
             metric
@@ -2912,7 +2916,7 @@ class DqcManager:
                     1,
                     message="No current metrics were generated for drift evaluation",
                 )
-            ]
+            ], []
 
         metric_name_sql = ", ".join([f"'{name}'" for name in sorted(drift_metric_names)])
         db_name = self.settings.database.db_name
@@ -2951,7 +2955,7 @@ class DqcManager:
                     message="No historical DQC baseline exists yet",
                     status="MONITOR",
                 )
-            ]
+            ], []
 
         baseline = {
             (row["metric_scope"], row["entity_name"], row["metric_name"]): row
@@ -2966,7 +2970,7 @@ class DqcManager:
             "zero_ratio": 0.2,
         }
         insufficient = 0
-        drifted: list[tuple[DqcMetric, dict[str, Any], float | None]] = []
+        drifted: list[tuple[DqcMetric, dict[str, Any], float | None, float | None]] = []
         for metric in current:
             key = (metric.metric_scope, metric.entity_name, metric.metric_name)
             row = baseline.get(key)
@@ -2981,11 +2985,12 @@ class DqcManager:
                 z_score = (metric.metric_value - float(baseline_mean or 0)) / baseline_std
                 drift = abs(z_score) > z_threshold
             relative_threshold = relative_thresholds.get(metric.metric_name)
+            relative_change = None
             if relative_threshold is not None and baseline_mean not in (None, 0):
                 relative_change = abs(metric.metric_value - baseline_mean) / abs(baseline_mean)
                 drift = drift or relative_change > relative_threshold
             if drift:
-                drifted.append((metric, row, z_score))
+                drifted.append((metric, row, z_score, relative_change))
 
         results = [
             self._dqc_result(
@@ -3017,8 +3022,12 @@ class DqcManager:
                     status="MONITOR",
                 )
             )
+        samples: list[DqcSample] = []
         if drifted:
-            metric, row, z_score = drifted[0]
+            # Worst first (largest |z|; metrics without a z_score sort last) so both the
+            # example-result row and the (capped) per-metric samples surface the severest drift.
+            drifted.sort(key=lambda item: abs(item[2]) if item[2] is not None else -1.0, reverse=True)
+            metric, row, z_score, _ = drifted[0]
             results.append(
                 self._dqc_result(
                     domain,
@@ -3038,7 +3047,41 @@ class DqcManager:
                     status="MONITOR",
                 )
             )
-        return results
+            # Persist one sample per drifted metric under the aggregate rule_id so the dashboard's
+            # existing dqc_metric_drift drill-down lists them all. The aggregate result row names
+            # none of the drifters; these samples do. Unlike offending-ROW samples (bounded by
+            # settings.quality.max_samples because a bad day can flag unboundedly many rows), drift
+            # samples are bounded by metric×entity (~hundreds) and enumerating them IS the feature,
+            # so we persist every drifter rather than truncating to max_samples.
+            if self.settings.quality.max_samples > 0:
+                for metric, row, z_score, relative_change in drifted:
+                    payload = {
+                        "metric_name": metric.metric_name,
+                        "metric_scope": metric.metric_scope,
+                        "entity_name": metric.entity_name,
+                        "observed_value": metric.metric_value,
+                        "baseline_mean": self._to_float(row.get("baseline_mean")),
+                        "baseline_std": self._to_float(row.get("baseline_std")),
+                        "baseline_days": int(row.get("baseline_days") or 0),
+                        "z_score": z_score,
+                        "relative_change": relative_change,
+                    }
+                    samples.append(
+                        DqcSample(
+                            layer="dws",
+                            domain=domain,
+                            suite_name=suite_name,
+                            table_name=table_name,
+                            rule_id="dqc_metric_drift",
+                            as_of_date=as_of_date,
+                            trade_date=metric.trade_date,
+                            instrument_id="",
+                            entity_name=metric.entity_name,
+                            sample_type="metric_drift",
+                            sample_json=json.dumps(payload, ensure_ascii=False, default=str),
+                        )
+                    )
+        return results, samples
 
     def _dws_consistency_checks(
         self,
