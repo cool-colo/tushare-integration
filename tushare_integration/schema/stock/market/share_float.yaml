@@ -10,6 +10,8 @@ primary_key:
 - float_date
 - holder_name
 - share_type
+- float_share
+- float_ratio
 indexes: []
 columns:
 - name: ts_code

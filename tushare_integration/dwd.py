@@ -129,9 +129,12 @@ class DWDManager:
 
         source_schema = self.load_source_schema(spec["source"]["schema_name"])
         business_key = set(spec.get("business_key") or source_schema.get("primary_key", []))
+        nullable_business_key = set(spec.get("nullable_business_key", []))
         source_column_excludes = set(spec.get("source_column_excludes", []))
         source_columns = [
-            _source_column_copy(column, business_key)
+            _nullable_copy(column)
+            if column["name"] in nullable_business_key
+            else _source_column_copy(column, business_key)
             for column in source_schema["columns"]
             if column["name"] not in source_column_excludes
         ]
@@ -168,6 +171,7 @@ calendar_map AS (
         business_key = spec.get("business_key") or source_schema.get("primary_key", [])
         if not business_key:
             raise ValueError(f"{spec['name']} requires business_key or source primary_key")
+        nullable_business_key = set(spec.get("nullable_business_key", []))
 
         source_column_excludes = set(spec.get("source_column_excludes", []))
         source_columns = [
@@ -176,7 +180,11 @@ calendar_map AS (
             if column["name"] not in source_column_excludes
         ]
         business_key_partition = ", ".join([f"{source_alias}.{_quote_column(column)}" for column in business_key])
-        source_filters = [f"{source_alias}.{_quote_column(column)} IS NOT NULL" for column in business_key]
+        source_filters = [
+            f"{source_alias}.{_quote_column(column)} IS NOT NULL"
+            for column in business_key
+            if column not in nullable_business_key
+        ]
         if _schema_has_column(source_schema, "trade_date"):
             source_filters.append(f"{source_alias}.`trade_date` >= {MIN_LAYER_TRADE_DATE_SQL}")
         for extra_filter in spec.get("source_filters", []):

@@ -363,6 +363,37 @@ class QualityValidationTest(unittest.TestCase):
 
         self.assertIn("ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING", sql)
 
+    def test_share_float_dwd_uses_complete_nullable_row_key(self):
+        manager = DWDManager()
+        spec = manager.load_spec("dwd_stock_share_float")
+        schema = manager.build_schema(spec)
+        columns = {column["name"]: column for column in schema["columns"]}
+        sql = manager.render_sync_sql("dwd_stock_share_float")
+
+        self.assertIn(
+            "PARTITION BY src.`ts_code`, src.`ann_date`, src.`float_date`, "
+            "src.`holder_name`, src.`share_type`, src.`float_share`, src.`float_ratio`",
+            sql,
+        )
+        self.assertNotIn("src.`float_share` IS NOT NULL", sql)
+        self.assertNotIn("src.`float_ratio` IS NOT NULL", sql)
+        self.assertTrue(columns["float_share"]["nullable"])
+        self.assertTrue(columns["float_ratio"]["nullable"])
+
+        quality = QualityManager(settings=self._settings(), db_engine=DummyDB())
+        rules = {
+            rule.rule_id: rule
+            for rule in quality.list_rules(
+                layer="dwd",
+                table_name="dwd_stock_share_float",
+                target_table_name="dwd_stock_share_float_tmp",
+            )
+        }
+        self.assertIn(
+            "GROUP BY ts_code, ann_date, float_date, holder_name, share_type, float_share, float_ratio",
+            rules["dwd_single_open_version"].issue_count_sql,
+        )
+
     def test_dwd_trade_date_source_rows_are_limited_since_2010(self):
         price_sql = DWDManager().render_sync_sql("dwd_stock_eod_price")
         income_sql = DWDManager().render_sync_sql("dwd_stock_income")

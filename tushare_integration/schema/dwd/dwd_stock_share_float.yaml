@@ -5,6 +5,12 @@ builder: raw_versioned
 source:
   table_name: share_float_raw
   schema_name: stock/market/share_float
+# Tushare can return several tranches for the same holder/date/type. The two
+# measure columns are therefore part of row identity, but remain nullable in
+# raw history and must not be discarded by the generic business-key filter.
+nullable_business_key:
+  - float_share
+  - float_ratio
 instrument_type: stock
 instrument_id_expr: "concat('stock:', src.ts_code)"
 source_code_expr: src.ts_code

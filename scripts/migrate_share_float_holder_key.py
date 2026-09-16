@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild share_float with its shareholder-level ClickHouse sorting key.
+"""Rebuild share_float with its complete row-level ClickHouse sorting key.
 
 The source raw table is append-only.  This migration keeps the newest value
 seen for every complete business key and preserves the old table as a backup.
@@ -20,7 +20,9 @@ from tushare_integration.storage import build_latest_schema
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 SCHEMA_PATH = ROOT_DIR / "tushare_integration/schema/stock/market/share_float.yaml"
-EXPECTED_SORTING_KEY = "ts_code, ann_date, float_date, holder_name, share_type"
+EXPECTED_SORTING_KEY = (
+    "ts_code, ann_date, float_date, holder_name, share_type, float_share, float_ratio"
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -52,7 +54,7 @@ def main() -> None:
     current_sorting_key = str(table_info.iloc[0]["sorting_key"])
     print(f"Current sorting key: {current_sorting_key}")
     if current_sorting_key == EXPECTED_SORTING_KEY:
-        print("share_float already uses the shareholder-level key; nothing to migrate")
+        print("share_float already uses the complete row-level key; nothing to migrate")
         return
     if not args.execute:
         print("Migration required; rerun with --execute")
@@ -60,7 +62,7 @@ def main() -> None:
 
     stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     staging_table = f"share_float_rebuild_{stamp}"
-    backup_table = f"share_float_backup_before_holder_key_{stamp}"
+    backup_table = f"share_float_backup_before_row_key_{stamp}"
     schema = yaml.safe_load(SCHEMA_PATH.read_text(encoding="utf-8"))
 
     print(f"Creating {db_name}.{staging_table}")
@@ -77,8 +79,8 @@ def main() -> None:
             key_ts_code AS ts_code,
             key_ann_date AS ann_date,
             key_float_date AS float_date,
-            argMax(value_float_share, tuple(ingest_time, batch_id, record_hash)) AS float_share,
-            argMax(value_float_ratio, tuple(ingest_time, batch_id, record_hash)) AS float_ratio,
+            key_float_share AS float_share,
+            key_float_ratio AS float_ratio,
             key_holder_name AS holder_name,
             key_share_type AS share_type,
             argMax(source, tuple(ingest_time, batch_id, record_hash)) AS _source,
@@ -92,8 +94,8 @@ def main() -> None:
                 ifNull(ts_code, '') AS key_ts_code,
                 ifNull(ann_date, toDate32('1970-01-01')) AS key_ann_date,
                 ifNull(float_date, toDate32('1970-01-01')) AS key_float_date,
-                ifNull(float_share, 0.) AS value_float_share,
-                ifNull(float_ratio, 0.) AS value_float_ratio,
+                ifNull(float_share, 0.) AS key_float_share,
+                ifNull(float_ratio, 0.) AS key_float_ratio,
                 ifNull(holder_name, '') AS key_holder_name,
                 ifNull(share_type, '') AS key_share_type,
                 _source AS source,
@@ -103,7 +105,9 @@ def main() -> None:
                 _record_hash AS record_hash
             FROM {db_name}.share_float_raw
         ) AS src
-        GROUP BY key_ts_code, key_ann_date, key_float_date, key_holder_name, key_share_type
+        GROUP BY
+            key_ts_code, key_ann_date, key_float_date, key_holder_name,
+            key_share_type, key_float_share, key_float_ratio
         """
     )
 
@@ -111,7 +115,10 @@ def main() -> None:
         f"""
         SELECT
             count() AS row_count,
-            uniqExact(tuple(ts_code, ann_date, float_date, holder_name, share_type)) AS unique_keys
+            uniqExact(tuple(
+                ts_code, ann_date, float_date, holder_name, share_type,
+                float_share, float_ratio
+            )) AS unique_keys
         FROM {db_name}.{staging_table}
         """
     ).iloc[0]

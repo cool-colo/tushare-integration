@@ -758,7 +758,15 @@ class TushareResponseTest(unittest.TestCase):
 
         self.assertEqual(
             spider.schema["primary_key"],
-            ["ts_code", "ann_date", "float_date", "holder_name", "share_type"],
+            [
+                "ts_code",
+                "ann_date",
+                "float_date",
+                "holder_name",
+                "share_type",
+                "float_share",
+                "float_ratio",
+            ],
         )
 
     def test_share_float_start_requests_enables_pagination(self):
