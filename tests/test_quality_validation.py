@@ -10,6 +10,7 @@ from tushare_integration.quality import (
     QualityManager,
     QualityValidationError,
     ValidationResult,
+    ValidationRule,
     _FactorExpressionReferenceEvaluator,
 )
 from tushare_integration.settings import TushareIntegrationSettings
@@ -143,6 +144,8 @@ class QualityValidationTest(unittest.TestCase):
             status="FAIL",
             issue_count=2,
             description="bad ohlc",
+            total_count=40,
+            issue_rate=0.05,
         )
 
         with mock.patch.object(manager, "run_rules", return_value=[failure]):
@@ -157,6 +160,9 @@ class QualityValidationTest(unittest.TestCase):
         self.assertEqual(run.status, "FAIL")
         self.assertFalse(run.should_block)
         self.assertEqual(db.inserts[1][0], "dq_validation_result")
+        result_insert = db.inserts[1][1]
+        self.assertEqual(result_insert["total_count"].iloc[0], 40)
+        self.assertEqual(result_insert["issue_rate"].iloc[0], 0.05)
 
     def test_strict_blocks_on_blocker_failure(self):
         db = DummyDB()
@@ -193,6 +199,39 @@ class QualityValidationTest(unittest.TestCase):
 
         self.assertEqual(manager.resolve_mode("dwd", "dwd_stock_financial_indicator"), "skip")
         self.assertEqual(manager.resolve_mode("dwd", "dwd_stock_eod_price"), "strict")
+
+    def test_run_rules_computes_total_count_and_issue_rate(self):
+        db = DummyDB()
+        db.query_df = mock.Mock(return_value=pd.DataFrame({"issue_count": [5]}))
+        manager = QualityManager(settings=self._settings(), db_engine=db)
+        rule = ValidationRule(
+            rule_id="demo_rule",
+            description="demo",
+            severity="WARN",
+            issue_count_sql="SELECT 5 AS issue_count",
+        )
+
+        with (
+            mock.patch.object(manager, "build_rules", return_value=[rule]),
+            mock.patch.object(manager, "checked_count", return_value=100),
+        ):
+            result = manager.run_rules("dwd", "dwd_stock_eod_price")[0]
+
+        self.assertEqual(result.total_count, 100)
+        self.assertEqual(result.issue_count, 5)
+        self.assertEqual(result.issue_rate, 0.05)
+
+    def test_validation_result_schema_includes_total_count_and_issue_rate(self):
+        manager = QualityManager(settings=self._settings(), db_engine=DummyDB())
+
+        columns = {
+            column["name"]: column
+            for column in manager._metadata_table_schemas()["dq_validation_result"]["columns"]
+        }
+
+        self.assertIn("total_count", columns)
+        self.assertIn("issue_rate", columns)
+        self.assertTrue(columns["issue_rate"]["nullable"])
 
     def test_dwd_market_rules_include_business_checks(self):
         manager = QualityManager(settings=self._settings(), db_engine=DummyDB())
@@ -242,6 +281,22 @@ class QualityValidationTest(unittest.TestCase):
         self.assertIn(
             "event_date >= toDate32('2010-01-01')",
             rules["stock_limit_positive_prices"].issue_count_sql,
+        )
+        positive_prices_sql = rules["stock_limit_positive_prices"].issue_count_sql
+        self.assertIn(
+            "up_limit = 99999.99",
+            positive_prices_sql,
+        )
+        self.assertIn("exchange = 'BJ'", positive_prices_sql)
+        self.assertNotIn("instrument_id =", positive_prices_sql)
+        self.assertNotIn("instrument_type =", positive_prices_sql)
+        self.assertIn(
+            "NOT (pre_close = 0 AND event_date < toDate32('2020-01-01'))",
+            positive_prices_sql,
+        )
+        self.assertNotIn(
+            "up_limit = 99999.99",
+            rules["stock_limit_up_not_below_down"].issue_count_sql,
         )
 
     def test_checked_count_sql_uses_trade_date_scope(self):

@@ -598,6 +598,8 @@ class ValidationResult:
     status: str
     issue_count: int
     description: str
+    total_count: int = 0
+    issue_rate: float | None = None
     message: str = ""
 
 
@@ -869,6 +871,11 @@ class QualityManager:
     def run_rules(self, layer: str, table_name: str, target_table_name: str | None = None) -> list[ValidationResult]:
         target_table_name = target_table_name or table_name
         rules = self.build_rules(layer=layer, table_name=table_name, target_table_name=target_table_name)
+        total_count = self.checked_count(
+            layer=layer,
+            table_name=table_name,
+            target_table_name=target_table_name,
+        )
         results = []
         db_engine = self.get_db_engine()
         for rule in rules:
@@ -880,6 +887,8 @@ class QualityManager:
                     status="FAIL" if issue_count > 0 else "PASS",
                     issue_count=issue_count,
                     description=rule.description,
+                    total_count=total_count,
+                    issue_rate=issue_count / total_count if total_count else None,
                 )
             )
         return results
@@ -1490,6 +1499,15 @@ class QualityManager:
         ]
 
     def _stock_limit_rules(self, qualified: str, validation_filter: str | None = None) -> list[ValidationRule]:
+        positive_price_condition = """
+            (up_limit <= 0 OR down_limit <= 0 OR pre_close <= 0)
+            AND NOT (
+                up_limit = 99999.99
+                AND down_limit = 0
+                AND exchange = 'BJ'
+            )
+            AND NOT (pre_close = 0 AND event_date < toDate32('2020-01-01'))
+        """.strip()
         return [
             ValidationRule(
                 rule_id="stock_limit_positive_prices",
@@ -1498,7 +1516,7 @@ class QualityManager:
                 issue_count_sql=f"""
                     SELECT count() AS issue_count
                     FROM {qualified}
-                    {self._where_sql("up_limit <= 0 OR down_limit <= 0 OR pre_close <= 0", validation_filter)}
+                    {self._where_sql(positive_price_condition, validation_filter)}
                 """,
             ),
             ValidationRule(
@@ -1831,6 +1849,13 @@ class QualityManager:
                     {"name": "severity", "data_type": "str", "length": 32, "comment": "Rule severity"},
                     {"name": "status", "data_type": "str", "length": 32, "comment": "Rule status"},
                     {"name": "issue_count", "data_type": "int", "comment": "Issue row count"},
+                    {"name": "total_count", "data_type": "int", "comment": "Total validated row count"},
+                    {
+                        "name": "issue_rate",
+                        "data_type": "float",
+                        "nullable": True,
+                        "comment": "Issue count / total count",
+                    },
                     {"name": "description", "data_type": "str", "length": 512, "comment": "Rule description"},
                     {"name": "message", "data_type": "str", "length": 1024, "comment": "Rule message"},
                     {"name": "created_at", "data_type": "datetime", "comment": "Created time"},
@@ -1905,6 +1930,8 @@ class QualityManager:
                                 "severity": result.severity,
                                 "status": result.status,
                                 "issue_count": result.issue_count,
+                                "total_count": result.total_count,
+                                "issue_rate": result.issue_rate,
                                 "description": result.description,
                                 "message": result.message,
                                 "created_at": run.finished_at,
@@ -1945,7 +1972,7 @@ class QualityManager:
         )
         result_df = self.get_db_engine().query_df(
             f"""
-            SELECT rule_id, severity, status, issue_count, description, message
+            SELECT rule_id, severity, status, issue_count, total_count, issue_rate, description, message
             FROM {db_name}.dq_validation_result
             WHERE run_id = '{run_id}'
             ORDER BY severity, rule_id
@@ -1962,7 +1989,8 @@ class QualityManager:
         for row in result_df.to_dict("records"):
             message = f" message={row['message']}" if row.get("message") else ""
             lines.append(
-                f"- {row['severity']} {row['status']} {row['rule_id']} issues={row['issue_count']}{message}"
+                f"- {row['severity']} {row['status']} {row['rule_id']} "
+                f"issues={row['issue_count']}/{row['total_count']} rate={row['issue_rate']}{message}"
             )
         return "\n".join(lines)
 

@@ -205,7 +205,7 @@ python main.py dws sync dws_stock_factor_wide --validation-mode warn_only
 | 表名 | 用途 |
 | --- | --- |
 | `dq_validation_run` | 记录每次质量运行的层级、阶段、目标表、模式和状态 |
-| `dq_validation_result` | 记录每条规则的状态、问题数、描述和消息 |
+| `dq_validation_result` | 记录每条规则的状态、总数、问题数、问题率、描述和消息 |
 | `dq_validation_metric` | 将规则问题数落为指标，便于后续监控 |
 | `dq_issue_sample` | 预留失败样本表结构 |
 
