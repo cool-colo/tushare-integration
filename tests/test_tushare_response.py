@@ -125,11 +125,56 @@ class TushareResponseTest(unittest.TestCase):
 
         self.assertIn("ASOF LEFT JOIN financial_indicator", sql)
         self.assertIn("price.available_trade_date >= financial_indicator.available_trade_date", sql)
-        self.assertIn("PARTITION BY src.instrument_id, src.available_trade_date", sql)
+        self.assertIn("financial_indicator_report_versions", sql)
+        self.assertIn("financial_indicator_state_dates", sql)
+        self.assertIn("src.update_flag DESC", sql)
         self.assertNotIn("financial_indicator.available_trade_date <= price.available_trade_date", sql)
         self.assertNotIn("available_trade_date <= price.available_trade_date", sql)
         self.assertNotIn("PARTITION BY price.instrument_id, price.event_date", sql)
         self.assertIn("AND event_date >= toDate32('2010-01-01')", sql)
+
+    def test_dwd_financial_statements_use_effective_announcement_date(self):
+        manager = object.__new__(DWDManager)
+        manager.settings = self._clickhouse_settings()
+
+        for table_name in (
+            "dwd_stock_income",
+            "dwd_stock_balance_sheet",
+            "dwd_stock_cashflow",
+        ):
+            with self.subTest(table_name=table_name):
+                sql = manager.render_sync_sql(table_name)
+                self.assertIn("nullIf(src.f_ann_date, toDate32('1970-01-01'))", sql)
+                self.assertIn("greatest(", sql)
+                self.assertIn("ROWS BETWEEN 1 FOLLOWING AND UNBOUNDED FOLLOWING", sql)
+                self.assertNotIn("o.cal_date >", sql)
+                self.assertIn(
+                    "calendar_map.calendar_date = src._calendar_lookup_date",
+                    sql,
+                )
+
+    def test_direct_financial_statement_joins_use_only_normal_consolidated_reports(self):
+        manager = object.__new__(DWSManager)
+        manager.settings = self._clickhouse_settings()
+
+        sql = manager.render_sync_sql("dws_stock_factor_wide")
+
+        # Each ordinary statement CTE owns its own type=1 filter. This prevents
+        # adjusted comparative and parent-company rows from entering LF fields.
+        self.assertEqual(sql.count("AND src.report_type = '1'"), 3)
+        self.assertGreaterEqual(sql.count("AND src.ann_date >= src.event_date"), 3)
+        for cte_name in ("income", "balance_sheet", "cashflow"):
+            self.assertIn(f"{cte_name}_report_versions AS (", sql)
+            self.assertIn(f"{cte_name}_state_dates AS (", sql)
+
+        # event_date is deliberately ordered first: a late correction to an
+        # older period must not displace an already visible newer period.
+        self.assertIn(
+            "r.event_date DESC,\n                    r.available_trade_date DESC,",
+            sql,
+        )
+        self.assertIn("r.f_ann_date DESC", sql)
+        self.assertIn("r.update_flag DESC", sql)
 
     def test_dws_stock_factor_wide_includes_pit_adj_factor(self):
         manager = object.__new__(DWSManager)
@@ -369,9 +414,12 @@ class TushareResponseTest(unittest.TestCase):
         self.assertIn("ebitda", column_names)
         self.assertEqual(manager.get_required_source_tables(spec), [STOCK_FINANCIAL_INDICATOR_QUARTER_SOURCE])
         self.assertIn("FROM default.dwd_stock_financial_indicator src", sql)
+        self.assertIn("src.update_flag DESC", sql)
+        self.assertIn("report_changes AS (", sql)
+        self.assertIn("affected_quarters AS (", sql)
         self.assertIn("toMonth(src.event_date) IN (3, 6, 9, 12)", sql)
-        self.assertIn("AND toQuarter(curr.event_date) != 1", sql)
-        self.assertIn("prev.event_date = toLastDayOfMonth(addMonths(curr.event_date, -3))", sql)
+        self.assertIn("toQuarter(event_date) = 1", sql)
+        self.assertIn("prev.event_date = curr.previous_event_date", sql)
         self.assertIn("`ebit` - `prev_ebit`", sql)
         self.assertIn("`ebitda` - `prev_ebitda`", sql)
         self.assertIn("`extra_item` - `prev_extra_item`", sql)
@@ -402,7 +450,16 @@ class TushareResponseTest(unittest.TestCase):
         self.assertEqual(manager.get_required_source_tables(income_spec), [STOCK_INCOME_QUARTER_SOURCE])
         self.assertIn("FROM default.dwd_stock_income src", income_sql)
         self.assertIn("src.report_type IN ('1', '4')", income_sql)
-        self.assertIn("prev.event_date = toLastDayOfMonth(addMonths(curr.event_date, -3))", income_sql)
+        self.assertIn("AND src.ann_date >= src.event_date", income_sql)
+        self.assertIn("WHERE toQuarter(change.affected_event_date) != 4", income_sql)
+        self.assertNotIn("src.report_type IN ('1', '3')", income_sql)
+        self.assertIn("report_changes AS (", income_sql)
+        self.assertIn("affected_quarters AS (", income_sql)
+        self.assertIn("toLastDayOfMonth(addMonths(change.affected_event_date, 3))", income_sql)
+        self.assertIn("WHERE r.available_trade_date <= a.state_available_trade_date", income_sql)
+        self.assertIn("ASOF LEFT JOIN reports prev", income_sql)
+        self.assertIn("curr.state_available_trade_date >= prev.available_trade_date", income_sql)
+        self.assertIn("prev.event_date = curr.previous_event_date", income_sql)
         self.assertIn("`revenue` - `prev_revenue`", income_sql)
         self.assertIn("`diluted_eps` - `prev_diluted_eps`", income_sql)
 
@@ -410,7 +467,12 @@ class TushareResponseTest(unittest.TestCase):
         self.assertEqual(manager.get_required_source_tables(cashflow_spec), [STOCK_CASHFLOW_QUARTER_SOURCE])
         self.assertIn("FROM default.dwd_stock_cashflow src", cashflow_sql)
         self.assertIn("src.report_type IN ('1', '4')", cashflow_sql)
-        self.assertIn("prev.event_date = toLastDayOfMonth(addMonths(curr.event_date, -3))", cashflow_sql)
+        self.assertIn("AND src.ann_date >= src.event_date", cashflow_sql)
+        self.assertIn("WHERE toQuarter(change.affected_event_date) != 4", cashflow_sql)
+        self.assertIn("toLastDayOfMonth(addMonths(change.affected_event_date, 3))", cashflow_sql)
+        self.assertNotIn("src.report_type IN ('1', '3')", cashflow_sql)
+        self.assertIn("affected_quarters AS (", cashflow_sql)
+        self.assertIn("prev.event_date = curr.previous_event_date", cashflow_sql)
         self.assertIn("`depr_fa_coga_dpba` - `prev_depr_fa_coga_dpba`", cashflow_sql)
 
     def test_parse_response_treats_common_no_data_message_as_empty_item(self):

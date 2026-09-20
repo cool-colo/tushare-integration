@@ -1600,6 +1600,29 @@ class QualityManager:
         ]
 
     def _financial_rules(self, table_name: str, qualified: str) -> list[ValidationRule]:
+        # The three statements may be corrected after their original ann_date.
+        # fina_indicator/dividend do not expose f_ann_date, so keep their
+        # existing announcement-date rule instead of referencing a missing
+        # column. Placeholder source dates fall back to the report period in
+        # exactly the same way as the DWD renderer.
+        if table_name in {
+            "dwd_stock_income",
+            "dwd_stock_balance_sheet",
+            "dwd_stock_cashflow",
+        }:
+            visibility_date_expr = """greatest(
+                            coalesce(nullIf(ann_date, toDate32('1970-01-01')), event_date),
+                            coalesce(
+                                nullIf(f_ann_date, toDate32('1970-01-01')),
+                                nullIf(ann_date, toDate32('1970-01-01')),
+                                event_date
+                            )
+                        )"""
+            visibility_description = "effective announcement date"
+        else:
+            visibility_date_expr = "ann_date"
+            visibility_description = "announcement date"
+
         rules = [
             ValidationRule(
                 rule_id="financial_no_placeholder_dates",
@@ -1635,12 +1658,12 @@ class QualityManager:
             ),
             ValidationRule(
                 rule_id="financial_no_same_day_pit_visibility",
-                description="Financial rows must become available after announcement date",
+                description=f"Financial rows must become available after {visibility_description}",
                 severity="BLOCKER",
                 issue_count_sql=f"""
                     SELECT count() AS issue_count
                     FROM {qualified}
-                    WHERE available_trade_date <= ann_date
+                    WHERE available_trade_date <= {visibility_date_expr}
                 """,
             ),
         ]
@@ -2642,7 +2665,7 @@ class DqcManager:
             "rqmcl",
         ]
         nonnegative_condition = " OR ".join([f"`{column}` < 0" for column in nonnegative_columns])
-        return [
+        results = [
             self._query_issue_result(
                 f"""
                 SELECT
@@ -2698,6 +2721,375 @@ class DqcManager:
                 expected_max=100,
             ),
         ]
+        # These checks intentionally run with the wide-table DQC. The wide
+        # table is the final consumer of the statement DWD and quarter DWS
+        # tables, so post-publish DQC can verify the complete PIT chain.
+        results.extend(
+            self._dws_financial_pit_results(
+                domain=domain,
+                suite_name=suite_name,
+                wide=qualified,
+                target_trade_date_sql=target_trade_date_sql,
+            )
+        )
+        return results
+
+    @staticmethod
+    def _dqc_financial_reports_cte(
+        db_name: str,
+        source_table: str,
+        value_fields: list[str] | None = None,
+    ) -> str:
+        value_select = "".join([f",\n        `{field}`" for field in value_fields or []])
+        return f"""
+reports AS (
+    SELECT
+        instrument_id,
+        event_date,
+        available_trade_date,
+        report_type,
+        f_ann_date,
+        update_flag,
+        sys_from,
+        source_record_hash{value_select}
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
+                ORDER BY
+                    multiIf(src.report_type = '4', 2, src.report_type = '1', 1, 0) DESC,
+                    src.f_ann_date DESC,
+                    src.update_flag DESC,
+                    src.sys_from DESC,
+                    src.source_record_hash DESC
+            ) AS report_rank
+        FROM {QualityManager._quote_table(db_name, source_table)} src
+        WHERE src.sys_to = {FAR_FUTURE_TS}
+          AND src.event_date >= {TRADE_VALIDATION_MIN_DATE_SQL}
+          AND toMonth(src.event_date) IN (3, 6, 9, 12)
+          AND src.report_type IN ('1', '4')
+          AND src.ann_date >= src.event_date
+    ) src
+    WHERE report_rank = 1
+)
+"""
+
+    @staticmethod
+    def _dqc_nullable_float_mismatch(actual: str, expected: str) -> str:
+        return (
+            f"(isNull({actual}) != isNull({expected}) OR "
+            f"(isNotNull({actual}) AND isNotNull({expected}) "
+            f"AND abs({actual} - {expected}) > "
+            f"1e-6 * greatest(1.0, abs({expected}))))"
+        )
+
+    def _dws_financial_quarter_state_results(
+        self,
+        domain: str,
+        suite_name: str,
+        source_table: str,
+        quarter_table: str,
+    ) -> list[DqcResult]:
+        db_name = self.settings.database.db_name
+        reports_cte = self._dqc_financial_reports_cte(db_name, source_table)
+        quarter = QualityManager._quote_table(db_name, quarter_table)
+
+        # Every derived state must be caused by either a new version of that
+        # quarter or, for Q2-Q4, a new version of the preceding cumulative
+        # quarter. In particular, a Q4 change cannot create a next-year Q1
+        # state because Q1 does not subtract Q4.
+        causality = self._query_issue_result(
+            f"""
+            WITH
+            {reports_cte},
+            causes AS (
+                SELECT DISTINCT instrument_id, event_date, available_trade_date
+                FROM reports
+            )
+            SELECT
+                countIf(own.instrument_id = '' AND previous.instrument_id = '') AS issue_count,
+                count() AS checked_count
+            FROM {quarter} q
+            LEFT JOIN causes own
+                ON own.instrument_id = q.instrument_id
+               AND own.event_date = q.event_date
+               AND own.available_trade_date = q.available_trade_date
+            LEFT JOIN causes previous
+                ON previous.instrument_id = q.instrument_id
+               AND previous.event_date = if(
+                    toQuarter(q.event_date) = 1,
+                    toDate32('1970-01-01'),
+                    toLastDayOfMonth(addMonths(q.event_date, -3))
+               )
+               AND previous.available_trade_date = q.available_trade_date
+            """,
+            domain,
+            suite_name,
+            quarter_table,
+            f"dqc_financial_quarter_state_causality.{quarter_table}",
+            "consistency",
+            "financial_pit_state_causality",
+            "BLOCKER",
+            "Every quarter state must be justified by its own or its preceding cumulative report change",
+        )
+
+        # Conversely, every source change must produce its own state. A Q1-Q3
+        # change must also reproduce the next quarter when that next report was
+        # already visible. This catches a missed Q3 -> Q4 recalculation.
+        coverage = self._query_issue_result(
+            f"""
+            WITH
+            {reports_cte},
+            expected_states AS (
+                SELECT DISTINCT
+                    instrument_id,
+                    event_date,
+                    available_trade_date
+                FROM reports
+                UNION DISTINCT
+                SELECT DISTINCT
+                    change.instrument_id AS instrument_id,
+                    toLastDayOfMonth(addMonths(change.event_date, 3)) AS event_date,
+                    change.available_trade_date AS available_trade_date
+                FROM reports change
+                INNER JOIN reports next_report
+                    ON next_report.instrument_id = change.instrument_id
+                   AND next_report.event_date = toLastDayOfMonth(addMonths(change.event_date, 3))
+                WHERE toQuarter(change.event_date) != 4
+                  AND next_report.available_trade_date <= change.available_trade_date
+            )
+            SELECT
+                countIf(actual.instrument_id = '') AS issue_count,
+                count() AS checked_count
+            FROM expected_states expected
+            LEFT JOIN {quarter} actual
+                ON actual.instrument_id = expected.instrument_id
+               AND actual.event_date = expected.event_date
+               AND actual.available_trade_date = expected.available_trade_date
+            """,
+            domain,
+            suite_name,
+            quarter_table,
+            f"dqc_financial_quarter_state_coverage.{quarter_table}",
+            "consistency",
+            "financial_pit_state_coverage",
+            "BLOCKER",
+            "Every cumulative report change must reproduce all affected visible quarter states",
+        )
+        return [causality, coverage]
+
+    def _dws_financial_quarter_value_result(
+        self,
+        domain: str,
+        suite_name: str,
+        source_table: str,
+        quarter_table: str,
+        value_fields: list[str],
+    ) -> DqcResult:
+        db_name = self.settings.database.db_name
+        reports_cte = self._dqc_financial_reports_cte(db_name, source_table, value_fields)
+        quarter = QualityManager._quote_table(db_name, quarter_table)
+        actual_values = ",\n                        ".join([f"q.`{field}`" for field in value_fields])
+        expected_values = ",\n                        ".join(
+            [
+                f"""if(
+                            toQuarter(q.event_date) = 1,
+                            curr.`{field}`,
+                            if(
+                                curr.`{field}` IS NULL OR previous.`{field}` IS NULL,
+                                CAST(NULL, 'Nullable(Float64)'),
+                                curr.`{field}` - previous.`{field}`
+                            )
+                        )"""
+                for field in value_fields
+            ]
+        )
+        return self._query_issue_result(
+            f"""
+            WITH
+            {reports_cte},
+            quarter_states AS (
+                SELECT
+                    q.*,
+                    if(
+                        toQuarter(q.event_date) = 1,
+                        toDate32('1970-01-01'),
+                        toLastDayOfMonth(addMonths(q.event_date, -3))
+                    ) AS previous_event_date
+                FROM {quarter} q
+            ),
+            evaluated AS (
+                SELECT
+                    tuple(
+                        {actual_values}
+                    ) AS actual_values,
+                    tuple(
+                        {expected_values}
+                    ) AS expected_values
+                FROM quarter_states q
+                -- reports is already unique on
+                -- (instrument_id, event_date, available_trade_date). Its
+                -- row_number uses the same type-4/type-1, f_ann_date,
+                -- update_flag, sys_from, and hash priority as the builder.
+                -- ASOF therefore resolves only the latest availability date;
+                -- it never chooses between report types at the same date.
+                ASOF LEFT JOIN reports curr
+                    ON curr.instrument_id = q.instrument_id
+                   AND curr.event_date = q.event_date
+                   AND q.available_trade_date >= curr.available_trade_date
+                ASOF LEFT JOIN reports previous
+                    ON previous.instrument_id = q.instrument_id
+                   AND previous.event_date = q.previous_event_date
+                   AND q.available_trade_date >= previous.available_trade_date
+            )
+            SELECT
+                countIf(toString(actual_values) != toString(expected_values)) AS issue_count,
+                count() AS checked_count
+            FROM evaluated
+            """,
+            domain,
+            suite_name,
+            quarter_table,
+            f"dqc_financial_quarter_value_consistency.{quarter_table}",
+            "consistency",
+            "financial_quarter_value",
+            "BLOCKER",
+            "Every numeric field must equal its PIT cumulative report difference selected with report/update priority",
+        )
+
+    def _dws_financial_direct_value_result(
+        self,
+        domain: str,
+        suite_name: str,
+        wide: str,
+        target_trade_date_sql: str,
+        source_table: str,
+        value_fields: list[str],
+    ) -> DqcResult:
+        db_name = self.settings.database.db_name
+        source = QualityManager._quote_table(db_name, source_table)
+        actual_values = ", ".join([f"`{field}`" for field in value_fields])
+        source_values = ", ".join([f"src.`{field}`" for field in value_fields])
+        return self._query_issue_result(
+            f"""
+            WITH target AS (
+                SELECT
+                    instrument_id,
+                    available_trade_date,
+                    tuple({actual_values}) AS actual_values
+                FROM {wide}
+                WHERE trade_date = {target_trade_date_sql}
+            ),
+            evaluated AS (
+                SELECT
+                    target.instrument_id AS instrument_id,
+                    any(target.actual_values) AS actual_values,
+                    argMax(
+                        tuple({source_values}),
+                        tuple(
+                            src.event_date,
+                            src.available_trade_date,
+                            src.f_ann_date,
+                            src.update_flag,
+                            src.sys_from,
+                            src.source_record_hash
+                        )
+                    ) AS expected_values
+                FROM target
+                INNER JOIN {source} src
+                    ON src.instrument_id = target.instrument_id
+                WHERE src.sys_to = {FAR_FUTURE_TS}
+                  AND src.report_type = '1'
+                  AND src.ann_date >= src.event_date
+                  AND src.available_trade_date <= target.available_trade_date
+                GROUP BY target.instrument_id
+            )
+            SELECT
+                countIf(toString(actual_values) != toString(expected_values)) AS issue_count,
+                count() AS checked_count
+            FROM evaluated
+            """,
+            domain,
+            suite_name,
+            "dws_stock_factor_wide",
+            f"dqc_financial_direct_type1_consistency.{source_table}",
+            "consistency",
+            "financial_direct_report_type",
+            "BLOCKER",
+            "Every direct financial field must come from the latest visible normal consolidated report_type=1 row",
+        )
+
+    def _dws_financial_pit_results(
+        self,
+        domain: str,
+        suite_name: str,
+        wide: str,
+        target_trade_date_sql: str,
+    ) -> list[DqcResult]:
+        results: list[DqcResult] = []
+        quarter_configs = [
+            ("dwd_stock_income", "dws_stock_income_quarter"),
+            ("dwd_stock_cashflow", "dws_stock_cashflow_quarter"),
+        ]
+        for source_table, quarter_table in quarter_configs:
+            value_fields = [
+                column["name"]
+                for column in self._dws_spec(quarter_table)["schema"]["columns"]
+                if column.get("data_type") == "float"
+            ]
+            results.extend(
+                self._dws_financial_quarter_state_results(
+                    domain, suite_name, source_table, quarter_table
+                )
+            )
+            results.append(
+                self._dws_financial_quarter_value_result(
+                    domain, suite_name, source_table, quarter_table, value_fields
+                )
+            )
+
+        direct_configs = [
+            (
+                "dwd_stock_income",
+                [
+                    "total_revenue", "revenue", "n_income", "n_income_attr_p",
+                    "compr_inc_attr_p", "compr_inc_attr_m_s", "oper_cost", "total_profit",
+                    "admin_exp", "sell_exp", "fin_exp", "income_tax",
+                    "total_opcost", "assets_impair_loss", "int_exp",
+                ],
+            ),
+            (
+                "dwd_stock_balance_sheet",
+                [
+                    "total_assets", "total_liab", "total_cur_liab", "total_cur_assets",
+                    "money_cap", "total_hldr_eqy_exc_min_int", "div_receiv",
+                    "fa_avail_for_sale", "htm_invest", "int_receiv", "intan_assets", "r_and_d",
+                ],
+            ),
+            (
+                "dwd_stock_cashflow",
+                [
+                    "c_inf_fr_operate_a", "st_cash_out_act", "stot_out_inv_act",
+                    "stot_inflows_inv_act", "stot_cash_in_fnc_act", "stot_cashout_fnc_act",
+                    "c_cash_equ_end_period", "c_fr_sale_sg", "c_pay_acq_const_fiolta",
+                ],
+            ),
+        ]
+        results.extend(
+            [
+                self._dws_financial_direct_value_result(
+                    domain,
+                    suite_name,
+                    wide,
+                    target_trade_date_sql,
+                    source_table,
+                    value_fields,
+                )
+                for source_table, value_fields in direct_configs
+            ]
+        )
+        return results
 
     def _dws_factor_matrix_semantic_results(
         self,

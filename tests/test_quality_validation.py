@@ -380,6 +380,40 @@ class QualityValidationTest(unittest.TestCase):
 
         self.assertNotIn("2010-01-01", rules["financial_no_placeholder_dates"].issue_count_sql)
 
+    def test_financial_statement_visibility_rule_uses_actual_announcement_date(self):
+        manager = QualityManager(settings=self._settings(), db_engine=DummyDB())
+
+        for table_name in (
+            "dwd_stock_income",
+            "dwd_stock_balance_sheet",
+            "dwd_stock_cashflow",
+        ):
+            with self.subTest(table_name=table_name):
+                rules = {
+                    rule.rule_id: rule
+                    for rule in manager.list_rules(
+                        layer="dwd",
+                        table_name=table_name,
+                        target_table_name=f"{table_name}_tmp",
+                    )
+                }
+                sql = rules["financial_no_same_day_pit_visibility"].issue_count_sql
+                self.assertIn("nullIf(f_ann_date, toDate32('1970-01-01'))", sql)
+                self.assertIn("greatest(", sql)
+
+        # These sources have no f_ann_date and must retain the simpler rule.
+        indicator_rules = {
+            rule.rule_id: rule
+            for rule in manager.list_rules(
+                layer="dwd",
+                table_name="dwd_stock_financial_indicator",
+                target_table_name="dwd_stock_financial_indicator_tmp",
+            )
+        }
+        indicator_sql = indicator_rules["financial_no_same_day_pit_visibility"].issue_count_sql
+        self.assertIn("available_trade_date <= ann_date", indicator_sql)
+        self.assertNotIn("f_ann_date", indicator_sql)
+
     def test_dwd_open_version_rule_uses_source_business_key(self):
         manager = QualityManager(settings=self._settings(), db_engine=DummyDB())
 
@@ -426,8 +460,8 @@ class QualityValidationTest(unittest.TestCase):
         sql = manager.render_sync_sql("dwd_stock_share_float")
 
         self.assertIn(
-            "PARTITION BY src.`ts_code`, src.`ann_date`, src.`float_date`, "
-            "src.`holder_name`, src.`share_type`, src.`float_share`, src.`float_ratio`",
+            "PARTITION BY `ts_code`, `ann_date`, `float_date`, "
+            "`holder_name`, `share_type`, `float_share`, `float_ratio`",
             sql,
         )
         self.assertNotIn("src.`float_share` IS NOT NULL", sql)
@@ -566,6 +600,53 @@ class QualityValidationTest(unittest.TestCase):
         self.assertIn("countIf(available_trade_date < trade_date) AS issue_count", rendered_sql)
         self.assertIn("count() AS checked_count", rendered_sql)
         self.assertIn("available_trade_date < trade_date", rendered_sql)
+        self.assertIn("dws_stock_income_quarter", rendered_sql)
+        self.assertIn("dws_stock_cashflow_quarter", rendered_sql)
+        self.assertIn("WHERE toQuarter(change.event_date) != 4", rendered_sql)
+        self.assertIn("next_report.available_trade_date <= change.available_trade_date", rendered_sql)
+        self.assertIn("own.instrument_id = '' AND previous.instrument_id = ''", rendered_sql)
+        self.assertIn("src.report_type = '1'", rendered_sql)
+        self.assertIn("src.ann_date >= src.event_date", rendered_sql)
+        self.assertIn("src.update_flag DESC", rendered_sql)
+        self.assertIn("curr.`revenue` - previous.`revenue`", rendered_sql)
+        self.assertIn("tuple(src.`total_revenue`, src.`revenue`, src.`n_income`", rendered_sql)
+        self.assertIn("countIf(toString(actual_values) != toString(expected_values))", rendered_sql)
+        self.assertIn(
+            "PARTITION BY src.instrument_id, src.event_date, src.available_trade_date",
+            rendered_sql,
+        )
+        self.assertIn(
+            "multiIf(src.report_type = '4', 2, src.report_type = '1', 1, 0) DESC",
+            rendered_sql,
+        )
+        self.assertIn("ASOF therefore resolves only the latest availability date", rendered_sql)
+
+    def test_dqc_financial_pit_rules_are_blockers(self):
+        db = DqcSqlDB()
+        manager = DqcManager(settings=self._settings(), db_engine=db)
+
+        results = manager._dws_financial_pit_results(
+            domain="factor",
+            suite_name="stock_factor_panel",
+            wide="default.dws_stock_factor_wide",
+            target_trade_date_sql="toDate32('2026-05-25')",
+        )
+
+        self.assertEqual(len(results), 9)
+        self.assertTrue(all(result.severity == "BLOCKER" for result in results))
+        rule_ids = {result.rule_id for result in results}
+        self.assertIn(
+            "dqc_financial_quarter_state_causality.dws_stock_income_quarter",
+            rule_ids,
+        )
+        self.assertIn(
+            "dqc_financial_quarter_state_coverage.dws_stock_cashflow_quarter",
+            rule_ids,
+        )
+        self.assertIn(
+            "dqc_financial_direct_type1_consistency.dwd_stock_balance_sheet",
+            rule_ids,
+        )
 
     def test_dqc_matrix_semantic_sql_contains_factor_checks(self):
         db = DqcSqlDB()
@@ -730,8 +811,8 @@ class QualityValidationTest(unittest.TestCase):
         )
 
         self.assertIn("FROM default.dividend_raw src", sql)
-        self.assertIn("PARTITION BY src.`ts_code`, src.`end_date`, src.`ann_date`, src.`div_proc`", sql)
-        self.assertIn("lagInFrame(src._record_hash)", sql)
+        self.assertIn("PARTITION BY `ts_code`, `end_date`, `ann_date`, `div_proc`", sql)
+        self.assertIn("lagInFrame(_record_hash)", sql)
         self.assertIn(availability_expr, sql)
         self.assertIn("coalesce(calendar_map.next_trade_date, src.imp_ann_date", sql)
 
@@ -746,8 +827,8 @@ class QualityValidationTest(unittest.TestCase):
         self.assertNotIn("nullable", columns["theme_code"])
         self.assertNotIn("nullable", columns["trade_date"])
         self.assertIn("FROM default.dc_concept_raw src", sql)
-        self.assertIn("PARTITION BY src.`theme_code`, src.`trade_date`", sql)
-        self.assertIn("lagInFrame(src._record_hash)", sql)
+        self.assertIn("PARTITION BY `theme_code`, `trade_date`", sql)
+        self.assertIn("lagInFrame(_record_hash)", sql)
         self.assertIn("coalesce(calendar_map.next_trade_date, src.trade_date)", sql)
 
     def test_dwd_dc_concept_cons_sql_uses_stock_theme_trade_key(self):
@@ -761,8 +842,8 @@ class QualityValidationTest(unittest.TestCase):
         self.assertNotIn("nullable", columns["trade_date"])
         self.assertIn("FROM default.dc_concept_cons_raw src", sql)
         self.assertIn("concat('stock:', src.ts_code) AS `instrument_id`", sql)
-        self.assertIn("PARTITION BY src.`ts_code`, src.`trade_date`, src.`theme_code`", sql)
-        self.assertIn("lagInFrame(src._record_hash)", sql)
+        self.assertIn("PARTITION BY `ts_code`, `trade_date`, `theme_code`", sql)
+        self.assertIn("lagInFrame(_record_hash)", sql)
 
     def test_dwd_dc_index_sql_uses_board_trade_key_and_no_instrument(self):
         manager = DWDManager()
@@ -775,8 +856,8 @@ class QualityValidationTest(unittest.TestCase):
         self.assertNotIn("nullable", columns["ts_code"])
         self.assertNotIn("nullable", columns["trade_date"])
         self.assertIn("FROM default.dc_index_raw src", sql)
-        self.assertIn("PARTITION BY src.`ts_code`, src.`trade_date`", sql)
-        self.assertIn("lagInFrame(src._record_hash)", sql)
+        self.assertIn("PARTITION BY `ts_code`, `trade_date`", sql)
+        self.assertIn("lagInFrame(_record_hash)", sql)
         self.assertIn("coalesce(calendar_map.next_trade_date, src.trade_date)", sql)
 
     def test_dwd_dc_member_sql_uses_stock_board_trade_key(self):
@@ -790,8 +871,8 @@ class QualityValidationTest(unittest.TestCase):
         self.assertNotIn("nullable", columns["con_code"])
         self.assertIn("FROM default.dc_member_raw src", sql)
         self.assertIn("concat('stock:', src.con_code) AS `instrument_id`", sql)
-        self.assertIn("PARTITION BY src.`trade_date`, src.`ts_code`, src.`con_code`", sql)
-        self.assertIn("lagInFrame(src._record_hash)", sql)
+        self.assertIn("PARTITION BY `trade_date`, `ts_code`, `con_code`", sql)
+        self.assertIn("lagInFrame(_record_hash)", sql)
 
     def test_dwd_index_weight_sql_uses_index_stock_trade_key(self):
         manager = DWDManager()
@@ -804,7 +885,7 @@ class QualityValidationTest(unittest.TestCase):
         self.assertNotIn("nullable", columns["trade_date"])
         self.assertIn("FROM default.index_weight_raw src", sql)
         self.assertIn("concat('stock:', src.con_code) AS `instrument_id`", sql)
-        self.assertIn("PARTITION BY src.`index_code`, src.`con_code`, src.`trade_date`", sql)
+        self.assertIn("PARTITION BY `index_code`, `con_code`, `trade_date`", sql)
         self.assertIn("src.`trade_date` >= toDate32('2010-01-01')", sql)
         self.assertIn("coalesce(calendar_map.next_trade_date, src.trade_date)", sql)
 
@@ -818,7 +899,7 @@ class QualityValidationTest(unittest.TestCase):
         self.assertIn("nullable", columns["parent_code"])
         self.assertIn("FROM default.index_classify_raw raw", sql)
         self.assertIn("concat('index:', raw.index_code) AS `instrument_id`", sql)
-        self.assertIn("PARTITION BY raw.`index_code`", sql)
+        self.assertIn("PARTITION BY `index_code`", sql)
         self.assertIn("toDate(raw._ingest_time) AS `event_date`", sql)
         self.assertIn("coalesce(calendar_map.next_trade_date, toDate(raw._ingest_time))", sql)
 

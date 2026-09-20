@@ -10,8 +10,10 @@ instrument_id_expr: "concat('stock:', src.ts_code)"
 source_code_expr: src.ts_code
 exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.ts_code)), 2)"
 event_date_expr: src.end_date
-calendar_date_expr: src.ann_date
-available_trade_date_expr: coalesce(calendar_map.next_trade_date, src.ann_date, src.end_date)
+# Keep revisions on their real disclosure timeline instead of backfilling them
+# to the original ann_date.
+calendar_date_expr: greatest(coalesce(nullIf(src.ann_date, toDate32('1970-01-01')), src.end_date), coalesce(nullIf(src.f_ann_date, toDate32('1970-01-01')), nullIf(src.ann_date, toDate32('1970-01-01')), src.end_date))
+available_trade_date_expr: coalesce(calendar_map.next_trade_date, greatest(coalesce(nullIf(src.ann_date, toDate32('1970-01-01')), src.end_date), coalesce(nullIf(src.f_ann_date, toDate32('1970-01-01')), nullIf(src.ann_date, toDate32('1970-01-01')), src.end_date)), src.end_date)
 partition_key:
   - toYear(available_trade_date)
 indexes:

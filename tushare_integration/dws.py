@@ -414,7 +414,9 @@ FINANCIAL_FEATURE_SOURCE_CONFIG = {
         "quarter_table": "dws_stock_cashflow_quarter",
         "quarter_source_kind": "quarter_dws",
         "sql_alias": "cashflow",
-        "quarter_report_types": ("2", "3"),
+        # Quarter features come from the canonical cumulative-difference DWS
+        # table, which is built from report types (1, 4). Types (2, 3) remain
+        # useful only as an external reconciliation source.
         "annual_report_types": ("1", "4"),
         "ttm_aggregation": "sum",
     },
@@ -423,7 +425,8 @@ FINANCIAL_FEATURE_SOURCE_CONFIG = {
         "quarter_table": "dws_stock_income_quarter",
         "quarter_source_kind": "quarter_dws",
         "sql_alias": "income",
-        "quarter_report_types": ("2", "3"),
+        # See cashflow above: production quarter/TTM values use cumulative
+        # report types (1, 4), rather than the native single-quarter (2, 3).
         "annual_report_types": ("1", "4"),
         "ttm_aggregation": "sum",
     },
@@ -650,12 +653,18 @@ class DWSManager:
                 PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
                 ORDER BY
                     multiIf(src.report_type IN ('3', '4'), 2, src.report_type IN ('2', '1'), 1, 0) DESC,
+                    src.f_ann_date DESC,
+                    src.update_flag DESC,
                     src.sys_from DESC,
                     src.source_record_hash DESC
             ) AS report_rank
         FROM {db_name}.{config['table']} src
         WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
           AND src.report_type IN ({self._sql_in(report_types)})
+          -- An announcement before its own report period is structurally
+          -- impossible. Keep the raw DWD row for audit, but do not let a
+          -- vendor metadata error enter canonical LYR/MRQ features.
+          AND src.ann_date >= src.event_date
           {annual_filter}
     ) src
     WHERE report_rank = 1
@@ -823,6 +832,92 @@ class DWSManager:
             ]
         )
 
+    @staticmethod
+    def _render_latest_consolidated_statement_cte(
+        db_name: str,
+        cte_name: str,
+        table_name: str,
+        fields: list[str],
+    ) -> str:
+        """Render a PIT state stream for the latest normal consolidated report.
+
+        A late correction to an old report period must not replace a newer
+        report merely because the correction has a later disclosure date.  We
+        therefore resolve versions inside each report period first, and only
+        then choose the greatest report period visible at each state date.
+        Direct wide-table fields intentionally use report_type=1 only; adjusted
+        comparative reports (type 4) remain available to LYR/TTM processing.
+        """
+
+        report_versions_cte = f"{cte_name}_report_versions"
+        state_dates_cte = f"{cte_name}_state_dates"
+        field_select = ",\n        ".join([f"r.`{field}` AS `{field}`" for field in fields])
+        output_field_select = ",\n        ".join([f"`{field}`" for field in fields])
+        return f"""
+{report_versions_cte} AS (
+    SELECT *
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
+                ORDER BY
+                    src.f_ann_date DESC,
+                    src.update_flag DESC,
+                    src.sys_from DESC,
+                    src.source_record_hash DESC
+            ) AS version_rank
+        FROM {db_name}.{table_name} src
+        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
+          AND src.report_type = '1'
+          -- Preserve malformed source rows in DWD for audit, while excluding
+          -- impossible announcement dates from the canonical direct join.
+          AND src.ann_date >= src.event_date
+    ) src
+    WHERE version_rank = 1
+),
+{state_dates_cte} AS (
+    SELECT DISTINCT
+        instrument_id,
+        available_trade_date
+    FROM {report_versions_cte}
+),
+{cte_name} AS (
+    SELECT
+        instrument_id,
+        event_date,
+        available_trade_date,
+        source_batch_id,
+        source_record_hash,
+        {output_field_select}
+    FROM (
+        SELECT
+            d.instrument_id AS instrument_id,
+            r.event_date AS event_date,
+            d.available_trade_date AS available_trade_date,
+            r.source_batch_id AS source_batch_id,
+            r.source_record_hash AS source_record_hash,
+            {field_select},
+            row_number() OVER (
+                PARTITION BY d.instrument_id, d.available_trade_date
+                ORDER BY
+                    r.event_date DESC,
+                    r.available_trade_date DESC,
+                    r.f_ann_date DESC,
+                    r.update_flag DESC,
+                    r.sys_from DESC,
+                    r.source_record_hash DESC
+            ) AS state_rank
+        FROM {state_dates_cte} d
+        INNER JOIN {report_versions_cte} r
+            ON r.instrument_id = d.instrument_id
+        -- ClickHouse only permits the range predicate in ASOF JOIN ON clauses.
+        -- Keep this as an equi-join and apply PIT visibility as a row filter.
+        WHERE r.available_trade_date <= d.available_trade_date
+    ) ranked
+    WHERE state_rank = 1
+)"""
+
     def _render_stock_factor_wide_sync_sql(self, target_table_name: str) -> str:
         db_name = self.settings.database.db_name
         source_table_sql = ",".join(STOCK_FACTOR_WIDE_SOURCES)
@@ -836,6 +931,69 @@ class DWSManager:
         financial_feature_joins = self._render_financial_feature_joins()
         financial_feature_source_batch_id_concat = self._render_financial_feature_lineage_concat("source_batch_id")
         financial_feature_source_record_hash_concat = self._render_financial_feature_lineage_concat("source_record_hash")
+        direct_statement_ctes = ",\n".join(
+            [
+                self._render_latest_consolidated_statement_cte(
+                    db_name,
+                    "income",
+                    "dwd_stock_income",
+                    [
+                        "total_revenue",
+                        "revenue",
+                        "n_income",
+                        "n_income_attr_p",
+                        "compr_inc_attr_p",
+                        "compr_inc_attr_m_s",
+                        "oper_cost",
+                        "total_profit",
+                        "ebit",
+                        "ebitda",
+                        "admin_exp",
+                        "sell_exp",
+                        "fin_exp",
+                        "income_tax",
+                        "total_opcost",
+                        "assets_impair_loss",
+                        "int_exp",
+                    ],
+                ),
+                self._render_latest_consolidated_statement_cte(
+                    db_name,
+                    "balance_sheet",
+                    "dwd_stock_balance_sheet",
+                    [
+                        "total_assets",
+                        "total_liab",
+                        "total_cur_liab",
+                        "total_cur_assets",
+                        "money_cap",
+                        "total_hldr_eqy_exc_min_int",
+                        "div_receiv",
+                        "fa_avail_for_sale",
+                        "htm_invest",
+                        "int_receiv",
+                        "intan_assets",
+                        "r_and_d",
+                    ],
+                ),
+                self._render_latest_consolidated_statement_cte(
+                    db_name,
+                    "cashflow",
+                    "dwd_stock_cashflow",
+                    [
+                        "c_inf_fr_operate_a",
+                        "st_cash_out_act",
+                        "stot_out_inv_act",
+                        "stot_inflows_inv_act",
+                        "stot_cash_in_fnc_act",
+                        "stot_cashout_fnc_act",
+                        "c_cash_equ_end_period",
+                        "c_fr_sale_sg",
+                        "c_pay_acq_const_fiolta",
+                    ],
+                ),
+            ]
+        )
         return f"""
 INSERT INTO {db_name}.{target_table_name}
 WITH
@@ -862,6 +1020,29 @@ quote_metrics AS (
     FROM {db_name}.dwd_stock_eod_quote_metrics
     WHERE sys_to = {FAR_FUTURE_TS_SQL}
       AND event_date >= {MIN_LAYER_TRADE_DATE_SQL}
+),
+financial_indicator_report_versions AS (
+    SELECT *
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
+                ORDER BY
+                    src.update_flag DESC,
+                    src.sys_from DESC,
+                    src.source_record_hash DESC
+            ) AS version_rank
+        FROM {db_name}.dwd_stock_financial_indicator src
+        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
+    ) src
+    WHERE version_rank = 1
+),
+financial_indicator_state_dates AS (
+    SELECT DISTINCT
+        instrument_id,
+        available_trade_date
+    FROM financial_indicator_report_versions
 ),
 financial_indicator AS (
     SELECT
@@ -898,123 +1079,54 @@ financial_indicator AS (
         ebitda
     FROM (
         SELECT
-            src.*,
+            d.instrument_id AS instrument_id,
+            src.event_date AS event_date,
+            d.available_trade_date AS available_trade_date,
+            src.source_batch_id AS source_batch_id,
+            src.source_record_hash AS source_record_hash,
+            src.roe AS roe,
+            src.roa AS roa,
+            src.roic AS roic,
+            src.grossprofit_margin AS grossprofit_margin,
+            src.netprofit_margin AS netprofit_margin,
+            src.or_yoy AS or_yoy,
+            src.netprofit_yoy AS netprofit_yoy,
+            src.op_yoy AS op_yoy,
+            src.basic_eps_yoy AS basic_eps_yoy,
+            src.q_roe AS q_roe,
+            src.q_gsprofit_margin AS q_gsprofit_margin,
+            src.q_netprofit_yoy AS q_netprofit_yoy,
+            src.q_sales_yoy AS q_sales_yoy,
+            src.ocf_to_or AS ocf_to_or,
+            src.ocf_to_profit AS ocf_to_profit,
+            src.debt_to_assets AS debt_to_assets,
+            src.current_ratio AS current_ratio,
+            src.eps AS eps,
+            src.bps AS bps,
+            src.ocfps AS ocfps,
+            src.rd_exp AS rd_exp,
+            src.assets_turn AS assets_turn,
+            src.inv_turn AS inv_turn,
+            src.ar_turn AS ar_turn,
+            src.ebit AS ebit,
+            src.ebitda AS ebitda,
             row_number() OVER (
-                PARTITION BY src.instrument_id, src.available_trade_date
+                PARTITION BY d.instrument_id, d.available_trade_date
                 ORDER BY
                     src.event_date DESC,
+                    src.available_trade_date DESC,
+                    src.update_flag DESC,
                     src.sys_from DESC,
                     src.source_record_hash DESC
             ) AS financial_rank
-        FROM {db_name}.dwd_stock_financial_indicator src
-        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
+        FROM financial_indicator_state_dates d
+        INNER JOIN financial_indicator_report_versions src
+            ON src.instrument_id = d.instrument_id
+        WHERE src.available_trade_date <= d.available_trade_date
     ) src
     WHERE financial_rank = 1
 ),
-income AS (
-    SELECT
-        instrument_id,
-        event_date,
-        available_trade_date,
-        source_batch_id,
-        source_record_hash,
-        total_revenue,
-        revenue,
-        n_income,
-        n_income_attr_p,
-        compr_inc_attr_p,
-        compr_inc_attr_m_s,
-        oper_cost,
-        total_profit,
-        ebit,
-        ebitda,
-        admin_exp,
-        sell_exp,
-        fin_exp,
-        income_tax,
-        total_opcost,
-        assets_impair_loss,
-        int_exp
-    FROM (
-        SELECT
-            src.*,
-            row_number() OVER (
-                PARTITION BY src.instrument_id, src.available_trade_date
-                ORDER BY
-                    src.event_date DESC,
-                    src.sys_from DESC,
-                    src.source_record_hash DESC
-            ) AS income_rank
-        FROM {db_name}.dwd_stock_income src
-        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
-    ) src
-    WHERE income_rank = 1
-),
-balance_sheet AS (
-    SELECT
-        instrument_id,
-        event_date,
-        available_trade_date,
-        source_batch_id,
-        source_record_hash,
-        total_assets,
-        total_liab,
-        total_cur_liab,
-        total_cur_assets,
-        money_cap,
-        total_hldr_eqy_exc_min_int,
-        div_receiv,
-        fa_avail_for_sale,
-        htm_invest,
-        int_receiv,
-        intan_assets,
-        r_and_d
-    FROM (
-        SELECT
-            src.*,
-            row_number() OVER (
-                PARTITION BY src.instrument_id, src.available_trade_date
-                ORDER BY
-                    src.event_date DESC,
-                    src.sys_from DESC,
-                    src.source_record_hash DESC
-            ) AS balance_sheet_rank
-        FROM {db_name}.dwd_stock_balance_sheet src
-        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
-    ) src
-    WHERE balance_sheet_rank = 1
-),
-cashflow AS (
-    SELECT
-        instrument_id,
-        event_date,
-        available_trade_date,
-        source_batch_id,
-        source_record_hash,
-        c_inf_fr_operate_a,
-        st_cash_out_act,
-        stot_out_inv_act,
-        stot_inflows_inv_act,
-        stot_cash_in_fnc_act,
-        stot_cashout_fnc_act,
-        c_cash_equ_end_period,
-        c_fr_sale_sg,
-        c_pay_acq_const_fiolta
-    FROM (
-        SELECT
-            src.*,
-            row_number() OVER (
-                PARTITION BY src.instrument_id, src.available_trade_date
-                ORDER BY
-                    src.event_date DESC,
-                    src.sys_from DESC,
-                    src.source_record_hash DESC
-            ) AS cashflow_rank
-        FROM {db_name}.dwd_stock_cashflow src
-        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
-    ) src
-    WHERE cashflow_rank = 1
-),
+{direct_statement_ctes},
 {financial_feature_ctes},
 northbound_holding AS (
     SELECT *
@@ -1444,8 +1556,9 @@ FROM factor_rows
         report_types: tuple[str, ...] | None = None,
     ) -> str:
         db_name = self.settings.database.db_name
-        field_selects = ",\n        ".join([f"`{field}`" for field in fields])
         curr_selects = ",\n        ".join([f"curr.`{field}` AS `{field}`" for field in fields])
+        report_field_selects = ",\n        ".join([f"`{field}`" for field in fields])
+        candidate_field_selects = ",\n        ".join([f"r.`{field}` AS `{field}`" for field in fields])
         prev_selects = ",\n        ".join(
             [
                 f"prev.`{field}` AS `prev_{field}`"
@@ -1460,14 +1573,41 @@ FROM factor_rows
         )
         if report_types:
             report_type_filter = f"AND src.report_type IN ({self._sql_in(report_types)})"
+            announcement_validity_filter = "AND src.ann_date >= src.event_date"
+            report_version_columns = "report_type,\n        f_ann_date,"
             report_rank_order = (
                 "multiIf(src.report_type = '4', 2, src.report_type = '1', 1, 0) DESC,\n"
+                "                    src.f_ann_date DESC,\n"
+                "                    src.update_flag DESC,\n"
                 "                    src.sys_from DESC,\n"
                 "                    src.source_record_hash DESC"
             )
+            current_rank_order = (
+                "r.available_trade_date DESC,\n"
+                "                    multiIf(r.report_type = '4', 2, r.report_type = '1', 1, 0) DESC,\n"
+                "                    r.f_ann_date DESC,\n"
+                "                    r.update_flag DESC,\n"
+                "                    r.sys_from DESC,\n"
+                "                    r.source_record_hash DESC"
+            )
         else:
             report_type_filter = ""
-            report_rank_order = "src.sys_from DESC,\n                    src.source_record_hash DESC"
+            announcement_validity_filter = ""
+            report_version_columns = ""
+            # fina_indicator has no report_type/f_ann_date.  update_flag is a
+            # deterministic tie-breaker only; its ann_date still defines when
+            # the source version becomes market-visible.
+            report_rank_order = (
+                "src.update_flag DESC,\n"
+                "                    src.sys_from DESC,\n"
+                "                    src.source_record_hash DESC"
+            )
+            current_rank_order = (
+                "r.available_trade_date DESC,\n"
+                "                    r.update_flag DESC,\n"
+                "                    r.sys_from DESC,\n"
+                "                    r.source_record_hash DESC"
+            )
 
         return f"""
 INSERT INTO {db_name}.{target_table_name}
@@ -1482,7 +1622,10 @@ reports AS (
         available_trade_date,
         source_batch_id,
         source_record_hash,
-        {field_selects}
+        update_flag,
+        sys_from,
+        {report_version_columns}
+        {report_field_selects}
     FROM (
         SELECT
             src.*,
@@ -1496,8 +1639,68 @@ reports AS (
           AND src.event_date >= {MIN_LAYER_TRADE_DATE_SQL}
           AND toMonth(src.event_date) IN (3, 6, 9, 12)
           {report_type_filter}
+          {announcement_validity_filter}
     ) src
     WHERE report_rank = 1
+),
+report_changes AS (
+    SELECT DISTINCT
+        instrument_id,
+        available_trade_date AS state_available_trade_date,
+        event_date AS affected_event_date
+    FROM reports
+),
+affected_quarters AS (
+    -- A cumulative revision changes its own quarter and, except for Q4, the
+    -- following quarter whose delta subtracts this cumulative value.
+    SELECT
+        instrument_id,
+        state_available_trade_date,
+        affected_event_date
+    FROM report_changes
+    UNION DISTINCT
+    SELECT
+        change.instrument_id,
+        change.state_available_trade_date,
+        toLastDayOfMonth(addMonths(change.affected_event_date, 3)) AS affected_event_date
+    FROM report_changes AS change
+    -- Qualify the input column: ClickHouse otherwise expands the SELECT alias
+    -- in WHERE, tests the *next* quarter, and reverses the intended Q3/Q4 edge.
+    WHERE toQuarter(change.affected_event_date) != 4
+),
+current_candidates AS (
+    SELECT
+        a.state_available_trade_date AS state_available_trade_date,
+        r.instrument_id AS instrument_id,
+        r.instrument_type AS instrument_type,
+        r.exchange AS exchange,
+        r.source_code AS source_code,
+        r.event_date AS event_date,
+        r.available_trade_date AS report_available_trade_date,
+        r.source_batch_id AS source_batch_id,
+        r.source_record_hash AS source_record_hash,
+        {candidate_field_selects},
+        row_number() OVER (
+            PARTITION BY a.instrument_id, a.affected_event_date, a.state_available_trade_date
+            ORDER BY
+                {current_rank_order}
+        ) AS current_rank
+    FROM affected_quarters a
+    INNER JOIN reports r
+        ON r.instrument_id = a.instrument_id
+       AND r.event_date = a.affected_event_date
+    WHERE r.available_trade_date <= a.state_available_trade_date
+),
+current_reports AS (
+    SELECT
+        *,
+        if(
+            toQuarter(event_date) = 1,
+            toDate32('1970-01-01'),
+            toLastDayOfMonth(addMonths(event_date, -3))
+        ) AS previous_event_date
+    FROM current_candidates
+    WHERE current_rank = 1
 ),
 quarter_candidates AS (
     SELECT
@@ -1508,26 +1711,22 @@ quarter_candidates AS (
         curr.event_date AS event_date,
         toUInt16(toYear(curr.event_date)) AS fiscal_year,
         toUInt8(toQuarter(curr.event_date)) AS fiscal_quarter,
-        curr.available_trade_date AS available_trade_date,
+        curr.state_available_trade_date AS available_trade_date,
         curr.source_batch_id AS source_batch_id,
         curr.source_record_hash AS source_record_hash,
         prev.instrument_id AS prev_instrument_id,
         prev.source_batch_id AS prev_source_batch_id,
         prev.source_record_hash AS prev_source_record_hash,
         {curr_selects},
-        {prev_selects},
-        row_number() OVER (
-            PARTITION BY curr.instrument_id, curr.event_date, curr.available_trade_date
-            ORDER BY
-                prev.available_trade_date DESC,
-                prev.source_record_hash DESC
-        ) AS prev_rank
-    FROM reports curr
-    LEFT JOIN reports prev
+        {prev_selects}
+    FROM current_reports curr
+    -- reports is unique per report period and availability date. ASOF therefore
+    -- returns the latest previous-quarter version visible at this state date.
+    -- Q1 uses an impossible report period so it keeps an empty previous side.
+    ASOF LEFT JOIN reports prev
         ON prev.instrument_id = curr.instrument_id
-       AND toQuarter(curr.event_date) != 1
-       AND prev.event_date = toLastDayOfMonth(addMonths(curr.event_date, -3))
-       AND prev.available_trade_date <= curr.available_trade_date
+       AND prev.event_date = curr.previous_event_date
+       AND curr.state_available_trade_date >= prev.available_trade_date
 )
 SELECT
     instrument_id,
@@ -1549,7 +1748,6 @@ SELECT
         coalesce(prev_source_record_hash, '')
     )))) AS source_record_hash
 FROM quarter_candidates
-WHERE prev_rank = 1
 """
 
     def _render_stock_financial_indicator_quarter_sync_sql(self, target_table_name: str) -> str:

@@ -153,15 +153,26 @@ class DWDManager:
         return f"""
 calendar_map AS (
     SELECT
-        c.cal_date AS calendar_date,
-        min(o.cal_date) AS next_trade_date
-    FROM {db_name}.{CALENDAR_SOURCE_TABLE} c
-    LEFT JOIN {db_name}.{CALENDAR_SOURCE_TABLE} o
-        ON o.exchange = c.exchange
-       AND o.is_open = 1
-       AND o.cal_date > c.cal_date
-    WHERE c.exchange = 'SSE'
-    GROUP BY c.cal_date
+        calendar_date,
+        -- The frame begins on the following calendar row, preserving the
+        -- project's strict "next trading day" visibility convention.  The
+        -- inner GROUP BY first collapses multiple ingested calendar versions;
+        -- otherwise a duplicate open-day row can be mistaken for "following".
+        nullIf(
+            minIf(calendar_date, is_open = 1) OVER (
+                ORDER BY calendar_date
+                ROWS BETWEEN 1 FOLLOWING AND UNBOUNDED FOLLOWING
+            ),
+            toDate32('1970-01-01')
+        ) AS next_trade_date
+    FROM (
+        SELECT
+            cal_date AS calendar_date,
+            max(is_open) AS is_open
+        FROM {db_name}.{CALENDAR_SOURCE_TABLE}
+        WHERE exchange = 'SSE'
+        GROUP BY cal_date
+    )
 )"""
 
     def _render_generic_sync_sql(self, spec: dict[str, Any], target_table_name: str) -> str:
@@ -179,7 +190,10 @@ calendar_map AS (
             for column in source_schema["columns"]
             if column["name"] not in source_column_excludes
         ]
-        business_key_partition = ", ".join([f"{source_alias}.{_quote_column(column)}" for column in business_key])
+        # The window input has a single source. Keeping its business-key
+        # columns unqualified avoids ClickHouse losing the nested alias while
+        # resolving window expressions through the outer calendar join.
+        business_key_partition = ", ".join([_quote_column(column) for column in business_key])
         source_filters = [
             f"{source_alias}.{_quote_column(column)} IS NOT NULL"
             for column in business_key
@@ -244,18 +258,18 @@ SELECT
 FROM (
     SELECT
         {source_alias}.*,
-        leadInFrame({source_alias}._ingest_time, 1, {FAR_FUTURE_TS_SQL}) OVER (
+        leadInFrame(_ingest_time, 1, {FAR_FUTURE_TS_SQL}) OVER (
             PARTITION BY {business_key_partition}
-            ORDER BY {source_alias}._ingest_time, {source_alias}._batch_id, {source_alias}._record_hash
+            ORDER BY _ingest_time, _batch_id, _record_hash
             ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
         ) AS _next_sys_from
         {calendar_lookup_select}
     FROM (
         SELECT
             {source_alias}.*,
-            lagInFrame({source_alias}._record_hash) OVER (
+            lagInFrame(_record_hash) OVER (
                 PARTITION BY {business_key_partition}
-                ORDER BY {source_alias}._ingest_time, {source_alias}._batch_id, {source_alias}._record_hash
+                ORDER BY _ingest_time, _batch_id, _record_hash
                 ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
             ) AS _prev_record_hash
         FROM {db_name}.{spec['source']['table_name']} {source_alias}
