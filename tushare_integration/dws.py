@@ -431,9 +431,14 @@ FINANCIAL_FEATURE_SOURCE_CONFIG = {
         "ttm_aggregation": "sum",
     },
     "fina_indicator": {
-        "table": "dws_stock_financial_indicator_quarter",
+        # LYR fields must retain the cumulative/full-year value published in
+        # the annual financial-indicator report.  Only MRQ/TTM fields consume
+        # the single-quarter values derived in the quarter DWS table.
+        "table": "dwd_stock_financial_indicator",
+        "source_kind": "raw_versioned_no_report_type",
+        "quarter_table": "dws_stock_financial_indicator_quarter",
+        "quarter_source_kind": "quarter_dws",
         "sql_alias": "financial_indicator_quarter",
-        "source_kind": "quarter_dws",
         "ttm_aggregation": {
             "__default__": "avg",
             "ebit": "sum",
@@ -627,6 +632,35 @@ class DWSManager:
         FROM {db_name}.{config['table']} src
         WHERE src.event_date >= {MIN_LAYER_TRADE_DATE_SQL}
           {period_filter}
+    ) src
+    WHERE report_rank = 1
+)"""
+        if config.get("source_kind") == "raw_versioned_no_report_type":
+            field_select = ",\n        ".join([f"`{field}`" for field in fields])
+            if field_select:
+                field_select = ",\n        " + field_select
+
+            return f"""
+{cte_name} AS (
+    SELECT
+        instrument_id,
+        event_date AS report_period,
+        available_trade_date,
+        source_batch_id,
+        source_record_hash{field_select}
+    FROM (
+        SELECT
+            src.*,
+            row_number() OVER (
+                PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
+                ORDER BY
+                    src.update_flag DESC,
+                    src.sys_from DESC,
+                    src.source_record_hash DESC
+            ) AS report_rank
+        FROM {db_name}.{config['table']} src
+        WHERE src.sys_to = {FAR_FUTURE_TS_SQL}
+          AND toMonth(src.event_date) = 12
     ) src
     WHERE report_rank = 1
 )"""

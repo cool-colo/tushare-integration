@@ -391,6 +391,17 @@ class TushareResponseTest(unittest.TestCase):
             "financial_indicator_quarter_annual_features.`ebitda_lyr` AS `ebitda_lyr`",
             sql,
         )
+        annual_start = sql.index("financial_indicator_quarter_annual_reports AS (")
+        annual_end = sql.index("financial_indicator_quarter_annual_dates AS (", annual_start)
+        annual_sql = sql[annual_start:annual_end]
+        self.assertIn("FROM default.dwd_stock_financial_indicator src", annual_sql)
+        self.assertIn("AND toMonth(src.event_date) = 12", annual_sql)
+        self.assertNotIn("FROM default.dws_stock_financial_indicator_quarter src", annual_sql)
+
+        quarter_start = sql.index("financial_indicator_quarter_quarter_reports AS (")
+        quarter_end = sql.index("financial_indicator_quarter_quarter_dates AS (", quarter_start)
+        quarter_sql = sql[quarter_start:quarter_end]
+        self.assertIn("FROM default.dws_stock_financial_indicator_quarter src", quarter_sql)
         self.assertIn("daily_basic.`volume_ratio` AS `volume_ratio`", sql)
         self.assertIn(
             "`total_mv` * 10000 + `interestdebt_ttm` - `money_cap_ttm_0` AS `ev_ttm`",
