@@ -34,10 +34,10 @@
 | `adj_factor` | 复权因子 | adj_factor（复权因子） | adj_factor | adj_factor: 复权因子 | 直接取 Tushare 原始字段；仅做字段标准化、PIT可见性或同日/历史可见关联。 |
 | `buying` | 外盘 | bak_daily（备用行情） | buying | buying: 内盘 | 直接取 Tushare 原始字段；仅做字段标准化、PIT可见性或同日/历史可见关联。 |
 | `selling` | 内盘 | bak_daily（备用行情） | selling | selling: 外盘 | 直接取 Tushare 原始字段；仅做字段标准化、PIT可见性或同日/历史可见关联。 |
-| `vol_ratio` | 量比 | bak_daily（备用行情） | vol_ratio | vol_ratio: 量比 | 直接取 Tushare 原始字段；仅做字段标准化、PIT可见性或同日/历史可见关联。 |
-| `turn_over` | 换手率 | bak_daily（备用行情） | turn_over | turn_over: 换手率 | 直接取 Tushare 原始字段；仅做字段标准化、PIT可见性或同日/历史可见关联。 |
-| `swing` | 振幅 | bak_daily（备用行情） | swing | swing: 振幅 | 直接取 Tushare 原始字段；仅做字段标准化、PIT可见性或同日/历史可见关联。 |
-| `avg_price` | 均价 | bak_daily（备用行情） | avg_price | avg_price: 平均价 | 直接取 Tushare 原始字段；仅做字段标准化、PIT可见性或同日/历史可见关联。 |
+| `vol_ratio` | 量比 | daily_basic（每日指标） | volume_ratio | volume_ratio: 量比 | 字段重命名：daily_basic.volume_ratio -> vol_ratio。 |
+| `turn_over` | 换手率 | daily_basic（每日指标） | turnover_rate | turnover_rate: 换手率 | 字段重命名：daily_basic.turnover_rate -> turn_over；不是自由流通股换手率 turnover_rate_f。 |
+| `swing` | 振幅 | daily（日线行情） | high, low, pre_close | high: 最高价；low: 最低价；pre_close: 昨收价 | 计算公式：(high - low) / pre_close * 100；pre_close 为 0 时结果为空。 |
+| `avg_price` | 均价 | daily（日线行情） | amount, vol | amount: 成交额；vol: 成交量 | 按 Tushare 单位计算：amount * 10 / vol；vol 为 0 时结果为空。 |
 | `strength` | 强弱度 | bak_daily（备用行情） | strength | strength: 强弱度(%) | 直接取 Tushare 原始字段；仅做字段标准化、PIT可见性或同日/历史可见关联。 |
 | `activity` | 活跃度 | bak_daily（备用行情） | activity | activity: 活跃度(%) | 直接取 Tushare 原始字段；仅做字段标准化、PIT可见性或同日/历史可见关联。 |
 | `avg_turnover` | 笔换手 | bak_daily（备用行情） | avg_turnover | avg_turnover: 笔换手 | 直接取 Tushare 原始字段；仅做字段标准化、PIT可见性或同日/历史可见关联。 |

@@ -60,6 +60,7 @@ DWD_TRADE_RELEVANT_TABLES = {
 
 DWS_TRADE_DATE_COLUMNS = {
     "dws_stock_factor_wide": "trade_date",
+    "dws_stock_factor_wide_v2": "trade_date",
     "dws_stock_factor_wide_matrix": "trade_date",
 }
 
@@ -68,7 +69,11 @@ DQC_DEFAULT_SUITE_BY_LAYER = {
 }
 
 DQC_SUITE_TABLES = {
-    ("dws", "stock_factor_panel"): ["dws_stock_factor_wide", "dws_stock_factor_wide_matrix"],
+    ("dws", "stock_factor_panel"): [
+        "dws_stock_factor_wide",
+        "dws_stock_factor_wide_v2",
+        "dws_stock_factor_wide_matrix",
+    ],
 }
 
 DQC_SUITE_DOMAIN = {
@@ -1106,7 +1111,7 @@ class QualityManager:
         qualified = self._quote_table(db_name, target_table_name)
         validation_filter = self._dws_validation_filter(table_name)
         rules = [self._row_count_rule(qualified, validation_filter)]
-        if table_name == "dws_stock_factor_wide":
+        if table_name in {"dws_stock_factor_wide", "dws_stock_factor_wide_v2"}:
             rules.extend(
                 [
                     ValidationRule(
@@ -2592,8 +2597,16 @@ class DqcManager:
                 )
             )
 
-        if table_name == "dws_stock_factor_wide":
-            checks.extend(self._dws_factor_wide_semantic_results(domain, suite_name, qualified, target_trade_date_sql))
+        if table_name in {"dws_stock_factor_wide", "dws_stock_factor_wide_v2"}:
+            checks.extend(
+                self._dws_factor_wide_semantic_results(
+                    domain,
+                    suite_name,
+                    table_name,
+                    qualified,
+                    target_trade_date_sql,
+                )
+            )
         if table_name == "dws_stock_factor_wide_matrix":
             checks.extend(
                 self._dws_factor_matrix_semantic_results(domain, suite_name, qualified, target_trade_date_sql)
@@ -2644,10 +2657,10 @@ class DqcManager:
         self,
         domain: str,
         suite_name: str,
+        table_name: str,
         qualified: str,
         target_trade_date_sql: str,
     ) -> list[DqcResult]:
-        table_name = "dws_stock_factor_wide"
         nonnegative_columns = [
             "vol",
             "amount",
@@ -2724,15 +2737,205 @@ class DqcManager:
         # These checks intentionally run with the wide-table DQC. The wide
         # table is the final consumer of the statement DWD and quarter DWS
         # tables, so post-publish DQC can verify the complete PIT chain.
-        results.extend(
-            self._dws_financial_pit_results(
-                domain=domain,
-                suite_name=suite_name,
-                wide=qualified,
-                target_trade_date_sql=target_trade_date_sql,
+        if table_name == "dws_stock_factor_wide":
+            results.extend(
+                self._dws_financial_pit_results(
+                    domain=domain,
+                    suite_name=suite_name,
+                    wide=qualified,
+                    target_trade_date_sql=target_trade_date_sql,
+                )
             )
-        )
+        else:
+            results.extend(
+                self._dws_factor_wide_v2_financial_results(
+                    domain=domain,
+                    suite_name=suite_name,
+                    wide=qualified,
+                    target_trade_date_sql=target_trade_date_sql,
+                )
+            )
         return results
+
+    def _dws_factor_wide_v2_financial_results(
+        self,
+        domain: str,
+        suite_name: str,
+        wide: str,
+        target_trade_date_sql: str,
+    ) -> list[DqcResult]:
+        db_name = self.settings.database.db_name
+        balance_reports = self._dqc_financial_reports_cte(
+            db_name,
+            "dwd_stock_balance_sheet",
+            ["total_assets"],
+        )
+        nullable_mismatch = self._dqc_nullable_float_mismatch("actual_value", "expected_value")
+
+        mrq_result = self._query_issue_result(
+            f"""
+            WITH
+            {balance_reports},
+            target AS (
+                SELECT
+                    instrument_id,
+                    available_trade_date,
+                    total_assets_mrq_0 AS actual_value,
+                    addDays(toStartOfQuarter(addDays(available_trade_date, 1)), -1) AS expected_period
+                FROM {wide}
+                WHERE trade_date = {target_trade_date_sql}
+            ),
+            evaluated AS (
+                SELECT
+                    target.actual_value AS actual_value,
+                    report.total_assets AS expected_value
+                FROM target
+                ASOF LEFT JOIN reports report
+                    ON target.instrument_id = report.instrument_id
+                   AND target.expected_period = report.event_date
+                   AND target.available_trade_date >= report.available_trade_date
+            )
+            SELECT countIf({nullable_mismatch}) AS issue_count, count() AS checked_count
+            FROM evaluated
+            """,
+            domain,
+            suite_name,
+            "dws_stock_factor_wide_v2",
+            "dqc_v2_mrq_0_fixed_period",
+            "consistency",
+            "financial_fixed_period",
+            "BLOCKER",
+            "MRQ index 0 must equal the latest visible version of the expected calendar quarter, or NULL",
+        )
+
+        income_quarter = QualityManager._quote_table(db_name, "dws_stock_income_quarter")
+        ttm_sum_result = self._query_issue_result(
+            f"""
+            WITH
+            reports AS (
+                SELECT instrument_id, event_date, available_trade_date, source_record_hash, revenue
+                FROM (
+                    SELECT
+                        src.*,
+                        row_number() OVER (
+                            PARTITION BY instrument_id, event_date, available_trade_date
+                            ORDER BY build_time DESC, source_record_hash DESC
+                        ) AS report_rank
+                    FROM {income_quarter} src
+                )
+                WHERE report_rank = 1
+            ),
+            target_periods AS (
+                SELECT
+                    instrument_id,
+                    available_trade_date,
+                    revenue_ttm_0 AS actual_value,
+                    report_offset,
+                    addDays(
+                        addMonths(
+                            toStartOfQuarter(addDays(available_trade_date, 1)),
+                            -3 * toInt32(report_offset)
+                        ),
+                        -1
+                    ) AS expected_period
+                FROM {wide}
+                ARRAY JOIN range(4) AS report_offset
+                WHERE trade_date = {target_trade_date_sql}
+            ),
+            selected AS (
+                SELECT
+                    target.instrument_id AS instrument_id,
+                    target.actual_value AS actual_value,
+                    if(report.source_record_hash != '', 1, 0) AS report_exists,
+                    report.revenue AS value
+                FROM target_periods target
+                ASOF LEFT JOIN reports report
+                    ON target.instrument_id = report.instrument_id
+                   AND target.expected_period = report.event_date
+                   AND target.available_trade_date >= report.available_trade_date
+            ),
+            evaluated AS (
+                SELECT
+                    any(actual_value) AS actual_value,
+                    if(
+                        countIf(report_exists = 1) = 4 AND countIf(value IS NOT NULL) > 0,
+                        sum(ifNull(value, 0.0)) / countIf(value IS NOT NULL) * 4,
+                        CAST(NULL, 'Nullable(Float64)')
+                    ) AS expected_value
+                FROM selected
+                GROUP BY instrument_id
+            )
+            SELECT countIf({nullable_mismatch}) AS issue_count, count() AS checked_count
+            FROM evaluated
+            """,
+            domain,
+            suite_name,
+            "dws_stock_factor_wide_v2",
+            "dqc_v2_ttm_sum_missing_policy",
+            "consistency",
+            "financial_ttm_sum",
+            "BLOCKER",
+            "Revenue TTM must require four report periods and annualize over its non-NULL field count",
+        )
+
+        balance_reports_for_ttm = balance_reports.replace("reports AS", "balance_reports AS", 1)
+        ttm_avg_result = self._query_issue_result(
+            f"""
+            WITH
+            {balance_reports_for_ttm},
+            target_periods AS (
+                SELECT
+                    instrument_id,
+                    available_trade_date,
+                    total_assets_ttm_0 AS actual_value,
+                    report_offset,
+                    addDays(
+                        addMonths(
+                            toStartOfQuarter(addDays(available_trade_date, 1)),
+                            -3 * toInt32(report_offset)
+                        ),
+                        -1
+                    ) AS expected_period
+                FROM {wide}
+                ARRAY JOIN range(4) AS report_offset
+                WHERE trade_date = {target_trade_date_sql}
+            ),
+            selected AS (
+                SELECT
+                    target.instrument_id AS instrument_id,
+                    target.actual_value AS actual_value,
+                    if(report.source_record_hash != '', 1, 0) AS report_exists,
+                    report.total_assets AS value
+                FROM target_periods target
+                ASOF LEFT JOIN balance_reports report
+                    ON target.instrument_id = report.instrument_id
+                   AND target.expected_period = report.event_date
+                   AND target.available_trade_date >= report.available_trade_date
+            ),
+            evaluated AS (
+                SELECT
+                    any(actual_value) AS actual_value,
+                    if(
+                        countIf(report_exists = 1) = 4 AND countIf(value IS NOT NULL) > 0,
+                        sum(ifNull(value, 0.0)) / countIf(value IS NOT NULL),
+                        CAST(NULL, 'Nullable(Float64)')
+                    ) AS expected_value
+                FROM selected
+                GROUP BY instrument_id
+            )
+            SELECT countIf({nullable_mismatch}) AS issue_count, count() AS checked_count
+            FROM evaluated
+            """,
+            domain,
+            suite_name,
+            "dws_stock_factor_wide_v2",
+            "dqc_v2_ttm_avg_missing_policy",
+            "consistency",
+            "financial_ttm_average",
+            "BLOCKER",
+            "Total-assets TTM must require four report periods and average over its non-NULL field count",
+        )
+        return [mrq_result, ttm_sum_result, ttm_avg_result]
 
     @staticmethod
     def _dqc_financial_reports_cte(

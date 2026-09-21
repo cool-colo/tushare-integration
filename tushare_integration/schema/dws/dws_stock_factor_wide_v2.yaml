@@ -1,0 +1,6975 @@
+id: 3006
+name: dws_stock_factor_wide_v2
+comment: 股票因子计算宽表汇总层V2（固定报告期索引）
+builder: stock_factor_wide_v2
+schema:
+  comment: 股票因子计算宽表汇总层V2（固定报告期索引）
+  primary_key: []
+  partition_key:
+  - toYear(available_trade_date)
+  indexes:
+  - name: dws_stock_factor_wide_v2_idx
+    columns:
+    - instrument_id
+    - event_date
+  columns:
+  - name: instrument_id
+    data_type: str
+    length: 64
+    comment: 统一证券ID
+  - name: instrument_type
+    data_type: str
+    length: 32
+    comment: 证券类型
+  - name: exchange
+    data_type: str
+    length: 32
+    comment: 交易所
+  - name: source_code
+    data_type: str
+    length: 64
+    comment: 源侧证券代码
+  - name: event_date
+    data_type: date
+    comment: 业务归属日期
+  - name: trade_date
+    data_type: date
+    comment: 交易日期
+  - name: available_trade_date
+    data_type: date
+    comment: 最早可用交易日
+  - name: open
+    data_type: float
+    nullable: true
+    comment: 开盘价
+  - name: high
+    data_type: float
+    nullable: true
+    comment: 最高价
+  - name: low
+    data_type: float
+    nullable: true
+    comment: 最低价
+  - name: close
+    data_type: float
+    nullable: true
+    comment: 收盘价
+  - name: pre_close
+    data_type: float
+    nullable: true
+    comment: 昨收价
+  - name: pct_chg
+    data_type: float
+    nullable: true
+    comment: 涨跌幅
+  - name: vol
+    data_type: float
+    nullable: true
+    comment: 成交量
+  - name: amount
+    data_type: float
+    nullable: true
+    comment: 成交额
+  - name: adj_factor
+    data_type: float
+    nullable: true
+    comment: 复权因子
+  - name: buying
+    data_type: float
+    nullable: true
+    comment: 外盘
+  - name: selling
+    data_type: float
+    nullable: true
+    comment: 内盘
+  - name: vol_ratio
+    data_type: float
+    nullable: true
+    comment: 量比
+  - name: turn_over
+    data_type: float
+    nullable: true
+    comment: 换手率
+  - name: swing
+    data_type: float
+    nullable: true
+    comment: 振幅
+  - name: avg_price
+    data_type: float
+    nullable: true
+    comment: 均价
+  - name: strength
+    data_type: float
+    nullable: true
+    comment: 强弱度
+  - name: activity
+    data_type: float
+    nullable: true
+    comment: 活跃度
+  - name: avg_turnover
+    data_type: float
+    nullable: true
+    comment: 笔换手
+  - name: attack
+    data_type: float
+    nullable: true
+    comment: 攻击波
+  - name: pe_ttm
+    data_type: float
+    nullable: true
+    comment: 市盈率TTM
+  - name: pb
+    data_type: float
+    nullable: true
+    comment: 市净率
+  - name: ps_ttm
+    data_type: float
+    nullable: true
+    comment: 市销率TTM
+  - name: dv_ttm
+    data_type: float
+    nullable: true
+    comment: 股息率TTM
+  - name: turnover_rate_f
+    data_type: float
+    nullable: true
+    comment: 自由流通股换手率
+  - name: volume_ratio_db
+    data_type: float
+    nullable: true
+    comment: 量比每日指标
+  - name: circ_mv
+    data_type: float
+    nullable: true
+    comment: 流通市值
+  - name: total_mv
+    data_type: float
+    nullable: true
+    comment: 总市值
+  - name: total_share
+    data_type: float
+    nullable: true
+    comment: 总股本
+  - name: float_share
+    data_type: float
+    nullable: true
+    comment: 流通股本
+  - name: free_share
+    data_type: float
+    nullable: true
+    comment: 自由流通股本
+  - name: roe
+    data_type: float
+    nullable: true
+    comment: 净资产收益率
+  - name: roa
+    data_type: float
+    nullable: true
+    comment: 总资产报酬率
+  - name: roic
+    data_type: float
+    nullable: true
+    comment: 投入资本回报率
+  - name: grossprofit_margin
+    data_type: float
+    nullable: true
+    comment: 销售毛利率
+  - name: netprofit_margin
+    data_type: float
+    nullable: true
+    comment: 销售净利率
+  - name: or_yoy
+    data_type: float
+    nullable: true
+    comment: 营业收入同比增长率
+  - name: netprofit_yoy
+    data_type: float
+    nullable: true
+    comment: 归母净利润同比增长率
+  - name: op_yoy
+    data_type: float
+    nullable: true
+    comment: 营业利润同比增长率
+  - name: basic_eps_yoy
+    data_type: float
+    nullable: true
+    comment: 基本每股收益同比增长率
+  - name: q_roe
+    data_type: float
+    nullable: true
+    comment: 单季度净资产收益率
+  - name: q_gsprofit_margin
+    data_type: float
+    nullable: true
+    comment: 单季度销售毛利率
+  - name: q_netprofit_yoy
+    data_type: float
+    nullable: true
+    comment: 单季度归母净利润同比增长率
+  - name: q_sales_yoy
+    data_type: float
+    nullable: true
+    comment: 单季度营业收入同比增长率
+  - name: ocf_to_or
+    data_type: float
+    nullable: true
+    comment: 经营现金流营业收入比
+  - name: ocf_to_profit
+    data_type: float
+    nullable: true
+    comment: 经营现金流营业利润比
+  - name: debt_to_assets
+    data_type: float
+    nullable: true
+    comment: 资产负债率
+  - name: current_ratio
+    data_type: float
+    nullable: true
+    comment: 流动比率
+  - name: eps
+    data_type: float
+    nullable: true
+    comment: 基本每股收益
+  - name: bps
+    data_type: float
+    nullable: true
+    comment: 每股净资产
+  - name: ocfps
+    data_type: float
+    nullable: true
+    comment: 每股经营现金流
+  - name: rd_exp
+    data_type: float
+    nullable: true
+    comment: 研发费用
+  - name: assets_turn
+    data_type: float
+    nullable: true
+    comment: 总资产周转率
+  - name: inv_turn
+    data_type: float
+    nullable: true
+    comment: 存货周转率
+  - name: ar_turn
+    data_type: float
+    nullable: true
+    comment: 应收账款周转率
+  - name: total_revenue
+    data_type: float
+    nullable: true
+    comment: 营业总收入
+  - name: revenue
+    data_type: float
+    nullable: true
+    comment: 营业收入
+  - name: n_income
+    data_type: float
+    nullable: true
+    comment: 净利润
+  - name: n_income_attr_p
+    data_type: float
+    nullable: true
+    comment: 归属于母公司所有者的净利润
+  - name: compr_inc_attr_p
+    data_type: float
+    nullable: true
+    comment: 归属于母公司所有者的综合收益总额
+  - name: compr_inc_attr_m_s
+    data_type: float
+    nullable: true
+    comment: 归属于少数股东的综合收益总额
+  - name: oper_cost
+    data_type: float
+    nullable: true
+    comment: 营业成本
+  - name: total_profit
+    data_type: float
+    nullable: true
+    comment: 利润总额
+  - name: ebit
+    data_type: float
+    nullable: true
+    comment: 息税前利润
+  - name: ebitda
+    data_type: float
+    nullable: true
+    comment: 息税折旧摊销前利润
+  - name: admin_exp
+    data_type: float
+    nullable: true
+    comment: 管理费用
+  - name: sell_exp
+    data_type: float
+    nullable: true
+    comment: 销售费用
+  - name: fin_exp
+    data_type: float
+    nullable: true
+    comment: 财务费用
+  - name: income_tax
+    data_type: float
+    nullable: true
+    comment: 所得税费用
+  - name: total_opcost
+    data_type: float
+    nullable: true
+    comment: 营业总成本
+  - name: total_assets
+    data_type: float
+    nullable: true
+    comment: 资产总计
+  - name: total_liab
+    data_type: float
+    nullable: true
+    comment: 负债合计
+  - name: total_cur_liab
+    data_type: float
+    nullable: true
+    comment: 流动负债合计
+  - name: total_cur_assets
+    data_type: float
+    nullable: true
+    comment: 流动资产合计
+  - name: money_cap
+    data_type: float
+    nullable: true
+    comment: 货币资金
+  - name: total_hldr_eqy_exc_min_int
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益)
+  - name: c_inf_fr_operate_a
+    data_type: float
+    nullable: true
+    comment: 经营活动现金流入小计
+  - name: st_cash_out_act
+    data_type: float
+    nullable: true
+    comment: 经营活动现金流出小计
+  - name: stot_out_inv_act
+    data_type: float
+    nullable: true
+    comment: 投资活动现金流出小计
+  - name: stot_inflows_inv_act
+    data_type: float
+    nullable: true
+    comment: 投资活动现金流入小计
+  - name: stot_cash_in_fnc_act
+    data_type: float
+    nullable: true
+    comment: 筹资活动现金流入小计
+  - name: stot_cashout_fnc_act
+    data_type: float
+    nullable: true
+    comment: 筹资活动现金流出小计
+  - name: bond_payable_mrq_0
+    data_type: float
+    nullable: true
+    comment: 应付债券mrq_0（固定报告期索引）
+  - name: bond_payable_mrq_1
+    data_type: float
+    nullable: true
+    comment: 应付债券mrq_1（固定报告期索引）
+  - name: bond_payable_mrq_2
+    data_type: float
+    nullable: true
+    comment: 应付债券mrq_2（固定报告期索引）
+  - name: bond_payable_mrq_3
+    data_type: float
+    nullable: true
+    comment: 应付债券mrq_3（固定报告期索引）
+  - name: bond_payable_mrq_4
+    data_type: float
+    nullable: true
+    comment: 应付债券mrq_4（固定报告期索引）
+  - name: bond_payable_mrq_5
+    data_type: float
+    nullable: true
+    comment: 应付债券mrq_5（固定报告期索引）
+  - name: bond_payable_mrq_6
+    data_type: float
+    nullable: true
+    comment: 应付债券mrq_6（固定报告期索引）
+  - name: bond_payable_mrq_7
+    data_type: float
+    nullable: true
+    comment: 应付债券mrq_7（固定报告期索引）
+  - name: bond_payable_mrq_8
+    data_type: float
+    nullable: true
+    comment: 应付债券mrq_8（固定报告期索引）
+  - name: bond_payable_ttm_0
+    data_type: float
+    nullable: true
+    comment: 应付债券ttm_0（固定报告期索引）
+  - name: bond_payable_ttm_1
+    data_type: float
+    nullable: true
+    comment: 应付债券ttm_1（固定报告期索引）
+  - name: bond_payable_ttm_2
+    data_type: float
+    nullable: true
+    comment: 应付债券ttm_2（固定报告期索引）
+  - name: bond_payable_ttm_3
+    data_type: float
+    nullable: true
+    comment: 应付债券ttm_3（固定报告期索引）
+  - name: bond_payable_ttm_4
+    data_type: float
+    nullable: true
+    comment: 应付债券ttm_4（固定报告期索引）
+  - name: bond_payable_ttm_5
+    data_type: float
+    nullable: true
+    comment: 应付债券ttm_5（固定报告期索引）
+  - name: bond_payable_ttm_6
+    data_type: float
+    nullable: true
+    comment: 应付债券ttm_6（固定报告期索引）
+  - name: bond_payable_ttm_7
+    data_type: float
+    nullable: true
+    comment: 应付债券ttm_7（固定报告期索引）
+  - name: bond_payable_ttm_8
+    data_type: float
+    nullable: true
+    comment: 应付债券ttm_8（固定报告期索引）
+  - name: bond_payable_lyr_0
+    data_type: float
+    nullable: true
+    comment: 应付债券lyr_0（固定报告期索引）
+  - name: bond_payable_lyr_1
+    data_type: float
+    nullable: true
+    comment: 应付债券lyr_1（固定报告期索引）
+  - name: bond_payable_lyr_2
+    data_type: float
+    nullable: true
+    comment: 应付债券lyr_2（固定报告期索引）
+  - name: bond_payable_lyr_3
+    data_type: float
+    nullable: true
+    comment: 应付债券lyr_3（固定报告期索引）
+  - name: bond_payable_lyr_4
+    data_type: float
+    nullable: true
+    comment: 应付债券lyr_4（固定报告期索引）
+  - name: fix_assets_mrq_0
+    data_type: float
+    nullable: true
+    comment: 固定资产mrq_0（固定报告期索引）
+  - name: fix_assets_mrq_1
+    data_type: float
+    nullable: true
+    comment: 固定资产mrq_1（固定报告期索引）
+  - name: fix_assets_mrq_2
+    data_type: float
+    nullable: true
+    comment: 固定资产mrq_2（固定报告期索引）
+  - name: fix_assets_mrq_3
+    data_type: float
+    nullable: true
+    comment: 固定资产mrq_3（固定报告期索引）
+  - name: fix_assets_mrq_4
+    data_type: float
+    nullable: true
+    comment: 固定资产mrq_4（固定报告期索引）
+  - name: fix_assets_mrq_5
+    data_type: float
+    nullable: true
+    comment: 固定资产mrq_5（固定报告期索引）
+  - name: fix_assets_mrq_6
+    data_type: float
+    nullable: true
+    comment: 固定资产mrq_6（固定报告期索引）
+  - name: fix_assets_mrq_7
+    data_type: float
+    nullable: true
+    comment: 固定资产mrq_7（固定报告期索引）
+  - name: fix_assets_mrq_8
+    data_type: float
+    nullable: true
+    comment: 固定资产mrq_8（固定报告期索引）
+  - name: fix_assets_ttm_0
+    data_type: float
+    nullable: true
+    comment: 固定资产ttm_0（固定报告期索引）
+  - name: fix_assets_ttm_1
+    data_type: float
+    nullable: true
+    comment: 固定资产ttm_1（固定报告期索引）
+  - name: fix_assets_ttm_2
+    data_type: float
+    nullable: true
+    comment: 固定资产ttm_2（固定报告期索引）
+  - name: fix_assets_ttm_3
+    data_type: float
+    nullable: true
+    comment: 固定资产ttm_3（固定报告期索引）
+  - name: fix_assets_ttm_4
+    data_type: float
+    nullable: true
+    comment: 固定资产ttm_4（固定报告期索引）
+  - name: fix_assets_ttm_5
+    data_type: float
+    nullable: true
+    comment: 固定资产ttm_5（固定报告期索引）
+  - name: fix_assets_ttm_6
+    data_type: float
+    nullable: true
+    comment: 固定资产ttm_6（固定报告期索引）
+  - name: fix_assets_ttm_7
+    data_type: float
+    nullable: true
+    comment: 固定资产ttm_7（固定报告期索引）
+  - name: fix_assets_ttm_8
+    data_type: float
+    nullable: true
+    comment: 固定资产ttm_8（固定报告期索引）
+  - name: fix_assets_lyr_0
+    data_type: float
+    nullable: true
+    comment: 固定资产lyr_0（固定报告期索引）
+  - name: fix_assets_lyr_1
+    data_type: float
+    nullable: true
+    comment: 固定资产lyr_1（固定报告期索引）
+  - name: fix_assets_lyr_2
+    data_type: float
+    nullable: true
+    comment: 固定资产lyr_2（固定报告期索引）
+  - name: fix_assets_lyr_3
+    data_type: float
+    nullable: true
+    comment: 固定资产lyr_3（固定报告期索引）
+  - name: fix_assets_lyr_4
+    data_type: float
+    nullable: true
+    comment: 固定资产lyr_4（固定报告期索引）
+  - name: lt_borr_mrq_0
+    data_type: float
+    nullable: true
+    comment: 长期借款mrq_0（固定报告期索引）
+  - name: lt_borr_mrq_1
+    data_type: float
+    nullable: true
+    comment: 长期借款mrq_1（固定报告期索引）
+  - name: lt_borr_mrq_2
+    data_type: float
+    nullable: true
+    comment: 长期借款mrq_2（固定报告期索引）
+  - name: lt_borr_mrq_3
+    data_type: float
+    nullable: true
+    comment: 长期借款mrq_3（固定报告期索引）
+  - name: lt_borr_mrq_4
+    data_type: float
+    nullable: true
+    comment: 长期借款mrq_4（固定报告期索引）
+  - name: lt_borr_mrq_5
+    data_type: float
+    nullable: true
+    comment: 长期借款mrq_5（固定报告期索引）
+  - name: lt_borr_mrq_6
+    data_type: float
+    nullable: true
+    comment: 长期借款mrq_6（固定报告期索引）
+  - name: lt_borr_mrq_7
+    data_type: float
+    nullable: true
+    comment: 长期借款mrq_7（固定报告期索引）
+  - name: lt_borr_mrq_8
+    data_type: float
+    nullable: true
+    comment: 长期借款mrq_8（固定报告期索引）
+  - name: lt_borr_ttm_0
+    data_type: float
+    nullable: true
+    comment: 长期借款ttm_0（固定报告期索引）
+  - name: lt_borr_ttm_1
+    data_type: float
+    nullable: true
+    comment: 长期借款ttm_1（固定报告期索引）
+  - name: lt_borr_ttm_2
+    data_type: float
+    nullable: true
+    comment: 长期借款ttm_2（固定报告期索引）
+  - name: lt_borr_ttm_3
+    data_type: float
+    nullable: true
+    comment: 长期借款ttm_3（固定报告期索引）
+  - name: lt_borr_ttm_4
+    data_type: float
+    nullable: true
+    comment: 长期借款ttm_4（固定报告期索引）
+  - name: lt_borr_ttm_5
+    data_type: float
+    nullable: true
+    comment: 长期借款ttm_5（固定报告期索引）
+  - name: lt_borr_ttm_6
+    data_type: float
+    nullable: true
+    comment: 长期借款ttm_6（固定报告期索引）
+  - name: lt_borr_ttm_7
+    data_type: float
+    nullable: true
+    comment: 长期借款ttm_7（固定报告期索引）
+  - name: lt_borr_ttm_8
+    data_type: float
+    nullable: true
+    comment: 长期借款ttm_8（固定报告期索引）
+  - name: lt_borr_lyr_0
+    data_type: float
+    nullable: true
+    comment: 长期借款lyr_0（固定报告期索引）
+  - name: lt_borr_lyr_1
+    data_type: float
+    nullable: true
+    comment: 长期借款lyr_1（固定报告期索引）
+  - name: lt_borr_lyr_2
+    data_type: float
+    nullable: true
+    comment: 长期借款lyr_2（固定报告期索引）
+  - name: lt_borr_lyr_3
+    data_type: float
+    nullable: true
+    comment: 长期借款lyr_3（固定报告期索引）
+  - name: lt_borr_lyr_4
+    data_type: float
+    nullable: true
+    comment: 长期借款lyr_4（固定报告期索引）
+  - name: money_cap_mrq_0
+    data_type: float
+    nullable: true
+    comment: 货币资金mrq_0（固定报告期索引）
+  - name: money_cap_mrq_1
+    data_type: float
+    nullable: true
+    comment: 货币资金mrq_1（固定报告期索引）
+  - name: money_cap_mrq_2
+    data_type: float
+    nullable: true
+    comment: 货币资金mrq_2（固定报告期索引）
+  - name: money_cap_mrq_3
+    data_type: float
+    nullable: true
+    comment: 货币资金mrq_3（固定报告期索引）
+  - name: money_cap_mrq_4
+    data_type: float
+    nullable: true
+    comment: 货币资金mrq_4（固定报告期索引）
+  - name: money_cap_mrq_5
+    data_type: float
+    nullable: true
+    comment: 货币资金mrq_5（固定报告期索引）
+  - name: money_cap_mrq_6
+    data_type: float
+    nullable: true
+    comment: 货币资金mrq_6（固定报告期索引）
+  - name: money_cap_mrq_7
+    data_type: float
+    nullable: true
+    comment: 货币资金mrq_7（固定报告期索引）
+  - name: money_cap_mrq_8
+    data_type: float
+    nullable: true
+    comment: 货币资金mrq_8（固定报告期索引）
+  - name: money_cap_ttm_0
+    data_type: float
+    nullable: true
+    comment: 货币资金ttm_0（固定报告期索引）
+  - name: money_cap_ttm_1
+    data_type: float
+    nullable: true
+    comment: 货币资金ttm_1（固定报告期索引）
+  - name: money_cap_ttm_2
+    data_type: float
+    nullable: true
+    comment: 货币资金ttm_2（固定报告期索引）
+  - name: money_cap_ttm_3
+    data_type: float
+    nullable: true
+    comment: 货币资金ttm_3（固定报告期索引）
+  - name: money_cap_ttm_4
+    data_type: float
+    nullable: true
+    comment: 货币资金ttm_4（固定报告期索引）
+  - name: money_cap_ttm_5
+    data_type: float
+    nullable: true
+    comment: 货币资金ttm_5（固定报告期索引）
+  - name: money_cap_ttm_6
+    data_type: float
+    nullable: true
+    comment: 货币资金ttm_6（固定报告期索引）
+  - name: money_cap_ttm_7
+    data_type: float
+    nullable: true
+    comment: 货币资金ttm_7（固定报告期索引）
+  - name: money_cap_ttm_8
+    data_type: float
+    nullable: true
+    comment: 货币资金ttm_8（固定报告期索引）
+  - name: money_cap_lyr_0
+    data_type: float
+    nullable: true
+    comment: 货币资金lyr_0（固定报告期索引）
+  - name: money_cap_lyr_1
+    data_type: float
+    nullable: true
+    comment: 货币资金lyr_1（固定报告期索引）
+  - name: money_cap_lyr_2
+    data_type: float
+    nullable: true
+    comment: 货币资金lyr_2（固定报告期索引）
+  - name: money_cap_lyr_3
+    data_type: float
+    nullable: true
+    comment: 货币资金lyr_3（固定报告期索引）
+  - name: money_cap_lyr_4
+    data_type: float
+    nullable: true
+    comment: 货币资金lyr_4（固定报告期索引）
+  - name: non_cur_liab_due_1y_ttm_0
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债ttm_0（固定报告期索引）
+  - name: non_cur_liab_due_1y_ttm_1
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债ttm_1（固定报告期索引）
+  - name: non_cur_liab_due_1y_ttm_2
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债ttm_2（固定报告期索引）
+  - name: non_cur_liab_due_1y_ttm_3
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债ttm_3（固定报告期索引）
+  - name: non_cur_liab_due_1y_ttm_4
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债ttm_4（固定报告期索引）
+  - name: non_cur_liab_due_1y_ttm_5
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债ttm_5（固定报告期索引）
+  - name: non_cur_liab_due_1y_ttm_6
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债ttm_6（固定报告期索引）
+  - name: non_cur_liab_due_1y_ttm_7
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债ttm_7（固定报告期索引）
+  - name: non_cur_liab_due_1y_ttm_8
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债ttm_8（固定报告期索引）
+  - name: non_cur_liab_due_1y_lyr_0
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债lyr_0（固定报告期索引）
+  - name: non_cur_liab_due_1y_lyr_1
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债lyr_1（固定报告期索引）
+  - name: non_cur_liab_due_1y_lyr_2
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债lyr_2（固定报告期索引）
+  - name: non_cur_liab_due_1y_lyr_3
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债lyr_3（固定报告期索引）
+  - name: non_cur_liab_due_1y_lyr_4
+    data_type: float
+    nullable: true
+    comment: 一年内到期的非流动负债lyr_4（固定报告期索引）
+  - name: notes_payable_ttm_0
+    data_type: float
+    nullable: true
+    comment: 应付票据ttm_0（固定报告期索引）
+  - name: notes_payable_ttm_1
+    data_type: float
+    nullable: true
+    comment: 应付票据ttm_1（固定报告期索引）
+  - name: notes_payable_ttm_2
+    data_type: float
+    nullable: true
+    comment: 应付票据ttm_2（固定报告期索引）
+  - name: notes_payable_ttm_3
+    data_type: float
+    nullable: true
+    comment: 应付票据ttm_3（固定报告期索引）
+  - name: notes_payable_ttm_4
+    data_type: float
+    nullable: true
+    comment: 应付票据ttm_4（固定报告期索引）
+  - name: notes_payable_ttm_5
+    data_type: float
+    nullable: true
+    comment: 应付票据ttm_5（固定报告期索引）
+  - name: notes_payable_ttm_6
+    data_type: float
+    nullable: true
+    comment: 应付票据ttm_6（固定报告期索引）
+  - name: notes_payable_ttm_7
+    data_type: float
+    nullable: true
+    comment: 应付票据ttm_7（固定报告期索引）
+  - name: notes_payable_ttm_8
+    data_type: float
+    nullable: true
+    comment: 应付票据ttm_8（固定报告期索引）
+  - name: notes_payable_lyr_0
+    data_type: float
+    nullable: true
+    comment: 应付票据lyr_0（固定报告期索引）
+  - name: notes_payable_lyr_1
+    data_type: float
+    nullable: true
+    comment: 应付票据lyr_1（固定报告期索引）
+  - name: notes_payable_lyr_2
+    data_type: float
+    nullable: true
+    comment: 应付票据lyr_2（固定报告期索引）
+  - name: notes_payable_lyr_3
+    data_type: float
+    nullable: true
+    comment: 应付票据lyr_3（固定报告期索引）
+  - name: notes_payable_lyr_4
+    data_type: float
+    nullable: true
+    comment: 应付票据lyr_4（固定报告期索引）
+  - name: st_borr_ttm_0
+    data_type: float
+    nullable: true
+    comment: 短期借款ttm_0（固定报告期索引）
+  - name: st_borr_ttm_1
+    data_type: float
+    nullable: true
+    comment: 短期借款ttm_1（固定报告期索引）
+  - name: st_borr_ttm_2
+    data_type: float
+    nullable: true
+    comment: 短期借款ttm_2（固定报告期索引）
+  - name: st_borr_ttm_3
+    data_type: float
+    nullable: true
+    comment: 短期借款ttm_3（固定报告期索引）
+  - name: st_borr_ttm_4
+    data_type: float
+    nullable: true
+    comment: 短期借款ttm_4（固定报告期索引）
+  - name: st_borr_ttm_5
+    data_type: float
+    nullable: true
+    comment: 短期借款ttm_5（固定报告期索引）
+  - name: st_borr_ttm_6
+    data_type: float
+    nullable: true
+    comment: 短期借款ttm_6（固定报告期索引）
+  - name: st_borr_ttm_7
+    data_type: float
+    nullable: true
+    comment: 短期借款ttm_7（固定报告期索引）
+  - name: st_borr_ttm_8
+    data_type: float
+    nullable: true
+    comment: 短期借款ttm_8（固定报告期索引）
+  - name: st_borr_lyr_0
+    data_type: float
+    nullable: true
+    comment: 短期借款lyr_0（固定报告期索引）
+  - name: st_borr_lyr_1
+    data_type: float
+    nullable: true
+    comment: 短期借款lyr_1（固定报告期索引）
+  - name: st_borr_lyr_2
+    data_type: float
+    nullable: true
+    comment: 短期借款lyr_2（固定报告期索引）
+  - name: st_borr_lyr_3
+    data_type: float
+    nullable: true
+    comment: 短期借款lyr_3（固定报告期索引）
+  - name: st_borr_lyr_4
+    data_type: float
+    nullable: true
+    comment: 短期借款lyr_4（固定报告期索引）
+  - name: total_assets_mrq_0
+    data_type: float
+    nullable: true
+    comment: 总资产mrq_0（固定报告期索引）
+  - name: total_assets_mrq_1
+    data_type: float
+    nullable: true
+    comment: 总资产mrq_1（固定报告期索引）
+  - name: total_assets_mrq_2
+    data_type: float
+    nullable: true
+    comment: 总资产mrq_2（固定报告期索引）
+  - name: total_assets_mrq_3
+    data_type: float
+    nullable: true
+    comment: 总资产mrq_3（固定报告期索引）
+  - name: total_assets_mrq_4
+    data_type: float
+    nullable: true
+    comment: 总资产mrq_4（固定报告期索引）
+  - name: total_assets_mrq_5
+    data_type: float
+    nullable: true
+    comment: 总资产mrq_5（固定报告期索引）
+  - name: total_assets_mrq_6
+    data_type: float
+    nullable: true
+    comment: 总资产mrq_6（固定报告期索引）
+  - name: total_assets_mrq_7
+    data_type: float
+    nullable: true
+    comment: 总资产mrq_7（固定报告期索引）
+  - name: total_assets_mrq_8
+    data_type: float
+    nullable: true
+    comment: 总资产mrq_8（固定报告期索引）
+  - name: total_assets_ttm_0
+    data_type: float
+    nullable: true
+    comment: 总资产ttm_0（固定报告期索引）
+  - name: total_assets_ttm_1
+    data_type: float
+    nullable: true
+    comment: 总资产ttm_1（固定报告期索引）
+  - name: total_assets_ttm_2
+    data_type: float
+    nullable: true
+    comment: 总资产ttm_2（固定报告期索引）
+  - name: total_assets_ttm_3
+    data_type: float
+    nullable: true
+    comment: 总资产ttm_3（固定报告期索引）
+  - name: total_assets_ttm_4
+    data_type: float
+    nullable: true
+    comment: 总资产ttm_4（固定报告期索引）
+  - name: total_assets_ttm_5
+    data_type: float
+    nullable: true
+    comment: 总资产ttm_5（固定报告期索引）
+  - name: total_assets_ttm_6
+    data_type: float
+    nullable: true
+    comment: 总资产ttm_6（固定报告期索引）
+  - name: total_assets_ttm_7
+    data_type: float
+    nullable: true
+    comment: 总资产ttm_7（固定报告期索引）
+  - name: total_assets_ttm_8
+    data_type: float
+    nullable: true
+    comment: 总资产ttm_8（固定报告期索引）
+  - name: total_assets_lyr_0
+    data_type: float
+    nullable: true
+    comment: 总资产lyr_0（固定报告期索引）
+  - name: total_assets_lyr_1
+    data_type: float
+    nullable: true
+    comment: 总资产lyr_1（固定报告期索引）
+  - name: total_assets_lyr_2
+    data_type: float
+    nullable: true
+    comment: 总资产lyr_2（固定报告期索引）
+  - name: total_assets_lyr_3
+    data_type: float
+    nullable: true
+    comment: 总资产lyr_3（固定报告期索引）
+  - name: total_assets_lyr_4
+    data_type: float
+    nullable: true
+    comment: 总资产lyr_4（固定报告期索引）
+  - name: total_cur_assets_mrq_0
+    data_type: float
+    nullable: true
+    comment: 流动资产合计mrq_0（固定报告期索引）
+  - name: total_cur_assets_mrq_1
+    data_type: float
+    nullable: true
+    comment: 流动资产合计mrq_1（固定报告期索引）
+  - name: total_cur_assets_mrq_2
+    data_type: float
+    nullable: true
+    comment: 流动资产合计mrq_2（固定报告期索引）
+  - name: total_cur_assets_mrq_3
+    data_type: float
+    nullable: true
+    comment: 流动资产合计mrq_3（固定报告期索引）
+  - name: total_cur_assets_mrq_4
+    data_type: float
+    nullable: true
+    comment: 流动资产合计mrq_4（固定报告期索引）
+  - name: total_cur_assets_mrq_5
+    data_type: float
+    nullable: true
+    comment: 流动资产合计mrq_5（固定报告期索引）
+  - name: total_cur_assets_mrq_6
+    data_type: float
+    nullable: true
+    comment: 流动资产合计mrq_6（固定报告期索引）
+  - name: total_cur_assets_mrq_7
+    data_type: float
+    nullable: true
+    comment: 流动资产合计mrq_7（固定报告期索引）
+  - name: total_cur_assets_mrq_8
+    data_type: float
+    nullable: true
+    comment: 流动资产合计mrq_8（固定报告期索引）
+  - name: total_cur_assets_ttm_0
+    data_type: float
+    nullable: true
+    comment: 流动资产合计ttm_0（固定报告期索引）
+  - name: total_cur_assets_ttm_1
+    data_type: float
+    nullable: true
+    comment: 流动资产合计ttm_1（固定报告期索引）
+  - name: total_cur_assets_ttm_2
+    data_type: float
+    nullable: true
+    comment: 流动资产合计ttm_2（固定报告期索引）
+  - name: total_cur_assets_ttm_3
+    data_type: float
+    nullable: true
+    comment: 流动资产合计ttm_3（固定报告期索引）
+  - name: total_cur_assets_ttm_4
+    data_type: float
+    nullable: true
+    comment: 流动资产合计ttm_4（固定报告期索引）
+  - name: total_cur_assets_ttm_5
+    data_type: float
+    nullable: true
+    comment: 流动资产合计ttm_5（固定报告期索引）
+  - name: total_cur_assets_ttm_6
+    data_type: float
+    nullable: true
+    comment: 流动资产合计ttm_6（固定报告期索引）
+  - name: total_cur_assets_ttm_7
+    data_type: float
+    nullable: true
+    comment: 流动资产合计ttm_7（固定报告期索引）
+  - name: total_cur_assets_ttm_8
+    data_type: float
+    nullable: true
+    comment: 流动资产合计ttm_8（固定报告期索引）
+  - name: total_cur_assets_lyr_0
+    data_type: float
+    nullable: true
+    comment: 流动资产合计lyr_0（固定报告期索引）
+  - name: total_cur_assets_lyr_1
+    data_type: float
+    nullable: true
+    comment: 流动资产合计lyr_1（固定报告期索引）
+  - name: total_cur_assets_lyr_2
+    data_type: float
+    nullable: true
+    comment: 流动资产合计lyr_2（固定报告期索引）
+  - name: total_cur_assets_lyr_3
+    data_type: float
+    nullable: true
+    comment: 流动资产合计lyr_3（固定报告期索引）
+  - name: total_cur_assets_lyr_4
+    data_type: float
+    nullable: true
+    comment: 流动资产合计lyr_4（固定报告期索引）
+  - name: total_cur_liab_mrq_0
+    data_type: float
+    nullable: true
+    comment: 流动负债合计mrq_0（固定报告期索引）
+  - name: total_cur_liab_mrq_1
+    data_type: float
+    nullable: true
+    comment: 流动负债合计mrq_1（固定报告期索引）
+  - name: total_cur_liab_mrq_2
+    data_type: float
+    nullable: true
+    comment: 流动负债合计mrq_2（固定报告期索引）
+  - name: total_cur_liab_mrq_3
+    data_type: float
+    nullable: true
+    comment: 流动负债合计mrq_3（固定报告期索引）
+  - name: total_cur_liab_mrq_4
+    data_type: float
+    nullable: true
+    comment: 流动负债合计mrq_4（固定报告期索引）
+  - name: total_cur_liab_mrq_5
+    data_type: float
+    nullable: true
+    comment: 流动负债合计mrq_5（固定报告期索引）
+  - name: total_cur_liab_mrq_6
+    data_type: float
+    nullable: true
+    comment: 流动负债合计mrq_6（固定报告期索引）
+  - name: total_cur_liab_mrq_7
+    data_type: float
+    nullable: true
+    comment: 流动负债合计mrq_7（固定报告期索引）
+  - name: total_cur_liab_mrq_8
+    data_type: float
+    nullable: true
+    comment: 流动负债合计mrq_8（固定报告期索引）
+  - name: total_cur_liab_ttm_0
+    data_type: float
+    nullable: true
+    comment: 流动负债合计ttm_0（固定报告期索引）
+  - name: total_cur_liab_ttm_1
+    data_type: float
+    nullable: true
+    comment: 流动负债合计ttm_1（固定报告期索引）
+  - name: total_cur_liab_ttm_2
+    data_type: float
+    nullable: true
+    comment: 流动负债合计ttm_2（固定报告期索引）
+  - name: total_cur_liab_ttm_3
+    data_type: float
+    nullable: true
+    comment: 流动负债合计ttm_3（固定报告期索引）
+  - name: total_cur_liab_ttm_4
+    data_type: float
+    nullable: true
+    comment: 流动负债合计ttm_4（固定报告期索引）
+  - name: total_cur_liab_ttm_5
+    data_type: float
+    nullable: true
+    comment: 流动负债合计ttm_5（固定报告期索引）
+  - name: total_cur_liab_ttm_6
+    data_type: float
+    nullable: true
+    comment: 流动负债合计ttm_6（固定报告期索引）
+  - name: total_cur_liab_ttm_7
+    data_type: float
+    nullable: true
+    comment: 流动负债合计ttm_7（固定报告期索引）
+  - name: total_cur_liab_ttm_8
+    data_type: float
+    nullable: true
+    comment: 流动负债合计ttm_8（固定报告期索引）
+  - name: total_cur_liab_lyr_0
+    data_type: float
+    nullable: true
+    comment: 流动负债合计lyr_0（固定报告期索引）
+  - name: total_cur_liab_lyr_1
+    data_type: float
+    nullable: true
+    comment: 流动负债合计lyr_1（固定报告期索引）
+  - name: total_cur_liab_lyr_2
+    data_type: float
+    nullable: true
+    comment: 流动负债合计lyr_2（固定报告期索引）
+  - name: total_cur_liab_lyr_3
+    data_type: float
+    nullable: true
+    comment: 流动负债合计lyr_3（固定报告期索引）
+  - name: total_cur_liab_lyr_4
+    data_type: float
+    nullable: true
+    comment: 流动负债合计lyr_4（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_mrq_0
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益mrq_0（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_mrq_1
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益mrq_1（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_mrq_2
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益mrq_2（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_mrq_3
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益mrq_3（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_mrq_4
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益mrq_4（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_mrq_5
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益mrq_5（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_mrq_6
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益mrq_6（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_mrq_7
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益mrq_7（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_mrq_8
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益mrq_8（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_ttm_0
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益ttm_0（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_ttm_1
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益ttm_1（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_ttm_2
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益ttm_2（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_ttm_3
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益ttm_3（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_ttm_4
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益ttm_4（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_ttm_5
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益ttm_5（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_ttm_6
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益ttm_6（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_ttm_7
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益ttm_7（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_ttm_8
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益ttm_8（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_lyr_0
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益lyr_0（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_lyr_1
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益lyr_1（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_lyr_2
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益lyr_2（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_lyr_3
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益lyr_3（固定报告期索引）
+  - name: total_hldr_eqy_exc_min_int_lyr_4
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(不含少数股东权益lyr_4（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_mrq_0
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益mrq_0（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_mrq_1
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益mrq_1（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_mrq_2
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益mrq_2（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_mrq_3
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益mrq_3（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_mrq_4
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益mrq_4（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_mrq_5
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益mrq_5（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_mrq_6
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益mrq_6（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_mrq_7
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益mrq_7（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_mrq_8
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益mrq_8（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_ttm_0
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益ttm_0（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_ttm_1
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益ttm_1（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_ttm_2
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益ttm_2（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_ttm_3
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益ttm_3（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_ttm_4
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益ttm_4（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_ttm_5
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益ttm_5（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_ttm_6
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益ttm_6（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_ttm_7
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益ttm_7（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_ttm_8
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益ttm_8（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_lyr_0
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益lyr_0（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_lyr_1
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益lyr_1（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_lyr_2
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益lyr_2（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_lyr_3
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益lyr_3（固定报告期索引）
+  - name: total_hldr_eqy_inc_min_int_lyr_4
+    data_type: float
+    nullable: true
+    comment: 股东权益合计(含少数股东权益lyr_4（固定报告期索引）
+  - name: total_liab_mrq_0
+    data_type: float
+    nullable: true
+    comment: 负债合计mrq_0（固定报告期索引）
+  - name: total_liab_mrq_1
+    data_type: float
+    nullable: true
+    comment: 负债合计mrq_1（固定报告期索引）
+  - name: total_liab_mrq_2
+    data_type: float
+    nullable: true
+    comment: 负债合计mrq_2（固定报告期索引）
+  - name: total_liab_mrq_3
+    data_type: float
+    nullable: true
+    comment: 负债合计mrq_3（固定报告期索引）
+  - name: total_liab_mrq_4
+    data_type: float
+    nullable: true
+    comment: 负债合计mrq_4（固定报告期索引）
+  - name: total_liab_mrq_5
+    data_type: float
+    nullable: true
+    comment: 负债合计mrq_5（固定报告期索引）
+  - name: total_liab_mrq_6
+    data_type: float
+    nullable: true
+    comment: 负债合计mrq_6（固定报告期索引）
+  - name: total_liab_mrq_7
+    data_type: float
+    nullable: true
+    comment: 负债合计mrq_7（固定报告期索引）
+  - name: total_liab_mrq_8
+    data_type: float
+    nullable: true
+    comment: 负债合计mrq_8（固定报告期索引）
+  - name: total_liab_ttm_0
+    data_type: float
+    nullable: true
+    comment: 负债合计ttm_0（固定报告期索引）
+  - name: total_liab_ttm_1
+    data_type: float
+    nullable: true
+    comment: 负债合计ttm_1（固定报告期索引）
+  - name: total_liab_ttm_2
+    data_type: float
+    nullable: true
+    comment: 负债合计ttm_2（固定报告期索引）
+  - name: total_liab_ttm_3
+    data_type: float
+    nullable: true
+    comment: 负债合计ttm_3（固定报告期索引）
+  - name: total_liab_ttm_4
+    data_type: float
+    nullable: true
+    comment: 负债合计ttm_4（固定报告期索引）
+  - name: total_liab_ttm_5
+    data_type: float
+    nullable: true
+    comment: 负债合计ttm_5（固定报告期索引）
+  - name: total_liab_ttm_6
+    data_type: float
+    nullable: true
+    comment: 负债合计ttm_6（固定报告期索引）
+  - name: total_liab_ttm_7
+    data_type: float
+    nullable: true
+    comment: 负债合计ttm_7（固定报告期索引）
+  - name: total_liab_ttm_8
+    data_type: float
+    nullable: true
+    comment: 负债合计ttm_8（固定报告期索引）
+  - name: total_liab_lyr_0
+    data_type: float
+    nullable: true
+    comment: 负债合计lyr_0（固定报告期索引）
+  - name: total_liab_lyr_1
+    data_type: float
+    nullable: true
+    comment: 负债合计lyr_1（固定报告期索引）
+  - name: total_liab_lyr_2
+    data_type: float
+    nullable: true
+    comment: 负债合计lyr_2（固定报告期索引）
+  - name: total_liab_lyr_3
+    data_type: float
+    nullable: true
+    comment: 负债合计lyr_3（固定报告期索引）
+  - name: total_liab_lyr_4
+    data_type: float
+    nullable: true
+    comment: 负债合计lyr_4（固定报告期索引）
+  - name: amort_intang_assets_mrq_0
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销mrq_0（固定报告期索引）
+  - name: amort_intang_assets_mrq_1
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销mrq_1（固定报告期索引）
+  - name: amort_intang_assets_mrq_2
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销mrq_2（固定报告期索引）
+  - name: amort_intang_assets_mrq_3
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销mrq_3（固定报告期索引）
+  - name: amort_intang_assets_mrq_4
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销mrq_4（固定报告期索引）
+  - name: amort_intang_assets_mrq_5
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销mrq_5（固定报告期索引）
+  - name: amort_intang_assets_mrq_6
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销mrq_6（固定报告期索引）
+  - name: amort_intang_assets_mrq_7
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销mrq_7（固定报告期索引）
+  - name: amort_intang_assets_mrq_8
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销mrq_8（固定报告期索引）
+  - name: amort_intang_assets_ttm_0
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销ttm_0（固定报告期索引）
+  - name: amort_intang_assets_ttm_1
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销ttm_1（固定报告期索引）
+  - name: amort_intang_assets_ttm_2
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销ttm_2（固定报告期索引）
+  - name: amort_intang_assets_ttm_3
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销ttm_3（固定报告期索引）
+  - name: amort_intang_assets_ttm_4
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销ttm_4（固定报告期索引）
+  - name: amort_intang_assets_ttm_5
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销ttm_5（固定报告期索引）
+  - name: amort_intang_assets_ttm_6
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销ttm_6（固定报告期索引）
+  - name: amort_intang_assets_ttm_7
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销ttm_7（固定报告期索引）
+  - name: amort_intang_assets_ttm_8
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销ttm_8（固定报告期索引）
+  - name: amort_intang_assets_lyr_0
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销lyr_0（固定报告期索引）
+  - name: amort_intang_assets_lyr_1
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销lyr_1（固定报告期索引）
+  - name: amort_intang_assets_lyr_2
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销lyr_2（固定报告期索引）
+  - name: amort_intang_assets_lyr_3
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销lyr_3（固定报告期索引）
+  - name: amort_intang_assets_lyr_4
+    data_type: float
+    nullable: true
+    comment: 无形资产摊销lyr_4（固定报告期索引）
+  - name: depr_fa_coga_dpba_mrq_0
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等mrq_0（固定报告期索引）
+  - name: depr_fa_coga_dpba_mrq_1
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等mrq_1（固定报告期索引）
+  - name: depr_fa_coga_dpba_mrq_2
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等mrq_2（固定报告期索引）
+  - name: depr_fa_coga_dpba_mrq_3
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等mrq_3（固定报告期索引）
+  - name: depr_fa_coga_dpba_mrq_4
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等mrq_4（固定报告期索引）
+  - name: depr_fa_coga_dpba_mrq_5
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等mrq_5（固定报告期索引）
+  - name: depr_fa_coga_dpba_mrq_6
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等mrq_6（固定报告期索引）
+  - name: depr_fa_coga_dpba_mrq_7
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等mrq_7（固定报告期索引）
+  - name: depr_fa_coga_dpba_mrq_8
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等mrq_8（固定报告期索引）
+  - name: depr_fa_coga_dpba_ttm_0
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等ttm_0（固定报告期索引）
+  - name: depr_fa_coga_dpba_ttm_1
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等ttm_1（固定报告期索引）
+  - name: depr_fa_coga_dpba_ttm_2
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等ttm_2（固定报告期索引）
+  - name: depr_fa_coga_dpba_ttm_3
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等ttm_3（固定报告期索引）
+  - name: depr_fa_coga_dpba_ttm_4
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等ttm_4（固定报告期索引）
+  - name: depr_fa_coga_dpba_ttm_5
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等ttm_5（固定报告期索引）
+  - name: depr_fa_coga_dpba_ttm_6
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等ttm_6（固定报告期索引）
+  - name: depr_fa_coga_dpba_ttm_7
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等ttm_7（固定报告期索引）
+  - name: depr_fa_coga_dpba_ttm_8
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等ttm_8（固定报告期索引）
+  - name: depr_fa_coga_dpba_lyr_0
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等lyr_0（固定报告期索引）
+  - name: depr_fa_coga_dpba_lyr_1
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等lyr_1（固定报告期索引）
+  - name: depr_fa_coga_dpba_lyr_2
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等lyr_2（固定报告期索引）
+  - name: depr_fa_coga_dpba_lyr_3
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等lyr_3（固定报告期索引）
+  - name: depr_fa_coga_dpba_lyr_4
+    data_type: float
+    nullable: true
+    comment: 固定资产折旧等lyr_4（固定报告期索引）
+  - name: n_cash_flows_fnc_act_ttm_0
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额ttm_0（固定报告期索引）
+  - name: n_cash_flows_fnc_act_ttm_1
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额ttm_1（固定报告期索引）
+  - name: n_cash_flows_fnc_act_ttm_2
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额ttm_2（固定报告期索引）
+  - name: n_cash_flows_fnc_act_ttm_3
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额ttm_3（固定报告期索引）
+  - name: n_cash_flows_fnc_act_ttm_4
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额ttm_4（固定报告期索引）
+  - name: n_cash_flows_fnc_act_ttm_5
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额ttm_5（固定报告期索引）
+  - name: n_cash_flows_fnc_act_ttm_6
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额ttm_6（固定报告期索引）
+  - name: n_cash_flows_fnc_act_ttm_7
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额ttm_7（固定报告期索引）
+  - name: n_cash_flows_fnc_act_ttm_8
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额ttm_8（固定报告期索引）
+  - name: n_cash_flows_fnc_act_lyr_0
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额lyr_0（固定报告期索引）
+  - name: n_cash_flows_fnc_act_lyr_1
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额lyr_1（固定报告期索引）
+  - name: n_cash_flows_fnc_act_lyr_2
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额lyr_2（固定报告期索引）
+  - name: n_cash_flows_fnc_act_lyr_3
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额lyr_3（固定报告期索引）
+  - name: n_cash_flows_fnc_act_lyr_4
+    data_type: float
+    nullable: true
+    comment: 筹资活动产生的现金流量净额lyr_4（固定报告期索引）
+  - name: n_cashflow_act_ttm_0
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额ttm_0（固定报告期索引）
+  - name: n_cashflow_act_ttm_1
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额ttm_1（固定报告期索引）
+  - name: n_cashflow_act_ttm_2
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额ttm_2（固定报告期索引）
+  - name: n_cashflow_act_ttm_3
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额ttm_3（固定报告期索引）
+  - name: n_cashflow_act_ttm_4
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额ttm_4（固定报告期索引）
+  - name: n_cashflow_act_ttm_5
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额ttm_5（固定报告期索引）
+  - name: n_cashflow_act_ttm_6
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额ttm_6（固定报告期索引）
+  - name: n_cashflow_act_ttm_7
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额ttm_7（固定报告期索引）
+  - name: n_cashflow_act_ttm_8
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额ttm_8（固定报告期索引）
+  - name: n_cashflow_act_lyr_0
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额lyr_0（固定报告期索引）
+  - name: n_cashflow_act_lyr_1
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额lyr_1（固定报告期索引）
+  - name: n_cashflow_act_lyr_2
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额lyr_2（固定报告期索引）
+  - name: n_cashflow_act_lyr_3
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额lyr_3（固定报告期索引）
+  - name: n_cashflow_act_lyr_4
+    data_type: float
+    nullable: true
+    comment: 经营活动产生的现金流量净额lyr_4（固定报告期索引）
+  - name: n_cashflow_inv_act_ttm_0
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额ttm_0（固定报告期索引）
+  - name: n_cashflow_inv_act_ttm_1
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额ttm_1（固定报告期索引）
+  - name: n_cashflow_inv_act_ttm_2
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额ttm_2（固定报告期索引）
+  - name: n_cashflow_inv_act_ttm_3
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额ttm_3（固定报告期索引）
+  - name: n_cashflow_inv_act_ttm_4
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额ttm_4（固定报告期索引）
+  - name: n_cashflow_inv_act_ttm_5
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额ttm_5（固定报告期索引）
+  - name: n_cashflow_inv_act_ttm_6
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额ttm_6（固定报告期索引）
+  - name: n_cashflow_inv_act_ttm_7
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额ttm_7（固定报告期索引）
+  - name: n_cashflow_inv_act_ttm_8
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额ttm_8（固定报告期索引）
+  - name: n_cashflow_inv_act_lyr_0
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额lyr_0（固定报告期索引）
+  - name: n_cashflow_inv_act_lyr_1
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额lyr_1（固定报告期索引）
+  - name: n_cashflow_inv_act_lyr_2
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额lyr_2（固定报告期索引）
+  - name: n_cashflow_inv_act_lyr_3
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额lyr_3（固定报告期索引）
+  - name: n_cashflow_inv_act_lyr_4
+    data_type: float
+    nullable: true
+    comment: 投资活动产生的现金流量净额lyr_4（固定报告期索引）
+  - name: n_incr_cash_cash_equ_ttm_0
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额ttm_0（固定报告期索引）
+  - name: n_incr_cash_cash_equ_ttm_1
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额ttm_1（固定报告期索引）
+  - name: n_incr_cash_cash_equ_ttm_2
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额ttm_2（固定报告期索引）
+  - name: n_incr_cash_cash_equ_ttm_3
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额ttm_3（固定报告期索引）
+  - name: n_incr_cash_cash_equ_ttm_4
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额ttm_4（固定报告期索引）
+  - name: n_incr_cash_cash_equ_ttm_5
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额ttm_5（固定报告期索引）
+  - name: n_incr_cash_cash_equ_ttm_6
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额ttm_6（固定报告期索引）
+  - name: n_incr_cash_cash_equ_ttm_7
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额ttm_7（固定报告期索引）
+  - name: n_incr_cash_cash_equ_ttm_8
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额ttm_8（固定报告期索引）
+  - name: n_incr_cash_cash_equ_lyr_0
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额lyr_0（固定报告期索引）
+  - name: n_incr_cash_cash_equ_lyr_1
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额lyr_1（固定报告期索引）
+  - name: n_incr_cash_cash_equ_lyr_2
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额lyr_2（固定报告期索引）
+  - name: n_incr_cash_cash_equ_lyr_3
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额lyr_3（固定报告期索引）
+  - name: n_incr_cash_cash_equ_lyr_4
+    data_type: float
+    nullable: true
+    comment: 现金及现金等价物净增加额lyr_4（固定报告期索引）
+  - name: prov_depr_assets_ttm_0
+    data_type: float
+    nullable: true
+    comment: 资产减值准备ttm_0（固定报告期索引）
+  - name: prov_depr_assets_ttm_1
+    data_type: float
+    nullable: true
+    comment: 资产减值准备ttm_1（固定报告期索引）
+  - name: prov_depr_assets_ttm_2
+    data_type: float
+    nullable: true
+    comment: 资产减值准备ttm_2（固定报告期索引）
+  - name: prov_depr_assets_ttm_3
+    data_type: float
+    nullable: true
+    comment: 资产减值准备ttm_3（固定报告期索引）
+  - name: prov_depr_assets_ttm_4
+    data_type: float
+    nullable: true
+    comment: 资产减值准备ttm_4（固定报告期索引）
+  - name: prov_depr_assets_ttm_5
+    data_type: float
+    nullable: true
+    comment: 资产减值准备ttm_5（固定报告期索引）
+  - name: prov_depr_assets_ttm_6
+    data_type: float
+    nullable: true
+    comment: 资产减值准备ttm_6（固定报告期索引）
+  - name: prov_depr_assets_ttm_7
+    data_type: float
+    nullable: true
+    comment: 资产减值准备ttm_7（固定报告期索引）
+  - name: prov_depr_assets_ttm_8
+    data_type: float
+    nullable: true
+    comment: 资产减值准备ttm_8（固定报告期索引）
+  - name: prov_depr_assets_lyr_0
+    data_type: float
+    nullable: true
+    comment: 资产减值准备lyr_0（固定报告期索引）
+  - name: prov_depr_assets_lyr_1
+    data_type: float
+    nullable: true
+    comment: 资产减值准备lyr_1（固定报告期索引）
+  - name: prov_depr_assets_lyr_2
+    data_type: float
+    nullable: true
+    comment: 资产减值准备lyr_2（固定报告期索引）
+  - name: prov_depr_assets_lyr_3
+    data_type: float
+    nullable: true
+    comment: 资产减值准备lyr_3（固定报告期索引）
+  - name: prov_depr_assets_lyr_4
+    data_type: float
+    nullable: true
+    comment: 资产减值准备lyr_4（固定报告期索引）
+  - name: ebitda_ttm_0
+    data_type: float
+    nullable: true
+    comment: EBITDAttm_0（固定报告期索引）
+  - name: ebitda_ttm_1
+    data_type: float
+    nullable: true
+    comment: EBITDAttm_1（固定报告期索引）
+  - name: ebitda_ttm_2
+    data_type: float
+    nullable: true
+    comment: EBITDAttm_2（固定报告期索引）
+  - name: ebitda_ttm_3
+    data_type: float
+    nullable: true
+    comment: EBITDAttm_3（固定报告期索引）
+  - name: ebitda_ttm_4
+    data_type: float
+    nullable: true
+    comment: EBITDAttm_4（固定报告期索引）
+  - name: ebitda_ttm_5
+    data_type: float
+    nullable: true
+    comment: EBITDAttm_5（固定报告期索引）
+  - name: ebitda_ttm_6
+    data_type: float
+    nullable: true
+    comment: EBITDAttm_6（固定报告期索引）
+  - name: ebitda_ttm_7
+    data_type: float
+    nullable: true
+    comment: EBITDAttm_7（固定报告期索引）
+  - name: ebitda_ttm_8
+    data_type: float
+    nullable: true
+    comment: EBITDAttm_8（固定报告期索引）
+  - name: ebitda_lyr_0
+    data_type: float
+    nullable: true
+    comment: EBITDAlyr_0（固定报告期索引）
+  - name: ebitda_lyr_1
+    data_type: float
+    nullable: true
+    comment: EBITDAlyr_1（固定报告期索引）
+  - name: ebitda_lyr_2
+    data_type: float
+    nullable: true
+    comment: EBITDAlyr_2（固定报告期索引）
+  - name: ebitda_lyr_3
+    data_type: float
+    nullable: true
+    comment: EBITDAlyr_3（固定报告期索引）
+  - name: ebitda_lyr_4
+    data_type: float
+    nullable: true
+    comment: EBITDAlyr_4（固定报告期索引）
+  - name: fin_exp_int_exp_ttm_0
+    data_type: float
+    nullable: true
+    comment: 利息支出ttm_0（固定报告期索引）
+  - name: fin_exp_int_exp_ttm_1
+    data_type: float
+    nullable: true
+    comment: 利息支出ttm_1（固定报告期索引）
+  - name: fin_exp_int_exp_ttm_2
+    data_type: float
+    nullable: true
+    comment: 利息支出ttm_2（固定报告期索引）
+  - name: fin_exp_int_exp_ttm_3
+    data_type: float
+    nullable: true
+    comment: 利息支出ttm_3（固定报告期索引）
+  - name: fin_exp_int_exp_ttm_4
+    data_type: float
+    nullable: true
+    comment: 利息支出ttm_4（固定报告期索引）
+  - name: fin_exp_int_exp_ttm_5
+    data_type: float
+    nullable: true
+    comment: 利息支出ttm_5（固定报告期索引）
+  - name: fin_exp_int_exp_ttm_6
+    data_type: float
+    nullable: true
+    comment: 利息支出ttm_6（固定报告期索引）
+  - name: fin_exp_int_exp_ttm_7
+    data_type: float
+    nullable: true
+    comment: 利息支出ttm_7（固定报告期索引）
+  - name: fin_exp_int_exp_ttm_8
+    data_type: float
+    nullable: true
+    comment: 利息支出ttm_8（固定报告期索引）
+  - name: fin_exp_int_exp_lyr_0
+    data_type: float
+    nullable: true
+    comment: 利息支出lyr_0（固定报告期索引）
+  - name: fin_exp_int_exp_lyr_1
+    data_type: float
+    nullable: true
+    comment: 利息支出lyr_1（固定报告期索引）
+  - name: fin_exp_int_exp_lyr_2
+    data_type: float
+    nullable: true
+    comment: 利息支出lyr_2（固定报告期索引）
+  - name: fin_exp_int_exp_lyr_3
+    data_type: float
+    nullable: true
+    comment: 利息支出lyr_3（固定报告期索引）
+  - name: fin_exp_int_exp_lyr_4
+    data_type: float
+    nullable: true
+    comment: 利息支出lyr_4（固定报告期索引）
+  - name: fin_exp_int_inc_ttm_0
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_0（固定报告期索引）
+  - name: fin_exp_int_inc_ttm_1
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_1（固定报告期索引）
+  - name: fin_exp_int_inc_ttm_2
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_2（固定报告期索引）
+  - name: fin_exp_int_inc_ttm_3
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_3（固定报告期索引）
+  - name: fin_exp_int_inc_ttm_4
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_4（固定报告期索引）
+  - name: fin_exp_int_inc_ttm_5
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_5（固定报告期索引）
+  - name: fin_exp_int_inc_ttm_6
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_6（固定报告期索引）
+  - name: fin_exp_int_inc_ttm_7
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_7（固定报告期索引）
+  - name: fin_exp_int_inc_ttm_8
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_8（固定报告期索引）
+  - name: fin_exp_int_inc_lyr_0
+    data_type: float
+    nullable: true
+    comment: 利息收入lyr_0（固定报告期索引）
+  - name: fin_exp_int_inc_lyr_1
+    data_type: float
+    nullable: true
+    comment: 利息收入lyr_1（固定报告期索引）
+  - name: fin_exp_int_inc_lyr_2
+    data_type: float
+    nullable: true
+    comment: 利息收入lyr_2（固定报告期索引）
+  - name: fin_exp_int_inc_lyr_3
+    data_type: float
+    nullable: true
+    comment: 利息收入lyr_3（固定报告期索引）
+  - name: fin_exp_int_inc_lyr_4
+    data_type: float
+    nullable: true
+    comment: 利息收入lyr_4（固定报告期索引）
+  - name: income_tax_ttm_0
+    data_type: float
+    nullable: true
+    comment: 所得税费用ttm_0（固定报告期索引）
+  - name: income_tax_ttm_1
+    data_type: float
+    nullable: true
+    comment: 所得税费用ttm_1（固定报告期索引）
+  - name: income_tax_ttm_2
+    data_type: float
+    nullable: true
+    comment: 所得税费用ttm_2（固定报告期索引）
+  - name: income_tax_ttm_3
+    data_type: float
+    nullable: true
+    comment: 所得税费用ttm_3（固定报告期索引）
+  - name: income_tax_ttm_4
+    data_type: float
+    nullable: true
+    comment: 所得税费用ttm_4（固定报告期索引）
+  - name: income_tax_ttm_5
+    data_type: float
+    nullable: true
+    comment: 所得税费用ttm_5（固定报告期索引）
+  - name: income_tax_ttm_6
+    data_type: float
+    nullable: true
+    comment: 所得税费用ttm_6（固定报告期索引）
+  - name: income_tax_ttm_7
+    data_type: float
+    nullable: true
+    comment: 所得税费用ttm_7（固定报告期索引）
+  - name: income_tax_ttm_8
+    data_type: float
+    nullable: true
+    comment: 所得税费用ttm_8（固定报告期索引）
+  - name: income_tax_lyr_0
+    data_type: float
+    nullable: true
+    comment: 所得税费用lyr_0（固定报告期索引）
+  - name: income_tax_lyr_1
+    data_type: float
+    nullable: true
+    comment: 所得税费用lyr_1（固定报告期索引）
+  - name: income_tax_lyr_2
+    data_type: float
+    nullable: true
+    comment: 所得税费用lyr_2（固定报告期索引）
+  - name: income_tax_lyr_3
+    data_type: float
+    nullable: true
+    comment: 所得税费用lyr_3（固定报告期索引）
+  - name: income_tax_lyr_4
+    data_type: float
+    nullable: true
+    comment: 所得税费用lyr_4（固定报告期索引）
+  - name: int_income_ttm_0
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_0（固定报告期索引）
+  - name: int_income_ttm_1
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_1（固定报告期索引）
+  - name: int_income_ttm_2
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_2（固定报告期索引）
+  - name: int_income_ttm_3
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_3（固定报告期索引）
+  - name: int_income_ttm_4
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_4（固定报告期索引）
+  - name: int_income_ttm_5
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_5（固定报告期索引）
+  - name: int_income_ttm_6
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_6（固定报告期索引）
+  - name: int_income_ttm_7
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_7（固定报告期索引）
+  - name: int_income_ttm_8
+    data_type: float
+    nullable: true
+    comment: 利息收入ttm_8（固定报告期索引）
+  - name: int_income_lyr_0
+    data_type: float
+    nullable: true
+    comment: 利息收入lyr_0（固定报告期索引）
+  - name: int_income_lyr_1
+    data_type: float
+    nullable: true
+    comment: 利息收入lyr_1（固定报告期索引）
+  - name: int_income_lyr_2
+    data_type: float
+    nullable: true
+    comment: 利息收入lyr_2（固定报告期索引）
+  - name: int_income_lyr_3
+    data_type: float
+    nullable: true
+    comment: 利息收入lyr_3（固定报告期索引）
+  - name: int_income_lyr_4
+    data_type: float
+    nullable: true
+    comment: 利息收入lyr_4（固定报告期索引）
+  - name: n_income_ttm_0
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益ttm_0（固定报告期索引）
+  - name: n_income_ttm_1
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益ttm_1（固定报告期索引）
+  - name: n_income_ttm_2
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益ttm_2（固定报告期索引）
+  - name: n_income_ttm_3
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益ttm_3（固定报告期索引）
+  - name: n_income_ttm_4
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益ttm_4（固定报告期索引）
+  - name: n_income_ttm_5
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益ttm_5（固定报告期索引）
+  - name: n_income_ttm_6
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益ttm_6（固定报告期索引）
+  - name: n_income_ttm_7
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益ttm_7（固定报告期索引）
+  - name: n_income_ttm_8
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益ttm_8（固定报告期索引）
+  - name: n_income_lyr_0
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益lyr_0（固定报告期索引）
+  - name: n_income_lyr_1
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益lyr_1（固定报告期索引）
+  - name: n_income_lyr_2
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益lyr_2（固定报告期索引）
+  - name: n_income_lyr_3
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益lyr_3（固定报告期索引）
+  - name: n_income_lyr_4
+    data_type: float
+    nullable: true
+    comment: 净利润(含少数股东损益lyr_4（固定报告期索引）
+  - name: n_income_attr_p_ttm_0
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益ttm_0（固定报告期索引）
+  - name: n_income_attr_p_ttm_1
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益ttm_1（固定报告期索引）
+  - name: n_income_attr_p_ttm_2
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益ttm_2（固定报告期索引）
+  - name: n_income_attr_p_ttm_3
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益ttm_3（固定报告期索引）
+  - name: n_income_attr_p_ttm_4
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益ttm_4（固定报告期索引）
+  - name: n_income_attr_p_ttm_5
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益ttm_5（固定报告期索引）
+  - name: n_income_attr_p_ttm_6
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益ttm_6（固定报告期索引）
+  - name: n_income_attr_p_ttm_7
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益ttm_7（固定报告期索引）
+  - name: n_income_attr_p_ttm_8
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益ttm_8（固定报告期索引）
+  - name: n_income_attr_p_lyr_0
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益lyr_0（固定报告期索引）
+  - name: n_income_attr_p_lyr_1
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益lyr_1（固定报告期索引）
+  - name: n_income_attr_p_lyr_2
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益lyr_2（固定报告期索引）
+  - name: n_income_attr_p_lyr_3
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益lyr_3（固定报告期索引）
+  - name: n_income_attr_p_lyr_4
+    data_type: float
+    nullable: true
+    comment: 净利润(不含少数股东损益lyr_4（固定报告期索引）
+  - name: operate_profit_ttm_0
+    data_type: float
+    nullable: true
+    comment: 营业利润ttm_0（固定报告期索引）
+  - name: operate_profit_ttm_1
+    data_type: float
+    nullable: true
+    comment: 营业利润ttm_1（固定报告期索引）
+  - name: operate_profit_ttm_2
+    data_type: float
+    nullable: true
+    comment: 营业利润ttm_2（固定报告期索引）
+  - name: operate_profit_ttm_3
+    data_type: float
+    nullable: true
+    comment: 营业利润ttm_3（固定报告期索引）
+  - name: operate_profit_ttm_4
+    data_type: float
+    nullable: true
+    comment: 营业利润ttm_4（固定报告期索引）
+  - name: operate_profit_ttm_5
+    data_type: float
+    nullable: true
+    comment: 营业利润ttm_5（固定报告期索引）
+  - name: operate_profit_ttm_6
+    data_type: float
+    nullable: true
+    comment: 营业利润ttm_6（固定报告期索引）
+  - name: operate_profit_ttm_7
+    data_type: float
+    nullable: true
+    comment: 营业利润ttm_7（固定报告期索引）
+  - name: operate_profit_ttm_8
+    data_type: float
+    nullable: true
+    comment: 营业利润ttm_8（固定报告期索引）
+  - name: operate_profit_lyr_0
+    data_type: float
+    nullable: true
+    comment: 营业利润lyr_0（固定报告期索引）
+  - name: operate_profit_lyr_1
+    data_type: float
+    nullable: true
+    comment: 营业利润lyr_1（固定报告期索引）
+  - name: operate_profit_lyr_2
+    data_type: float
+    nullable: true
+    comment: 营业利润lyr_2（固定报告期索引）
+  - name: operate_profit_lyr_3
+    data_type: float
+    nullable: true
+    comment: 营业利润lyr_3（固定报告期索引）
+  - name: operate_profit_lyr_4
+    data_type: float
+    nullable: true
+    comment: 营业利润lyr_4（固定报告期索引）
+  - name: revenue_ttm_0
+    data_type: float
+    nullable: true
+    comment: 营业收入ttm_0（固定报告期索引）
+  - name: revenue_ttm_1
+    data_type: float
+    nullable: true
+    comment: 营业收入ttm_1（固定报告期索引）
+  - name: revenue_ttm_2
+    data_type: float
+    nullable: true
+    comment: 营业收入ttm_2（固定报告期索引）
+  - name: revenue_ttm_3
+    data_type: float
+    nullable: true
+    comment: 营业收入ttm_3（固定报告期索引）
+  - name: revenue_ttm_4
+    data_type: float
+    nullable: true
+    comment: 营业收入ttm_4（固定报告期索引）
+  - name: revenue_ttm_5
+    data_type: float
+    nullable: true
+    comment: 营业收入ttm_5（固定报告期索引）
+  - name: revenue_ttm_6
+    data_type: float
+    nullable: true
+    comment: 营业收入ttm_6（固定报告期索引）
+  - name: revenue_ttm_7
+    data_type: float
+    nullable: true
+    comment: 营业收入ttm_7（固定报告期索引）
+  - name: revenue_ttm_8
+    data_type: float
+    nullable: true
+    comment: 营业收入ttm_8（固定报告期索引）
+  - name: revenue_lyr_0
+    data_type: float
+    nullable: true
+    comment: 营业收入lyr_0（固定报告期索引）
+  - name: revenue_lyr_1
+    data_type: float
+    nullable: true
+    comment: 营业收入lyr_1（固定报告期索引）
+  - name: revenue_lyr_2
+    data_type: float
+    nullable: true
+    comment: 营业收入lyr_2（固定报告期索引）
+  - name: revenue_lyr_3
+    data_type: float
+    nullable: true
+    comment: 营业收入lyr_3（固定报告期索引）
+  - name: revenue_lyr_4
+    data_type: float
+    nullable: true
+    comment: 营业收入lyr_4（固定报告期索引）
+  - name: total_cogs_ttm_0
+    data_type: float
+    nullable: true
+    comment: 营业总成本ttm_0（固定报告期索引）
+  - name: total_cogs_ttm_1
+    data_type: float
+    nullable: true
+    comment: 营业总成本ttm_1（固定报告期索引）
+  - name: total_cogs_ttm_2
+    data_type: float
+    nullable: true
+    comment: 营业总成本ttm_2（固定报告期索引）
+  - name: total_cogs_ttm_3
+    data_type: float
+    nullable: true
+    comment: 营业总成本ttm_3（固定报告期索引）
+  - name: total_cogs_ttm_4
+    data_type: float
+    nullable: true
+    comment: 营业总成本ttm_4（固定报告期索引）
+  - name: total_cogs_ttm_5
+    data_type: float
+    nullable: true
+    comment: 营业总成本ttm_5（固定报告期索引）
+  - name: total_cogs_ttm_6
+    data_type: float
+    nullable: true
+    comment: 营业总成本ttm_6（固定报告期索引）
+  - name: total_cogs_ttm_7
+    data_type: float
+    nullable: true
+    comment: 营业总成本ttm_7（固定报告期索引）
+  - name: total_cogs_ttm_8
+    data_type: float
+    nullable: true
+    comment: 营业总成本ttm_8（固定报告期索引）
+  - name: total_cogs_lyr_0
+    data_type: float
+    nullable: true
+    comment: 营业总成本lyr_0（固定报告期索引）
+  - name: total_cogs_lyr_1
+    data_type: float
+    nullable: true
+    comment: 营业总成本lyr_1（固定报告期索引）
+  - name: total_cogs_lyr_2
+    data_type: float
+    nullable: true
+    comment: 营业总成本lyr_2（固定报告期索引）
+  - name: total_cogs_lyr_3
+    data_type: float
+    nullable: true
+    comment: 营业总成本lyr_3（固定报告期索引）
+  - name: total_cogs_lyr_4
+    data_type: float
+    nullable: true
+    comment: 营业总成本lyr_4（固定报告期索引）
+  - name: total_profit_ttm_0
+    data_type: float
+    nullable: true
+    comment: 利润总额ttm_0（固定报告期索引）
+  - name: total_profit_ttm_1
+    data_type: float
+    nullable: true
+    comment: 利润总额ttm_1（固定报告期索引）
+  - name: total_profit_ttm_2
+    data_type: float
+    nullable: true
+    comment: 利润总额ttm_2（固定报告期索引）
+  - name: total_profit_ttm_3
+    data_type: float
+    nullable: true
+    comment: 利润总额ttm_3（固定报告期索引）
+  - name: total_profit_ttm_4
+    data_type: float
+    nullable: true
+    comment: 利润总额ttm_4（固定报告期索引）
+  - name: total_profit_ttm_5
+    data_type: float
+    nullable: true
+    comment: 利润总额ttm_5（固定报告期索引）
+  - name: total_profit_ttm_6
+    data_type: float
+    nullable: true
+    comment: 利润总额ttm_6（固定报告期索引）
+  - name: total_profit_ttm_7
+    data_type: float
+    nullable: true
+    comment: 利润总额ttm_7（固定报告期索引）
+  - name: total_profit_ttm_8
+    data_type: float
+    nullable: true
+    comment: 利润总额ttm_8（固定报告期索引）
+  - name: total_profit_lyr_0
+    data_type: float
+    nullable: true
+    comment: 利润总额lyr_0（固定报告期索引）
+  - name: total_profit_lyr_1
+    data_type: float
+    nullable: true
+    comment: 利润总额lyr_1（固定报告期索引）
+  - name: total_profit_lyr_2
+    data_type: float
+    nullable: true
+    comment: 利润总额lyr_2（固定报告期索引）
+  - name: total_profit_lyr_3
+    data_type: float
+    nullable: true
+    comment: 利润总额lyr_3（固定报告期索引）
+  - name: total_profit_lyr_4
+    data_type: float
+    nullable: true
+    comment: 利润总额lyr_4（固定报告期索引）
+  - name: basic_eps_ttm_0
+    data_type: float
+    nullable: true
+    comment: 基本每股收益ttm_0（固定报告期索引）
+  - name: basic_eps_ttm_1
+    data_type: float
+    nullable: true
+    comment: 基本每股收益ttm_1（固定报告期索引）
+  - name: basic_eps_ttm_2
+    data_type: float
+    nullable: true
+    comment: 基本每股收益ttm_2（固定报告期索引）
+  - name: basic_eps_ttm_3
+    data_type: float
+    nullable: true
+    comment: 基本每股收益ttm_3（固定报告期索引）
+  - name: basic_eps_ttm_4
+    data_type: float
+    nullable: true
+    comment: 基本每股收益ttm_4（固定报告期索引）
+  - name: basic_eps_ttm_5
+    data_type: float
+    nullable: true
+    comment: 基本每股收益ttm_5（固定报告期索引）
+  - name: basic_eps_ttm_6
+    data_type: float
+    nullable: true
+    comment: 基本每股收益ttm_6（固定报告期索引）
+  - name: basic_eps_ttm_7
+    data_type: float
+    nullable: true
+    comment: 基本每股收益ttm_7（固定报告期索引）
+  - name: basic_eps_ttm_8
+    data_type: float
+    nullable: true
+    comment: 基本每股收益ttm_8（固定报告期索引）
+  - name: basic_eps_lyr_0
+    data_type: float
+    nullable: true
+    comment: 基本每股收益lyr_0（固定报告期索引）
+  - name: basic_eps_lyr_1
+    data_type: float
+    nullable: true
+    comment: 基本每股收益lyr_1（固定报告期索引）
+  - name: basic_eps_lyr_2
+    data_type: float
+    nullable: true
+    comment: 基本每股收益lyr_2（固定报告期索引）
+  - name: basic_eps_lyr_3
+    data_type: float
+    nullable: true
+    comment: 基本每股收益lyr_3（固定报告期索引）
+  - name: basic_eps_lyr_4
+    data_type: float
+    nullable: true
+    comment: 基本每股收益lyr_4（固定报告期索引）
+  - name: oper_cost_ttm_0
+    data_type: float
+    nullable: true
+    comment: 营业成本ttm_0（固定报告期索引）
+  - name: oper_cost_ttm_1
+    data_type: float
+    nullable: true
+    comment: 营业成本ttm_1（固定报告期索引）
+  - name: oper_cost_ttm_2
+    data_type: float
+    nullable: true
+    comment: 营业成本ttm_2（固定报告期索引）
+  - name: oper_cost_ttm_3
+    data_type: float
+    nullable: true
+    comment: 营业成本ttm_3（固定报告期索引）
+  - name: oper_cost_ttm_4
+    data_type: float
+    nullable: true
+    comment: 营业成本ttm_4（固定报告期索引）
+  - name: oper_cost_ttm_5
+    data_type: float
+    nullable: true
+    comment: 营业成本ttm_5（固定报告期索引）
+  - name: oper_cost_ttm_6
+    data_type: float
+    nullable: true
+    comment: 营业成本ttm_6（固定报告期索引）
+  - name: oper_cost_ttm_7
+    data_type: float
+    nullable: true
+    comment: 营业成本ttm_7（固定报告期索引）
+  - name: oper_cost_ttm_8
+    data_type: float
+    nullable: true
+    comment: 营业成本ttm_8（固定报告期索引）
+  - name: oper_cost_lyr_0
+    data_type: float
+    nullable: true
+    comment: 营业成本lyr_0（固定报告期索引）
+  - name: oper_cost_lyr_1
+    data_type: float
+    nullable: true
+    comment: 营业成本lyr_1（固定报告期索引）
+  - name: oper_cost_lyr_2
+    data_type: float
+    nullable: true
+    comment: 营业成本lyr_2（固定报告期索引）
+  - name: oper_cost_lyr_3
+    data_type: float
+    nullable: true
+    comment: 营业成本lyr_3（固定报告期索引）
+  - name: oper_cost_lyr_4
+    data_type: float
+    nullable: true
+    comment: 营业成本lyr_4（固定报告期索引）
+  - name: ebit_ttm_0
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）ttm_0（固定报告期索引）
+  - name: ebit_ttm_1
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）ttm_1（固定报告期索引）
+  - name: ebit_ttm_2
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）ttm_2（固定报告期索引）
+  - name: ebit_ttm_3
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）ttm_3（固定报告期索引）
+  - name: ebit_ttm_4
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）ttm_4（固定报告期索引）
+  - name: ebit_ttm_5
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）ttm_5（固定报告期索引）
+  - name: ebit_ttm_6
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）ttm_6（固定报告期索引）
+  - name: ebit_ttm_7
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）ttm_7（固定报告期索引）
+  - name: ebit_ttm_8
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）ttm_8（固定报告期索引）
+  - name: ebit_lyr_0
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）lyr_0（固定报告期索引）
+  - name: ebit_lyr_1
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）lyr_1（固定报告期索引）
+  - name: ebit_lyr_2
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）lyr_2（固定报告期索引）
+  - name: ebit_lyr_3
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）lyr_3（固定报告期索引）
+  - name: ebit_lyr_4
+    data_type: float
+    nullable: true
+    comment: 息税前利润(EBIT)（最近年报）lyr_4（固定报告期索引）
+  - name: fv_value_chg_gain_ttm_0
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益ttm_0（固定报告期索引）
+  - name: fv_value_chg_gain_ttm_1
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益ttm_1（固定报告期索引）
+  - name: fv_value_chg_gain_ttm_2
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益ttm_2（固定报告期索引）
+  - name: fv_value_chg_gain_ttm_3
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益ttm_3（固定报告期索引）
+  - name: fv_value_chg_gain_ttm_4
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益ttm_4（固定报告期索引）
+  - name: fv_value_chg_gain_ttm_5
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益ttm_5（固定报告期索引）
+  - name: fv_value_chg_gain_ttm_6
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益ttm_6（固定报告期索引）
+  - name: fv_value_chg_gain_ttm_7
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益ttm_7（固定报告期索引）
+  - name: fv_value_chg_gain_ttm_8
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益ttm_8（固定报告期索引）
+  - name: fv_value_chg_gain_lyr_0
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益lyr_0（固定报告期索引）
+  - name: fv_value_chg_gain_lyr_1
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益lyr_1（固定报告期索引）
+  - name: fv_value_chg_gain_lyr_2
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益lyr_2（固定报告期索引）
+  - name: fv_value_chg_gain_lyr_3
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益lyr_3（固定报告期索引）
+  - name: fv_value_chg_gain_lyr_4
+    data_type: float
+    nullable: true
+    comment: 公允价值变动收益lyr_4（固定报告期索引）
+  - name: fin_exp_ttm_0
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: fin_exp_ttm_1
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: fin_exp_ttm_2
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: fin_exp_ttm_3
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: fin_exp_ttm_4
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: fin_exp_ttm_5
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: fin_exp_ttm_6
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: fin_exp_ttm_7
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: fin_exp_ttm_8
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: fin_exp_lyr_0
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: fin_exp_lyr_1
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: fin_exp_lyr_2
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: fin_exp_lyr_3
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: fin_exp_lyr_4
+    data_type: float
+    nullable: true
+    comment: 财务费用（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: diluted_eps_ttm_0
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益ttm_0（固定报告期索引）
+  - name: diluted_eps_ttm_1
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益ttm_1（固定报告期索引）
+  - name: diluted_eps_ttm_2
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益ttm_2（固定报告期索引）
+  - name: diluted_eps_ttm_3
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益ttm_3（固定报告期索引）
+  - name: diluted_eps_ttm_4
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益ttm_4（固定报告期索引）
+  - name: diluted_eps_ttm_5
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益ttm_5（固定报告期索引）
+  - name: diluted_eps_ttm_6
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益ttm_6（固定报告期索引）
+  - name: diluted_eps_ttm_7
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益ttm_7（固定报告期索引）
+  - name: diluted_eps_ttm_8
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益ttm_8（固定报告期索引）
+  - name: diluted_eps_lyr_0
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益lyr_0（固定报告期索引）
+  - name: diluted_eps_lyr_1
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益lyr_1（固定报告期索引）
+  - name: diluted_eps_lyr_2
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益lyr_2（固定报告期索引）
+  - name: diluted_eps_lyr_3
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益lyr_3（固定报告期索引）
+  - name: diluted_eps_lyr_4
+    data_type: float
+    nullable: true
+    comment: 稀释每股收益lyr_4（固定报告期索引）
+  - name: oth_impair_loss_assets_mrq_0
+    data_type: float
+    nullable: true
+    comment: 开发支出mrq_0（固定报告期索引）
+  - name: oth_impair_loss_assets_mrq_1
+    data_type: float
+    nullable: true
+    comment: 开发支出mrq_1（固定报告期索引）
+  - name: oth_impair_loss_assets_mrq_2
+    data_type: float
+    nullable: true
+    comment: 开发支出mrq_2（固定报告期索引）
+  - name: oth_impair_loss_assets_mrq_3
+    data_type: float
+    nullable: true
+    comment: 开发支出mrq_3（固定报告期索引）
+  - name: oth_impair_loss_assets_mrq_4
+    data_type: float
+    nullable: true
+    comment: 开发支出mrq_4（固定报告期索引）
+  - name: oth_impair_loss_assets_mrq_5
+    data_type: float
+    nullable: true
+    comment: 开发支出mrq_5（固定报告期索引）
+  - name: oth_impair_loss_assets_mrq_6
+    data_type: float
+    nullable: true
+    comment: 开发支出mrq_6（固定报告期索引）
+  - name: oth_impair_loss_assets_mrq_7
+    data_type: float
+    nullable: true
+    comment: 开发支出mrq_7（固定报告期索引）
+  - name: oth_impair_loss_assets_mrq_8
+    data_type: float
+    nullable: true
+    comment: 开发支出mrq_8（固定报告期索引）
+  - name: oth_impair_loss_assets_ttm_0
+    data_type: float
+    nullable: true
+    comment: 开发支出ttm_0（固定报告期索引）
+  - name: oth_impair_loss_assets_ttm_1
+    data_type: float
+    nullable: true
+    comment: 开发支出ttm_1（固定报告期索引）
+  - name: oth_impair_loss_assets_ttm_2
+    data_type: float
+    nullable: true
+    comment: 开发支出ttm_2（固定报告期索引）
+  - name: oth_impair_loss_assets_ttm_3
+    data_type: float
+    nullable: true
+    comment: 开发支出ttm_3（固定报告期索引）
+  - name: oth_impair_loss_assets_ttm_4
+    data_type: float
+    nullable: true
+    comment: 开发支出ttm_4（固定报告期索引）
+  - name: oth_impair_loss_assets_ttm_5
+    data_type: float
+    nullable: true
+    comment: 开发支出ttm_5（固定报告期索引）
+  - name: oth_impair_loss_assets_ttm_6
+    data_type: float
+    nullable: true
+    comment: 开发支出ttm_6（固定报告期索引）
+  - name: oth_impair_loss_assets_ttm_7
+    data_type: float
+    nullable: true
+    comment: 开发支出ttm_7（固定报告期索引）
+  - name: oth_impair_loss_assets_ttm_8
+    data_type: float
+    nullable: true
+    comment: 开发支出ttm_8（固定报告期索引）
+  - name: oth_impair_loss_assets_lyr_0
+    data_type: float
+    nullable: true
+    comment: 开发支出lyr_0（固定报告期索引）
+  - name: oth_impair_loss_assets_lyr_1
+    data_type: float
+    nullable: true
+    comment: 开发支出lyr_1（固定报告期索引）
+  - name: oth_impair_loss_assets_lyr_2
+    data_type: float
+    nullable: true
+    comment: 开发支出lyr_2（固定报告期索引）
+  - name: oth_impair_loss_assets_lyr_3
+    data_type: float
+    nullable: true
+    comment: 开发支出lyr_3（固定报告期索引）
+  - name: oth_impair_loss_assets_lyr_4
+    data_type: float
+    nullable: true
+    comment: 开发支出lyr_4（固定报告期索引）
+  - name: ass_invest_income_ttm_0
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益ttm_0（固定报告期索引）
+  - name: ass_invest_income_ttm_1
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益ttm_1（固定报告期索引）
+  - name: ass_invest_income_ttm_2
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益ttm_2（固定报告期索引）
+  - name: ass_invest_income_ttm_3
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益ttm_3（固定报告期索引）
+  - name: ass_invest_income_ttm_4
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益ttm_4（固定报告期索引）
+  - name: ass_invest_income_ttm_5
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益ttm_5（固定报告期索引）
+  - name: ass_invest_income_ttm_6
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益ttm_6（固定报告期索引）
+  - name: ass_invest_income_ttm_7
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益ttm_7（固定报告期索引）
+  - name: ass_invest_income_ttm_8
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益ttm_8（固定报告期索引）
+  - name: ass_invest_income_lyr_0
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益lyr_0（固定报告期索引）
+  - name: ass_invest_income_lyr_1
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益lyr_1（固定报告期索引）
+  - name: ass_invest_income_lyr_2
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益lyr_2（固定报告期索引）
+  - name: ass_invest_income_lyr_3
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益lyr_3（固定报告期索引）
+  - name: ass_invest_income_lyr_4
+    data_type: float
+    nullable: true
+    comment: 对联营合营公司的投资收益lyr_4（固定报告期索引）
+  - name: invest_income_ttm_0
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: invest_income_ttm_1
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: invest_income_ttm_2
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: invest_income_ttm_3
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: invest_income_ttm_4
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: invest_income_ttm_5
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: invest_income_ttm_6
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: invest_income_ttm_7
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: invest_income_ttm_8
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: invest_income_lyr_0
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: invest_income_lyr_1
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: invest_income_lyr_2
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: invest_income_lyr_3
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: invest_income_lyr_4
+    data_type: float
+    nullable: true
+    comment: 投资收益（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: non_oper_exp_ttm_0
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: non_oper_exp_ttm_1
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: non_oper_exp_ttm_2
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: non_oper_exp_ttm_3
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: non_oper_exp_ttm_4
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: non_oper_exp_ttm_5
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: non_oper_exp_ttm_6
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: non_oper_exp_ttm_7
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: non_oper_exp_ttm_8
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: non_oper_exp_lyr_0
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: non_oper_exp_lyr_1
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: non_oper_exp_lyr_2
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: non_oper_exp_lyr_3
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: non_oper_exp_lyr_4
+    data_type: float
+    nullable: true
+    comment: 营业外支出（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: non_oper_income_ttm_0
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: non_oper_income_ttm_1
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: non_oper_income_ttm_2
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: non_oper_income_ttm_3
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: non_oper_income_ttm_4
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: non_oper_income_ttm_5
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: non_oper_income_ttm_6
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: non_oper_income_ttm_7
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: non_oper_income_ttm_8
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: non_oper_income_lyr_0
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: non_oper_income_lyr_1
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: non_oper_income_lyr_2
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: non_oper_income_lyr_3
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: non_oper_income_lyr_4
+    data_type: float
+    nullable: true
+    comment: 营业外收入（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: biz_tax_surchg_ttm_0
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加ttm_0（固定报告期索引）
+  - name: biz_tax_surchg_ttm_1
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加ttm_1（固定报告期索引）
+  - name: biz_tax_surchg_ttm_2
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加ttm_2（固定报告期索引）
+  - name: biz_tax_surchg_ttm_3
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加ttm_3（固定报告期索引）
+  - name: biz_tax_surchg_ttm_4
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加ttm_4（固定报告期索引）
+  - name: biz_tax_surchg_ttm_5
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加ttm_5（固定报告期索引）
+  - name: biz_tax_surchg_ttm_6
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加ttm_6（固定报告期索引）
+  - name: biz_tax_surchg_ttm_7
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加ttm_7（固定报告期索引）
+  - name: biz_tax_surchg_ttm_8
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加ttm_8（固定报告期索引）
+  - name: biz_tax_surchg_lyr_0
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加lyr_0（固定报告期索引）
+  - name: biz_tax_surchg_lyr_1
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加lyr_1（固定报告期索引）
+  - name: biz_tax_surchg_lyr_2
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加lyr_2（固定报告期索引）
+  - name: biz_tax_surchg_lyr_3
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加lyr_3（固定报告期索引）
+  - name: biz_tax_surchg_lyr_4
+    data_type: float
+    nullable: true
+    comment: 营业税金及附加lyr_4（固定报告期索引）
+  - name: acc_exp_mrq_0
+    data_type: float
+    nullable: true
+    comment: 预提费用mrq_0（固定报告期索引）
+  - name: acc_exp_mrq_1
+    data_type: float
+    nullable: true
+    comment: 预提费用mrq_1（固定报告期索引）
+  - name: acc_exp_mrq_2
+    data_type: float
+    nullable: true
+    comment: 预提费用mrq_2（固定报告期索引）
+  - name: acc_exp_mrq_3
+    data_type: float
+    nullable: true
+    comment: 预提费用mrq_3（固定报告期索引）
+  - name: acc_exp_mrq_4
+    data_type: float
+    nullable: true
+    comment: 预提费用mrq_4（固定报告期索引）
+  - name: acc_exp_mrq_5
+    data_type: float
+    nullable: true
+    comment: 预提费用mrq_5（固定报告期索引）
+  - name: acc_exp_mrq_6
+    data_type: float
+    nullable: true
+    comment: 预提费用mrq_6（固定报告期索引）
+  - name: acc_exp_mrq_7
+    data_type: float
+    nullable: true
+    comment: 预提费用mrq_7（固定报告期索引）
+  - name: acc_exp_mrq_8
+    data_type: float
+    nullable: true
+    comment: 预提费用mrq_8（固定报告期索引）
+  - name: acc_exp_ttm_0
+    data_type: float
+    nullable: true
+    comment: 预提费用ttm_0（固定报告期索引）
+  - name: acc_exp_ttm_1
+    data_type: float
+    nullable: true
+    comment: 预提费用ttm_1（固定报告期索引）
+  - name: acc_exp_ttm_2
+    data_type: float
+    nullable: true
+    comment: 预提费用ttm_2（固定报告期索引）
+  - name: acc_exp_ttm_3
+    data_type: float
+    nullable: true
+    comment: 预提费用ttm_3（固定报告期索引）
+  - name: acc_exp_ttm_4
+    data_type: float
+    nullable: true
+    comment: 预提费用ttm_4（固定报告期索引）
+  - name: acc_exp_ttm_5
+    data_type: float
+    nullable: true
+    comment: 预提费用ttm_5（固定报告期索引）
+  - name: acc_exp_ttm_6
+    data_type: float
+    nullable: true
+    comment: 预提费用ttm_6（固定报告期索引）
+  - name: acc_exp_ttm_7
+    data_type: float
+    nullable: true
+    comment: 预提费用ttm_7（固定报告期索引）
+  - name: acc_exp_ttm_8
+    data_type: float
+    nullable: true
+    comment: 预提费用ttm_8（固定报告期索引）
+  - name: acc_exp_lyr_0
+    data_type: float
+    nullable: true
+    comment: 预提费用lyr_0（固定报告期索引）
+  - name: acc_exp_lyr_1
+    data_type: float
+    nullable: true
+    comment: 预提费用lyr_1（固定报告期索引）
+  - name: acc_exp_lyr_2
+    data_type: float
+    nullable: true
+    comment: 预提费用lyr_2（固定报告期索引）
+  - name: acc_exp_lyr_3
+    data_type: float
+    nullable: true
+    comment: 预提费用lyr_3（固定报告期索引）
+  - name: acc_exp_lyr_4
+    data_type: float
+    nullable: true
+    comment: 预提费用lyr_4（固定报告期索引）
+  - name: acct_payable_mrq_0
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）mrq_0（固定报告期索引）
+  - name: acct_payable_mrq_1
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）mrq_1（固定报告期索引）
+  - name: acct_payable_mrq_2
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）mrq_2（固定报告期索引）
+  - name: acct_payable_mrq_3
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）mrq_3（固定报告期索引）
+  - name: acct_payable_mrq_4
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）mrq_4（固定报告期索引）
+  - name: acct_payable_mrq_5
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）mrq_5（固定报告期索引）
+  - name: acct_payable_mrq_6
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）mrq_6（固定报告期索引）
+  - name: acct_payable_mrq_7
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）mrq_7（固定报告期索引）
+  - name: acct_payable_mrq_8
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）mrq_8（固定报告期索引）
+  - name: acct_payable_ttm_0
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: acct_payable_ttm_1
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: acct_payable_ttm_2
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: acct_payable_ttm_3
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: acct_payable_ttm_4
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: acct_payable_ttm_5
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: acct_payable_ttm_6
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: acct_payable_ttm_7
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: acct_payable_ttm_8
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: acct_payable_lyr_0
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: acct_payable_lyr_1
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: acct_payable_lyr_2
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: acct_payable_lyr_3
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: acct_payable_lyr_4
+    data_type: float
+    nullable: true
+    comment: 应付账款（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: accounts_receiv_mrq_0
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）mrq_0（固定报告期索引）
+  - name: accounts_receiv_mrq_1
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）mrq_1（固定报告期索引）
+  - name: accounts_receiv_mrq_2
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）mrq_2（固定报告期索引）
+  - name: accounts_receiv_mrq_3
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）mrq_3（固定报告期索引）
+  - name: accounts_receiv_mrq_4
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）mrq_4（固定报告期索引）
+  - name: accounts_receiv_mrq_5
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）mrq_5（固定报告期索引）
+  - name: accounts_receiv_mrq_6
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）mrq_6（固定报告期索引）
+  - name: accounts_receiv_mrq_7
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）mrq_7（固定报告期索引）
+  - name: accounts_receiv_mrq_8
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）mrq_8（固定报告期索引）
+  - name: accounts_receiv_ttm_0
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）ttm_0（固定报告期索引）
+  - name: accounts_receiv_ttm_1
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）ttm_1（固定报告期索引）
+  - name: accounts_receiv_ttm_2
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）ttm_2（固定报告期索引）
+  - name: accounts_receiv_ttm_3
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）ttm_3（固定报告期索引）
+  - name: accounts_receiv_ttm_4
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）ttm_4（固定报告期索引）
+  - name: accounts_receiv_ttm_5
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）ttm_5（固定报告期索引）
+  - name: accounts_receiv_ttm_6
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）ttm_6（固定报告期索引）
+  - name: accounts_receiv_ttm_7
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）ttm_7（固定报告期索引）
+  - name: accounts_receiv_ttm_8
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）ttm_8（固定报告期索引）
+  - name: accounts_receiv_lyr_0
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）lyr_0（固定报告期索引）
+  - name: accounts_receiv_lyr_1
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）lyr_1（固定报告期索引）
+  - name: accounts_receiv_lyr_2
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）lyr_2（固定报告期索引）
+  - name: accounts_receiv_lyr_3
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）lyr_3（固定报告期索引）
+  - name: accounts_receiv_lyr_4
+    data_type: float
+    nullable: true
+    comment: 应收账款（TTM）lyr_4（固定报告期索引）
+  - name: adv_receipts_mrq_0
+    data_type: float
+    nullable: true
+    comment: 预收款项mrq_0（固定报告期索引）
+  - name: adv_receipts_mrq_1
+    data_type: float
+    nullable: true
+    comment: 预收款项mrq_1（固定报告期索引）
+  - name: adv_receipts_mrq_2
+    data_type: float
+    nullable: true
+    comment: 预收款项mrq_2（固定报告期索引）
+  - name: adv_receipts_mrq_3
+    data_type: float
+    nullable: true
+    comment: 预收款项mrq_3（固定报告期索引）
+  - name: adv_receipts_mrq_4
+    data_type: float
+    nullable: true
+    comment: 预收款项mrq_4（固定报告期索引）
+  - name: adv_receipts_mrq_5
+    data_type: float
+    nullable: true
+    comment: 预收款项mrq_5（固定报告期索引）
+  - name: adv_receipts_mrq_6
+    data_type: float
+    nullable: true
+    comment: 预收款项mrq_6（固定报告期索引）
+  - name: adv_receipts_mrq_7
+    data_type: float
+    nullable: true
+    comment: 预收款项mrq_7（固定报告期索引）
+  - name: adv_receipts_mrq_8
+    data_type: float
+    nullable: true
+    comment: 预收款项mrq_8（固定报告期索引）
+  - name: adv_receipts_ttm_0
+    data_type: float
+    nullable: true
+    comment: 预收款项ttm_0（固定报告期索引）
+  - name: adv_receipts_ttm_1
+    data_type: float
+    nullable: true
+    comment: 预收款项ttm_1（固定报告期索引）
+  - name: adv_receipts_ttm_2
+    data_type: float
+    nullable: true
+    comment: 预收款项ttm_2（固定报告期索引）
+  - name: adv_receipts_ttm_3
+    data_type: float
+    nullable: true
+    comment: 预收款项ttm_3（固定报告期索引）
+  - name: adv_receipts_ttm_4
+    data_type: float
+    nullable: true
+    comment: 预收款项ttm_4（固定报告期索引）
+  - name: adv_receipts_ttm_5
+    data_type: float
+    nullable: true
+    comment: 预收款项ttm_5（固定报告期索引）
+  - name: adv_receipts_ttm_6
+    data_type: float
+    nullable: true
+    comment: 预收款项ttm_6（固定报告期索引）
+  - name: adv_receipts_ttm_7
+    data_type: float
+    nullable: true
+    comment: 预收款项ttm_7（固定报告期索引）
+  - name: adv_receipts_ttm_8
+    data_type: float
+    nullable: true
+    comment: 预收款项ttm_8（固定报告期索引）
+  - name: adv_receipts_lyr_0
+    data_type: float
+    nullable: true
+    comment: 预收款项lyr_0（固定报告期索引）
+  - name: adv_receipts_lyr_1
+    data_type: float
+    nullable: true
+    comment: 预收款项lyr_1（固定报告期索引）
+  - name: adv_receipts_lyr_2
+    data_type: float
+    nullable: true
+    comment: 预收款项lyr_2（固定报告期索引）
+  - name: adv_receipts_lyr_3
+    data_type: float
+    nullable: true
+    comment: 预收款项lyr_3（固定报告期索引）
+  - name: adv_receipts_lyr_4
+    data_type: float
+    nullable: true
+    comment: 预收款项lyr_4（固定报告期索引）
+  - name: notes_receiv_mrq_0
+    data_type: float
+    nullable: true
+    comment: 应收票据mrq_0（固定报告期索引）
+  - name: notes_receiv_mrq_1
+    data_type: float
+    nullable: true
+    comment: 应收票据mrq_1（固定报告期索引）
+  - name: notes_receiv_mrq_2
+    data_type: float
+    nullable: true
+    comment: 应收票据mrq_2（固定报告期索引）
+  - name: notes_receiv_mrq_3
+    data_type: float
+    nullable: true
+    comment: 应收票据mrq_3（固定报告期索引）
+  - name: notes_receiv_mrq_4
+    data_type: float
+    nullable: true
+    comment: 应收票据mrq_4（固定报告期索引）
+  - name: notes_receiv_mrq_5
+    data_type: float
+    nullable: true
+    comment: 应收票据mrq_5（固定报告期索引）
+  - name: notes_receiv_mrq_6
+    data_type: float
+    nullable: true
+    comment: 应收票据mrq_6（固定报告期索引）
+  - name: notes_receiv_mrq_7
+    data_type: float
+    nullable: true
+    comment: 应收票据mrq_7（固定报告期索引）
+  - name: notes_receiv_mrq_8
+    data_type: float
+    nullable: true
+    comment: 应收票据mrq_8（固定报告期索引）
+  - name: notes_receiv_ttm_0
+    data_type: float
+    nullable: true
+    comment: 应收票据ttm_0（固定报告期索引）
+  - name: notes_receiv_ttm_1
+    data_type: float
+    nullable: true
+    comment: 应收票据ttm_1（固定报告期索引）
+  - name: notes_receiv_ttm_2
+    data_type: float
+    nullable: true
+    comment: 应收票据ttm_2（固定报告期索引）
+  - name: notes_receiv_ttm_3
+    data_type: float
+    nullable: true
+    comment: 应收票据ttm_3（固定报告期索引）
+  - name: notes_receiv_ttm_4
+    data_type: float
+    nullable: true
+    comment: 应收票据ttm_4（固定报告期索引）
+  - name: notes_receiv_ttm_5
+    data_type: float
+    nullable: true
+    comment: 应收票据ttm_5（固定报告期索引）
+  - name: notes_receiv_ttm_6
+    data_type: float
+    nullable: true
+    comment: 应收票据ttm_6（固定报告期索引）
+  - name: notes_receiv_ttm_7
+    data_type: float
+    nullable: true
+    comment: 应收票据ttm_7（固定报告期索引）
+  - name: notes_receiv_ttm_8
+    data_type: float
+    nullable: true
+    comment: 应收票据ttm_8（固定报告期索引）
+  - name: notes_receiv_lyr_0
+    data_type: float
+    nullable: true
+    comment: 应收票据lyr_0（固定报告期索引）
+  - name: notes_receiv_lyr_1
+    data_type: float
+    nullable: true
+    comment: 应收票据lyr_1（固定报告期索引）
+  - name: notes_receiv_lyr_2
+    data_type: float
+    nullable: true
+    comment: 应收票据lyr_2（固定报告期索引）
+  - name: notes_receiv_lyr_3
+    data_type: float
+    nullable: true
+    comment: 应收票据lyr_3（固定报告期索引）
+  - name: notes_receiv_lyr_4
+    data_type: float
+    nullable: true
+    comment: 应收票据lyr_4（固定报告期索引）
+  - name: cap_rese_mrq_0
+    data_type: float
+    nullable: true
+    comment: 资本公积金mrq_0（固定报告期索引）
+  - name: cap_rese_mrq_1
+    data_type: float
+    nullable: true
+    comment: 资本公积金mrq_1（固定报告期索引）
+  - name: cap_rese_mrq_2
+    data_type: float
+    nullable: true
+    comment: 资本公积金mrq_2（固定报告期索引）
+  - name: cap_rese_mrq_3
+    data_type: float
+    nullable: true
+    comment: 资本公积金mrq_3（固定报告期索引）
+  - name: cap_rese_mrq_4
+    data_type: float
+    nullable: true
+    comment: 资本公积金mrq_4（固定报告期索引）
+  - name: cap_rese_mrq_5
+    data_type: float
+    nullable: true
+    comment: 资本公积金mrq_5（固定报告期索引）
+  - name: cap_rese_mrq_6
+    data_type: float
+    nullable: true
+    comment: 资本公积金mrq_6（固定报告期索引）
+  - name: cap_rese_mrq_7
+    data_type: float
+    nullable: true
+    comment: 资本公积金mrq_7（固定报告期索引）
+  - name: cap_rese_mrq_8
+    data_type: float
+    nullable: true
+    comment: 资本公积金mrq_8（固定报告期索引）
+  - name: cap_rese_ttm_0
+    data_type: float
+    nullable: true
+    comment: 资本公积金ttm_0（固定报告期索引）
+  - name: cap_rese_ttm_1
+    data_type: float
+    nullable: true
+    comment: 资本公积金ttm_1（固定报告期索引）
+  - name: cap_rese_ttm_2
+    data_type: float
+    nullable: true
+    comment: 资本公积金ttm_2（固定报告期索引）
+  - name: cap_rese_ttm_3
+    data_type: float
+    nullable: true
+    comment: 资本公积金ttm_3（固定报告期索引）
+  - name: cap_rese_ttm_4
+    data_type: float
+    nullable: true
+    comment: 资本公积金ttm_4（固定报告期索引）
+  - name: cap_rese_ttm_5
+    data_type: float
+    nullable: true
+    comment: 资本公积金ttm_5（固定报告期索引）
+  - name: cap_rese_ttm_6
+    data_type: float
+    nullable: true
+    comment: 资本公积金ttm_6（固定报告期索引）
+  - name: cap_rese_ttm_7
+    data_type: float
+    nullable: true
+    comment: 资本公积金ttm_7（固定报告期索引）
+  - name: cap_rese_ttm_8
+    data_type: float
+    nullable: true
+    comment: 资本公积金ttm_8（固定报告期索引）
+  - name: cap_rese_lyr_0
+    data_type: float
+    nullable: true
+    comment: 资本公积金lyr_0（固定报告期索引）
+  - name: cap_rese_lyr_1
+    data_type: float
+    nullable: true
+    comment: 资本公积金lyr_1（固定报告期索引）
+  - name: cap_rese_lyr_2
+    data_type: float
+    nullable: true
+    comment: 资本公积金lyr_2（固定报告期索引）
+  - name: cap_rese_lyr_3
+    data_type: float
+    nullable: true
+    comment: 资本公积金lyr_3（固定报告期索引）
+  - name: cap_rese_lyr_4
+    data_type: float
+    nullable: true
+    comment: 资本公积金lyr_4（固定报告期索引）
+  - name: amor_exp_mrq_0
+    data_type: float
+    nullable: true
+    comment: 待摊费用mrq_0（固定报告期索引）
+  - name: amor_exp_mrq_1
+    data_type: float
+    nullable: true
+    comment: 待摊费用mrq_1（固定报告期索引）
+  - name: amor_exp_mrq_2
+    data_type: float
+    nullable: true
+    comment: 待摊费用mrq_2（固定报告期索引）
+  - name: amor_exp_mrq_3
+    data_type: float
+    nullable: true
+    comment: 待摊费用mrq_3（固定报告期索引）
+  - name: amor_exp_mrq_4
+    data_type: float
+    nullable: true
+    comment: 待摊费用mrq_4（固定报告期索引）
+  - name: amor_exp_mrq_5
+    data_type: float
+    nullable: true
+    comment: 待摊费用mrq_5（固定报告期索引）
+  - name: amor_exp_mrq_6
+    data_type: float
+    nullable: true
+    comment: 待摊费用mrq_6（固定报告期索引）
+  - name: amor_exp_mrq_7
+    data_type: float
+    nullable: true
+    comment: 待摊费用mrq_7（固定报告期索引）
+  - name: amor_exp_mrq_8
+    data_type: float
+    nullable: true
+    comment: 待摊费用mrq_8（固定报告期索引）
+  - name: amor_exp_ttm_0
+    data_type: float
+    nullable: true
+    comment: 待摊费用ttm_0（固定报告期索引）
+  - name: amor_exp_ttm_1
+    data_type: float
+    nullable: true
+    comment: 待摊费用ttm_1（固定报告期索引）
+  - name: amor_exp_ttm_2
+    data_type: float
+    nullable: true
+    comment: 待摊费用ttm_2（固定报告期索引）
+  - name: amor_exp_ttm_3
+    data_type: float
+    nullable: true
+    comment: 待摊费用ttm_3（固定报告期索引）
+  - name: amor_exp_ttm_4
+    data_type: float
+    nullable: true
+    comment: 待摊费用ttm_4（固定报告期索引）
+  - name: amor_exp_ttm_5
+    data_type: float
+    nullable: true
+    comment: 待摊费用ttm_5（固定报告期索引）
+  - name: amor_exp_ttm_6
+    data_type: float
+    nullable: true
+    comment: 待摊费用ttm_6（固定报告期索引）
+  - name: amor_exp_ttm_7
+    data_type: float
+    nullable: true
+    comment: 待摊费用ttm_7（固定报告期索引）
+  - name: amor_exp_ttm_8
+    data_type: float
+    nullable: true
+    comment: 待摊费用ttm_8（固定报告期索引）
+  - name: amor_exp_lyr_0
+    data_type: float
+    nullable: true
+    comment: 待摊费用lyr_0（固定报告期索引）
+  - name: amor_exp_lyr_1
+    data_type: float
+    nullable: true
+    comment: 待摊费用lyr_1（固定报告期索引）
+  - name: amor_exp_lyr_2
+    data_type: float
+    nullable: true
+    comment: 待摊费用lyr_2（固定报告期索引）
+  - name: amor_exp_lyr_3
+    data_type: float
+    nullable: true
+    comment: 待摊费用lyr_3（固定报告期索引）
+  - name: amor_exp_lyr_4
+    data_type: float
+    nullable: true
+    comment: 待摊费用lyr_4（固定报告期索引）
+  - name: deferred_inc_mrq_0
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）mrq_0（固定报告期索引）
+  - name: deferred_inc_mrq_1
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）mrq_1（固定报告期索引）
+  - name: deferred_inc_mrq_2
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）mrq_2（固定报告期索引）
+  - name: deferred_inc_mrq_3
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）mrq_3（固定报告期索引）
+  - name: deferred_inc_mrq_4
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）mrq_4（固定报告期索引）
+  - name: deferred_inc_mrq_5
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）mrq_5（固定报告期索引）
+  - name: deferred_inc_mrq_6
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）mrq_6（固定报告期索引）
+  - name: deferred_inc_mrq_7
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）mrq_7（固定报告期索引）
+  - name: deferred_inc_mrq_8
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）mrq_8（固定报告期索引）
+  - name: deferred_inc_ttm_0
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: deferred_inc_ttm_1
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: deferred_inc_ttm_2
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: deferred_inc_ttm_3
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: deferred_inc_ttm_4
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: deferred_inc_ttm_5
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: deferred_inc_ttm_6
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: deferred_inc_ttm_7
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: deferred_inc_ttm_8
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: deferred_inc_lyr_0
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: deferred_inc_lyr_1
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: deferred_inc_lyr_2
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: deferred_inc_lyr_3
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: deferred_inc_lyr_4
+    data_type: float
+    nullable: true
+    comment: 递延收益（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: const_materials_mrq_0
+    data_type: float
+    nullable: true
+    comment: 工程物资mrq_0（固定报告期索引）
+  - name: const_materials_mrq_1
+    data_type: float
+    nullable: true
+    comment: 工程物资mrq_1（固定报告期索引）
+  - name: const_materials_mrq_2
+    data_type: float
+    nullable: true
+    comment: 工程物资mrq_2（固定报告期索引）
+  - name: const_materials_mrq_3
+    data_type: float
+    nullable: true
+    comment: 工程物资mrq_3（固定报告期索引）
+  - name: const_materials_mrq_4
+    data_type: float
+    nullable: true
+    comment: 工程物资mrq_4（固定报告期索引）
+  - name: const_materials_mrq_5
+    data_type: float
+    nullable: true
+    comment: 工程物资mrq_5（固定报告期索引）
+  - name: const_materials_mrq_6
+    data_type: float
+    nullable: true
+    comment: 工程物资mrq_6（固定报告期索引）
+  - name: const_materials_mrq_7
+    data_type: float
+    nullable: true
+    comment: 工程物资mrq_7（固定报告期索引）
+  - name: const_materials_mrq_8
+    data_type: float
+    nullable: true
+    comment: 工程物资mrq_8（固定报告期索引）
+  - name: const_materials_ttm_0
+    data_type: float
+    nullable: true
+    comment: 工程物资ttm_0（固定报告期索引）
+  - name: const_materials_ttm_1
+    data_type: float
+    nullable: true
+    comment: 工程物资ttm_1（固定报告期索引）
+  - name: const_materials_ttm_2
+    data_type: float
+    nullable: true
+    comment: 工程物资ttm_2（固定报告期索引）
+  - name: const_materials_ttm_3
+    data_type: float
+    nullable: true
+    comment: 工程物资ttm_3（固定报告期索引）
+  - name: const_materials_ttm_4
+    data_type: float
+    nullable: true
+    comment: 工程物资ttm_4（固定报告期索引）
+  - name: const_materials_ttm_5
+    data_type: float
+    nullable: true
+    comment: 工程物资ttm_5（固定报告期索引）
+  - name: const_materials_ttm_6
+    data_type: float
+    nullable: true
+    comment: 工程物资ttm_6（固定报告期索引）
+  - name: const_materials_ttm_7
+    data_type: float
+    nullable: true
+    comment: 工程物资ttm_7（固定报告期索引）
+  - name: const_materials_ttm_8
+    data_type: float
+    nullable: true
+    comment: 工程物资ttm_8（固定报告期索引）
+  - name: const_materials_lyr_0
+    data_type: float
+    nullable: true
+    comment: 工程物资lyr_0（固定报告期索引）
+  - name: const_materials_lyr_1
+    data_type: float
+    nullable: true
+    comment: 工程物资lyr_1（固定报告期索引）
+  - name: const_materials_lyr_2
+    data_type: float
+    nullable: true
+    comment: 工程物资lyr_2（固定报告期索引）
+  - name: const_materials_lyr_3
+    data_type: float
+    nullable: true
+    comment: 工程物资lyr_3（固定报告期索引）
+  - name: const_materials_lyr_4
+    data_type: float
+    nullable: true
+    comment: 工程物资lyr_4（固定报告期索引）
+  - name: trad_asset_mrq_0
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产mrq_0（固定报告期索引）
+  - name: trad_asset_mrq_1
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产mrq_1（固定报告期索引）
+  - name: trad_asset_mrq_2
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产mrq_2（固定报告期索引）
+  - name: trad_asset_mrq_3
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产mrq_3（固定报告期索引）
+  - name: trad_asset_mrq_4
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产mrq_4（固定报告期索引）
+  - name: trad_asset_mrq_5
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产mrq_5（固定报告期索引）
+  - name: trad_asset_mrq_6
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产mrq_6（固定报告期索引）
+  - name: trad_asset_mrq_7
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产mrq_7（固定报告期索引）
+  - name: trad_asset_mrq_8
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产mrq_8（固定报告期索引）
+  - name: trad_asset_ttm_0
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产ttm_0（固定报告期索引）
+  - name: trad_asset_ttm_1
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产ttm_1（固定报告期索引）
+  - name: trad_asset_ttm_2
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产ttm_2（固定报告期索引）
+  - name: trad_asset_ttm_3
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产ttm_3（固定报告期索引）
+  - name: trad_asset_ttm_4
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产ttm_4（固定报告期索引）
+  - name: trad_asset_ttm_5
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产ttm_5（固定报告期索引）
+  - name: trad_asset_ttm_6
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产ttm_6（固定报告期索引）
+  - name: trad_asset_ttm_7
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产ttm_7（固定报告期索引）
+  - name: trad_asset_ttm_8
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产ttm_8（固定报告期索引）
+  - name: trad_asset_lyr_0
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产lyr_0（固定报告期索引）
+  - name: trad_asset_lyr_1
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产lyr_1（固定报告期索引）
+  - name: trad_asset_lyr_2
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产lyr_2（固定报告期索引）
+  - name: trad_asset_lyr_3
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产lyr_3（固定报告期索引）
+  - name: trad_asset_lyr_4
+    data_type: float
+    nullable: true
+    comment: 交易性金融资产lyr_4（固定报告期索引）
+  - name: goodwill_mrq_0
+    data_type: float
+    nullable: true
+    comment: 商誉mrq_0（固定报告期索引）
+  - name: goodwill_mrq_1
+    data_type: float
+    nullable: true
+    comment: 商誉mrq_1（固定报告期索引）
+  - name: goodwill_mrq_2
+    data_type: float
+    nullable: true
+    comment: 商誉mrq_2（固定报告期索引）
+  - name: goodwill_mrq_3
+    data_type: float
+    nullable: true
+    comment: 商誉mrq_3（固定报告期索引）
+  - name: goodwill_mrq_4
+    data_type: float
+    nullable: true
+    comment: 商誉mrq_4（固定报告期索引）
+  - name: goodwill_mrq_5
+    data_type: float
+    nullable: true
+    comment: 商誉mrq_5（固定报告期索引）
+  - name: goodwill_mrq_6
+    data_type: float
+    nullable: true
+    comment: 商誉mrq_6（固定报告期索引）
+  - name: goodwill_mrq_7
+    data_type: float
+    nullable: true
+    comment: 商誉mrq_7（固定报告期索引）
+  - name: goodwill_mrq_8
+    data_type: float
+    nullable: true
+    comment: 商誉mrq_8（固定报告期索引）
+  - name: goodwill_ttm_0
+    data_type: float
+    nullable: true
+    comment: 商誉ttm_0（固定报告期索引）
+  - name: goodwill_ttm_1
+    data_type: float
+    nullable: true
+    comment: 商誉ttm_1（固定报告期索引）
+  - name: goodwill_ttm_2
+    data_type: float
+    nullable: true
+    comment: 商誉ttm_2（固定报告期索引）
+  - name: goodwill_ttm_3
+    data_type: float
+    nullable: true
+    comment: 商誉ttm_3（固定报告期索引）
+  - name: goodwill_ttm_4
+    data_type: float
+    nullable: true
+    comment: 商誉ttm_4（固定报告期索引）
+  - name: goodwill_ttm_5
+    data_type: float
+    nullable: true
+    comment: 商誉ttm_5（固定报告期索引）
+  - name: goodwill_ttm_6
+    data_type: float
+    nullable: true
+    comment: 商誉ttm_6（固定报告期索引）
+  - name: goodwill_ttm_7
+    data_type: float
+    nullable: true
+    comment: 商誉ttm_7（固定报告期索引）
+  - name: goodwill_ttm_8
+    data_type: float
+    nullable: true
+    comment: 商誉ttm_8（固定报告期索引）
+  - name: goodwill_lyr_0
+    data_type: float
+    nullable: true
+    comment: 商誉lyr_0（固定报告期索引）
+  - name: goodwill_lyr_1
+    data_type: float
+    nullable: true
+    comment: 商誉lyr_1（固定报告期索引）
+  - name: goodwill_lyr_2
+    data_type: float
+    nullable: true
+    comment: 商誉lyr_2（固定报告期索引）
+  - name: goodwill_lyr_3
+    data_type: float
+    nullable: true
+    comment: 商誉lyr_3（固定报告期索引）
+  - name: goodwill_lyr_4
+    data_type: float
+    nullable: true
+    comment: 商誉lyr_4（固定报告期索引）
+  - name: inventories_mrq_0
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货mrq_0（固定报告期索引）
+  - name: inventories_mrq_1
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货mrq_1（固定报告期索引）
+  - name: inventories_mrq_2
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货mrq_2（固定报告期索引）
+  - name: inventories_mrq_3
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货mrq_3（固定报告期索引）
+  - name: inventories_mrq_4
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货mrq_4（固定报告期索引）
+  - name: inventories_mrq_5
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货mrq_5（固定报告期索引）
+  - name: inventories_mrq_6
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货mrq_6（固定报告期索引）
+  - name: inventories_mrq_7
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货mrq_7（固定报告期索引）
+  - name: inventories_mrq_8
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货mrq_8（固定报告期索引）
+  - name: inventories_ttm_0
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货ttm_0（固定报告期索引）
+  - name: inventories_ttm_1
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货ttm_1（固定报告期索引）
+  - name: inventories_ttm_2
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货ttm_2（固定报告期索引）
+  - name: inventories_ttm_3
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货ttm_3（固定报告期索引）
+  - name: inventories_ttm_4
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货ttm_4（固定报告期索引）
+  - name: inventories_ttm_5
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货ttm_5（固定报告期索引）
+  - name: inventories_ttm_6
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货ttm_6（固定报告期索引）
+  - name: inventories_ttm_7
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货ttm_7（固定报告期索引）
+  - name: inventories_ttm_8
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货ttm_8（固定报告期索引）
+  - name: inventories_lyr_0
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货lyr_0（固定报告期索引）
+  - name: inventories_lyr_1
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货lyr_1（固定报告期索引）
+  - name: inventories_lyr_2
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货lyr_2（固定报告期索引）
+  - name: inventories_lyr_3
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货lyr_3（固定报告期索引）
+  - name: inventories_lyr_4
+    data_type: float
+    nullable: true
+    comment: 本期年报披露存货lyr_4（固定报告期索引）
+  - name: total_nca_mrq_0
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）mrq_0（固定报告期索引）
+  - name: total_nca_mrq_1
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）mrq_1（固定报告期索引）
+  - name: total_nca_mrq_2
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）mrq_2（固定报告期索引）
+  - name: total_nca_mrq_3
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）mrq_3（固定报告期索引）
+  - name: total_nca_mrq_4
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）mrq_4（固定报告期索引）
+  - name: total_nca_mrq_5
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）mrq_5（固定报告期索引）
+  - name: total_nca_mrq_6
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）mrq_6（固定报告期索引）
+  - name: total_nca_mrq_7
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）mrq_7（固定报告期索引）
+  - name: total_nca_mrq_8
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）mrq_8（固定报告期索引）
+  - name: total_nca_ttm_0
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: total_nca_ttm_1
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: total_nca_ttm_2
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: total_nca_ttm_3
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: total_nca_ttm_4
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: total_nca_ttm_5
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: total_nca_ttm_6
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: total_nca_ttm_7
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: total_nca_ttm_8
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: total_nca_lyr_0
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: total_nca_lyr_1
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: total_nca_lyr_2
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: total_nca_lyr_3
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: total_nca_lyr_4
+    data_type: float
+    nullable: true
+    comment: 非流动资产（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: total_ncl_mrq_0
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）mrq_0（固定报告期索引）
+  - name: total_ncl_mrq_1
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）mrq_1（固定报告期索引）
+  - name: total_ncl_mrq_2
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）mrq_2（固定报告期索引）
+  - name: total_ncl_mrq_3
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）mrq_3（固定报告期索引）
+  - name: total_ncl_mrq_4
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）mrq_4（固定报告期索引）
+  - name: total_ncl_mrq_5
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）mrq_5（固定报告期索引）
+  - name: total_ncl_mrq_6
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）mrq_6（固定报告期索引）
+  - name: total_ncl_mrq_7
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）mrq_7（固定报告期索引）
+  - name: total_ncl_mrq_8
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）mrq_8（固定报告期索引）
+  - name: total_ncl_ttm_0
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: total_ncl_ttm_1
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: total_ncl_ttm_2
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: total_ncl_ttm_3
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: total_ncl_ttm_4
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: total_ncl_ttm_5
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: total_ncl_ttm_6
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: total_ncl_ttm_7
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: total_ncl_ttm_8
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: total_ncl_lyr_0
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: total_ncl_lyr_1
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: total_ncl_lyr_2
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: total_ncl_lyr_3
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: total_ncl_lyr_4
+    data_type: float
+    nullable: true
+    comment: 非流动负债（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: oth_receiv_mrq_0
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）mrq_0（固定报告期索引）
+  - name: oth_receiv_mrq_1
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）mrq_1（固定报告期索引）
+  - name: oth_receiv_mrq_2
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）mrq_2（固定报告期索引）
+  - name: oth_receiv_mrq_3
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）mrq_3（固定报告期索引）
+  - name: oth_receiv_mrq_4
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）mrq_4（固定报告期索引）
+  - name: oth_receiv_mrq_5
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）mrq_5（固定报告期索引）
+  - name: oth_receiv_mrq_6
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）mrq_6（固定报告期索引）
+  - name: oth_receiv_mrq_7
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）mrq_7（固定报告期索引）
+  - name: oth_receiv_mrq_8
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）mrq_8（固定报告期索引）
+  - name: oth_receiv_ttm_0
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）ttm_0（固定报告期索引）
+  - name: oth_receiv_ttm_1
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）ttm_1（固定报告期索引）
+  - name: oth_receiv_ttm_2
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）ttm_2（固定报告期索引）
+  - name: oth_receiv_ttm_3
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）ttm_3（固定报告期索引）
+  - name: oth_receiv_ttm_4
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）ttm_4（固定报告期索引）
+  - name: oth_receiv_ttm_5
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）ttm_5（固定报告期索引）
+  - name: oth_receiv_ttm_6
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）ttm_6（固定报告期索引）
+  - name: oth_receiv_ttm_7
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）ttm_7（固定报告期索引）
+  - name: oth_receiv_ttm_8
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）ttm_8（固定报告期索引）
+  - name: oth_receiv_lyr_0
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）lyr_0（固定报告期索引）
+  - name: oth_receiv_lyr_1
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）lyr_1（固定报告期索引）
+  - name: oth_receiv_lyr_2
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）lyr_2（固定报告期索引）
+  - name: oth_receiv_lyr_3
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）lyr_3（固定报告期索引）
+  - name: oth_receiv_lyr_4
+    data_type: float
+    nullable: true
+    comment: 其他应收款（MRQ）lyr_4（固定报告期索引）
+  - name: oth_cur_liab_mrq_0
+    data_type: float
+    nullable: true
+    comment: 其他流动负债mrq_0（固定报告期索引）
+  - name: oth_cur_liab_mrq_1
+    data_type: float
+    nullable: true
+    comment: 其他流动负债mrq_1（固定报告期索引）
+  - name: oth_cur_liab_mrq_2
+    data_type: float
+    nullable: true
+    comment: 其他流动负债mrq_2（固定报告期索引）
+  - name: oth_cur_liab_mrq_3
+    data_type: float
+    nullable: true
+    comment: 其他流动负债mrq_3（固定报告期索引）
+  - name: oth_cur_liab_mrq_4
+    data_type: float
+    nullable: true
+    comment: 其他流动负债mrq_4（固定报告期索引）
+  - name: oth_cur_liab_mrq_5
+    data_type: float
+    nullable: true
+    comment: 其他流动负债mrq_5（固定报告期索引）
+  - name: oth_cur_liab_mrq_6
+    data_type: float
+    nullable: true
+    comment: 其他流动负债mrq_6（固定报告期索引）
+  - name: oth_cur_liab_mrq_7
+    data_type: float
+    nullable: true
+    comment: 其他流动负债mrq_7（固定报告期索引）
+  - name: oth_cur_liab_mrq_8
+    data_type: float
+    nullable: true
+    comment: 其他流动负债mrq_8（固定报告期索引）
+  - name: oth_cur_liab_ttm_0
+    data_type: float
+    nullable: true
+    comment: 其他流动负债ttm_0（固定报告期索引）
+  - name: oth_cur_liab_ttm_1
+    data_type: float
+    nullable: true
+    comment: 其他流动负债ttm_1（固定报告期索引）
+  - name: oth_cur_liab_ttm_2
+    data_type: float
+    nullable: true
+    comment: 其他流动负债ttm_2（固定报告期索引）
+  - name: oth_cur_liab_ttm_3
+    data_type: float
+    nullable: true
+    comment: 其他流动负债ttm_3（固定报告期索引）
+  - name: oth_cur_liab_ttm_4
+    data_type: float
+    nullable: true
+    comment: 其他流动负债ttm_4（固定报告期索引）
+  - name: oth_cur_liab_ttm_5
+    data_type: float
+    nullable: true
+    comment: 其他流动负债ttm_5（固定报告期索引）
+  - name: oth_cur_liab_ttm_6
+    data_type: float
+    nullable: true
+    comment: 其他流动负债ttm_6（固定报告期索引）
+  - name: oth_cur_liab_ttm_7
+    data_type: float
+    nullable: true
+    comment: 其他流动负债ttm_7（固定报告期索引）
+  - name: oth_cur_liab_ttm_8
+    data_type: float
+    nullable: true
+    comment: 其他流动负债ttm_8（固定报告期索引）
+  - name: oth_cur_liab_lyr_0
+    data_type: float
+    nullable: true
+    comment: 其他流动负债lyr_0（固定报告期索引）
+  - name: oth_cur_liab_lyr_1
+    data_type: float
+    nullable: true
+    comment: 其他流动负债lyr_1（固定报告期索引）
+  - name: oth_cur_liab_lyr_2
+    data_type: float
+    nullable: true
+    comment: 其他流动负债lyr_2（固定报告期索引）
+  - name: oth_cur_liab_lyr_3
+    data_type: float
+    nullable: true
+    comment: 其他流动负债lyr_3（固定报告期索引）
+  - name: oth_cur_liab_lyr_4
+    data_type: float
+    nullable: true
+    comment: 其他流动负债lyr_4（固定报告期索引）
+  - name: oth_payable_mrq_0
+    data_type: float
+    nullable: true
+    comment: 其他应付款mrq_0（固定报告期索引）
+  - name: oth_payable_mrq_1
+    data_type: float
+    nullable: true
+    comment: 其他应付款mrq_1（固定报告期索引）
+  - name: oth_payable_mrq_2
+    data_type: float
+    nullable: true
+    comment: 其他应付款mrq_2（固定报告期索引）
+  - name: oth_payable_mrq_3
+    data_type: float
+    nullable: true
+    comment: 其他应付款mrq_3（固定报告期索引）
+  - name: oth_payable_mrq_4
+    data_type: float
+    nullable: true
+    comment: 其他应付款mrq_4（固定报告期索引）
+  - name: oth_payable_mrq_5
+    data_type: float
+    nullable: true
+    comment: 其他应付款mrq_5（固定报告期索引）
+  - name: oth_payable_mrq_6
+    data_type: float
+    nullable: true
+    comment: 其他应付款mrq_6（固定报告期索引）
+  - name: oth_payable_mrq_7
+    data_type: float
+    nullable: true
+    comment: 其他应付款mrq_7（固定报告期索引）
+  - name: oth_payable_mrq_8
+    data_type: float
+    nullable: true
+    comment: 其他应付款mrq_8（固定报告期索引）
+  - name: oth_payable_ttm_0
+    data_type: float
+    nullable: true
+    comment: 其他应付款ttm_0（固定报告期索引）
+  - name: oth_payable_ttm_1
+    data_type: float
+    nullable: true
+    comment: 其他应付款ttm_1（固定报告期索引）
+  - name: oth_payable_ttm_2
+    data_type: float
+    nullable: true
+    comment: 其他应付款ttm_2（固定报告期索引）
+  - name: oth_payable_ttm_3
+    data_type: float
+    nullable: true
+    comment: 其他应付款ttm_3（固定报告期索引）
+  - name: oth_payable_ttm_4
+    data_type: float
+    nullable: true
+    comment: 其他应付款ttm_4（固定报告期索引）
+  - name: oth_payable_ttm_5
+    data_type: float
+    nullable: true
+    comment: 其他应付款ttm_5（固定报告期索引）
+  - name: oth_payable_ttm_6
+    data_type: float
+    nullable: true
+    comment: 其他应付款ttm_6（固定报告期索引）
+  - name: oth_payable_ttm_7
+    data_type: float
+    nullable: true
+    comment: 其他应付款ttm_7（固定报告期索引）
+  - name: oth_payable_ttm_8
+    data_type: float
+    nullable: true
+    comment: 其他应付款ttm_8（固定报告期索引）
+  - name: oth_payable_lyr_0
+    data_type: float
+    nullable: true
+    comment: 其他应付款lyr_0（固定报告期索引）
+  - name: oth_payable_lyr_1
+    data_type: float
+    nullable: true
+    comment: 其他应付款lyr_1（固定报告期索引）
+  - name: oth_payable_lyr_2
+    data_type: float
+    nullable: true
+    comment: 其他应付款lyr_2（固定报告期索引）
+  - name: oth_payable_lyr_3
+    data_type: float
+    nullable: true
+    comment: 其他应付款lyr_3（固定报告期索引）
+  - name: oth_payable_lyr_4
+    data_type: float
+    nullable: true
+    comment: 其他应付款lyr_4（固定报告期索引）
+  - name: payroll_payable_mrq_0
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬mrq_0（固定报告期索引）
+  - name: payroll_payable_mrq_1
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬mrq_1（固定报告期索引）
+  - name: payroll_payable_mrq_2
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬mrq_2（固定报告期索引）
+  - name: payroll_payable_mrq_3
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬mrq_3（固定报告期索引）
+  - name: payroll_payable_mrq_4
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬mrq_4（固定报告期索引）
+  - name: payroll_payable_mrq_5
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬mrq_5（固定报告期索引）
+  - name: payroll_payable_mrq_6
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬mrq_6（固定报告期索引）
+  - name: payroll_payable_mrq_7
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬mrq_7（固定报告期索引）
+  - name: payroll_payable_mrq_8
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬mrq_8（固定报告期索引）
+  - name: payroll_payable_ttm_0
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬ttm_0（固定报告期索引）
+  - name: payroll_payable_ttm_1
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬ttm_1（固定报告期索引）
+  - name: payroll_payable_ttm_2
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬ttm_2（固定报告期索引）
+  - name: payroll_payable_ttm_3
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬ttm_3（固定报告期索引）
+  - name: payroll_payable_ttm_4
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬ttm_4（固定报告期索引）
+  - name: payroll_payable_ttm_5
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬ttm_5（固定报告期索引）
+  - name: payroll_payable_ttm_6
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬ttm_6（固定报告期索引）
+  - name: payroll_payable_ttm_7
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬ttm_7（固定报告期索引）
+  - name: payroll_payable_ttm_8
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬ttm_8（固定报告期索引）
+  - name: payroll_payable_lyr_0
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬lyr_0（固定报告期索引）
+  - name: payroll_payable_lyr_1
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬lyr_1（固定报告期索引）
+  - name: payroll_payable_lyr_2
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬lyr_2（固定报告期索引）
+  - name: payroll_payable_lyr_3
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬lyr_3（固定报告期索引）
+  - name: payroll_payable_lyr_4
+    data_type: float
+    nullable: true
+    comment: 应付职工薪酬lyr_4（固定报告期索引）
+  - name: prepayment_mrq_0
+    data_type: float
+    nullable: true
+    comment: 预付账款mrq_0（固定报告期索引）
+  - name: prepayment_mrq_1
+    data_type: float
+    nullable: true
+    comment: 预付账款mrq_1（固定报告期索引）
+  - name: prepayment_mrq_2
+    data_type: float
+    nullable: true
+    comment: 预付账款mrq_2（固定报告期索引）
+  - name: prepayment_mrq_3
+    data_type: float
+    nullable: true
+    comment: 预付账款mrq_3（固定报告期索引）
+  - name: prepayment_mrq_4
+    data_type: float
+    nullable: true
+    comment: 预付账款mrq_4（固定报告期索引）
+  - name: prepayment_mrq_5
+    data_type: float
+    nullable: true
+    comment: 预付账款mrq_5（固定报告期索引）
+  - name: prepayment_mrq_6
+    data_type: float
+    nullable: true
+    comment: 预付账款mrq_6（固定报告期索引）
+  - name: prepayment_mrq_7
+    data_type: float
+    nullable: true
+    comment: 预付账款mrq_7（固定报告期索引）
+  - name: prepayment_mrq_8
+    data_type: float
+    nullable: true
+    comment: 预付账款mrq_8（固定报告期索引）
+  - name: prepayment_ttm_0
+    data_type: float
+    nullable: true
+    comment: 预付账款ttm_0（固定报告期索引）
+  - name: prepayment_ttm_1
+    data_type: float
+    nullable: true
+    comment: 预付账款ttm_1（固定报告期索引）
+  - name: prepayment_ttm_2
+    data_type: float
+    nullable: true
+    comment: 预付账款ttm_2（固定报告期索引）
+  - name: prepayment_ttm_3
+    data_type: float
+    nullable: true
+    comment: 预付账款ttm_3（固定报告期索引）
+  - name: prepayment_ttm_4
+    data_type: float
+    nullable: true
+    comment: 预付账款ttm_4（固定报告期索引）
+  - name: prepayment_ttm_5
+    data_type: float
+    nullable: true
+    comment: 预付账款ttm_5（固定报告期索引）
+  - name: prepayment_ttm_6
+    data_type: float
+    nullable: true
+    comment: 预付账款ttm_6（固定报告期索引）
+  - name: prepayment_ttm_7
+    data_type: float
+    nullable: true
+    comment: 预付账款ttm_7（固定报告期索引）
+  - name: prepayment_ttm_8
+    data_type: float
+    nullable: true
+    comment: 预付账款ttm_8（固定报告期索引）
+  - name: prepayment_lyr_0
+    data_type: float
+    nullable: true
+    comment: 预付账款lyr_0（固定报告期索引）
+  - name: prepayment_lyr_1
+    data_type: float
+    nullable: true
+    comment: 预付账款lyr_1（固定报告期索引）
+  - name: prepayment_lyr_2
+    data_type: float
+    nullable: true
+    comment: 预付账款lyr_2（固定报告期索引）
+  - name: prepayment_lyr_3
+    data_type: float
+    nullable: true
+    comment: 预付账款lyr_3（固定报告期索引）
+  - name: prepayment_lyr_4
+    data_type: float
+    nullable: true
+    comment: 预付账款lyr_4（固定报告期索引）
+  - name: surplus_rese_mrq_0
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）mrq_0（固定报告期索引）
+  - name: surplus_rese_mrq_1
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）mrq_1（固定报告期索引）
+  - name: surplus_rese_mrq_2
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）mrq_2（固定报告期索引）
+  - name: surplus_rese_mrq_3
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）mrq_3（固定报告期索引）
+  - name: surplus_rese_mrq_4
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）mrq_4（固定报告期索引）
+  - name: surplus_rese_mrq_5
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）mrq_5（固定报告期索引）
+  - name: surplus_rese_mrq_6
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）mrq_6（固定报告期索引）
+  - name: surplus_rese_mrq_7
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）mrq_7（固定报告期索引）
+  - name: surplus_rese_mrq_8
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）mrq_8（固定报告期索引）
+  - name: surplus_rese_ttm_0
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: surplus_rese_ttm_1
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: surplus_rese_ttm_2
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: surplus_rese_ttm_3
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: surplus_rese_ttm_4
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: surplus_rese_ttm_5
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: surplus_rese_ttm_6
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: surplus_rese_ttm_7
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: surplus_rese_ttm_8
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: surplus_rese_lyr_0
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: surplus_rese_lyr_1
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: surplus_rese_lyr_2
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: surplus_rese_lyr_3
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: surplus_rese_lyr_4
+    data_type: float
+    nullable: true
+    comment: 盈余公积（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: taxes_payable_mrq_0
+    data_type: float
+    nullable: true
+    comment: 应交税费mrq_0（固定报告期索引）
+  - name: taxes_payable_mrq_1
+    data_type: float
+    nullable: true
+    comment: 应交税费mrq_1（固定报告期索引）
+  - name: taxes_payable_mrq_2
+    data_type: float
+    nullable: true
+    comment: 应交税费mrq_2（固定报告期索引）
+  - name: taxes_payable_mrq_3
+    data_type: float
+    nullable: true
+    comment: 应交税费mrq_3（固定报告期索引）
+  - name: taxes_payable_mrq_4
+    data_type: float
+    nullable: true
+    comment: 应交税费mrq_4（固定报告期索引）
+  - name: taxes_payable_mrq_5
+    data_type: float
+    nullable: true
+    comment: 应交税费mrq_5（固定报告期索引）
+  - name: taxes_payable_mrq_6
+    data_type: float
+    nullable: true
+    comment: 应交税费mrq_6（固定报告期索引）
+  - name: taxes_payable_mrq_7
+    data_type: float
+    nullable: true
+    comment: 应交税费mrq_7（固定报告期索引）
+  - name: taxes_payable_mrq_8
+    data_type: float
+    nullable: true
+    comment: 应交税费mrq_8（固定报告期索引）
+  - name: taxes_payable_ttm_0
+    data_type: float
+    nullable: true
+    comment: 应交税费ttm_0（固定报告期索引）
+  - name: taxes_payable_ttm_1
+    data_type: float
+    nullable: true
+    comment: 应交税费ttm_1（固定报告期索引）
+  - name: taxes_payable_ttm_2
+    data_type: float
+    nullable: true
+    comment: 应交税费ttm_2（固定报告期索引）
+  - name: taxes_payable_ttm_3
+    data_type: float
+    nullable: true
+    comment: 应交税费ttm_3（固定报告期索引）
+  - name: taxes_payable_ttm_4
+    data_type: float
+    nullable: true
+    comment: 应交税费ttm_4（固定报告期索引）
+  - name: taxes_payable_ttm_5
+    data_type: float
+    nullable: true
+    comment: 应交税费ttm_5（固定报告期索引）
+  - name: taxes_payable_ttm_6
+    data_type: float
+    nullable: true
+    comment: 应交税费ttm_6（固定报告期索引）
+  - name: taxes_payable_ttm_7
+    data_type: float
+    nullable: true
+    comment: 应交税费ttm_7（固定报告期索引）
+  - name: taxes_payable_ttm_8
+    data_type: float
+    nullable: true
+    comment: 应交税费ttm_8（固定报告期索引）
+  - name: taxes_payable_lyr_0
+    data_type: float
+    nullable: true
+    comment: 应交税费lyr_0（固定报告期索引）
+  - name: taxes_payable_lyr_1
+    data_type: float
+    nullable: true
+    comment: 应交税费lyr_1（固定报告期索引）
+  - name: taxes_payable_lyr_2
+    data_type: float
+    nullable: true
+    comment: 应交税费lyr_2（固定报告期索引）
+  - name: taxes_payable_lyr_3
+    data_type: float
+    nullable: true
+    comment: 应交税费lyr_3（固定报告期索引）
+  - name: taxes_payable_lyr_4
+    data_type: float
+    nullable: true
+    comment: 应交税费lyr_4（固定报告期索引）
+  - name: undistr_porfit_mrq_0
+    data_type: float
+    nullable: true
+    comment: 未分配利润mrq_0（固定报告期索引）
+  - name: undistr_porfit_mrq_1
+    data_type: float
+    nullable: true
+    comment: 未分配利润mrq_1（固定报告期索引）
+  - name: undistr_porfit_mrq_2
+    data_type: float
+    nullable: true
+    comment: 未分配利润mrq_2（固定报告期索引）
+  - name: undistr_porfit_mrq_3
+    data_type: float
+    nullable: true
+    comment: 未分配利润mrq_3（固定报告期索引）
+  - name: undistr_porfit_mrq_4
+    data_type: float
+    nullable: true
+    comment: 未分配利润mrq_4（固定报告期索引）
+  - name: undistr_porfit_mrq_5
+    data_type: float
+    nullable: true
+    comment: 未分配利润mrq_5（固定报告期索引）
+  - name: undistr_porfit_mrq_6
+    data_type: float
+    nullable: true
+    comment: 未分配利润mrq_6（固定报告期索引）
+  - name: undistr_porfit_mrq_7
+    data_type: float
+    nullable: true
+    comment: 未分配利润mrq_7（固定报告期索引）
+  - name: undistr_porfit_mrq_8
+    data_type: float
+    nullable: true
+    comment: 未分配利润mrq_8（固定报告期索引）
+  - name: undistr_porfit_ttm_0
+    data_type: float
+    nullable: true
+    comment: 未分配利润ttm_0（固定报告期索引）
+  - name: undistr_porfit_ttm_1
+    data_type: float
+    nullable: true
+    comment: 未分配利润ttm_1（固定报告期索引）
+  - name: undistr_porfit_ttm_2
+    data_type: float
+    nullable: true
+    comment: 未分配利润ttm_2（固定报告期索引）
+  - name: undistr_porfit_ttm_3
+    data_type: float
+    nullable: true
+    comment: 未分配利润ttm_3（固定报告期索引）
+  - name: undistr_porfit_ttm_4
+    data_type: float
+    nullable: true
+    comment: 未分配利润ttm_4（固定报告期索引）
+  - name: undistr_porfit_ttm_5
+    data_type: float
+    nullable: true
+    comment: 未分配利润ttm_5（固定报告期索引）
+  - name: undistr_porfit_ttm_6
+    data_type: float
+    nullable: true
+    comment: 未分配利润ttm_6（固定报告期索引）
+  - name: undistr_porfit_ttm_7
+    data_type: float
+    nullable: true
+    comment: 未分配利润ttm_7（固定报告期索引）
+  - name: undistr_porfit_ttm_8
+    data_type: float
+    nullable: true
+    comment: 未分配利润ttm_8（固定报告期索引）
+  - name: undistr_porfit_lyr_0
+    data_type: float
+    nullable: true
+    comment: 未分配利润lyr_0（固定报告期索引）
+  - name: undistr_porfit_lyr_1
+    data_type: float
+    nullable: true
+    comment: 未分配利润lyr_1（固定报告期索引）
+  - name: undistr_porfit_lyr_2
+    data_type: float
+    nullable: true
+    comment: 未分配利润lyr_2（固定报告期索引）
+  - name: undistr_porfit_lyr_3
+    data_type: float
+    nullable: true
+    comment: 未分配利润lyr_3（固定报告期索引）
+  - name: undistr_porfit_lyr_4
+    data_type: float
+    nullable: true
+    comment: 未分配利润lyr_4（固定报告期索引）
+  - name: working_capital_mrq_0
+    data_type: float
+    nullable: true
+    comment: 营运资本mrq_0（固定报告期索引）
+  - name: working_capital_mrq_1
+    data_type: float
+    nullable: true
+    comment: 营运资本mrq_1（固定报告期索引）
+  - name: working_capital_mrq_2
+    data_type: float
+    nullable: true
+    comment: 营运资本mrq_2（固定报告期索引）
+  - name: working_capital_mrq_3
+    data_type: float
+    nullable: true
+    comment: 营运资本mrq_3（固定报告期索引）
+  - name: working_capital_mrq_4
+    data_type: float
+    nullable: true
+    comment: 营运资本mrq_4（固定报告期索引）
+  - name: working_capital_mrq_5
+    data_type: float
+    nullable: true
+    comment: 营运资本mrq_5（固定报告期索引）
+  - name: working_capital_mrq_6
+    data_type: float
+    nullable: true
+    comment: 营运资本mrq_6（固定报告期索引）
+  - name: working_capital_mrq_7
+    data_type: float
+    nullable: true
+    comment: 营运资本mrq_7（固定报告期索引）
+  - name: working_capital_mrq_8
+    data_type: float
+    nullable: true
+    comment: 营运资本mrq_8（固定报告期索引）
+  - name: working_capital_ttm_0
+    data_type: float
+    nullable: true
+    comment: 营运资本ttm_0（固定报告期索引）
+  - name: working_capital_ttm_1
+    data_type: float
+    nullable: true
+    comment: 营运资本ttm_1（固定报告期索引）
+  - name: working_capital_ttm_2
+    data_type: float
+    nullable: true
+    comment: 营运资本ttm_2（固定报告期索引）
+  - name: working_capital_ttm_3
+    data_type: float
+    nullable: true
+    comment: 营运资本ttm_3（固定报告期索引）
+  - name: working_capital_ttm_4
+    data_type: float
+    nullable: true
+    comment: 营运资本ttm_4（固定报告期索引）
+  - name: working_capital_ttm_5
+    data_type: float
+    nullable: true
+    comment: 营运资本ttm_5（固定报告期索引）
+  - name: working_capital_ttm_6
+    data_type: float
+    nullable: true
+    comment: 营运资本ttm_6（固定报告期索引）
+  - name: working_capital_ttm_7
+    data_type: float
+    nullable: true
+    comment: 营运资本ttm_7（固定报告期索引）
+  - name: working_capital_ttm_8
+    data_type: float
+    nullable: true
+    comment: 营运资本ttm_8（固定报告期索引）
+  - name: working_capital_lyr_0
+    data_type: float
+    nullable: true
+    comment: 营运资本lyr_0（固定报告期索引）
+  - name: working_capital_lyr_1
+    data_type: float
+    nullable: true
+    comment: 营运资本lyr_1（固定报告期索引）
+  - name: working_capital_lyr_2
+    data_type: float
+    nullable: true
+    comment: 营运资本lyr_2（固定报告期索引）
+  - name: working_capital_lyr_3
+    data_type: float
+    nullable: true
+    comment: 营运资本lyr_3（固定报告期索引）
+  - name: working_capital_lyr_4
+    data_type: float
+    nullable: true
+    comment: 营运资本lyr_4（固定报告期索引）
+  - name: cip_mrq_0
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_0（固定报告期索引）
+  - name: cip_mrq_1
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_1（固定报告期索引）
+  - name: cip_mrq_2
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_2（固定报告期索引）
+  - name: cip_mrq_3
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_3（固定报告期索引）
+  - name: cip_mrq_4
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_4（固定报告期索引）
+  - name: cip_mrq_5
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_5（固定报告期索引）
+  - name: cip_mrq_6
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_6（固定报告期索引）
+  - name: cip_mrq_7
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_7（固定报告期索引）
+  - name: cip_mrq_8
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_8（固定报告期索引）
+  - name: cip_ttm_0
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: cip_ttm_1
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: cip_ttm_2
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: cip_ttm_3
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: cip_ttm_4
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: cip_ttm_5
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: cip_ttm_6
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: cip_ttm_7
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: cip_ttm_8
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: cip_lyr_0
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: cip_lyr_1
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: cip_lyr_2
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: cip_lyr_3
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: cip_lyr_4
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: fix_assets_total_ttm_0
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: fix_assets_total_ttm_1
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: fix_assets_total_ttm_2
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: fix_assets_total_ttm_3
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: fix_assets_total_ttm_4
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: fix_assets_total_ttm_5
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: fix_assets_total_ttm_6
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: fix_assets_total_ttm_7
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: fix_assets_total_ttm_8
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: fix_assets_total_lyr_0
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: fix_assets_total_lyr_1
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: fix_assets_total_lyr_2
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: fix_assets_total_lyr_3
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: fix_assets_total_lyr_4
+    data_type: float
+    nullable: true
+    comment: 固定资产净额（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: cip_total_mrq_0
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_0（固定报告期索引）
+  - name: cip_total_mrq_1
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_1（固定报告期索引）
+  - name: cip_total_mrq_2
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_2（固定报告期索引）
+  - name: cip_total_mrq_3
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_3（固定报告期索引）
+  - name: cip_total_mrq_4
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_4（固定报告期索引）
+  - name: cip_total_mrq_5
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_5（固定报告期索引）
+  - name: cip_total_mrq_6
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_6（固定报告期索引）
+  - name: cip_total_mrq_7
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_7（固定报告期索引）
+  - name: cip_total_mrq_8
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）mrq_8（固定报告期索引）
+  - name: cip_total_ttm_0
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: cip_total_ttm_1
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: cip_total_ttm_2
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: cip_total_ttm_3
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: cip_total_ttm_4
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: cip_total_ttm_5
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: cip_total_ttm_6
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: cip_total_ttm_7
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: cip_total_ttm_8
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: cip_total_lyr_0
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: cip_total_lyr_1
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: cip_total_lyr_2
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: cip_total_lyr_3
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: cip_total_lyr_4
+    data_type: float
+    nullable: true
+    comment: 在建工程合计（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: lt_amort_deferred_exp_mrq_0
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销mrq_0（固定报告期索引）
+  - name: lt_amort_deferred_exp_mrq_1
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销mrq_1（固定报告期索引）
+  - name: lt_amort_deferred_exp_mrq_2
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销mrq_2（固定报告期索引）
+  - name: lt_amort_deferred_exp_mrq_3
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销mrq_3（固定报告期索引）
+  - name: lt_amort_deferred_exp_mrq_4
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销mrq_4（固定报告期索引）
+  - name: lt_amort_deferred_exp_mrq_5
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销mrq_5（固定报告期索引）
+  - name: lt_amort_deferred_exp_mrq_6
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销mrq_6（固定报告期索引）
+  - name: lt_amort_deferred_exp_mrq_7
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销mrq_7（固定报告期索引）
+  - name: lt_amort_deferred_exp_mrq_8
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销mrq_8（固定报告期索引）
+  - name: lt_amort_deferred_exp_ttm_0
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销ttm_0（固定报告期索引）
+  - name: lt_amort_deferred_exp_ttm_1
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销ttm_1（固定报告期索引）
+  - name: lt_amort_deferred_exp_ttm_2
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销ttm_2（固定报告期索引）
+  - name: lt_amort_deferred_exp_ttm_3
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销ttm_3（固定报告期索引）
+  - name: lt_amort_deferred_exp_ttm_4
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销ttm_4（固定报告期索引）
+  - name: lt_amort_deferred_exp_ttm_5
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销ttm_5（固定报告期索引）
+  - name: lt_amort_deferred_exp_ttm_6
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销ttm_6（固定报告期索引）
+  - name: lt_amort_deferred_exp_ttm_7
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销ttm_7（固定报告期索引）
+  - name: lt_amort_deferred_exp_ttm_8
+    data_type: float
+    nullable: true
+    comment: 长期待摊费用摊销ttm_8（固定报告期索引）
+  - name: eff_fx_flu_cash_ttm_0
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: eff_fx_flu_cash_ttm_1
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: eff_fx_flu_cash_ttm_2
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: eff_fx_flu_cash_ttm_3
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: eff_fx_flu_cash_ttm_4
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: eff_fx_flu_cash_ttm_5
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: eff_fx_flu_cash_ttm_6
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: eff_fx_flu_cash_ttm_7
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: eff_fx_flu_cash_ttm_8
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: eff_fx_flu_cash_lyr_0
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: eff_fx_flu_cash_lyr_1
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: eff_fx_flu_cash_lyr_2
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: eff_fx_flu_cash_lyr_3
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: eff_fx_flu_cash_lyr_4
+    data_type: float
+    nullable: true
+    comment: 汇兑损益（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: arturn_days_ttm_0
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）ttm_0（固定报告期索引）
+  - name: arturn_days_ttm_1
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）ttm_1（固定报告期索引）
+  - name: arturn_days_ttm_2
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）ttm_2（固定报告期索引）
+  - name: arturn_days_ttm_3
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）ttm_3（固定报告期索引）
+  - name: arturn_days_ttm_4
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）ttm_4（固定报告期索引）
+  - name: arturn_days_ttm_5
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）ttm_5（固定报告期索引）
+  - name: arturn_days_ttm_6
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）ttm_6（固定报告期索引）
+  - name: arturn_days_ttm_7
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）ttm_7（固定报告期索引）
+  - name: arturn_days_ttm_8
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）ttm_8（固定报告期索引）
+  - name: arturn_days_lyr_0
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）lyr_0（固定报告期索引）
+  - name: arturn_days_lyr_1
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）lyr_1（固定报告期索引）
+  - name: arturn_days_lyr_2
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）lyr_2（固定报告期索引）
+  - name: arturn_days_lyr_3
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）lyr_3（固定报告期索引）
+  - name: arturn_days_lyr_4
+    data_type: float
+    nullable: true
+    comment: 应付账款周转天数（最近年报）lyr_4（固定报告期索引）
+  - name: ar_turn_ttm_0
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）ttm_0（固定报告期索引）
+  - name: ar_turn_ttm_1
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）ttm_1（固定报告期索引）
+  - name: ar_turn_ttm_2
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）ttm_2（固定报告期索引）
+  - name: ar_turn_ttm_3
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）ttm_3（固定报告期索引）
+  - name: ar_turn_ttm_4
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）ttm_4（固定报告期索引）
+  - name: ar_turn_ttm_5
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）ttm_5（固定报告期索引）
+  - name: ar_turn_ttm_6
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）ttm_6（固定报告期索引）
+  - name: ar_turn_ttm_7
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）ttm_7（固定报告期索引）
+  - name: ar_turn_ttm_8
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）ttm_8（固定报告期索引）
+  - name: ar_turn_lyr_0
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）lyr_0（固定报告期索引）
+  - name: ar_turn_lyr_1
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）lyr_1（固定报告期索引）
+  - name: ar_turn_lyr_2
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）lyr_2（固定报告期索引）
+  - name: ar_turn_lyr_3
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）lyr_3（固定报告期索引）
+  - name: ar_turn_lyr_4
+    data_type: float
+    nullable: true
+    comment: 应付账款周转率（最近年报）lyr_4（固定报告期索引）
+  - name: profit_dedt_ttm_0
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润ttm_0（固定报告期索引）
+  - name: profit_dedt_ttm_1
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润ttm_1（固定报告期索引）
+  - name: profit_dedt_ttm_2
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润ttm_2（固定报告期索引）
+  - name: profit_dedt_ttm_3
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润ttm_3（固定报告期索引）
+  - name: profit_dedt_ttm_4
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润ttm_4（固定报告期索引）
+  - name: profit_dedt_ttm_5
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润ttm_5（固定报告期索引）
+  - name: profit_dedt_ttm_6
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润ttm_6（固定报告期索引）
+  - name: profit_dedt_ttm_7
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润ttm_7（固定报告期索引）
+  - name: profit_dedt_ttm_8
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润ttm_8（固定报告期索引）
+  - name: profit_dedt_lyr_0
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润lyr_0（固定报告期索引）
+  - name: profit_dedt_lyr_1
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润lyr_1（固定报告期索引）
+  - name: profit_dedt_lyr_2
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润lyr_2（固定报告期索引）
+  - name: profit_dedt_lyr_3
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润lyr_3（固定报告期索引）
+  - name: profit_dedt_lyr_4
+    data_type: float
+    nullable: true
+    comment: 扣除非经常性损益的净利润lyr_4（固定报告期索引）
+  - name: fcfe_ttm_0
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_0（固定报告期索引）
+  - name: fcfe_ttm_1
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_1（固定报告期索引）
+  - name: fcfe_ttm_2
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_2（固定报告期索引）
+  - name: fcfe_ttm_3
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_3（固定报告期索引）
+  - name: fcfe_ttm_4
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_4（固定报告期索引）
+  - name: fcfe_ttm_5
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_5（固定报告期索引）
+  - name: fcfe_ttm_6
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_6（固定报告期索引）
+  - name: fcfe_ttm_7
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_7（固定报告期索引）
+  - name: fcfe_ttm_8
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_8（固定报告期索引）
+  - name: fcfe_lyr_0
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量lyr_0（固定报告期索引）
+  - name: fcfe_lyr_1
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量lyr_1（固定报告期索引）
+  - name: fcfe_lyr_2
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量lyr_2（固定报告期索引）
+  - name: fcfe_lyr_3
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量lyr_3（固定报告期索引）
+  - name: fcfe_lyr_4
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量lyr_4（固定报告期索引）
+  - name: fcff_ttm_0
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_0（固定报告期索引）
+  - name: fcff_ttm_1
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_1（固定报告期索引）
+  - name: fcff_ttm_2
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_2（固定报告期索引）
+  - name: fcff_ttm_3
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_3（固定报告期索引）
+  - name: fcff_ttm_4
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_4（固定报告期索引）
+  - name: fcff_ttm_5
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_5（固定报告期索引）
+  - name: fcff_ttm_6
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_6（固定报告期索引）
+  - name: fcff_ttm_7
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_7（固定报告期索引）
+  - name: fcff_ttm_8
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量ttm_8（固定报告期索引）
+  - name: fcff_lyr_0
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量lyr_0（固定报告期索引）
+  - name: fcff_lyr_1
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量lyr_1（固定报告期索引）
+  - name: fcff_lyr_2
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量lyr_2（固定报告期索引）
+  - name: fcff_lyr_3
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量lyr_3（固定报告期索引）
+  - name: fcff_lyr_4
+    data_type: float
+    nullable: true
+    comment: 股东自由现金流量lyr_4（固定报告期索引）
+  - name: interestdebt_mrq_0
+    data_type: float
+    nullable: true
+    comment: 带息债务mrq_0（固定报告期索引）
+  - name: interestdebt_mrq_1
+    data_type: float
+    nullable: true
+    comment: 带息债务mrq_1（固定报告期索引）
+  - name: interestdebt_mrq_2
+    data_type: float
+    nullable: true
+    comment: 带息债务mrq_2（固定报告期索引）
+  - name: interestdebt_mrq_3
+    data_type: float
+    nullable: true
+    comment: 带息债务mrq_3（固定报告期索引）
+  - name: interestdebt_mrq_4
+    data_type: float
+    nullable: true
+    comment: 带息债务mrq_4（固定报告期索引）
+  - name: interestdebt_mrq_5
+    data_type: float
+    nullable: true
+    comment: 带息债务mrq_5（固定报告期索引）
+  - name: interestdebt_mrq_6
+    data_type: float
+    nullable: true
+    comment: 带息债务mrq_6（固定报告期索引）
+  - name: interestdebt_mrq_7
+    data_type: float
+    nullable: true
+    comment: 带息债务mrq_7（固定报告期索引）
+  - name: interestdebt_mrq_8
+    data_type: float
+    nullable: true
+    comment: 带息债务mrq_8（固定报告期索引）
+  - name: interestdebt_ttm_0
+    data_type: float
+    nullable: true
+    comment: 带息债务ttm_0（固定报告期索引）
+  - name: interestdebt_ttm_1
+    data_type: float
+    nullable: true
+    comment: 带息债务ttm_1（固定报告期索引）
+  - name: interestdebt_ttm_2
+    data_type: float
+    nullable: true
+    comment: 带息债务ttm_2（固定报告期索引）
+  - name: interestdebt_ttm_3
+    data_type: float
+    nullable: true
+    comment: 带息债务ttm_3（固定报告期索引）
+  - name: interestdebt_ttm_4
+    data_type: float
+    nullable: true
+    comment: 带息债务ttm_4（固定报告期索引）
+  - name: interestdebt_ttm_5
+    data_type: float
+    nullable: true
+    comment: 带息债务ttm_5（固定报告期索引）
+  - name: interestdebt_ttm_6
+    data_type: float
+    nullable: true
+    comment: 带息债务ttm_6（固定报告期索引）
+  - name: interestdebt_ttm_7
+    data_type: float
+    nullable: true
+    comment: 带息债务ttm_7（固定报告期索引）
+  - name: interestdebt_ttm_8
+    data_type: float
+    nullable: true
+    comment: 带息债务ttm_8（固定报告期索引）
+  - name: interestdebt_lyr_0
+    data_type: float
+    nullable: true
+    comment: 带息债务lyr_0（固定报告期索引）
+  - name: interestdebt_lyr_1
+    data_type: float
+    nullable: true
+    comment: 带息债务lyr_1（固定报告期索引）
+  - name: interestdebt_lyr_2
+    data_type: float
+    nullable: true
+    comment: 带息债务lyr_2（固定报告期索引）
+  - name: interestdebt_lyr_3
+    data_type: float
+    nullable: true
+    comment: 带息债务lyr_3（固定报告期索引）
+  - name: interestdebt_lyr_4
+    data_type: float
+    nullable: true
+    comment: 带息债务lyr_4（固定报告期索引）
+  - name: inv_turn_ttm_0
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）ttm_0（固定报告期索引）
+  - name: inv_turn_ttm_1
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）ttm_1（固定报告期索引）
+  - name: inv_turn_ttm_2
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）ttm_2（固定报告期索引）
+  - name: inv_turn_ttm_3
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）ttm_3（固定报告期索引）
+  - name: inv_turn_ttm_4
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）ttm_4（固定报告期索引）
+  - name: inv_turn_ttm_5
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）ttm_5（固定报告期索引）
+  - name: inv_turn_ttm_6
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）ttm_6（固定报告期索引）
+  - name: inv_turn_ttm_7
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）ttm_7（固定报告期索引）
+  - name: inv_turn_ttm_8
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）ttm_8（固定报告期索引）
+  - name: inv_turn_lyr_0
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）lyr_0（固定报告期索引）
+  - name: inv_turn_lyr_1
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）lyr_1（固定报告期索引）
+  - name: inv_turn_lyr_2
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）lyr_2（固定报告期索引）
+  - name: inv_turn_lyr_3
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）lyr_3（固定报告期索引）
+  - name: inv_turn_lyr_4
+    data_type: float
+    nullable: true
+    comment: 存货周转率（最近年报）lyr_4（固定报告期索引）
+  - name: invest_capital_mrq_0
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）mrq_0（固定报告期索引）
+  - name: invest_capital_mrq_1
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）mrq_1（固定报告期索引）
+  - name: invest_capital_mrq_2
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）mrq_2（固定报告期索引）
+  - name: invest_capital_mrq_3
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）mrq_3（固定报告期索引）
+  - name: invest_capital_mrq_4
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）mrq_4（固定报告期索引）
+  - name: invest_capital_mrq_5
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）mrq_5（固定报告期索引）
+  - name: invest_capital_mrq_6
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）mrq_6（固定报告期索引）
+  - name: invest_capital_mrq_7
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）mrq_7（固定报告期索引）
+  - name: invest_capital_mrq_8
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）mrq_8（固定报告期索引）
+  - name: invest_capital_ttm_0
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）ttm_0（固定报告期索引）
+  - name: invest_capital_ttm_1
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）ttm_1（固定报告期索引）
+  - name: invest_capital_ttm_2
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）ttm_2（固定报告期索引）
+  - name: invest_capital_ttm_3
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）ttm_3（固定报告期索引）
+  - name: invest_capital_ttm_4
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）ttm_4（固定报告期索引）
+  - name: invest_capital_ttm_5
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）ttm_5（固定报告期索引）
+  - name: invest_capital_ttm_6
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）ttm_6（固定报告期索引）
+  - name: invest_capital_ttm_7
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）ttm_7（固定报告期索引）
+  - name: invest_capital_ttm_8
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）ttm_8（固定报告期索引）
+  - name: invest_capital_lyr_0
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）lyr_0（固定报告期索引）
+  - name: invest_capital_lyr_1
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）lyr_1（固定报告期索引）
+  - name: invest_capital_lyr_2
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）lyr_2（固定报告期索引）
+  - name: invest_capital_lyr_3
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）lyr_3（固定报告期索引）
+  - name: invest_capital_lyr_4
+    data_type: float
+    nullable: true
+    comment: 投入资本（最新口径）lyr_4（固定报告期索引）
+  - name: netdebt_ttm_0
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）ttm_0（固定报告期索引）
+  - name: netdebt_ttm_1
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）ttm_1（固定报告期索引）
+  - name: netdebt_ttm_2
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）ttm_2（固定报告期索引）
+  - name: netdebt_ttm_3
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）ttm_3（固定报告期索引）
+  - name: netdebt_ttm_4
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）ttm_4（固定报告期索引）
+  - name: netdebt_ttm_5
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）ttm_5（固定报告期索引）
+  - name: netdebt_ttm_6
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）ttm_6（固定报告期索引）
+  - name: netdebt_ttm_7
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）ttm_7（固定报告期索引）
+  - name: netdebt_ttm_8
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）ttm_8（固定报告期索引）
+  - name: netdebt_lyr_0
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）lyr_0（固定报告期索引）
+  - name: netdebt_lyr_1
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）lyr_1（固定报告期索引）
+  - name: netdebt_lyr_2
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）lyr_2（固定报告期索引）
+  - name: netdebt_lyr_3
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）lyr_3（固定报告期索引）
+  - name: netdebt_lyr_4
+    data_type: float
+    nullable: true
+    comment: 净负债/净债务（LYR）lyr_4（固定报告期索引）
+  - name: current_exint_mrq_0
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）mrq_0（固定报告期索引）
+  - name: current_exint_mrq_1
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）mrq_1（固定报告期索引）
+  - name: current_exint_mrq_2
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）mrq_2（固定报告期索引）
+  - name: current_exint_mrq_3
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）mrq_3（固定报告期索引）
+  - name: current_exint_mrq_4
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）mrq_4（固定报告期索引）
+  - name: current_exint_mrq_5
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）mrq_5（固定报告期索引）
+  - name: current_exint_mrq_6
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）mrq_6（固定报告期索引）
+  - name: current_exint_mrq_7
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）mrq_7（固定报告期索引）
+  - name: current_exint_mrq_8
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）mrq_8（固定报告期索引）
+  - name: current_exint_ttm_0
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）ttm_0（固定报告期索引）
+  - name: current_exint_ttm_1
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）ttm_1（固定报告期索引）
+  - name: current_exint_ttm_2
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）ttm_2（固定报告期索引）
+  - name: current_exint_ttm_3
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）ttm_3（固定报告期索引）
+  - name: current_exint_ttm_4
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）ttm_4（固定报告期索引）
+  - name: current_exint_ttm_5
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）ttm_5（固定报告期索引）
+  - name: current_exint_ttm_6
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）ttm_6（固定报告期索引）
+  - name: current_exint_ttm_7
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）ttm_7（固定报告期索引）
+  - name: current_exint_ttm_8
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）ttm_8（固定报告期索引）
+  - name: current_exint_lyr_0
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）lyr_0（固定报告期索引）
+  - name: current_exint_lyr_1
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）lyr_1（固定报告期索引）
+  - name: current_exint_lyr_2
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）lyr_2（固定报告期索引）
+  - name: current_exint_lyr_3
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）lyr_3（固定报告期索引）
+  - name: current_exint_lyr_4
+    data_type: float
+    nullable: true
+    comment: 无息流动负债(口径)（最新口径）lyr_4（固定报告期索引）
+  - name: noncurrent_exint_mrq_0
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）mrq_0（固定报告期索引）
+  - name: noncurrent_exint_mrq_1
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）mrq_1（固定报告期索引）
+  - name: noncurrent_exint_mrq_2
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）mrq_2（固定报告期索引）
+  - name: noncurrent_exint_mrq_3
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）mrq_3（固定报告期索引）
+  - name: noncurrent_exint_mrq_4
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）mrq_4（固定报告期索引）
+  - name: noncurrent_exint_mrq_5
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）mrq_5（固定报告期索引）
+  - name: noncurrent_exint_mrq_6
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）mrq_6（固定报告期索引）
+  - name: noncurrent_exint_mrq_7
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）mrq_7（固定报告期索引）
+  - name: noncurrent_exint_mrq_8
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）mrq_8（固定报告期索引）
+  - name: noncurrent_exint_ttm_0
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）ttm_0（固定报告期索引）
+  - name: noncurrent_exint_ttm_1
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）ttm_1（固定报告期索引）
+  - name: noncurrent_exint_ttm_2
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）ttm_2（固定报告期索引）
+  - name: noncurrent_exint_ttm_3
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）ttm_3（固定报告期索引）
+  - name: noncurrent_exint_ttm_4
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）ttm_4（固定报告期索引）
+  - name: noncurrent_exint_ttm_5
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）ttm_5（固定报告期索引）
+  - name: noncurrent_exint_ttm_6
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）ttm_6（固定报告期索引）
+  - name: noncurrent_exint_ttm_7
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）ttm_7（固定报告期索引）
+  - name: noncurrent_exint_ttm_8
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）ttm_8（固定报告期索引）
+  - name: noncurrent_exint_lyr_0
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）lyr_0（固定报告期索引）
+  - name: noncurrent_exint_lyr_1
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）lyr_1（固定报告期索引）
+  - name: noncurrent_exint_lyr_2
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）lyr_2（固定报告期索引）
+  - name: noncurrent_exint_lyr_3
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）lyr_3（固定报告期索引）
+  - name: noncurrent_exint_lyr_4
+    data_type: float
+    nullable: true
+    comment: 无息非流动负债(口径)（最新口径）lyr_4（固定报告期索引）
+  - name: extra_item_ttm_0
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）ttm_0（固定报告期索引）
+  - name: extra_item_ttm_1
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）ttm_1（固定报告期索引）
+  - name: extra_item_ttm_2
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）ttm_2（固定报告期索引）
+  - name: extra_item_ttm_3
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）ttm_3（固定报告期索引）
+  - name: extra_item_ttm_4
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）ttm_4（固定报告期索引）
+  - name: extra_item_ttm_5
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）ttm_5（固定报告期索引）
+  - name: extra_item_ttm_6
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）ttm_6（固定报告期索引）
+  - name: extra_item_ttm_7
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）ttm_7（固定报告期索引）
+  - name: extra_item_ttm_8
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）ttm_8（固定报告期索引）
+  - name: extra_item_lyr_0
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）lyr_0（固定报告期索引）
+  - name: extra_item_lyr_1
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）lyr_1（固定报告期索引）
+  - name: extra_item_lyr_2
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）lyr_2（固定报告期索引）
+  - name: extra_item_lyr_3
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）lyr_3（固定报告期索引）
+  - name: extra_item_lyr_4
+    data_type: float
+    nullable: true
+    comment: 非经常性损益（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: turn_days_ttm_0
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）ttm_0（固定报告期索引）
+  - name: turn_days_ttm_1
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）ttm_1（固定报告期索引）
+  - name: turn_days_ttm_2
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）ttm_2（固定报告期索引）
+  - name: turn_days_ttm_3
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）ttm_3（固定报告期索引）
+  - name: turn_days_ttm_4
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）ttm_4（固定报告期索引）
+  - name: turn_days_ttm_5
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）ttm_5（固定报告期索引）
+  - name: turn_days_ttm_6
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）ttm_6（固定报告期索引）
+  - name: turn_days_ttm_7
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）ttm_7（固定报告期索引）
+  - name: turn_days_ttm_8
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）ttm_8（固定报告期索引）
+  - name: turn_days_lyr_0
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）lyr_0（固定报告期索引）
+  - name: turn_days_lyr_1
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）lyr_1（固定报告期索引）
+  - name: turn_days_lyr_2
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）lyr_2（固定报告期索引）
+  - name: turn_days_lyr_3
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）lyr_3（固定报告期索引）
+  - name: turn_days_lyr_4
+    data_type: float
+    nullable: true
+    comment: 营业周期（TTM）lyr_4（固定报告期索引）
+  - name: retained_earnings_mrq_0
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）mrq_0（固定报告期索引）
+  - name: retained_earnings_mrq_1
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）mrq_1（固定报告期索引）
+  - name: retained_earnings_mrq_2
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）mrq_2（固定报告期索引）
+  - name: retained_earnings_mrq_3
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）mrq_3（固定报告期索引）
+  - name: retained_earnings_mrq_4
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）mrq_4（固定报告期索引）
+  - name: retained_earnings_mrq_5
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）mrq_5（固定报告期索引）
+  - name: retained_earnings_mrq_6
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）mrq_6（固定报告期索引）
+  - name: retained_earnings_mrq_7
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）mrq_7（固定报告期索引）
+  - name: retained_earnings_mrq_8
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）mrq_8（固定报告期索引）
+  - name: retained_earnings_ttm_0
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）ttm_0（固定报告期索引）
+  - name: retained_earnings_ttm_1
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）ttm_1（固定报告期索引）
+  - name: retained_earnings_ttm_2
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）ttm_2（固定报告期索引）
+  - name: retained_earnings_ttm_3
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）ttm_3（固定报告期索引）
+  - name: retained_earnings_ttm_4
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）ttm_4（固定报告期索引）
+  - name: retained_earnings_ttm_5
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）ttm_5（固定报告期索引）
+  - name: retained_earnings_ttm_6
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）ttm_6（固定报告期索引）
+  - name: retained_earnings_ttm_7
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）ttm_7（固定报告期索引）
+  - name: retained_earnings_ttm_8
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）ttm_8（固定报告期索引）
+  - name: retained_earnings_lyr_0
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）lyr_0（固定报告期索引）
+  - name: retained_earnings_lyr_1
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）lyr_1（固定报告期索引）
+  - name: retained_earnings_lyr_2
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）lyr_2（固定报告期索引）
+  - name: retained_earnings_lyr_3
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）lyr_3（固定报告期索引）
+  - name: retained_earnings_lyr_4
+    data_type: float
+    nullable: true
+    comment: 留存收益（最新口径）lyr_4（固定报告期索引）
+  - name: assets_turn_ttm_0
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）ttm_0（固定报告期索引）
+  - name: assets_turn_ttm_1
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）ttm_1（固定报告期索引）
+  - name: assets_turn_ttm_2
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）ttm_2（固定报告期索引）
+  - name: assets_turn_ttm_3
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）ttm_3（固定报告期索引）
+  - name: assets_turn_ttm_4
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）ttm_4（固定报告期索引）
+  - name: assets_turn_ttm_5
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）ttm_5（固定报告期索引）
+  - name: assets_turn_ttm_6
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）ttm_6（固定报告期索引）
+  - name: assets_turn_ttm_7
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）ttm_7（固定报告期索引）
+  - name: assets_turn_ttm_8
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）ttm_8（固定报告期索引）
+  - name: assets_turn_lyr_0
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）lyr_0（固定报告期索引）
+  - name: assets_turn_lyr_1
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）lyr_1（固定报告期索引）
+  - name: assets_turn_lyr_2
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）lyr_2（固定报告期索引）
+  - name: assets_turn_lyr_3
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）lyr_3（固定报告期索引）
+  - name: assets_turn_lyr_4
+    data_type: float
+    nullable: true
+    comment: 总资产周转率（最近年报）lyr_4（固定报告期索引）
+  - name: ev_ttm_0
+    data_type: float
+    nullable: true
+    comment: ev_ttm_0（固定报告期索引）
+  - name: ev_ttm_1
+    data_type: float
+    nullable: true
+    comment: ev_ttm_1（固定报告期索引）
+  - name: ev_ttm_2
+    data_type: float
+    nullable: true
+    comment: ev_ttm_2（固定报告期索引）
+  - name: ev_ttm_3
+    data_type: float
+    nullable: true
+    comment: ev_ttm_3（固定报告期索引）
+  - name: ev_ttm_4
+    data_type: float
+    nullable: true
+    comment: ev_ttm_4（固定报告期索引）
+  - name: ev_ttm_5
+    data_type: float
+    nullable: true
+    comment: ev_ttm_5（固定报告期索引）
+  - name: ev_ttm_6
+    data_type: float
+    nullable: true
+    comment: ev_ttm_6（固定报告期索引）
+  - name: ev_ttm_7
+    data_type: float
+    nullable: true
+    comment: ev_ttm_7（固定报告期索引）
+  - name: ev_ttm_8
+    data_type: float
+    nullable: true
+    comment: ev_ttm_8（固定报告期索引）
+  - name: ev_lyr_0
+    data_type: float
+    nullable: true
+    comment: ev_lyr_0（固定报告期索引）
+  - name: ev_lyr_1
+    data_type: float
+    nullable: true
+    comment: ev_lyr_1（固定报告期索引）
+  - name: ev_lyr_2
+    data_type: float
+    nullable: true
+    comment: ev_lyr_2（固定报告期索引）
+  - name: ev_lyr_3
+    data_type: float
+    nullable: true
+    comment: ev_lyr_3（固定报告期索引）
+  - name: ev_lyr_4
+    data_type: float
+    nullable: true
+    comment: ev_lyr_4（固定报告期索引）
+  - name: ev_no_cash_ttm_0
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_ttm_0（固定报告期索引）
+  - name: ev_no_cash_ttm_1
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_ttm_1（固定报告期索引）
+  - name: ev_no_cash_ttm_2
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_ttm_2（固定报告期索引）
+  - name: ev_no_cash_ttm_3
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_ttm_3（固定报告期索引）
+  - name: ev_no_cash_ttm_4
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_ttm_4（固定报告期索引）
+  - name: ev_no_cash_ttm_5
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_ttm_5（固定报告期索引）
+  - name: ev_no_cash_ttm_6
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_ttm_6（固定报告期索引）
+  - name: ev_no_cash_ttm_7
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_ttm_7（固定报告期索引）
+  - name: ev_no_cash_ttm_8
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_ttm_8（固定报告期索引）
+  - name: ev_no_cash_lyr_0
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_lyr_0（固定报告期索引）
+  - name: ev_no_cash_lyr_1
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_lyr_1（固定报告期索引）
+  - name: ev_no_cash_lyr_2
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_lyr_2（固定报告期索引）
+  - name: ev_no_cash_lyr_3
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_lyr_3（固定报告期索引）
+  - name: ev_no_cash_lyr_4
+    data_type: float
+    nullable: true
+    comment: ev_no_cash_lyr_4（固定报告期索引）
+  - name: volume_ratio
+    data_type: float
+    nullable: true
+    comment: 情绪/交易活跃因子(近似)
+  - name: assets_impair_loss
+    data_type: float
+    nullable: true
+    comment: 资产减值损失TTM
+  - name: int_exp
+    data_type: float
+    nullable: true
+    comment: 利息支出TTM
+  - name: div_receiv
+    data_type: float
+    nullable: true
+    comment: 应收股利
+  - name: fa_avail_for_sale
+    data_type: float
+    nullable: true
+    comment: 可供出售金融资产
+  - name: htm_invest
+    data_type: float
+    nullable: true
+    comment: 持有至到期投资
+  - name: int_receiv
+    data_type: float
+    nullable: true
+    comment: 应收利息
+  - name: intan_assets
+    data_type: float
+    nullable: true
+    comment: 无形资产
+  - name: r_and_d
+    data_type: float
+    nullable: true
+    comment: 研发支出
+  - name: c_cash_equ_end_period
+    data_type: float
+    nullable: true
+    comment: 期末现金及现金等价物余额
+  - name: c_fr_sale_sg
+    data_type: float
+    nullable: true
+    comment: 销售商品、提供劳务收到的现金TTM
+  - name: c_pay_acq_const_fiolta
+    data_type: float
+    nullable: true
+    comment: 投资能力(可用CAPEX强度等近似)
+  - name: hk_hold_vol
+    data_type: float
+    nullable: true
+    comment: 北向持股数量
+  - name: hk_hold_ratio
+    data_type: float
+    nullable: true
+    comment: 北向持股占比
+  - name: rzye
+    data_type: float
+    nullable: true
+    comment: 融资余额
+  - name: rzmre
+    data_type: float
+    nullable: true
+    comment: 融资买入额
+  - name: rzche
+    data_type: float
+    nullable: true
+    comment: 融资偿还额
+  - name: rqye
+    data_type: float
+    nullable: true
+    comment: 融券余额
+  - name: rqyl
+    data_type: float
+    nullable: true
+    comment: 融券余量
+  - name: rqmcl
+    data_type: float
+    nullable: true
+    comment: 融券卖出量
+  - name: winner_rate
+    data_type: float
+    nullable: true
+    comment: 获利比例
+  - name: cost_5pct
+    data_type: float
+    nullable: true
+    comment: 5分位成本
+  - name: cost_50pct
+    data_type: float
+    nullable: true
+    comment: 50分位成本
+  - name: cost_95pct
+    data_type: float
+    nullable: true
+    comment: 95分位成本
+  - name: weight_avg_cost
+    data_type: float
+    nullable: true
+    comment: 加权平均成本
+  - name: build_time
+    data_type: datetime
+    comment: 汇总构建时间
+  - name: source
+    data_type: str
+    length: 32
+    comment: 来源系统
+  - name: source_table
+    data_type: str
+    length: 512
+    comment: 来源表
+  - name: source_batch_id
+    data_type: str
+    length: 512
+    comment: 来源批次ID
+  - name: source_record_hash
+    data_type: str
+    length: 32
+    comment: 来源记录哈希

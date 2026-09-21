@@ -31,6 +31,13 @@ class DailyMarketJobsScriptTest(unittest.TestCase):
     def test_daily_script_uses_shared_runner(self):
         self.assertIn('source "$SCRIPT_DIR/lib/market_job_runner.sh"', self.script)
 
+    def test_stock_factor_wide_v2_is_scheduled_between_wide_and_matrix(self):
+        old_wide = self.script.index("dws_stock_factor_wide\"")
+        v2_wide = self.script.index("dws_stock_factor_wide_v2\"")
+        matrix = self.script.index("dws_stock_factor_wide_matrix\"")
+        self.assertLess(old_wide, v2_wide)
+        self.assertLess(v2_wide, matrix)
+
     def test_pre_market_script_runs_price_batch_then_dwd_sync(self):
         script_path = self.root_dir / "scripts" / "run_pre_market_jobs.sh"
         script = script_path.read_text(encoding="utf-8")

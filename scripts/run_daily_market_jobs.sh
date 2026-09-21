@@ -56,6 +56,7 @@ main() {
     "tushare-dws-sync-stock-cashflow-quarter|$DWS_SYNC_IMAGE|dws_stock_cashflow_quarter"
     "tushare-dws-sync-stock-income-quarter|$DWS_SYNC_IMAGE|dws_stock_income_quarter"
     "tushare-dws-sync-stock-factor-wide|$DWS_SYNC_IMAGE|dws_stock_factor_wide"
+    "tushare-dws-sync-stock-factor-wide-v2|$DWS_SYNC_IMAGE|dws_stock_factor_wide_v2"
     "tushare-dws-sync-stock-factor-wide-matrix|$DWS_SYNC_IMAGE|dws_stock_factor_wide_matrix"
   )
 

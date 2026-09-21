@@ -11,6 +11,7 @@ from tushare_integration.db_engine import ClickhouseEngine
 from tushare_integration.dwd import DWDManager
 from tushare_integration.dws import (
     DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT,
+    DWS_CLICKHOUSE_QUERY_SETTINGS,
     DWSManager,
     FINANCIAL_FEATURE_COLUMNS,
     STOCK_CASHFLOW_QUARTER_FIELDS,
@@ -115,6 +116,7 @@ class TushareResponseTest(unittest.TestCase):
         create.assert_called_once_with(
             manager.settings,
             clickhouse_send_receive_timeout=DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT,
+            clickhouse_query_settings=DWS_CLICKHOUSE_QUERY_SETTINGS,
         )
 
     def test_dws_stock_factor_wide_uses_asof_financial_join(self):
@@ -132,6 +134,21 @@ class TushareResponseTest(unittest.TestCase):
         self.assertNotIn("available_trade_date <= price.available_trade_date", sql)
         self.assertNotIn("PARTITION BY price.instrument_id, price.event_date", sql)
         self.assertIn("AND event_date >= toDate32('2010-01-01')", sql)
+
+    def test_dws_stock_factor_wide_uses_daily_sources_for_replaced_quote_metrics(self):
+        manager = object.__new__(DWSManager)
+        manager.settings = self._clickhouse_settings()
+
+        sql = manager.render_sync_sql("dws_stock_factor_wide")
+
+        self.assertIn("daily_basic.volume_ratio AS vol_ratio", sql)
+        self.assertIn("daily_basic.turnover_rate AS turn_over", sql)
+        self.assertIn("(price.high - price.low) / nullIf(price.pre_close, 0) * 100 AS swing", sql)
+        self.assertIn("price.amount * 10 / nullIf(price.vol, 0) AS avg_price", sql)
+        self.assertNotIn("quote_metrics.vol_ratio AS vol_ratio", sql)
+        self.assertNotIn("quote_metrics.turn_over AS turn_over", sql)
+        self.assertNotIn("quote_metrics.swing AS swing", sql)
+        self.assertNotIn("quote_metrics.avg_price AS avg_price", sql)
 
     def test_dwd_financial_statements_use_effective_announcement_date(self):
         manager = object.__new__(DWDManager)

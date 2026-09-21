@@ -21,14 +21,22 @@ from tushare_integration.settings import TushareIntegrationSettings
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DWS_SCHEMA_DIR = ROOT_DIR / "tushare_integration" / "schema" / "dws"
+STOCK_FACTOR_WIDE_V2_BASE_SQL = (
+    ROOT_DIR / "tushare_integration" / "sql" / "dws_stock_factor_wide_v2_base.sql"
+)
 FACTOR_MAPPING_CSV = DEFAULT_FACTOR_MAPPING_CSV
 FACTOR_MAPPING_CSV_CANDIDATES = DEFAULT_FACTOR_MAPPING_CSV_CANDIDATES
 DWS_CLICKHOUSE_SEND_RECEIVE_TIMEOUT = 1200
+DWS_CLICKHOUSE_QUERY_SETTINGS = {
+    "max_query_size": 2 * 1024 * 1024,
+    "max_ast_elements": 500000,
+}
 DWS_TABLE_BUILD_PRIORITY = {
     "dws_stock_financial_indicator_quarter": 0,
     "dws_stock_income_quarter": 0,
     "dws_stock_cashflow_quarter": 0,
     "dws_stock_factor_wide": 10,
+    "dws_stock_factor_wide_v2": 11,
     "dws_stock_factor_wide_matrix": 20,
 }
 
@@ -49,6 +57,22 @@ STOCK_FACTOR_WIDE_SOURCES = [
     "dwd_stock_chip_distribution",
 ]
 STOCK_FACTOR_WIDE_MATRIX_SOURCES = ["dws_stock_factor_wide"]
+STOCK_FACTOR_WIDE_V2_SOURCES = [
+    "dwd_stock_eod_price",
+    "dwd_stock_adj_factor",
+    "dwd_stock_daily_basic",
+    "dwd_stock_eod_quote_metrics",
+    "dws_stock_financial_indicator_quarter",
+    "dws_stock_income_quarter",
+    "dws_stock_cashflow_quarter",
+    "dwd_stock_financial_indicator",
+    "dwd_stock_income",
+    "dwd_stock_balance_sheet",
+    "dwd_stock_cashflow",
+    "dwd_stock_northbound_holding",
+    "dwd_stock_margin_trading",
+    "dwd_stock_chip_distribution",
+]
 STOCK_FACTOR_WIDE_MATRIX_UDF = "dws_stock_factor_rows"
 STOCK_FACTOR_WIDE_MATRIX_PREFIX_COLUMNS = [
     "trade_date",
@@ -482,6 +506,192 @@ CALCULATED_FACTOR_COLUMNS = [
 ]
 
 
+V2_FINANCIAL_FEATURE_FAMILIES = [
+    ("balancesheet", "bond_payable", "bond_payable", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "fix_assets", "fix_assets", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "lt_borr", "lt_borr", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "money_cap", "money_cap", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "non_cur_liab_due_1y", "non_cur_liab_due_1y", ("ttm", "lyr")),
+    ("balancesheet", "notes_payable", "notes_payable", ("ttm", "lyr")),
+    ("balancesheet", "st_borr", "st_borr", ("ttm", "lyr")),
+    ("balancesheet", "total_assets", "total_assets", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "total_cur_assets", "total_cur_assets", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "total_cur_liab", "total_cur_liab", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "total_hldr_eqy_exc_min_int", "total_hldr_eqy_exc_min_int", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "total_hldr_eqy_inc_min_int", "total_hldr_eqy_inc_min_int", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "total_liab", "total_liab", ("mrq", "ttm", "lyr")),
+    ("cashflow", "amort_intang_assets", "amort_intang_assets", ("mrq", "ttm", "lyr")),
+    ("cashflow", "depr_fa_coga_dpba", "depr_fa_coga_dpba", ("mrq", "ttm", "lyr")),
+    ("cashflow", "n_cash_flows_fnc_act", "n_cash_flows_fnc_act", ("ttm", "lyr")),
+    ("cashflow", "n_cashflow_act", "n_cashflow_act", ("ttm", "lyr")),
+    ("cashflow", "n_cashflow_inv_act", "n_cashflow_inv_act", ("ttm", "lyr")),
+    ("cashflow", "n_incr_cash_cash_equ", "n_incr_cash_cash_equ", ("ttm", "lyr")),
+    ("cashflow", "prov_depr_assets", "prov_depr_assets", ("ttm", "lyr")),
+    ("fina_indicator", "ebitda", "ebitda", ("ttm", "lyr")),
+    ("income", "fin_exp_int_exp", "fin_exp_int_exp", ("ttm", "lyr")),
+    ("income", "fin_exp_int_inc", "fin_exp_int_inc", ("ttm", "lyr")),
+    ("income", "income_tax", "income_tax", ("ttm", "lyr")),
+    ("income", "int_income", "int_income", ("ttm", "lyr")),
+    ("income", "n_income", "n_income", ("ttm", "lyr")),
+    ("income", "n_income_attr_p", "n_income_attr_p", ("ttm", "lyr")),
+    ("income", "operate_profit", "operate_profit", ("ttm", "lyr")),
+    ("income", "revenue", "revenue", ("ttm", "lyr")),
+    ("income", "total_cogs", "total_cogs", ("ttm", "lyr")),
+    ("income", "total_profit", "total_profit", ("ttm", "lyr")),
+    ("income", "basic_eps", "basic_eps", ("ttm", "lyr")),
+    ("income", "oper_cost", "oper_cost", ("ttm", "lyr")),
+    ("fina_indicator", "ebit", "ebit", ("ttm", "lyr")),
+    ("income", "fv_value_chg_gain", "fv_value_chg_gain", ("ttm", "lyr")),
+    ("income", "fin_exp", "fin_exp", ("ttm", "lyr")),
+    ("income", "diluted_eps", "diluted_eps", ("ttm", "lyr")),
+    ("income", "oth_impair_loss_assets", "oth_impair_loss_assets", ("mrq", "ttm", "lyr")),
+    ("income", "ass_invest_income", "ass_invest_income", ("ttm", "lyr")),
+    ("income", "invest_income", "invest_income", ("ttm", "lyr")),
+    ("income", "non_oper_exp", "non_oper_exp", ("ttm", "lyr")),
+    ("income", "non_oper_income", "non_oper_income", ("ttm", "lyr")),
+    ("income", "biz_tax_surchg", "biz_tax_surchg", ("ttm", "lyr")),
+    ("balancesheet", "acc_exp", "acc_exp", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "acct_payable", "acct_payable", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "accounts_receiv", "accounts_receiv", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "adv_receipts", "adv_receipts", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "notes_receiv", "notes_receiv", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "cap_rese", "cap_rese", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "amor_exp", "amor_exp", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "deferred_inc", "deferred_inc", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "const_materials", "const_materials", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "trad_asset", "trad_asset", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "goodwill", "goodwill", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "inventories", "inventories", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "total_nca", "total_nca", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "total_ncl", "total_ncl", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "oth_receiv", "oth_receiv", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "oth_cur_liab", "oth_cur_liab", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "oth_payable", "oth_payable", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "payroll_payable", "payroll_payable", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "prepayment", "prepayment", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "surplus_rese", "surplus_rese", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "taxes_payable", "taxes_payable", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "undistr_porfit", "undistr_porfit", ("mrq", "ttm", "lyr")),
+    ("fina_indicator", "working_capital", "working_capital", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "cip", "cip", ("mrq", "ttm", "lyr")),
+    ("balancesheet", "fix_assets_total", "fix_assets_total", ("ttm", "lyr")),
+    ("balancesheet", "cip_total", "cip_total", ("mrq", "ttm", "lyr")),
+    ("cashflow", "lt_amort_deferred_exp", "lt_amort_deferred_exp", ("mrq", "ttm")),
+    ("cashflow", "eff_fx_flu_cash", "eff_fx_flu_cash", ("ttm", "lyr")),
+    ("fina_indicator", "arturn_days", "arturn_days", ("ttm", "lyr")),
+    ("fina_indicator", "ar_turn", "ar_turn", ("ttm", "lyr")),
+    ("fina_indicator", "profit_dedt", "profit_dedt", ("ttm", "lyr")),
+    ("fina_indicator", "fcfe", "fcfe", ("ttm", "lyr")),
+    ("fina_indicator", "fcff", "fcff", ("ttm", "lyr")),
+    ("fina_indicator", "interestdebt", "interestdebt", ("mrq", "ttm", "lyr")),
+    ("fina_indicator", "inv_turn", "inv_turn", ("ttm", "lyr")),
+    ("fina_indicator", "invest_capital", "invest_capital", ("mrq", "ttm", "lyr")),
+    ("fina_indicator", "netdebt", "netdebt", ("ttm", "lyr")),
+    ("fina_indicator", "current_exint", "current_exint", ("mrq", "ttm", "lyr")),
+    ("fina_indicator", "noncurrent_exint", "noncurrent_exint", ("mrq", "ttm", "lyr")),
+    ("fina_indicator", "extra_item", "extra_item", ("ttm", "lyr")),
+    ("fina_indicator", "turn_days", "turn_days", ("ttm", "lyr")),
+    ("fina_indicator", "retained_earnings", "retained_earnings", ("mrq", "ttm", "lyr")),
+    ("fina_indicator", "assets_turn", "assets_turn", ("ttm", "lyr")),
+]
+
+
+def _build_v2_financial_feature_columns() -> list[tuple[str, str, str, str]]:
+    expanded: list[tuple[str, str, str, str]] = []
+    for api, field, prefix, kinds in V2_FINANCIAL_FEATURE_FAMILIES:
+        for kind, max_index in (("mrq", 8), ("ttm", 8), ("lyr", 4)):
+            if kind not in kinds:
+                continue
+            for index in range(max_index + 1):
+                suffix = f"{kind}_{index}"
+                expanded.append((api, field, suffix, f"{prefix}_{suffix}"))
+    return expanded
+
+
+V2_FINANCIAL_FEATURE_COLUMNS = _build_v2_financial_feature_columns()
+V2_FINANCIAL_FEATURE_SOURCE_CONFIG = {
+    "balancesheet": {
+        "table": "dwd_stock_balance_sheet",
+        "sql_alias": "balance_sheet",
+        "quarter_report_types": ("1", "4"),
+        "annual_report_types": ("1", "4"),
+        "ttm_aggregation": "avg",
+    },
+    "cashflow": {
+        "table": "dwd_stock_cashflow",
+        "quarter_table": "dws_stock_cashflow_quarter",
+        "quarter_source_kind": "quarter_dws",
+        "sql_alias": "cashflow",
+        "annual_report_types": ("1", "4"),
+        "ttm_aggregation": "sum",
+    },
+    "income": {
+        "table": "dwd_stock_income",
+        "quarter_table": "dws_stock_income_quarter",
+        "quarter_source_kind": "quarter_dws",
+        "sql_alias": "income",
+        "annual_report_types": ("1", "4"),
+        "ttm_aggregation": "sum",
+    },
+    "fina_indicator": {
+        "table": "dwd_stock_financial_indicator",
+        "source_kind": "raw_versioned_no_report_type",
+        "quarter_table": "dws_stock_financial_indicator_quarter",
+        "quarter_source_kind": "quarter_dws",
+        "sql_alias": "financial_indicator_quarter",
+        "ttm_aggregation": {
+            "__default__": "avg",
+            "ebit": "sum",
+            "ebitda": "sum",
+            "extra_item": "sum",
+            "fcfe": "sum",
+            "fcff": "sum",
+            "profit_dedt": "sum",
+        },
+    },
+}
+V2_FINANCIAL_FEATURE_JOIN_ALIASES = [
+    "balance_sheet_quarter_features",
+    "balance_sheet_annual_features",
+    "cashflow_quarter_features",
+    "cashflow_annual_features",
+    "income_quarter_features",
+    "income_annual_features",
+    "financial_indicator_quarter_quarter_features",
+    "financial_indicator_quarter_annual_features",
+]
+V2_CALCULATED_FACTOR_COLUMNS = [
+    *[
+        (
+            f"ev_ttm_{index}",
+            f"`total_mv` * 10000 + `interestdebt_ttm_{index}` - `money_cap_ttm_{index}`",
+        )
+        for index in range(9)
+    ],
+    *[
+        (
+            f"ev_lyr_{index}",
+            f"`total_mv` * 10000 + `interestdebt_lyr_{index}` - `money_cap_lyr_{index}`",
+        )
+        for index in range(5)
+    ],
+    *[
+        (
+            f"ev_no_cash_ttm_{index}",
+            f"`total_mv` * 10000 + `interestdebt_ttm_{index}` - `money_cap_ttm_{index}`",
+        )
+        for index in range(9)
+    ],
+    *[
+        (
+            f"ev_no_cash_lyr_{index}",
+            f"`total_mv` * 10000 + `interestdebt_lyr_{index}` - `money_cap_lyr_{index}`",
+        )
+        for index in range(5)
+    ],
+]
+
+
 def _load_yaml(path: Path) -> dict[str, Any]:
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f.read())
@@ -522,6 +732,11 @@ class DWSManager:
             self.db_engine = DatabaseEngineFactory.create(
                 self.settings,
                 clickhouse_send_receive_timeout=clickhouse_timeout,
+                clickhouse_query_settings=(
+                    DWS_CLICKHOUSE_QUERY_SETTINGS
+                    if self.settings.database.db_type == "clickhouse"
+                    else None
+                ),
             )
         return self.db_engine
 
@@ -553,7 +768,19 @@ class DWSManager:
 
     @staticmethod
     def _financial_feature_ttm_aggregation(api: str, field: str) -> str:
-        aggregation = FINANCIAL_FEATURE_SOURCE_CONFIG[api]["ttm_aggregation"]
+        return DWSManager._financial_feature_ttm_aggregation_from(
+            FINANCIAL_FEATURE_SOURCE_CONFIG,
+            api,
+            field,
+        )
+
+    @staticmethod
+    def _financial_feature_ttm_aggregation_from(
+        source_config: dict[str, dict[str, Any]],
+        api: str,
+        field: str,
+    ) -> str:
+        aggregation = source_config[api]["ttm_aggregation"]
         if isinstance(aggregation, dict):
             return aggregation.get(field, aggregation.get("__default__", "sum"))
         return aggregation
@@ -572,8 +799,20 @@ class DWSManager:
 
     @staticmethod
     def _financial_feature_entries(api: str, feature_group: str) -> list[tuple[str, str, str, str]]:
+        return DWSManager._financial_feature_entries_from(
+            FINANCIAL_FEATURE_COLUMNS,
+            api,
+            feature_group,
+        )
+
+    @staticmethod
+    def _financial_feature_entries_from(
+        catalog: list[tuple[str, str, str, str]],
+        api: str,
+        feature_group: str,
+    ) -> list[tuple[str, str, str, str]]:
         entries = []
-        for entry in FINANCIAL_FEATURE_COLUMNS:
+        for entry in catalog:
             entry_api, _, suffix, _ = entry
             if entry_api != api:
                 continue
@@ -598,10 +837,33 @@ class DWSManager:
         api: str,
         feature_group: str,
         fields: list[str],
+        source_configs: dict[str, dict[str, Any]] | None = None,
     ) -> str:
-        config = self._financial_feature_source_config(api, feature_group)
+        if source_configs is None:
+            config = self._financial_feature_source_config(api, feature_group)
+        else:
+            config = dict(source_configs[api])
+            if feature_group == "quarter" and "quarter_table" in config:
+                config["table"] = config["quarter_table"]
+                config["source_kind"] = config.get("quarter_source_kind", "quarter_dws")
         cte_prefix = config["sql_alias"]
         cte_name = f"{cte_prefix}_{feature_group}_reports"
+
+        def source_projection(ordering_columns: list[str]) -> str:
+            if source_configs is None:
+                return "src.*"
+            columns = [
+                "instrument_id",
+                "event_date",
+                "available_trade_date",
+                "source_batch_id",
+                "source_record_hash",
+                *ordering_columns,
+                *fields,
+            ]
+            columns = list(dict.fromkeys(columns))
+            return ",\n            ".join(f"src.`{column}`" for column in columns)
+
         if config.get("source_kind") == "quarter_dws":
             period_filter = (
                 "AND toMonth(src.event_date) = 12"
@@ -622,7 +884,7 @@ class DWSManager:
         source_record_hash{field_select}
     FROM (
         SELECT
-            src.*,
+            {source_projection(['build_time'])},
             row_number() OVER (
                 PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
                 ORDER BY
@@ -650,7 +912,7 @@ class DWSManager:
         source_record_hash{field_select}
     FROM (
         SELECT
-            src.*,
+            {source_projection(['update_flag', 'sys_from'])},
             row_number() OVER (
                 PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
                 ORDER BY
@@ -682,7 +944,7 @@ class DWSManager:
         source_record_hash{field_select}
     FROM (
         SELECT
-            src.*,
+            {source_projection(['report_type', 'f_ann_date', 'update_flag', 'sys_from'])},
             row_number() OVER (
                 PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
                 ORDER BY
@@ -802,6 +1064,136 @@ class DWSManager:
         available_trade_date
 )"""
 
+    def _render_financial_feature_cte_v2(
+        self,
+        db_name: str,
+        api: str,
+        feature_group: str,
+        entries: list[tuple[str, str, str, str]],
+    ) -> str:
+        """Render fixed calendar-period slots anchored to every wide-table state date."""
+
+        config = V2_FINANCIAL_FEATURE_SOURCE_CONFIG[api]
+        cte_prefix = config["sql_alias"]
+        report_cte = f"{cte_prefix}_{feature_group}_reports"
+        dates_cte = f"{cte_prefix}_{feature_group}_dates"
+        expected_cte = f"{cte_prefix}_{feature_group}_expected"
+        selected_cte = f"{cte_prefix}_{feature_group}_selected"
+        features_cte = f"{cte_prefix}_{feature_group}_features"
+        fields = self._financial_feature_fields(entries)
+        max_offset = max(
+            self._financial_feature_offset(suffix)
+            + (3 if self._financial_feature_kind(suffix) == "ttm" else 0)
+            for _, _, suffix, _ in entries
+        )
+        joined_field_select = ",\n        ".join([f"r.`{field}` AS `{field}`" for field in fields])
+        if joined_field_select:
+            joined_field_select = ",\n        " + joined_field_select
+
+        if feature_group == "annual":
+            expected_period_sql = (
+                "addYears(toDate(concat(toString(toYear(addDays(available_trade_date, 1)) - 1), "
+                "'-12-31')), -toInt32(report_offset))"
+            )
+        else:
+            expected_period_sql = (
+                "addDays(addMonths(toStartOfQuarter(addDays(available_trade_date, 1)), "
+                "-3 * toInt32(report_offset)), -1)"
+            )
+        boundary_period_sql = expected_period_sql.replace(
+            "available_trade_date",
+            "p.available_trade_date",
+        ).replace("report_offset", "0")
+
+        feature_exprs = []
+        for _, field, suffix, column in entries:
+            kind = self._financial_feature_kind(suffix)
+            offset = self._financial_feature_offset(suffix)
+            if kind == "ttm":
+                condition = f"report_offset >= {offset} AND report_offset < {offset + 4}"
+                non_null_count = f"countIf({condition} AND `{field}` IS NOT NULL)"
+                value_sum = f"sumIf(ifNull(`{field}`, 0.0), {condition})"
+                multiplier = (
+                    " * 4"
+                    if self._financial_feature_ttm_aggregation_from(
+                        V2_FINANCIAL_FEATURE_SOURCE_CONFIG,
+                        api,
+                        field,
+                    )
+                    == "sum"
+                    else ""
+                )
+                feature_exprs.append(
+                    f"if(countIf({condition} AND report_exists = 1) = 4 AND {non_null_count} > 0, "
+                    f"{value_sum} / {non_null_count}{multiplier}, "
+                    f"CAST(NULL, 'Nullable(Float64)')) AS `{column}`"
+                )
+            else:
+                feature_exprs.append(
+                    f"anyIf(`{field}`, report_offset = {offset} AND report_exists = 1) AS `{column}`"
+                )
+        feature_select = ",\n        ".join(feature_exprs)
+
+        return f"""
+{dates_cte} AS (
+    SELECT
+        instrument_id,
+        available_trade_date
+    FROM {report_cte}
+    UNION DISTINCT
+    SELECT
+        p.instrument_id,
+        min(p.available_trade_date) AS available_trade_date
+    FROM {db_name}.dwd_stock_eod_price p
+    WHERE p.sys_to = {FAR_FUTURE_TS_SQL}
+      AND p.event_date >= {MIN_LAYER_TRADE_DATE_SQL}
+    GROUP BY
+        p.instrument_id,
+        {boundary_period_sql}
+),
+{expected_cte} AS (
+    SELECT
+        instrument_id,
+        available_trade_date,
+        report_offset,
+        {expected_period_sql} AS report_period
+    FROM {dates_cte}
+    ARRAY JOIN range({max_offset + 1}) AS report_offset
+),
+{selected_cte} AS (
+    SELECT
+        e.instrument_id AS instrument_id,
+        e.available_trade_date AS available_trade_date,
+        e.report_offset AS report_offset,
+        e.report_period AS report_period,
+        if(r.source_record_hash != '', 1, 0) AS report_exists,
+        r.source_batch_id AS source_batch_id,
+        r.source_record_hash AS source_record_hash{joined_field_select}
+    FROM {expected_cte} e
+    ASOF LEFT JOIN {report_cte} r
+        ON e.instrument_id = r.instrument_id
+       AND e.report_period = r.report_period
+       AND e.available_trade_date >= r.available_trade_date
+),
+{features_cte} AS (
+    SELECT
+        instrument_id,
+        available_trade_date,
+        arrayStringConcat(
+            arrayDistinct(groupArrayIf(source_batch_id, report_exists = 1 AND source_batch_id != '')),
+            '|'
+        ) AS source_batch_id,
+        lower(hex(MD5(arrayStringConcat(
+            arrayDistinct(groupArrayIf(source_record_hash, report_exists = 1 AND source_record_hash != '')),
+            '|'
+        )))) AS source_record_hash,
+        {feature_select}
+    FROM {selected_cte}
+    GROUP BY
+        instrument_id,
+        available_trade_date
+)"""
+
     def _render_financial_feature_ctes(self, db_name: str) -> str:
         ctes = []
         for api in ("balancesheet", "cashflow", "income", "fina_indicator"):
@@ -812,6 +1204,37 @@ class DWSManager:
                 fields = self._financial_feature_fields(entries)
                 ctes.append(self._render_financial_report_cte(db_name, api, feature_group, fields))
                 ctes.append(self._render_financial_feature_cte(api, feature_group, entries))
+        return ",\n".join(ctes)
+
+    def _render_financial_feature_ctes_v2(self, db_name: str) -> str:
+        ctes = []
+        for api in ("balancesheet", "cashflow", "income", "fina_indicator"):
+            for feature_group in ("quarter", "annual"):
+                entries = self._financial_feature_entries_from(
+                    V2_FINANCIAL_FEATURE_COLUMNS,
+                    api,
+                    feature_group,
+                )
+                if not entries:
+                    continue
+                fields = self._financial_feature_fields(entries)
+                ctes.append(
+                    self._render_financial_report_cte(
+                        db_name,
+                        api,
+                        feature_group,
+                        fields,
+                        source_configs=V2_FINANCIAL_FEATURE_SOURCE_CONFIG,
+                    )
+                )
+                ctes.append(
+                    self._render_financial_feature_cte_v2(
+                        db_name,
+                        api,
+                        feature_group,
+                        entries,
+                    )
+                )
         return ",\n".join(ctes)
 
     def _render_financial_feature_available_trade_dates(self) -> str:
@@ -848,9 +1271,9 @@ class DWSManager:
             [f"{expression} AS `{column}`" for column, expression in CALCULATED_FACTOR_COLUMNS]
         )
 
-    def _render_financial_feature_joins(self) -> str:
+    def _render_financial_feature_joins(self, aliases: list[str] | None = None) -> str:
         joins = []
-        for alias in FINANCIAL_FEATURE_JOIN_ALIASES:
+        for alias in aliases or FINANCIAL_FEATURE_JOIN_ALIASES:
             joins.append(
                 f"""    ASOF LEFT JOIN {alias}
         ON price.instrument_id = {alias}.instrument_id
@@ -858,11 +1281,15 @@ class DWSManager:
             )
         return "\n".join(joins)
 
-    def _render_financial_feature_lineage_concat(self, column: str) -> str:
+    def _render_financial_feature_lineage_concat(
+        self,
+        column: str,
+        aliases: list[str] | None = None,
+    ) -> str:
         return "".join(
             [
                 f",\n            '|', coalesce({alias}.{column}, '')"
-                for alias in FINANCIAL_FEATURE_JOIN_ALIASES
+                for alias in aliases or FINANCIAL_FEATURE_JOIN_ALIASES
             ]
         )
 
@@ -1213,10 +1640,10 @@ wide_candidates AS (
         adj_factor.adj_factor AS adj_factor,
         quote_metrics.buying AS buying,
         quote_metrics.selling AS selling,
-        quote_metrics.vol_ratio AS vol_ratio,
-        quote_metrics.turn_over AS turn_over,
-        quote_metrics.swing AS swing,
-        quote_metrics.avg_price AS avg_price,
+        daily_basic.volume_ratio AS vol_ratio,
+        daily_basic.turnover_rate AS turn_over,
+        (price.high - price.low) / nullIf(price.pre_close, 0) * 100 AS swing,
+        price.amount * 10 / nullIf(price.vol, 0) AS avg_price,
         quote_metrics.strength AS strength,
         quote_metrics.activity AS activity,
         quote_metrics.avg_turnover AS avg_turnover,
@@ -1473,6 +1900,100 @@ SELECT
     source_batch_id,
     source_record_hash
 FROM wide_candidates
+"""
+
+    def _render_stock_factor_wide_v2_sync_sql(
+        self,
+        target_table_name: str,
+    ) -> str:
+        db_name = self.settings.database.db_name
+        base_sql = STOCK_FACTOR_WIDE_V2_BASE_SQL.read_text(encoding="utf-8").replace(
+            "{db_name}",
+            db_name,
+        )
+        v2_spec = self.load_spec("dws_stock_factor_wide_v2")
+        v2_financial_columns = {column for _, _, _, column in V2_FINANCIAL_FEATURE_COLUMNS}
+        v2_calculated_columns = {column for column, _ in V2_CALCULATED_FACTOR_COLUMNS}
+        base_columns = [
+            column["name"]
+            for column in v2_spec["schema"]["columns"]
+            if column["name"] not in v2_financial_columns
+            and column["name"] not in v2_calculated_columns
+        ]
+
+        financial_feature_ctes = self._render_financial_feature_ctes_v2(db_name)
+        financial_feature_joins = self._render_financial_feature_joins(
+            V2_FINANCIAL_FEATURE_JOIN_ALIASES
+        )
+        batch_lineage = self._render_financial_feature_lineage_concat(
+            "source_batch_id",
+            V2_FINANCIAL_FEATURE_JOIN_ALIASES,
+        )
+        hash_lineage = self._render_financial_feature_lineage_concat(
+            "source_record_hash",
+            V2_FINANCIAL_FEATURE_JOIN_ALIASES,
+        )
+        source_table_sql = ",".join(STOCK_FACTOR_WIDE_V2_SOURCES)
+
+        candidate_selects = []
+        for column in base_columns:
+            if column == "build_time":
+                candidate_selects.append("now64(3) AS `build_time`")
+            elif column == "source":
+                candidate_selects.append("'derived' AS `source`")
+            elif column == "source_table":
+                candidate_selects.append(f"'{source_table_sql}' AS `source_table`")
+            elif column == "source_batch_id":
+                candidate_selects.append(
+                    "concat(price.source_batch_id"
+                    f"{batch_lineage}\n        ) AS `source_batch_id`"
+                )
+            elif column == "source_record_hash":
+                candidate_selects.append(
+                    "lower(hex(MD5(concat(price.source_record_hash"
+                    f"{hash_lineage}\n        )))) AS `source_record_hash`"
+                )
+            else:
+                candidate_selects.append(f"price.`{column}` AS `{column}`")
+
+        for api, _, suffix, column in V2_FINANCIAL_FEATURE_COLUMNS:
+            feature_group = "annual" if self._financial_feature_kind(suffix) == "lyr" else "quarter"
+            alias = f"{V2_FINANCIAL_FEATURE_SOURCE_CONFIG[api]['sql_alias']}_{feature_group}_features"
+            candidate_selects.append(f"{alias}.`{column}` AS `{column}`")
+        candidate_select_sql = ",\n        ".join(candidate_selects)
+
+        calculated = dict(V2_CALCULATED_FACTOR_COLUMNS)
+        candidate_columns = set(base_columns) | {
+            column for _, _, _, column in V2_FINANCIAL_FEATURE_COLUMNS
+        }
+        output_selects = []
+        for column_spec in v2_spec["schema"]["columns"]:
+            column = column_spec["name"]
+            if column in calculated:
+                output_selects.append(f"{calculated[column]} AS `{column}`")
+            elif column in candidate_columns:
+                output_selects.append(f"`{column}`")
+            else:
+                raise ValueError(f"No v2 stock factor expression for schema column {column}")
+        output_select_sql = ",\n    ".join(output_selects)
+
+        return f"""
+INSERT INTO {db_name}.{target_table_name}
+WITH
+price AS (
+    {base_sql}
+),
+{financial_feature_ctes},
+wide_candidates AS (
+    SELECT
+        {candidate_select_sql}
+    FROM price
+{financial_feature_joins}
+)
+SELECT
+    {output_select_sql}
+FROM wide_candidates
+SETTINGS max_insert_threads = 4
 """
 
     def _stock_factor_matrix_source_fields(self) -> list[tuple[str, str]]:
@@ -1810,11 +2331,17 @@ FROM quarter_candidates
             report_types=("1", "4"),
         )
 
-    def render_sync_sql(self, table_name: str, target_table_name: str | None = None) -> str:
+    def render_sync_sql(
+        self,
+        table_name: str,
+        target_table_name: str | None = None,
+    ) -> str:
         spec = self.load_spec(table_name)
         target_table_name = target_table_name or spec["name"]
         if spec.get("builder") == "stock_factor_wide":
             return self._render_stock_factor_wide_sync_sql(target_table_name)
+        if spec.get("builder") == "stock_factor_wide_v2":
+            return self._render_stock_factor_wide_v2_sync_sql(target_table_name)
         if spec.get("builder") == "stock_factor_wide_matrix":
             return self._render_stock_factor_wide_matrix_sync_sql(target_table_name)
         if spec.get("builder") == "stock_financial_indicator_quarter":
@@ -1828,6 +2355,8 @@ FROM quarter_candidates
     def get_required_source_tables(self, spec: dict[str, Any]) -> list[str]:
         if spec.get("builder") == "stock_factor_wide":
             return STOCK_FACTOR_WIDE_SOURCES
+        if spec.get("builder") == "stock_factor_wide_v2":
+            return STOCK_FACTOR_WIDE_V2_SOURCES
         if spec.get("builder") == "stock_factor_wide_matrix":
             return STOCK_FACTOR_WIDE_MATRIX_SOURCES
         if spec.get("builder") == "stock_financial_indicator_quarter":
@@ -1963,7 +2492,11 @@ FROM quarter_candidates
             self.sync_table(table_name, validation_mode=validation_mode, skip_validation=skip_validation)
 
     def _run_post_publish_dqc(self, table_name: str, db_engine) -> None:
-        if table_name not in {"dws_stock_factor_wide", "dws_stock_factor_wide_matrix"}:
+        if table_name not in {
+            "dws_stock_factor_wide",
+            "dws_stock_factor_wide_v2",
+            "dws_stock_factor_wide_matrix",
+        }:
             return
 
         dqc_table_name = None if table_name == "dws_stock_factor_wide_matrix" else table_name

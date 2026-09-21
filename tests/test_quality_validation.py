@@ -507,7 +507,11 @@ class QualityValidationTest(unittest.TestCase):
         self.assertEqual(manager.resolve_suite("dws", None), "stock_factor_panel")
         self.assertEqual(
             manager.resolve_tables("dws", "stock_factor_panel"),
-            ["dws_stock_factor_wide", "dws_stock_factor_wide_matrix"],
+            [
+                "dws_stock_factor_wide",
+                "dws_stock_factor_wide_v2",
+                "dws_stock_factor_wide_matrix",
+            ],
         )
 
     def test_dqc_skip_records_bypass_without_running_suite(self):
@@ -647,6 +651,25 @@ class QualityValidationTest(unittest.TestCase):
             "dqc_financial_direct_type1_consistency.dwd_stock_balance_sheet",
             rule_ids,
         )
+
+    def test_dqc_v2_checks_fixed_period_and_missing_value_policies(self):
+        db = DqcSqlDB()
+        manager = DqcManager(settings=self._settings(), db_engine=db)
+
+        results = manager._dws_factor_wide_v2_financial_results(
+            domain="factor",
+            suite_name="stock_factor_panel",
+            wide="default.dws_stock_factor_wide_v2",
+            target_trade_date_sql="toDate32('2026-05-25')",
+        )
+        rendered_sql = "\n".join(db.queries)
+
+        self.assertEqual(len(results), 3)
+        self.assertTrue(all(result.severity == "BLOCKER" for result in results))
+        self.assertIn("toStartOfQuarter(addDays(available_trade_date, 1))", rendered_sql)
+        self.assertIn("countIf(report_exists = 1) = 4", rendered_sql)
+        self.assertIn("countIf(value IS NOT NULL) * 4", rendered_sql)
+        self.assertIn("total_assets_ttm_0", rendered_sql)
 
     def test_dqc_matrix_semantic_sql_contains_factor_checks(self):
         db = DqcSqlDB()

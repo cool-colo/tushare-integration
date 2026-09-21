@@ -119,7 +119,12 @@ class ApacheDorisEngine(SQLAlchemyEngine):
 
 
 class ClickhouseEngine(DBEngine):
-    def __init__(self, settings: TushareIntegrationSettings, send_receive_timeout: int | None = None):
+    def __init__(
+        self,
+        settings: TushareIntegrationSettings,
+        send_receive_timeout: int | None = None,
+        query_settings: dict[str, object] | None = None,
+    ):
         super().__init__(settings)
 
         client_kwargs = {
@@ -132,6 +137,8 @@ class ClickhouseEngine(DBEngine):
         }
         if send_receive_timeout is not None:
             client_kwargs["send_receive_timeout"] = send_receive_timeout
+        if query_settings:
+            client_kwargs["settings"] = query_settings
 
         self.client = clickhouse_connect.get_client(**client_kwargs)
 
@@ -235,9 +242,14 @@ class DatabaseEngineFactory(object):
     def create(
         settings: TushareIntegrationSettings,
         clickhouse_send_receive_timeout: int | None = None,
+        clickhouse_query_settings: dict[str, object] | None = None,
     ) -> DBEngine:
         if settings.database.db_type == 'clickhouse':
-            return ClickhouseEngine(settings, send_receive_timeout=clickhouse_send_receive_timeout)
+            return ClickhouseEngine(
+                settings,
+                send_receive_timeout=clickhouse_send_receive_timeout,
+                query_settings=clickhouse_query_settings,
+            )
         elif settings.database.db_type == 'doris':
             return ApacheDorisEngine(settings)
         elif settings.database.db_type == 'mysql':
