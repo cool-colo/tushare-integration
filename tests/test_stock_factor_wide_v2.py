@@ -93,6 +93,19 @@ class StockFactorWideV2Test(unittest.TestCase):
         self.assertNotIn("quote_metrics.swing AS swing", sql)
         self.assertNotIn("quote_metrics.avg_price AS avg_price", sql)
 
+    def test_v2_fills_missing_ocf_to_profit_from_same_report_period(self):
+        sql = self.manager.render_sync_sql("dws_stock_factor_wide_v2")
+
+        self.assertIn("src.operate_profit", sql)
+        self.assertIn("src.n_cashflow_act", sql)
+        self.assertIn("financial_indicator.ocf_to_profit,", sql)
+        self.assertIn("financial_indicator.event_date = income.event_date", sql)
+        self.assertIn("financial_indicator.event_date = cashflow.event_date", sql)
+        self.assertIn(
+            "100.0 * cashflow.n_cashflow_act / nullIf(income.operate_profit, 0)",
+            sql,
+        )
+
     def test_v2_calculates_only_on_financial_and_calendar_change_dates(self):
         sql = self.manager.render_sync_sql("dws_stock_factor_wide_v2")
         self.assertIn("FROM balance_sheet_quarter_reports\n    UNION DISTINCT", sql)

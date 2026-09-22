@@ -1406,6 +1406,7 @@ class DWSManager:
                         "compr_inc_attr_p",
                         "compr_inc_attr_m_s",
                         "oper_cost",
+                        "operate_profit",
                         "total_profit",
                         "ebit",
                         "ebitda",
@@ -1443,6 +1444,7 @@ class DWSManager:
                     "dwd_stock_cashflow",
                     [
                         "c_inf_fr_operate_a",
+                        "n_cashflow_act",
                         "st_cash_out_act",
                         "stot_out_inv_act",
                         "stot_inflows_inv_act",
@@ -1673,7 +1675,15 @@ wide_candidates AS (
         financial_indicator.q_netprofit_yoy AS q_netprofit_yoy,
         financial_indicator.q_sales_yoy AS q_sales_yoy,
         financial_indicator.ocf_to_or AS ocf_to_or,
-        financial_indicator.ocf_to_profit AS ocf_to_profit,
+        coalesce(
+            financial_indicator.ocf_to_profit,
+            if(
+                financial_indicator.event_date = income.event_date
+                AND financial_indicator.event_date = cashflow.event_date,
+                100.0 * cashflow.n_cashflow_act / nullIf(income.operate_profit, 0),
+                CAST(NULL AS Nullable(Float64))
+            )
+        ) AS ocf_to_profit,
         financial_indicator.debt_to_assets AS debt_to_assets,
         financial_indicator.current_ratio AS current_ratio,
         financial_indicator.eps AS eps,

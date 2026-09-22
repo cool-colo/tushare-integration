@@ -325,6 +325,13 @@ class TushareResponseTest(unittest.TestCase):
         self.assertIn("income.total_revenue AS total_revenue", sql)
         self.assertIn("balance_sheet.total_assets AS total_assets", sql)
         self.assertIn("cashflow.c_inf_fr_operate_a AS c_inf_fr_operate_a", sql)
+        self.assertIn("financial_indicator.ocf_to_profit,", sql)
+        self.assertIn("financial_indicator.event_date = income.event_date", sql)
+        self.assertIn("financial_indicator.event_date = cashflow.event_date", sql)
+        self.assertIn(
+            "100.0 * cashflow.n_cashflow_act / nullIf(income.operate_profit, 0)",
+            sql,
+        )
         self.assertIn("|', coalesce(income.source_batch_id, '')", sql)
         self.assertIn("|', coalesce(balance_sheet.source_record_hash, '')", sql)
         self.assertIn("|', coalesce(cashflow.source_record_hash, '')", sql)
