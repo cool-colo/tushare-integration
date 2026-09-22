@@ -60,6 +60,7 @@ RUN python3 -m venv "${VIRTUAL_ENV}" \
 COPY deploy/clickhouse/user_scripts/dws_stock_factor_rows.py /opt/clickhouse-udf/user_scripts/dws_stock_factor_rows.py
 COPY deploy/clickhouse/user_defined_functions/dws_stock_factor_rows.xml /opt/clickhouse-udf/user_defined_functions/dws_stock_factor_rows.xml
 COPY deploy/clickhouse/config.d/executable-udf.xml /etc/clickhouse-server/config.d/executable-udf.xml
+COPY deploy/clickhouse/config.d/system-log-ttl.xml /etc/clickhouse-server/config.d/system-log-ttl.xml
 COPY deploy/clickhouse/users.d/network-access.xml /etc/clickhouse-server/users.d/network-access.xml
 COPY deploy/clickhouse/docker-entrypoint-udf.sh /usr/local/bin/docker-entrypoint-udf.sh
 

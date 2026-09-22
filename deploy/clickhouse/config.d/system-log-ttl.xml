@@ -1,0 +1,17 @@
+<clickhouse>
+    <!-- 限制 system 自省日志表体积:保留 7 天,自动删除旧分区。
+         这些表只是服务端运行日志(text_log 是 clickhouse-server.log 的镜像),
+         与业务数据准确性无关,曾累计到 1TB+。 -->
+    <text_log>
+        <engine>ENGINE = MergeTree PARTITION BY event_date ORDER BY (event_time) TTL event_date + INTERVAL 7 DAY DELETE</engine>
+    </text_log>
+    <query_log>
+        <engine>ENGINE = MergeTree PARTITION BY event_date ORDER BY (event_time) TTL event_date + INTERVAL 7 DAY DELETE</engine>
+    </query_log>
+    <trace_log>
+        <engine>ENGINE = MergeTree PARTITION BY event_date ORDER BY (event_time) TTL event_date + INTERVAL 7 DAY DELETE</engine>
+    </trace_log>
+    <processors_profile_log>
+        <engine>ENGINE = MergeTree PARTITION BY event_date ORDER BY (event_time) TTL event_date + INTERVAL 7 DAY DELETE</engine>
+    </processors_profile_log>
+</clickhouse>
