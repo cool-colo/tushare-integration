@@ -128,6 +128,17 @@ ODS 层规则关注采集元数据是否可追溯，当前不校验各接口业�
 
 `balance_sheet_assets_equation` 仅适用于资产负债表，`cashflow_operating_net_flow` 仅适用于现金流量表，`dividend_*` 规则仅适用于分红送股表。
 
+### 6.6.1 卖方研报规则
+
+适用表：`dwd_stock_research_report`。
+
+| 规则 ID | 严重级别 | 规则含义 |
+| --- | --- | --- |
+| `research_report_no_placeholder_dates` | `BLOCKER` | 研报日期和源更新时间不能使用占位日期 |
+| `research_report_strict_next_trade_visibility` | `BLOCKER` | 可用日必须晚于研报日期和源更新时间日期两者中的较晚日期 |
+| `research_report_target_price_range` | `WARN` | 目标价应非负，且同时存在上下限时最低价不应高于最高价 |
+| `research_report_quarter_format` | `WARN` | 非空预测报告期建议使用 `YYYYQ1` 至 `YYYYQ4` 格式 |
+
 ### 6.7 融资融券规则
 
 适用表：`dwd_stock_margin_trading`。

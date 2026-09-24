@@ -7,6 +7,13 @@ dependencies:
 primary_key:
 - ts_code
 - report_date
+- org_name
+- report_title
+- author_name
+- quarter
+- report_type
+- classify
+- create_time
 indexes: []
 columns:
 - name: ts_code

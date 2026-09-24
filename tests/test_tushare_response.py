@@ -26,7 +26,7 @@ from tushare_integration.spiders.index.quotes import IndexWeightSpider
 from tushare_integration.spiders.stock.basic import STSpider
 from tushare_integration.spiders.stock.financial import FinaMainBZSpider
 from tushare_integration.spiders.stock.market import ShareFloatSpider
-from tushare_integration.spiders.stock.special import CyqChipsSpider
+from tushare_integration.spiders.stock.special import CyqChipsSpider, ReportRCSpider
 
 
 class DummyResponse:
@@ -823,6 +823,24 @@ class TushareResponseTest(unittest.TestCase):
         spider = CyqChipsSpider()
 
         self.assertEqual(spider.schema["primary_key"], ["ts_code", "trade_date", "price"])
+
+    def test_report_rc_primary_key_preserves_report_forecast_rows(self):
+        spider = ReportRCSpider()
+
+        self.assertEqual(
+            spider.schema["primary_key"],
+            [
+                "ts_code",
+                "report_date",
+                "org_name",
+                "report_title",
+                "author_name",
+                "quarter",
+                "report_type",
+                "classify",
+                "create_time",
+            ],
+        )
 
     def test_st_schema_uses_tushare_st_type_field(self):
         spider = STSpider()

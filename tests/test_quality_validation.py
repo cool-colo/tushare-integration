@@ -483,6 +483,49 @@ class QualityValidationTest(unittest.TestCase):
             rules["dwd_single_open_version"].issue_count_sql,
         )
 
+    def test_research_report_dwd_preserves_nullable_identity_and_pit_visibility(self):
+        manager = DWDManager()
+        spec = manager.load_spec("dwd_stock_research_report")
+        schema = manager.build_schema(spec)
+        columns = {column["name"]: column for column in schema["columns"]}
+        sql = manager.render_sync_sql("dwd_stock_research_report")
+
+        self.assertIn(
+            "PARTITION BY `ts_code`, `report_date`, `org_name`, `report_title`, "
+            "`author_name`, `quarter`, `report_type`, `classify`, `create_time`",
+            sql,
+        )
+        for column in ("report_title", "author_name", "quarter", "report_type"):
+            self.assertNotIn(f"src.`{column}` IS NOT NULL", sql)
+            self.assertTrue(columns[column]["nullable"])
+        self.assertIn("FROM default.report_rc_raw src", sql)
+        self.assertIn("greatest(src.report_date, toDate(src.create_time))", sql)
+        self.assertIn("calendar_map.next_trade_date", sql)
+        self.assertIn("forecast_period_end", columns)
+        self.assertTrue(columns["forecast_period_end"]["nullable"])
+        self.assertIn("'^[0-9]{4}Q[1-4]$'", sql)
+
+        quality = QualityManager(settings=self._settings(), db_engine=DummyDB())
+        rules = {
+            rule.rule_id: rule
+            for rule in quality.list_rules(
+                layer="dwd",
+                table_name="dwd_stock_research_report",
+                target_table_name="dwd_stock_research_report_tmp",
+            )
+        }
+        self.assertIn("research_report_no_placeholder_dates", rules)
+        self.assertIn("research_report_strict_next_trade_visibility", rules)
+        self.assertIn("research_report_target_price_range", rules)
+        self.assertIn("research_report_quarter_format", rules)
+        self.assertIn(
+            "GROUP BY ts_code, report_date, org_name, report_title, author_name, quarter, "
+            "report_type, classify, create_time",
+            rules["dwd_single_open_version"].issue_count_sql,
+        )
+        self.assertEqual(rules["research_report_target_price_range"].severity, "WARN")
+        self.assertEqual(rules["research_report_quarter_format"].severity, "WARN")
+
     def test_dwd_trade_date_source_rows_are_limited_since_2010(self):
         price_sql = DWDManager().render_sync_sql("dwd_stock_eod_price")
         income_sql = DWDManager().render_sync_sql("dwd_stock_income")

@@ -309,7 +309,7 @@
 - `share_float`
 - `stk_holdernumber`
 - `stk_holdertrade`
-- `report_rc`
+- `report_rc`（已补充 `dwd_stock_research_report` 标准层，按研报日期与源更新时间两者较晚日期的下一交易日可用，并固化版本窗口）
 - `stk_surv`
 
 原因：
@@ -375,6 +375,7 @@
 - `balancesheet`
 - `fina_indicator`
 - `dividend`（已补充 `dwd_stock_dividend` 标准层）
+- `report_rc`（已补充 `dwd_stock_research_report` 标准层）
 - `repurchase`
 - `stk_holdernumber`
 - `index_member`

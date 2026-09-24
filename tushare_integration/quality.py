@@ -1394,6 +1394,8 @@ class QualityManager:
             rules.extend(self._financial_rules(table_name, qualified))
         if table_name == "dwd_stock_dividend":
             rules.extend(self._dividend_rules(qualified, validation_filter))
+        if table_name == "dwd_stock_research_report":
+            rules.extend(self._research_report_rules(qualified, validation_filter))
         if table_name == "dwd_stock_margin_trading":
             rules.extend(self._margin_rules(qualified, validation_filter))
         if table_name == "dwd_stock_northbound_holding":
@@ -1405,6 +1407,55 @@ class QualityManager:
         if table_name == "dwd_security_master":
             rules.extend(self._security_master_rules(qualified))
         return rules
+
+    def _research_report_rules(
+        self,
+        qualified: str,
+        validation_filter: str | None = None,
+    ) -> list[ValidationRule]:
+        source_visible_date = "greatest(report_date, toDate(create_time))"
+        return [
+            ValidationRule(
+                rule_id="research_report_no_placeholder_dates",
+                description="Research reports must have valid report and source creation dates",
+                severity="BLOCKER",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("report_date <= toDate32('1971-01-01') OR create_time <= toDateTime64('1971-01-01 00:00:00', 3)", validation_filter)}
+                """,
+            ),
+            ValidationRule(
+                rule_id="research_report_strict_next_trade_visibility",
+                description="Research reports must become visible after the later source report/update date",
+                severity="BLOCKER",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql(f"available_trade_date <= {source_visible_date}", validation_filter)}
+                """,
+            ),
+            ValidationRule(
+                rule_id="research_report_target_price_range",
+                description="Research report target prices should be nonnegative and ordered",
+                severity="WARN",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("min_price < 0 OR max_price < 0 OR (min_price > 0 AND max_price > 0 AND min_price > max_price)", validation_filter)}
+                """,
+            ),
+            ValidationRule(
+                rule_id="research_report_quarter_format",
+                description="Nonempty forecast quarters should use YYYYQ1 through YYYYQ4",
+                severity="WARN",
+                issue_count_sql=f"""
+                    SELECT count() AS issue_count
+                    FROM {qualified}
+                    {self._where_sql("quarter IS NOT NULL AND quarter != '' AND NOT match(quarter, '^[0-9]{4}Q[1-4]$')", validation_filter)}
+                """,
+            ),
+        ]
 
     def _market_price_rules(
         self,

@@ -1,0 +1,38 @@
+id: 2028
+name: dwd_stock_research_report
+comment: 卖方盈利预测研报标准层
+builder: raw_versioned
+source:
+  table_name: report_rc_raw
+  schema_name: stock/special/report_rc
+# These fields are part of source-row identity but are legitimately absent on
+# some non-forecast or sparsely attributed reports. Keep those rows and let
+# ClickHouse partition nullable key values as one identity component.
+nullable_business_key:
+  - report_title
+  - author_name
+  - quarter
+  - report_type
+instrument_type: stock
+instrument_id_expr: "concat('stock:', src.ts_code)"
+source_code_expr: src.ts_code
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.ts_code)), 2)"
+event_date_expr: src.report_date
+# create_time is Tushare's source update timestamp. A report must not become
+# visible before either its stated report date or that source timestamp.
+calendar_date_expr: greatest(src.report_date, toDate(src.create_time))
+available_trade_date_expr: coalesce(calendar_map.next_trade_date, greatest(src.report_date, toDate(src.create_time)))
+extra_columns:
+  - name: forecast_period_end
+    data_type: date
+    nullable: true
+    comment: 标准化预测报告期末日期
+    expr: "if(match(ifNull(src.quarter, ''), '^[0-9]{4}Q[1-4]$'), toDate32(concat(substring(assumeNotNull(src.quarter), 1, 4), arrayElement(['-03-31', '-06-30', '-09-30', '-12-31'], toUInt8(substring(assumeNotNull(src.quarter), 6, 1))))), CAST(NULL, 'Nullable(Date32)'))"
+partition_key:
+  - toYear(available_trade_date)
+indexes:
+  - name: dwd_stock_research_report_idx
+    columns:
+      - instrument_id
+      - event_date
+      - sys_from
