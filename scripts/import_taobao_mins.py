@@ -5,6 +5,8 @@
 
 数据布局:<freq>_按年汇总/<year>_<freq>/<code>_<year>.csv
   例如 1分钟_按年汇总/2024_1min/sh600000_2024.csv
+月归档布局:<freq>_按月归档/<YYYY-MM>/<YYYYMMDD>_<freq>/<code>.csv
+  例如 1分钟_按月归档/2026-09/20260901_1min/sh600000.csv
 CSV(UTF-8 BOM,中文表头):
   时间,代码,名称,开盘价,收盘价,最高价,最低价,成交量,成交额,涨幅,振幅
 
@@ -15,16 +17,20 @@ CSV(UTF-8 BOM,中文表头):
   python scripts/import_taobao_mins.py --create-table          # 仅建表
   python scripts/import_taobao_mins.py --freq 1min --dry-run   # 只统计,不写库
   python scripts/import_taobao_mins.py --freq 1min --years 2000
+  python scripts/import_taobao_mins.py --freq 1min --months 2026-07,2026-08,2026-09 \
+    --after "2026-07-03 15:00:00"
   python scripts/import_taobao_mins.py --freq 1min             # 全量(支持断点续跑)
 """
 
 import argparse
 import glob
+import io
 import json
 import logging
 import os
 import sys
 import time
+import zipfile
 
 import pandas as pd
 import yaml
@@ -83,6 +89,7 @@ SETTINGS index_granularity = 8192
 """
 
 logger = logging.getLogger("import_taobao_mins")
+ZIP_READERS = {}
 
 
 def build_engine():
@@ -148,6 +155,39 @@ def parse_years(years_arg):
     return {int(years_arg)}
 
 
+def parse_months(months_arg):
+    """'2026-07,2026-08' -> ['2026-07', '2026-08']。"""
+    if not months_arg:
+        return None
+    months = []
+    for raw in months_arg.split(","):
+        month = raw.strip()
+        try:
+            parsed = pd.Timestamp(f"{month}-01")
+        except ValueError as exc:
+            raise ValueError(f"无效月份: {month};期望 YYYY-MM") from exc
+        normalized = parsed.strftime("%Y-%m")
+        if month != normalized:
+            raise ValueError(f"无效月份: {month};期望 YYYY-MM")
+        months.append(month)
+    return months
+
+
+def resolve_month_dirs(base_dir: str, freq: str, months):
+    """返回指定频率的月归档目录。"""
+    prefix = FREQ_DIR_PREFIX[freq]
+    archive_dir = os.path.join(base_dir, f"{prefix}_按月归档")
+    if not os.path.isdir(archive_dir):
+        raise FileNotFoundError(f"未找到月归档目录: {archive_dir}")
+    result = []
+    for month in months:
+        path = os.path.join(archive_dir, month)
+        if not os.path.isdir(path):
+            raise FileNotFoundError(f"未找到月份目录: {path}")
+        result.append(path)
+    return result
+
+
 def list_csv_files(year_dirs):
     files = []
     for d in year_dirs:
@@ -155,9 +195,54 @@ def list_csv_files(year_dirs):
     return files
 
 
+def list_monthly_csv_files(month_dirs, freq: str, after=None):
+    """列出月归档中的日级 CSV;可跳过早于 after 当日的目录。"""
+    files = []
+    cutoff_day = after.strftime("%Y%m%d") if after is not None else None
+    for month_dir in month_dirs:
+        day_dirs = sorted(
+            d for d in glob.glob(os.path.join(month_dir, f"*_{freq}")) if os.path.isdir(d)
+        )
+        for day_dir in day_dirs:
+            day = os.path.basename(day_dir).split("_", 1)[0]
+            if cutoff_day and day < cutoff_day:
+                continue
+            day_files = sorted(glob.glob(os.path.join(day_dir, "*.csv")))
+            zip_path = day_dir + ".zip"
+            if os.path.isfile(zip_path) and os.access(zip_path, os.R_OK):
+                with zipfile.ZipFile(zip_path) as zf:
+                    members = sorted(name for name in zf.namelist() if name.lower().endswith(".csv"))
+                if day_files and not os.access(day_files[0], os.R_OK):
+                    logger.info(
+                        "日目录 CSV 不可读,改用 ZIP: %s (%d 文件)",
+                        zip_path,
+                        len(members),
+                    )
+                files.extend(f"{zip_path}::{member}" for member in members)
+                continue
+
+            if not day_files or not os.access(day_files[0], os.R_OK):
+                logger.warning("日目录 CSV 不可读且无可读 ZIP: %s", day_dir)
+            files.extend(day_files)
+    return files
+
+
+def state_key(path):
+    """将 ZIP 成员和解压文件映射到同一断点键。"""
+    if "::" not in path:
+        return path
+    zip_path, member = path.split("::", 1)
+    if zip_path.endswith(".zip"):
+        return os.path.join(zip_path[:-4], member)
+    return path
+
+
 def load_state(state_file):
     if state_file and os.path.exists(state_file):
         try:
+            if state_file.endswith(".jsonl"):
+                with open(state_file, "r", encoding="utf-8") as f:
+                    return {state_key(line.rstrip("\n")) for line in f if line.strip()}
             with open(state_file, "r", encoding="utf-8") as f:
                 return set(json.load(f).get("done", []))
         except Exception:  # noqa: BLE001
@@ -174,25 +259,52 @@ def save_state(state_file, done_set):
     os.replace(tmp, state_file)
 
 
+def append_state(state_file, paths):
+    """以追加日志保存大量月归档文件状态,避免反复重写整个 JSON。"""
+    if not paths:
+        return
+    with open(state_file, "a", encoding="utf-8") as f:
+        for path in paths:
+            f.write(path + "\n")
+        f.flush()
+        os.fsync(f.fileno())
+
+
 def process_file(path: str, freq: str):
-    """读单个 CSV -> 规范化后的 DataFrame(列顺序 = TARGET_COLUMNS)。坏文件返回空 DataFrame。"""
+    """读单个 CSV -> 规范化后的 DataFrame;读取失败返回 None。"""
+    zip_data = None
+    if "::" in path:
+        zip_path, member = path.split("::", 1)
+        try:
+            zf = ZIP_READERS.get(zip_path)
+            if zf is None:
+                zf = zipfile.ZipFile(zip_path)
+                ZIP_READERS[zip_path] = zf
+            zip_data = zf.read(member)
+        except Exception as e:  # noqa: BLE001
+            logger.warning("跳过(读取 ZIP 失败 %s): %s", e, path)
+            return None
+
+    def source():
+        return io.BytesIO(zip_data) if zip_data is not None else path
+
     try:
         df = pd.read_csv(
-            path,
+            source(),
             encoding="utf-8-sig",
             usecols=list(COLUMN_MAP.keys()),
         )
     except ValueError:
         # 列不匹配等,退回全量读取再筛列
-        df = pd.read_csv(path, encoding="utf-8-sig")
+        df = pd.read_csv(source(), encoding="utf-8-sig")
         missing = [c for c in COLUMN_MAP if c not in df.columns]
         if missing:
             logger.warning("跳过(缺列 %s): %s", missing, path)
-            return pd.DataFrame(columns=TARGET_COLUMNS)
+            return None
         df = df[list(COLUMN_MAP.keys())]
     except Exception as e:  # noqa: BLE001
         logger.warning("跳过(读取失败 %s): %s", e, path)
-        return pd.DataFrame(columns=TARGET_COLUMNS)
+        return None
 
     df = df.rename(columns=COLUMN_MAP)
 
@@ -242,6 +354,12 @@ def main():
     parser.add_argument("--freq", default="1min", choices=list(FREQ_DIR_PREFIX.keys()))
     parser.add_argument("--base-dir", default="/oss_data/zichao.wang/quant_data")
     parser.add_argument("--years", default=None, help="如 2024 或 2020-2024;默认全部年份")
+    parser.add_argument("--months", default=None, help="按月归档模式,如 2026-07,2026-08,2026-09")
+    parser.add_argument(
+        "--after",
+        default=None,
+        help="仅导入源时间严格晚于该值的记录,如 '2026-07-03 15:00:00'",
+    )
     parser.add_argument("--batch-size", type=int, default=200000, help="每批 insert 的行数")
     parser.add_argument("--state-file", default=None, help="断点续跑状态文件;默认 scripts/.taobao_mins_import_state.<freq>.json")
     parser.add_argument("--dry-run", action="store_true", help="只统计文件数/预估行数,不写库")
@@ -261,10 +379,22 @@ def main():
         create_table(engine, settings)
         return
 
-    years = parse_years(args.years)
-    year_dirs = resolve_year_dirs(args.base_dir, args.freq, years)
-    files = list_csv_files(year_dirs)
-    logger.info("频率=%s 年份目录=%d 个,CSV 文件=%d 个", args.freq, len(year_dirs), len(files))
+    if args.months and args.years:
+        parser.error("--months 和 --years 不能同时使用")
+    after = pd.Timestamp(args.after) if args.after else None
+    months = parse_months(args.months)
+    if months:
+        source_dirs = resolve_month_dirs(args.base_dir, args.freq, months)
+        files = list_monthly_csv_files(source_dirs, args.freq, after)
+        logger.info(
+            "频率=%s 月归档=%s,CSV 文件=%d 个,after=%s",
+            args.freq, ",".join(months), len(files), after,
+        )
+    else:
+        years = parse_years(args.years)
+        source_dirs = resolve_year_dirs(args.base_dir, args.freq, years)
+        files = list_csv_files(source_dirs)
+        logger.info("频率=%s 年份目录=%d 个,CSV 文件=%d 个", args.freq, len(source_dirs), len(files))
 
     if args.dry_run:
         # 抽样估算平均行数(避免全量 wc)
@@ -285,18 +415,31 @@ def main():
     # 建表(幂等)
     create_table(engine, settings)
 
-    state_file = args.state_file or os.path.join(
-        REPO_ROOT, "scripts", f".taobao_mins_import_state.{args.freq}.json"
-    )
+    if args.state_file:
+        state_file = args.state_file
+    elif months:
+        month_token = f"{months[0]}_{months[-1]}"
+        state_file = os.path.join(
+            REPO_ROOT,
+            "scripts",
+            f".taobao_mins_import_state.{args.freq}.monthly.{month_token}.jsonl",
+        )
+    else:
+        state_file = os.path.join(
+            REPO_ROOT, "scripts", f".taobao_mins_import_state.{args.freq}.json"
+        )
     done = load_state(state_file)
     if done:
         logger.info("续跑:已完成 %d 个文件,将跳过", len(done))
 
     t0 = time.time()
     total_rows = 0
+    skipped_rows = 0
+    failed_files = 0
     processed = 0
     buffer = []
     buffer_rows = 0
+    checkpoint_paths = []
 
     def flush():
         nonlocal buffer, buffer_rows, total_rows
@@ -308,23 +451,42 @@ def main():
         buffer = []
         buffer_rows = 0
 
-    pending = [p for p in files if p not in done]
+    def checkpoint():
+        nonlocal checkpoint_paths
+        if state_file.endswith(".jsonl"):
+            append_state(state_file, checkpoint_paths)
+        else:
+            save_state(state_file, done)
+        checkpoint_paths = []
+
+    pending = [p for p in files if state_key(p) not in done]
     logger.info("待处理文件 %d 个", len(pending))
 
     for i, path in enumerate(pending, 1):
         df = process_file(path, args.freq)
+        if df is None:
+            failed_files += 1
+            continue
+        if after is not None and not df.empty:
+            before = len(df)
+            df = df[df["trade_time"] > after]
+            skipped_rows += before - len(df)
         if not df.empty:
             buffer.append(df)
             buffer_rows += len(df)
+
+        key = state_key(path)
+        done.add(key)
+        checkpoint_paths.append(key)
+        processed += 1
+
         if buffer_rows >= args.batch_size:
             flush()
-
-        done.add(path)
-        processed += 1
+            checkpoint()
 
         if processed % args.log_every == 0:
             flush()  # flush 后再存 state,保证已 insert 才标记完成
-            save_state(state_file, done)
+            checkpoint()
             elapsed = time.time() - t0
             rate = processed / elapsed if elapsed else 0
             remain = (len(pending) - processed) / rate if rate else 0
@@ -335,10 +497,13 @@ def main():
 
     # 收尾
     flush()
-    save_state(state_file, done)
+    checkpoint()
 
     elapsed = time.time() - t0
-    logger.info("完成:处理 %d 文件,写入 %d 行,耗时 %.1f 分钟", processed, total_rows, elapsed / 60)
+    logger.info(
+        "完成:处理 %d 文件,失败 %d 文件,边界过滤 %d 行,写入 %d 行,耗时 %.1f 分钟",
+        processed, failed_files, skipped_rows, total_rows, elapsed / 60,
+    )
 
     # 核对
     res = engine.client.query(
