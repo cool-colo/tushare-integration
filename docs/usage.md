@@ -26,6 +26,13 @@ spider_name基于正则全文匹配，例如stock/basic/*将运行所有stock/ba
 
 该命令将从jobs.yaml文件中找到对应的job，然后运行该job下的所有spider
 
+## 公募基金持仓
+
+`fund/portfolio/fund_portfolio` 采集公募基金季度股票持仓，并保留ODS最新数据和原始版本。
+使用 `python main.py run job fund/portfolio --update-type full` 采集后，运行
+`python main.py dwd sync dwd_fund_portfolio --validation-mode strict` 发布DWD。
+公告可用日依赖已采集的SSE交易日历，完整口径和运行说明见[基金持仓](fund_portfolio.md)。
+
 ## 使用K8S
 
 项目提供了基于Helm的部署模板，编写好values.yaml后直接部署到集群即可，会自动创建CronJob用于定时更新

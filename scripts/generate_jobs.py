@@ -6,6 +6,7 @@ DISABLED_SPIDERS = {
 }
 
 spiders = [
+    'fund/portfolio/fund_portfolio',
     'future/basic/fut_basic',
     'future/quotes/fut_daily',
     'future/quotes/fut_holding',
@@ -112,6 +113,8 @@ for spider in spiders:
     if group not in data_tmp:
         data_tmp[group] = []
     spider_config = {'name': spider}
+    if spider == 'fund/portfolio/fund_portfolio':
+        spider_config['update_type'] = 'full'
     if spider in DISABLED_SPIDERS:
         spider_config['enabled'] = False
         spider_config['disabled_reason'] = DISABLED_SPIDERS[spider]

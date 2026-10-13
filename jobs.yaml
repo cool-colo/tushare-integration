@@ -1,5 +1,10 @@
 cronjob:
   - cron_expr: UnSupported
+    name: fund/portfolio
+    spiders:
+      - name: fund/portfolio/fund_portfolio
+        update_type: full
+  - cron_expr: UnSupported
     name: future/basic
     spiders:
       - name: future/basic/fut_basic

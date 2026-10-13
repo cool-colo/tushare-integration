@@ -1404,9 +1404,51 @@ class QualityManager:
             rules.extend(self._chip_rules(qualified, validation_filter))
         if table_name == "dwd_index_weight":
             rules.extend(self._index_weight_rules(qualified, validation_filter))
+        if table_name == "dwd_fund_portfolio":
+            rules.extend(self._fund_portfolio_rules(qualified, validation_filter))
         if table_name == "dwd_security_master":
             rules.extend(self._security_master_rules(qualified))
         return rules
+
+    def _fund_portfolio_rules(self, qualified: str, validation_filter: str | None = None) -> list[ValidationRule]:
+        conditions = [
+            (
+                "fund_portfolio_identity_present",
+                "Fund holdings must retain both the fund and held stock identities",
+                "ts_code = '' OR symbol = '' OR fund_id IS NULL OR fund_id != concat('fund:', ts_code) "
+                "OR instrument_id != concat('stock:', symbol) OR source_code != symbol",
+            ),
+            (
+                "fund_portfolio_report_dates",
+                "Fund holdings must have a valid quarter end no later than the announcement",
+                "end_date <= toDate32('1971-01-01') OR ann_date <= toDate32('1971-01-01') "
+                "OR end_date > ann_date OR end_date != toLastDayOfMonth(end_date) "
+                "OR toMonth(end_date) NOT IN (3, 6, 9, 12) OR event_date != end_date",
+            ),
+            (
+                "fund_portfolio_strict_next_trade_visibility",
+                "Fund holdings must become visible strictly after their announcement date",
+                "available_trade_date <= ann_date",
+            ),
+            (
+                "fund_portfolio_nonnegative_finite_measures",
+                "Known holding values, quantities and source ratios must be finite and nonnegative",
+                " OR ".join(
+                    f"({column} < 0 OR NOT isFinite({column}))"
+                    for column in ("mkv", "amount", "stk_mkv_ratio", "stk_float_ratio")
+                ),
+            ),
+        ]
+        return [
+            ValidationRule(
+                rule_id=rule_id,
+                description=description,
+                severity="BLOCKER",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} "
+                f"{self._where_sql(condition, validation_filter)}",
+            )
+            for rule_id, description, condition in conditions
+        ]
 
     def _research_report_rules(
         self,

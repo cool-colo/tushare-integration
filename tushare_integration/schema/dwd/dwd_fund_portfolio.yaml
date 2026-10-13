@@ -1,0 +1,37 @@
+id: 2029
+name: dwd_fund_portfolio
+comment: 公募基金季度股票持仓标准层
+builder: raw_versioned
+source:
+  table_name: fund_portfolio_raw
+  schema_name: fund/portfolio/fund_portfolio
+business_key:
+  - ts_code
+  - ann_date
+  - end_date
+  - symbol
+# The instrument is the held stock; ts_code remains the holding fund's code.
+instrument_type: stock
+instrument_id_expr: "concat('stock:', src.symbol)"
+source_code_expr: src.symbol
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.symbol)), 2)"
+event_date_expr: src.end_date
+calendar_date_expr: src.ann_date
+# Missing calendar coverage must not make a disclosure visible on ann_date.
+available_trade_date_expr: "addDays(assumeNotNull(calendar_map.next_trade_date), throwIf(isNull(calendar_map.next_trade_date), 'Missing SSE next trading day for fund announcement'))"
+extra_columns:
+  - name: fund_id
+    data_type: str
+    length: 64
+    comment: 持仓基金ID（fund前缀加TS基金代码）
+    expr: "concat('fund:', src.ts_code)"
+partition_key:
+  - toYear(event_date)
+indexes:
+  - name: dwd_fund_portfolio_idx
+    columns:
+      - instrument_id
+      - ts_code
+      - end_date
+      - ann_date
+      - sys_from

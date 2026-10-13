@@ -73,6 +73,8 @@ class TushareIntegrationFillNAPipeline(BasePipeline):
         item["latest_data"] = data.copy(deep=True)
 
         for column in self.schema["columns"]:
+            if column.get("nullable", False):
+                continue
             if column.get("default", None) is None:
                 column["default"] = self.get_default_by_data_type(column["data_type"])
             # 需要特殊处理NaT,Pandas的fillna方法不支持NaT
@@ -145,7 +147,7 @@ class TransformDTypePipeline(BasePipeline):
                 item["raw_data"][column["name"]], column, preserve_nulls=True
             )
             item["latest_data"][column["name"]] = self.convert_series(
-                item["latest_data"][column["name"]], column, preserve_nulls=False
+                item["latest_data"][column["name"]], column, preserve_nulls=column.get("nullable", False)
             )
         return item
 
