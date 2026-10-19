@@ -7,6 +7,11 @@ DISABLED_SPIDERS = {
 
 spiders = [
     'fund/portfolio/fund_portfolio',
+    'fund/basic/etf_basic',
+    'fund/basic/etf_index',
+    'fund/quotes/fund_daily',
+    'fund/quotes/fund_adj',
+    'fund/quotes/etf_limit',
     'future/basic/fut_basic',
     'future/quotes/fut_daily',
     'future/quotes/fut_holding',
@@ -113,7 +118,7 @@ for spider in spiders:
     if group not in data_tmp:
         data_tmp[group] = []
     spider_config = {'name': spider}
-    if spider == 'fund/portfolio/fund_portfolio':
+    if spider in ('fund/portfolio/fund_portfolio', 'fund/basic/etf_basic', 'fund/basic/etf_index'):
         spider_config['update_type'] = 'full'
     if spider in DISABLED_SPIDERS:
         spider_config['enabled'] = False

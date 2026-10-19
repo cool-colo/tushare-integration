@@ -1,0 +1,46 @@
+id: 386
+api_name: etf_index
+name: etf_index
+comment: ETF基准指数列表（Tushare doc_id=386）
+dependencies: []
+primary_key:
+  - ts_code
+indexes: []
+columns:
+  - name: ts_code
+    data_type: str
+    length: 16
+    default: ''
+    comment: 指数代码
+  - name: indx_name
+    data_type: str
+    length: 255
+    default: ''
+    comment: 指数全称
+  - name: indx_csname
+    data_type: str
+    length: 255
+    default: ''
+    comment: 指数简称
+  - name: pub_party_name
+    data_type: str
+    length: 255
+    default: ''
+    comment: 指数发布机构
+  - name: pub_date
+    data_type: date
+    default: '1970-01-01'
+    comment: 指数发布日期
+  - name: base_date
+    data_type: date
+    default: '1970-01-01'
+    comment: 指数基日
+  - name: bp
+    data_type: float
+    nullable: true
+    comment: 指数基点(点)
+  - name: adj_circle
+    data_type: str
+    length: 255
+    default: ''
+    comment: 指数成份证券调整周期

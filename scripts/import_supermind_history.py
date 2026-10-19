@@ -165,23 +165,44 @@ def _q(s: str) -> str:
 
 
 def read_factor_year(csv_paths, factor_code, sub_category):
-    """读取一个因子某一年的所有日 CSV,拼成目标 DataFrame。"""
+    """读取一个因子某一年的所有日 CSV,拼成目标 DataFrame。
+
+    返回 (DataFrame|None, skipped_empty)。部分交易日的日文件可能为空(0 字节或仅表头,
+    代表当天该因子无数据),直接跳过而非报错。
+    """
     frames = []
+    skipped = 0
     for p in csv_paths:
+        # 空文件(0 字节)直接跳过,避免 pandas EmptyDataError
+        try:
+            if os.path.getsize(p) == 0:
+                skipped += 1
+                continue
+        except OSError:
+            skipped += 1
+            continue
         # 第 3 列列名就是 factor_code;统一重命名,空串 -> NaN -> Nullable(Float64)
-        df = pd.read_csv(p, dtype={"time": str, "code": str})
+        try:
+            df = pd.read_csv(p, dtype={"time": str, "code": str})
+        except pd.errors.EmptyDataError:
+            # 仅表头 / 无可解析列
+            skipped += 1
+            continue
         if df.shape[1] != 3:
             raise ValueError(f"unexpected columns in {p}: {list(df.columns)}")
+        if df.empty:
+            skipped += 1
+            continue
         df.columns = ["trade_date", "ts_code", "value"]
         df["value"] = pd.to_numeric(df["value"], errors="coerce")
         frames.append(df)
     if not frames:
-        return None
+        return None, skipped
     out = pd.concat(frames, ignore_index=True)
     out["trade_date"] = pd.to_datetime(out["trade_date"]).dt.date
     out["factor_code"] = factor_code
     out["sub_category"] = sub_category
-    return out[["trade_date", "ts_code", "factor_code", "sub_category", "value"]]
+    return out[["trade_date", "ts_code", "factor_code", "sub_category", "value"]], skipped
 
 
 def iter_units(root, group, since, until):
@@ -241,29 +262,26 @@ def process_group(client, root, group, args):
 
     def _one(unit):
         factor, sub, year, paths = unit
-        df = read_factor_year(paths, factor, sub)
-        if df is None or df.empty:
-            return factor, year, len(paths), 0
-        return factor, year, len(paths), df, sub
+        df, skipped = read_factor_year(paths, factor, sub)
+        return factor, year, len(paths), df, skipped
 
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         futs = {pool.submit(_one, u): u for u in pending}
         for fut in as_completed(futs):
-            res = fut.result()
-            if len(res) == 4:  # 空单元
-                factor, year, nfiles, _ = res
+            factor, year, nfiles, df, skipped = fut.result()
+            if df is None or df.empty:
                 nrows = 0
             else:
-                factor, year, nfiles, df, sub = res
                 client.insert_df(f"{DB_NAME}.{table}", df)
                 nrows = len(df)
                 total_rows += nrows
-                client.insert(
-                    f"{DB_NAME}.load_manifest",
-                    [[group, table, factor, year, nfiles, nrows]],
-                    column_names=["group", "table", "factor_code", "year", "files", "rows"],
-                )
-            log.info("  %-20s %d: %d files, %d rows", factor, year, nfiles, nrows)
+            # 即使 0 行(当年全空文件)也写 manifest,保证续跑不再重扫该单元
+            client.insert(
+                f"{DB_NAME}.load_manifest",
+                [[group, table, factor, year, nfiles, nrows]],
+                column_names=["group", "table", "factor_code", "year", "files", "rows"],
+            )
+            log.info("  %-20s %d: %d files, %d rows (skip空 %d)", factor, year, nfiles, nrows, skipped)
     log.info("[%s] 完成,共写入 %d 行", group, total_rows)
     return total_rows
 

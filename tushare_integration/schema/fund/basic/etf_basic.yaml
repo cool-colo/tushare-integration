@@ -1,0 +1,76 @@
+id: 385
+api_name: etf_basic
+name: etf_basic
+comment: ETF基础信息（Tushare doc_id=385）
+dependencies: []
+primary_key:
+  - ts_code
+indexes: []
+columns:
+  - name: ts_code
+    data_type: str
+    length: 16
+    default: ''
+    comment: 基金交易代码
+  - name: csname
+    data_type: str
+    length: 255
+    default: ''
+    comment: ETF中文简称
+  - name: extname
+    data_type: str
+    length: 255
+    default: ''
+    comment: ETF扩位简称(对应交易所简称)
+  - name: cname
+    data_type: str
+    length: 255
+    default: ''
+    comment: 基金中文全称
+  - name: index_code
+    data_type: str
+    length: 16
+    default: ''
+    comment: ETF基准指数代码
+  - name: index_name
+    data_type: str
+    length: 255
+    default: ''
+    comment: ETF基准指数中文全称
+  - name: setup_date
+    data_type: date
+    default: '1970-01-01'
+    comment: 设立日期
+  - name: list_date
+    data_type: date
+    default: '1970-01-01'
+    comment: 上市日期
+  - name: list_status
+    data_type: str
+    length: 8
+    default: ''
+    comment: 存续状态（L上市 D退市 P待上市）
+  - name: exchange
+    data_type: str
+    length: 8
+    default: ''
+    comment: 交易所（上交所SH 深交所SZ）
+  - name: mgr_name
+    data_type: str
+    length: 255
+    default: ''
+    comment: 基金管理人简称
+  - name: custod_name
+    data_type: str
+    length: 255
+    default: ''
+    comment: 基金托管人名称
+  - name: mgt_fee
+    data_type: float
+    nullable: true
+    comment: 基金管理人收取的费用
+  - name: etf_type
+    data_type: str
+    length: 32
+    default: ''
+    comment: 基金投资通道类型（境内、QDII）

@@ -1,0 +1,25 @@
+id: 2033
+name: dwd_etf_index
+comment: ETF基准指数列表标准层
+builder: raw_versioned
+source_alias: raw
+source:
+  table_name: etf_index_raw
+  schema_name: fund/basic/etf_index
+instrument_type: index
+business_key:
+  - ts_code
+instrument_id_expr: "concat('index:', raw.ts_code)"
+source_code_expr: raw.ts_code
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(raw.ts_code)), 2)"
+event_date_expr: toDate(raw._ingest_time)
+calendar_date_expr: toDate(raw._ingest_time)
+available_trade_date_expr: coalesce(calendar_map.next_trade_date, toDate(raw._ingest_time))
+partition_key:
+  - toYear(available_trade_date)
+indexes:
+  - name: dwd_etf_index_idx
+    columns:
+      - instrument_id
+      - ts_code
+      - sys_from

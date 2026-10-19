@@ -56,6 +56,9 @@ DWD_TRADE_RELEVANT_TABLES = {
     "dwd_dc_member",
     "dwd_dc_concept",
     "dwd_dc_concept_cons",
+    "dwd_etf_eod_price",
+    "dwd_etf_adj_factor",
+    "dwd_etf_limit",
 }
 
 DWS_TRADE_DATE_COLUMNS = {
@@ -1363,15 +1366,15 @@ class QualityManager:
         validation_filter: str | None = None,
     ) -> list[ValidationRule]:
         rules: list[ValidationRule] = []
-        if table_name in {"dwd_stock_eod_price", "dwd_index_eod_price", "dwd_future_eod_price"}:
+        if table_name in {"dwd_stock_eod_price", "dwd_index_eod_price", "dwd_future_eod_price", "dwd_etf_eod_price"}:
             rules.extend(self._market_price_rules(table_name, qualified, validation_filter))
         if table_name == "dwd_stock_daily_basic":
             rules.extend(self._daily_basic_rules(qualified, validation_filter))
         if table_name == "dwd_stock_eod_quote_metrics":
             rules.extend(self._quote_metric_rules(qualified, validation_filter))
-        if table_name == "dwd_stock_limit":
+        if table_name in {"dwd_stock_limit", "dwd_etf_limit"}:
             rules.extend(self._stock_limit_rules(qualified, validation_filter))
-        if table_name == "dwd_stock_adj_factor":
+        if table_name in {"dwd_stock_adj_factor", "dwd_etf_adj_factor"}:
             rules.append(
                 ValidationRule(
                     rule_id="adj_factor_positive",

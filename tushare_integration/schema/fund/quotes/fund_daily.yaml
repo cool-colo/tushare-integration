@@ -1,0 +1,67 @@
+id: 127
+api_name: fund_daily
+name: fund_daily
+comment: 场内基金（含ETF）日线行情（Tushare doc_id=127）
+dependencies:
+  - stock/basic/trade_cal
+  - fund/basic/etf_basic
+primary_key:
+  - ts_code
+  - trade_date
+indexes: []
+columns:
+  - name: ts_code
+    data_type: str
+    length: 16
+    default: ""
+    comment: 基金代码
+  - name: trade_date
+    data_type: date
+    length: 0
+    default: "1970-01-01"
+    comment: 交易日期
+  - name: open
+    data_type: float
+    length: 0
+    default: "0.0"
+    comment: 开盘价(元)
+  - name: high
+    data_type: float
+    length: 0
+    default: "0.0"
+    comment: 最高价(元)
+  - name: low
+    data_type: float
+    length: 0
+    default: "0.0"
+    comment: 最低价(元)
+  - name: close
+    data_type: float
+    length: 0
+    default: "0.0"
+    comment: 收盘价(元)
+  - name: pre_close
+    data_type: float
+    length: 0
+    default: "0.0"
+    comment: 昨收盘价(元)
+  - name: change
+    data_type: float
+    length: 0
+    default: "0.0"
+    comment: 涨跌额(元)
+  - name: pct_chg
+    data_type: float
+    length: 0
+    default: "0.0"
+    comment: 涨跌幅(%)
+  - name: vol
+    data_type: float
+    length: 0
+    default: "0.0"
+    comment: 成交量(手)
+  - name: amount
+    data_type: float
+    length: 0
+    default: "0.0"
+    comment: 成交额(千元)

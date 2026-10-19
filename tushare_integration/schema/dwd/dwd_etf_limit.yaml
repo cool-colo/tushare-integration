@@ -1,0 +1,22 @@
+id: 2031
+name: dwd_etf_limit
+comment: ETF每日涨跌停价格标准层
+builder: raw_versioned
+source:
+  table_name: etf_limit_raw
+  schema_name: fund/quotes/etf_limit
+instrument_type: fund
+instrument_id_expr: "concat('fund:', src.ts_code)"
+source_code_expr: src.ts_code
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.ts_code)), 2)"
+event_date_expr: src.trade_date
+calendar_date_expr: src.trade_date
+available_trade_date_expr: coalesce(calendar_map.next_trade_date, src.trade_date)
+partition_key:
+  - toYear(available_trade_date)
+indexes:
+  - name: dwd_etf_limit_idx
+    columns:
+      - instrument_id
+      - event_date
+      - sys_from

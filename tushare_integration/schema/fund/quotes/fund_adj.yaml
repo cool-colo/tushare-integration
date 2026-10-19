@@ -1,0 +1,26 @@
+id: 199
+api_name: fund_adj
+name: fund_adj
+comment: 场内基金（含ETF）复权因子（Tushare doc_id=199）
+dependencies:
+  - stock/basic/trade_cal
+primary_key:
+  - ts_code
+  - trade_date
+indexes: []
+columns:
+  - name: ts_code
+    data_type: str
+    length: 16
+    default: ""
+    comment: TS基金代码
+  - name: trade_date
+    data_type: date
+    length: 0
+    default: "1970-01-01"
+    comment: 交易日期
+  - name: adj_factor
+    data_type: number
+    length: 0
+    default: "0.0"
+    comment: 复权因子

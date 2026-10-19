@@ -392,6 +392,42 @@ security_union AS (
     FROM {db_name}.fut_basic_raw src
     LEFT JOIN calendar_map ON calendar_map.calendar_date = toDate(src._ingest_time)
     WHERE src.ts_code IS NOT NULL
+
+    UNION ALL
+
+    SELECT
+        concat('fund:', src.ts_code) AS instrument_id,
+        'fund' AS instrument_type,
+        arrayElement(splitByChar('.', assumeNotNull(src.ts_code)), 2) AS exchange,
+        src.ts_code AS source_code,
+        CAST(NULL, 'Nullable(String)') AS symbol,
+        src.extname AS instrument_name,
+        src.cname AS full_name,
+        CAST(NULL, 'Nullable(String)') AS english_name,
+        src.etf_type AS market,
+        CAST(NULL, 'Nullable(String)') AS category,
+        CAST(NULL, 'Nullable(String)') AS publisher,
+        'CNY' AS currency,
+        src.list_status AS list_status,
+        src.list_date AS list_date,
+        CAST(NULL, 'Nullable(Date)') AS delist_date,
+        CAST(NULL, 'Nullable(String)') AS area,
+        CAST(NULL, 'Nullable(String)') AS industry,
+        CAST(NULL, 'Nullable(String)') AS is_hs,
+        src.index_code AS underlying_code,
+        CAST(NULL, 'Nullable(Float64)') AS contract_multiplier,
+        CAST(NULL, 'Nullable(String)') AS trade_unit,
+        CAST(NULL, 'Nullable(String)') AS quote_unit,
+        coalesce(src.list_date, toDate(src._ingest_time)) AS event_date,
+        coalesce(src.list_date, calendar_map.next_trade_date, toDate(src._ingest_time)) AS available_trade_date,
+        src._ingest_time AS sys_from,
+        src._source AS source,
+        'etf_basic_raw' AS source_table,
+        src._batch_id AS source_batch_id,
+        src._record_hash AS source_record_hash
+    FROM {db_name}.etf_basic_raw src
+    LEFT JOIN calendar_map ON calendar_map.calendar_date = toDate(src._ingest_time)
+    WHERE src.ts_code IS NOT NULL
 ),
 versioned AS (
     SELECT
@@ -546,7 +582,7 @@ FROM dedup d
     def get_required_source_tables(self, spec: dict[str, Any]) -> list[str]:
         builder = spec.get("builder", "raw_versioned")
         if builder == "security_master":
-            return ["stock_basic_raw", "index_basic_raw", "fut_basic_raw", CALENDAR_SOURCE_TABLE]
+            return ["stock_basic_raw", "index_basic_raw", "fut_basic_raw", "etf_basic_raw", CALENDAR_SOURCE_TABLE]
         if builder == "business_interval":
             return sorted({spec["source"]["table_name"], CALENDAR_SOURCE_TABLE})
 

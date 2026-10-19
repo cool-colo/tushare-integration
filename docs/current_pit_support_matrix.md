@@ -4,6 +4,11 @@
 `sys_from/sys_to` 观察版本和原始来源追踪。持仓报告期不能直接作为可用日期，历史回补也不能
 重建未观察到的源版本，详见[基金持仓说明](fund_portfolio.md)。下文总体判断保留原文档的历史评估口径。
 
+ETF 补充：场内基金（含 ETF）五张源表已端到端接入——`fund_daily`/`fund_adj`/`etf_limit`
+落地为交易日级弱 PIT 的 `dwd_etf_eod_price`/`dwd_etf_adj_factor`/`dwd_etf_limit`（见 §4.6）；
+`etf_basic`/`etf_index` 落地为可观察版本的 `dwd_etf_basic`/`dwd_etf_index`，且 `etf_basic`
+并入 `dwd_security_master`（见 §5.1）。
+
 ## 1. 文档目的
 
 本文档单独回答一个问题：
@@ -236,6 +241,23 @@
 
 ---
 
+## 4.6 场内基金（含 ETF）日频行情类
+
+这些表**支持交易日级弱 PIT**，已落地对应 `dwd_etf_*` 标准层表：
+
+- `fund_daily`（ETF/场内基金日线行情） → `dwd_etf_eod_price`
+- `fund_adj`（场内基金复权因子） → `dwd_etf_adj_factor`
+- `etf_limit`（ETF 每日涨跌停价格） → `dwd_etf_limit`
+
+原因：
+
+- 都以 `trade_date` 为业务日期，是某交易日的事实快照
+- DWD 层统一用 `available_trade_date = coalesce(下一交易日, trade_date)` 补可用日规则
+- 复权因子正值、涨跌停价格正值与 OHLC 一致性等业务校验复用股票同类规则
+- `instrument_id` 统一为 `fund:<ts_code>`，可被天级 PIT 层与 `dwd_security_master` 直接消费
+
+---
+
 ## 5. 当前“具备 PIT 原料，但必须在 DWD 再加工”的表
 
 这些表的共性是：
@@ -256,12 +278,21 @@
 - `fut_basic`
 - `index_basic`
 - `ths_index`
+- `etf_basic`
+- `etf_index`
 
 原因：
 
 - 这些表通常具备 `list_date` / `delist_date` / `in_date` / `out_date` / `exp_date`
 - 理论上可以判断某日是否有效
 - 但当前没有系统版本历史，也没有统一的“某天可见版本”规则
+
+补充：`etf_basic` / `etf_index` 已在 DWD 层落地为 `dwd_etf_basic` / `dwd_etf_index`，
+以 `_ingest_time` 为采集版本边界，补 `sys_from/sys_to` 与
+`available_trade_date = coalesce(下一交易日, 采集日)`，从而成为可观察版本的 PIT 表；
+其中 `etf_basic` 还并入 `dwd_security_master`（`instrument_type='fund'`，
+`instrument_id = fund:<ts_code>`，`underlying_code = index_code` 指向跟踪指数），
+使 ETF 成为统一证券主数据中的一等公民。
 
 ## 5.2 成分股 / 成员关系类
 
