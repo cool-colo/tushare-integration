@@ -29,6 +29,24 @@ UPDATE_TYPE_ALIASES = {
 VALID_UPDATE_TYPES = set(UPDATE_TYPE_ALIASES.values())
 
 
+class _CriticalErrorLogHandler(logging.Handler):
+    """记录CRITICAL级别日志，用于捕获Scrapy/Twisted未处理的致命错误。
+
+    这些错误(如下载器/引擎加载失败)不会触发spider_error信号，若不捕获，
+    爬虫会崩溃但进程仍以退出码0结束，导致下游误判为成功。
+    """
+
+    def __init__(self, sink: list[str]):
+        super().__init__(level=logging.CRITICAL)
+        self._sink = sink
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            self._sink.append(self.format(record))
+        except Exception:  # pragma: no cover - 记录失败不应影响主流程
+            pass
+
+
 class CrawlManager(object):
     def __init__(self):
         self.batch_id = uuid.uuid1().hex
@@ -44,6 +62,12 @@ class CrawlManager(object):
         self.signals = []
         dispatcher.connect(self.append_signal, signal=scrapy.signals.item_error)
         dispatcher.connect(self.append_signal, signal=scrapy.signals.spider_error)
+
+        # 捕获引擎启动失败/未处理的Deferred错误等不会触发spider_error信号的致命错误
+        # (例如依赖版本不兼容导致下载器加载失败)，避免爬虫崩溃却以退出码0"假成功"
+        self.critical_errors: list[str] = []
+        self._critical_log_handler = _CriticalErrorLogHandler(self.critical_errors)
+        logging.getLogger().addHandler(self._critical_log_handler)
 
     def list_spiders(self, spider: str | None = None) -> list[str]:
         """
@@ -206,8 +230,15 @@ class CrawlManager(object):
             return
 
         deferred = self.process.crawl(spiders[0])
+        deferred.addErrback(self._record_crawl_failure, spiders[0])
         if len(spiders) > 1:
             deferred.addCallback(lambda _: self.run_spiders_in_sequence(spiders[1:]))
+
+    def _record_crawl_failure(self, failure, spider_name):
+        # 引擎/下载器启动阶段的失败不会触发spider_error信号，在此显式记录
+        detail = failure.getTraceback() if hasattr(failure, "getTraceback") else str(failure)
+        logging.error("Crawl bootstrap failed for spider %s:\n%s", spider_name, detail)
+        self.critical_errors.append(f"spider={spider_name}\n{detail}")
 
     def run_job(self, job_name: str, update_type: str | None = None):
         spiders = self.get_spiders_by_job(job_name, update_type=update_type)
@@ -250,6 +281,12 @@ class CrawlManager(object):
         return all_spiders
 
     def raise_for_signal(self):
+        # 致命错误：引擎启动失败/未处理的Deferred等(不会触发spider_error信号)
+        critical_errors = getattr(self, "critical_errors", [])
+        if critical_errors:
+            error_details = "\n".join(critical_errors)
+            raise RuntimeError(f"Critical errors captured:\n{error_details}")
+
         fatal_signals = [scrapy_signal for scrapy_signal in self.signals if not self.is_rate_limit_signal(scrapy_signal)]
         if fatal_signals:
             signal_details = "\n".join([self.describe_signal(scrapy_signal) for scrapy_signal in fatal_signals])
@@ -260,6 +297,13 @@ class CrawlManager(object):
 
     def get_report_content(self):
         content = f"批次ID：{self.batch_id}\n"
+
+        critical_errors = getattr(self, "critical_errors", [])
+        if critical_errors:
+            content += "严重错误(采集失败)：\n"
+            for error in critical_errors:
+                # 只取首行摘要，避免钉钉消息过长
+                content += f"- {error.splitlines()[0] if error.splitlines() else error}\n"
 
         db_engine = DatabaseEngineFactory.create(self.settings)
 
