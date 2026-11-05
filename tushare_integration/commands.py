@@ -1,4 +1,5 @@
 import json
+import logging
 import re
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from tushare_integration.dwd import DWDManager
 from tushare_integration.dws import DWSManager
 from tushare_integration.manager import CrawlManager
 from tushare_integration.quality import DqcManager, DqcValidationError, QualityManager, QualityValidationError, ValidationMode
+from tushare_integration.reporters import DingTalkWebHookReporter
 
 try:
     from rich import print
@@ -221,6 +223,113 @@ def _dqc_run_summary(run) -> dict:
     }
 
 
+def _dqc_drift_summary(results) -> dict[str, int | float | None]:
+    drift_results = [result for result in results if result.rule_id == "dqc_metric_drift"]
+    issue_count = sum(result.issue_count for result in drift_results)
+    checked_count = sum(result.checked_count for result in drift_results)
+    return {
+        "issue_count": issue_count,
+        "checked_count": checked_count,
+        "issue_rate": issue_count / checked_count if checked_count else None,
+    }
+
+
+def _dqc_daily_drift_history(manager: DqcManager, run, days: int = 7) -> list[dict]:
+    def sql_string(value: str) -> str:
+        return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'"
+
+    history: dict[str, dict] = {}
+    try:
+        db_name = manager.settings.database.db_name
+        history_df = manager.get_db_engine().query_df(
+            f"""
+            WITH latest_daily_runs AS (
+                SELECT
+                    as_of_date,
+                    argMax(run_id, started_at) AS run_id
+                FROM {db_name}.dq_dqc_run
+                WHERE layer = {sql_string(run.layer)}
+                  AND suite_name = {sql_string(run.suite_name)}
+                  AND table_name = 'all'
+                  AND as_of_date <= toDate({sql_string(str(run.as_of_date))})
+                GROUP BY as_of_date
+                ORDER BY as_of_date DESC
+                LIMIT {days}
+            )
+            SELECT
+                latest_daily_runs.as_of_date AS as_of_date,
+                sum(result.issue_count) AS issue_count,
+                sum(result.checked_count) AS checked_count
+            FROM latest_daily_runs
+            INNER JOIN {db_name}.dq_dqc_result result
+                ON result.run_id = latest_daily_runs.run_id
+            WHERE result.rule_id = 'dqc_metric_drift'
+            GROUP BY latest_daily_runs.as_of_date
+            ORDER BY latest_daily_runs.as_of_date DESC
+            """
+        )
+        for row in history_df.to_dict("records"):
+            issue_count = int(row.get("issue_count") or 0)
+            checked_count = int(row.get("checked_count") or 0)
+            history[str(row["as_of_date"])] = {
+                "as_of_date": str(row["as_of_date"]),
+                "issue_count": issue_count,
+                "checked_count": checked_count,
+                "issue_rate": issue_count / checked_count if checked_count else None,
+            }
+    except Exception:
+        logging.exception("Failed to load DQC daily drift history for run %s", run.run_id)
+
+    current = _dqc_drift_summary(run.results)
+    history[str(run.as_of_date)] = {"as_of_date": str(run.as_of_date), **current}
+    return sorted(history.values(), key=lambda row: row["as_of_date"], reverse=True)[:days]
+
+
+def _format_issue_rate(value: float | None) -> str:
+    return "-" if value is None else f"{value:.2%}"
+
+
+def _dqc_dingtalk_report(run, history: list[dict]) -> tuple[str, str]:
+    drift = _dqc_drift_summary(run.results)
+    failed_results = [result for result in run.results if result.status == "FAIL"]
+    status_icon = "✅" if run.status == "PASS" else "⚠️"
+    subject = f"{status_icon} DWS DQC 日报 {run.as_of_date}"
+    lines = [
+        f"**状态：{run.status}**",
+        "",
+        f"- 检查日期：`{run.as_of_date}`",
+        f"- 漂移问题：**{drift['issue_count']} / {drift['checked_count']}**",
+        f"- 漂移问题率：**{_format_issue_rate(drift['issue_rate'])}**",
+        f"- 失败规则：**{len(failed_results)}**",
+        "",
+        "#### 最近 7 个 DQC 日期的漂移问题率",
+    ]
+    lines.extend(
+        f"- `{row['as_of_date']}`：{_format_issue_rate(row['issue_rate'])} "
+        f"（{row['issue_count']}/{row['checked_count']}）"
+        for row in history
+    )
+    if failed_results:
+        lines.extend(["", "#### 失败规则"])
+        lines.extend(
+            f"- **[{result.severity}]** `{result.table_name}` / `{result.rule_id}`："
+            f"{result.issue_count}/{result.checked_count} "
+            f"（{_format_issue_rate(result.issue_rate)}）"
+            for result in failed_results
+        )
+    lines.extend(["", f"> run_id: `{run.run_id}`"])
+    return subject, "\n".join(lines)
+
+
+def _send_dqc_dingtalk_report(manager: DqcManager, run) -> None:
+    try:
+        history = _dqc_daily_drift_history(manager, run)
+        subject, content = _dqc_dingtalk_report(run, history)
+        DingTalkWebHookReporter(manager.settings.dingtalk_webhook).send_report(subject, content)
+    except Exception:
+        logging.exception("Failed to send DQC DingTalk report for run %s", run.run_id)
+
+
 @query_app.command('list', help="List spiders")
 def list_spiders():
     manager = CrawlManager()
@@ -392,6 +501,11 @@ def run_dqc(
     all_tables: bool = typer.Option(False, "--all", help="Run the suite for all supported tables"),
     as_of_date: str | None = typer.Option(None, "--as-of-date", help="DQC as-of date, YYYY-MM-DD"),
     mode: str | None = typer.Option(None, "--mode", help="Override DQC mode: strict, warn_only, or skip"),
+    notify_dingtalk: bool = typer.Option(
+        False,
+        "--notify-dingtalk/--no-notify-dingtalk",
+        help="Send a concise DQC daily report to the configured DingTalk webhook",
+    ),
 ):
     if all_tables:
         table_name = None
@@ -406,8 +520,12 @@ def run_dqc(
             mode=resolved_mode,
         )
     except DqcValidationError as exc:
+        if notify_dingtalk:
+            _send_dqc_dingtalk_report(manager, exc.run)
         print(json.dumps(_dqc_run_summary(exc.run), ensure_ascii=False, indent=2, default=str))
         raise typer.Exit(1)
+    if notify_dingtalk:
+        _send_dqc_dingtalk_report(manager, run)
     print(json.dumps(_dqc_run_summary(run), ensure_ascii=False, indent=2, default=str))
 
 

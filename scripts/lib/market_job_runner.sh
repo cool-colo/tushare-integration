@@ -230,7 +230,7 @@ run_dqc() {
 
   echo "[$(date '+%F %T')] Starting DWS DQC as_of_date=$as_of_date with $image as $container"
   docker_cmd rm -f "$container" >/dev/null 2>&1 || true
-  container_id="$(docker_cmd run -d --name "$container" --net=host -v "$CONFIG_FILE:/code/app/config.yaml:ro" "$image" python main.py quality dqc --layer dws --all --as-of-date "$as_of_date")"
+  container_id="$(docker_cmd run -d --name "$container" --net=host -v "$CONFIG_FILE:/code/app/config.yaml:ro" "$image" python main.py quality dqc --layer dws --all --as-of-date "$as_of_date" --notify-dingtalk)"
   echo "[$(date '+%F %T')] Container started: $container_id"
   ACTIVE_CONTAINER="$container"
   docker_cmd logs -f "$container" &

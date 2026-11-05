@@ -5,7 +5,7 @@ from unittest import mock
 from typer.testing import CliRunner
 
 from tushare_integration import commands
-from tushare_integration.quality import DqcRun, ValidationResult, ValidationRule, ValidationRun
+from tushare_integration.quality import DqcResult, DqcRun, ValidationResult, ValidationRule, ValidationRun
 
 
 class FakeQualityManager:
@@ -283,6 +283,68 @@ class QualityCliTest(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0)
         self.assertIsNone(FakeDqcManager.calls[0]["table_name"])
+
+    def test_quality_dqc_can_send_dingtalk_daily_report(self):
+        with (
+            mock.patch.object(commands, "DqcManager", FakeDqcManager),
+            mock.patch.object(commands, "_send_dqc_dingtalk_report") as send_report,
+        ):
+            result = self.runner.invoke(
+                commands.quality_app,
+                ["dqc", "--layer", "dws", "--all", "--notify-dingtalk"],
+            )
+
+        self.assertEqual(result.exit_code, 0)
+        send_report.assert_called_once()
+        self.assertEqual(send_report.call_args.args[1].run_id, "dqc_run")
+
+    def test_dqc_dingtalk_report_is_concise_and_includes_history(self):
+        drift = DqcResult(
+            rule_id="dqc_metric_drift",
+            layer="dws",
+            domain="factor",
+            suite_name="stock_factor_panel",
+            table_name="dws_stock_factor_wide",
+            check_layer="statistical",
+            check_type="drift",
+            severity="WARN",
+            status="FAIL",
+            checked_count=200,
+            issue_count=20,
+            issue_rate=0.1,
+        )
+        run = FakeDqcManager().run(
+            layer="dws",
+            suite_name="stock_factor_panel",
+            table_name=None,
+            as_of_date="2026-11-04",
+            mode="warn_only",
+        )
+        run = DqcRun(**{**run.__dict__, "status": "FAIL", "results": [drift]})
+
+        subject, content = commands._dqc_dingtalk_report(
+            run,
+            [
+                {
+                    "as_of_date": "2026-11-04",
+                    "issue_count": 20,
+                    "checked_count": 200,
+                    "issue_rate": 0.1,
+                },
+                {
+                    "as_of_date": "2026-11-03",
+                    "issue_count": 10,
+                    "checked_count": 200,
+                    "issue_rate": 0.05,
+                },
+            ],
+        )
+
+        self.assertIn("DWS DQC 日报 2026-11-04", subject)
+        self.assertIn("漂移问题率：**10.00%**", content)
+        self.assertIn("`2026-11-03`：5.00%", content)
+        self.assertIn("dqc_metric_drift", content)
+        self.assertNotIn("metric_count", content)
 
 
 if __name__ == "__main__":
