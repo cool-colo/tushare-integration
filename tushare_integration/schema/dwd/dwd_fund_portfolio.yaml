@@ -1,6 +1,6 @@
 id: 2029
 name: dwd_fund_portfolio
-comment: 公募基金季度股票持仓标准层
+comment: 公募基金股票持仓标准层（包含首期非自然季末快照）
 builder: raw_versioned
 source:
   table_name: fund_portfolio_raw

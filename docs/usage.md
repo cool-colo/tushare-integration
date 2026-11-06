@@ -176,6 +176,8 @@ python main.py run job stock/quotes --update-type full
 UPDATE_TYPE=full scripts/run_daily_market_jobs.sh
 ```
 
+`fund/portfolio` 及其 `dwd_fund_portfolio` 同步只在 `UPDATE_TYPE=full` 时调度；工作日的 `UPDATE_TYPE=incremental` 批次不再运行该长任务。
+
 ### 股票日线提前批
 
 `pre_job.yaml` 独立维护股票日线行情所需的 `stock_basic`、`trade_cal` 和 `daily` 三个增量 spider。提前批脚本会在采集成功后立即同步 `dwd_stock_eod_price`：

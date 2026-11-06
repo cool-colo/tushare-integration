@@ -34,8 +34,8 @@ class FundPortfolioTest(unittest.TestCase):
     def row(self, fund="001753.OF", ann_date="20240823", symbol="603019.SH", mkv=3130994.46):
         return [fund, ann_date, "20240630", symbol, mkv, 68258.0, 4.37, None]
 
-    def response(self, rows, offset=0):
-        request = self.spider.get_scrapy_request({"period": "20240630", "offset": offset, "limit": 2})
+    def response(self, rows, offset=0, fund="001753.OF"):
+        request = self.spider.get_scrapy_request({"ts_code": fund, "offset": offset, "limit": 2})
         return TextResponse(
             url=request.url,
             request=request,
@@ -43,37 +43,96 @@ class FundPortfolioTest(unittest.TestCase):
             encoding="utf-8",
         )
 
-    def test_collects_completed_quarters_including_weekend_report_dates(self):
-        with mock.patch.object(self.spider, "get_request_end_date", return_value=datetime.date(2024, 7, 2)):
-            requests = list(self.spider.start_requests())
+    def fund_basic_response(self, codes, market="E", offset=0):
+        request = self.spider.get_fund_basic_request(market, offset)
+        return TextResponse(
+            url=request.url,
+            request=request,
+            body=json.dumps(
+                {"code": 0, "data": {"fields": ["ts_code"], "items": [[code] for code in codes]}}
+            ).encode(),
+            encoding="utf-8",
+        )
+
+    def test_starts_with_complete_fund_basic_markets_instead_of_period_only_requests(self):
+        requests = list(self.spider.start_requests())
         self.assertEqual(
-            [json.loads(request.body)["params"] for request in requests],
+            [json.loads(request.body) for request in requests],
             [
-                {"period": "20240331", "offset": 0, "limit": 8000},
-                {"period": "20240630", "offset": 0, "limit": 8000},
+                {
+                    "api_name": "fund_basic", "token": "token",
+                    "params": {"market": "E", "offset": 0, "limit": 15000}, "fields": "ts_code",
+                },
+                {
+                    "api_name": "fund_basic", "token": "token",
+                    "params": {"market": "O", "offset": 0, "limit": 15000}, "fields": "ts_code",
+                },
             ],
         )
-        self.spider.spider_settings.default_min_cal_date = "2024-04-01"
-        with mock.patch.object(self.spider, "get_request_end_date", return_value=datetime.date(2024, 7, 2)):
-            self.assertEqual(list(self.spider.get_all_period()), ["20240630"])
+        self.assertTrue(all(request.callback == self.spider.parse_fund_basic for request in requests))
+
+    def test_fund_basic_completes_both_markets_before_scheduling_unique_codes(self):
+        self.spider.FUND_BASIC_PAGE_LIMIT = 2
+        outputs = list(self.spider.parse_fund_basic(self.fund_basic_response(["001753.OF", "510300.SH"])))
+        bodies = [json.loads(request.body) for request in outputs]
+        self.assertEqual(
+            [body["params"] for body in bodies],
+            [{"market": "E", "offset": 2, "limit": 2}],
+        )
+        self.assertEqual(bodies[0]["api_name"], "fund_basic")
+        outputs = list(self.spider.parse_fund_basic(self.fund_basic_response(["001753.OF"], offset=2)))
+        self.assertEqual(len(outputs), 1)
+        self.assertEqual(json.loads(outputs[0].body)["params"], {"market": "E", "offset": 3, "limit": 2})
+        self.assertNotIn("E", self.spider.completed_fund_markets)
+        self.assertEqual(list(self.spider.parse_fund_basic(self.fund_basic_response([], offset=3))), [])
+        self.assertIn("E", self.spider.completed_fund_markets)
+        self.assertEqual(self.spider.fund_basic_progress["E"]["rows"], 3)
+        self.assertEqual(self.spider.fund_codes, {"001753.OF", "510300.SH"})
+
+        outputs = list(self.spider.parse_fund_basic(self.fund_basic_response(["000001.OF"], market="O")))
+        self.assertEqual(len(outputs), 1)
+        self.assertEqual(
+            json.loads(outputs[0].body)["params"], {"market": "O", "offset": 1, "limit": 2}
+        )
+        outputs = list(self.spider.parse_fund_basic(self.fund_basic_response([], market="O", offset=1)))
+        self.assertEqual(
+            [json.loads(request.body)["params"] for request in outputs],
+            [
+                {"ts_code": "000001.OF", "offset": 0, "limit": 8000},
+                {"ts_code": "001753.OF", "offset": 0, "limit": 8000},
+                {"ts_code": "510300.SH", "offset": 0, "limit": 8000},
+            ],
+        )
+
+    def test_fund_basic_repeated_page_fails_instead_of_silently_truncating_universe(self):
+        self.spider.FUND_BASIC_PAGE_LIMIT = 2
+        list(self.spider.parse_fund_basic(self.fund_basic_response(["001753.OF", "510300.SH"])))
+        with self.assertRaisesRegex(RuntimeError, "repeated a source page.*universe may be truncated"):
+            list(self.spider.parse_fund_basic(
+                self.fund_basic_response(["510300.SH", "001753.OF"], offset=2)
+            ))
+
+    def test_empty_fund_basic_market_fails_instead_of_running_partial_universe(self):
+        with self.assertRaisesRegex(RuntimeError, "no fund codes for market=O"):
+            list(self.spider.parse_fund_basic(self.fund_basic_response([], market="O")))
 
     def test_pages_are_emitted_immediately_and_short_pages_continue_until_empty(self):
         outputs = self.spider.parse(self.response([self.row()]))
-        # Receiving the item must not fetch the next page or collect the quarter.
+        # Receiving the item must not fetch the next page or collect the fund.
         with mock.patch.object(self.spider, "request_with_requests") as blocking_fetch:
             item = next(outputs)
             self.assertEqual(item["data"]["mkv"].tolist(), [3130994.46])
             request = next(outputs)
         blocking_fetch.assert_not_called()
-        self.assertEqual(json.loads(request.body)["params"], {"period": "20240630", "offset": 1, "limit": 2})
+        self.assertEqual(json.loads(request.body)["params"], {"ts_code": "001753.OF", "offset": 1, "limit": 2})
         later_disclosure = self.row(ann_date="20240901", mkv=3131994.46)
-        other_fund = self.row(fund="000001.OF")
-        item, request = list(self.spider.parse(self.response([later_disclosure, other_fund], offset=1)))
+        other_holding = self.row(symbol="600000.SH")
+        item, request = list(self.spider.parse(self.response([later_disclosure, other_holding], offset=1)))
         self.assertEqual(item["data"]["ann_date"].tolist(), ["20240901", "20240823"])
-        self.assertEqual(item["data"]["ts_code"].tolist(), ["001753.OF", "000001.OF"])
-        self.assertEqual(json.loads(request.body)["params"], {"period": "20240630", "offset": 3, "limit": 2})
+        self.assertEqual(item["data"]["ts_code"].tolist(), ["001753.OF", "001753.OF"])
+        self.assertEqual(json.loads(request.body)["params"], {"ts_code": "001753.OF", "offset": 3, "limit": 2})
         self.assertEqual(list(self.spider.parse(self.response([], offset=3))), [])
-        self.assertNotIn("20240630", self.spider.period_progress)
+        self.assertNotIn("001753.OF", self.spider.fund_progress)
 
     def test_repeated_source_page_continues_to_later_rows_even_when_order_changes(self):
         rows = [self.row(), self.row(symbol="600845.SH")]
@@ -88,14 +147,14 @@ class FundPortfolioTest(unittest.TestCase):
         self.assertEqual(list(self.spider.parse(self.response([], offset=5))), [])
 
     def test_endless_nonempty_pages_fail_at_safety_limit_without_claiming_completion(self):
-        self.spider.MAX_PAGES_PER_PERIOD = 2
+        self.spider.MAX_PAGES_PER_FUND = 2
         list(self.spider.parse(self.response([self.row()], offset=0)))
         list(self.spider.parse(self.response([self.row()], offset=1)))
-        with self.assertRaisesRegex(RuntimeError, "page safety limit.*period is incomplete"):
+        with self.assertRaisesRegex(RuntimeError, "page safety limit.*fund is incomplete"):
             list(self.spider.parse(self.response([self.row()], offset=2)))
 
     def test_terminal_empty_page_can_complete_at_safety_limit(self):
-        self.spider.MAX_PAGES_PER_PERIOD = 1
+        self.spider.MAX_PAGES_PER_FUND = 1
         list(self.spider.parse(self.response([self.row()])))
         self.assertEqual(list(self.spider.parse(self.response([], offset=1))), [])
 
@@ -119,19 +178,54 @@ class FundPortfolioTest(unittest.TestCase):
             list(self.spider.parse(response))
         self.assertEqual(len(item["data"]), 1)
 
-    def test_unexpected_report_period_fails_before_emitting_rows(self):
+    def test_unexpected_fund_code_fails_before_emitting_rows(self):
+        with self.assertRaisesRegex(RuntimeError, "different fund code"):
+            list(self.spider.parse(self.response([self.row(fund="000001.OF")])))
+
+    def test_invalid_or_future_report_date_fails_before_emitting_rows(self):
+        invalid = self.row()
+        invalid[2] = "not-a-date"
+        with self.assertRaisesRegex(RuntimeError, "invalid end_date"):
+            list(self.spider.parse(self.response([invalid])))
+        future = self.row()
+        future[2] = "20991231"
+        with self.assertRaisesRegex(RuntimeError, "future end_date"):
+            list(self.spider.parse(self.response([future])))
+
+    def test_initial_non_quarter_end_snapshot_is_preserved(self):
+        self.spider.spider_settings.default_min_cal_date = "2021-01-01"
+        initial_snapshot = self.row(fund="159849.SZ", ann_date="20210225")
+        initial_snapshot[2] = "20210223"
+        item, request = list(self.spider.parse(self.response([initial_snapshot], fund="159849.SZ")))
+        self.assertEqual(item["data"]["end_date"].tolist(), ["20210223"])
+        self.assertEqual(json.loads(request.body)["params"]["offset"], 1)
+
+    def test_history_before_configured_boundary_is_not_stored_but_pagination_continues(self):
+        old = self.row()
+        old[2] = "20231231"
+        outputs = list(self.spider.parse(self.response([old])))
+        self.assertEqual(len(outputs), 1)
+        self.assertEqual(json.loads(outputs[0].body)["params"]["offset"], 1)
+
+    def test_unexpected_report_period_is_allowed_when_it_is_in_configured_history(self):
         row = self.row()
         row[2] = "20240331"
-        with self.assertRaisesRegex(RuntimeError, "different report period"):
-            list(self.spider.parse(self.response([row])))
+        item, request = list(self.spider.parse(self.response([row])))
+        self.assertEqual(item["data"]["end_date"].tolist(), ["20240331"])
+        self.assertEqual(json.loads(request.body)["params"]["offset"], 1)
+
+    def test_blank_fund_code_in_source_fails_request_code_validation(self):
+        with self.assertRaisesRegex(RuntimeError, "different fund code"):
+            list(self.spider.parse(self.response([self.row(fund="")])))
 
     def test_progress_keeps_hashes_and_counts_without_accumulating_dataframes(self):
         for offset in range(20):
             list(self.spider.parse(self.response([self.row(symbol=f"{offset:06d}.SZ")], offset=offset)))
-        progress = self.spider.period_progress["20240630"]
-        self.assertEqual(progress["rows"], 20)
+        progress = self.spider.fund_progress["001753.OF"]
+        self.assertEqual(progress["source_rows"], 20)
+        self.assertEqual(progress["stored_rows"], 20)
         self.assertEqual(len(progress["page_hashes"]), 20)
-        self.assertEqual(set(progress), {"rows", "pages", "page_hashes"})
+        self.assertEqual(set(progress), {"source_rows", "stored_rows", "pages", "page_hashes"})
 
     def test_storage_receives_each_page_before_followup_request_is_emitted(self):
         self.spider.settings = Settings({"BATCH_ID": "stream-check"})
@@ -153,7 +247,7 @@ class FundPortfolioTest(unittest.TestCase):
             self.assertEqual(len(db.insert.call_args.kwargs["data"]), 1)
             next(outputs)
 
-    def test_empty_quarter_does_not_request_more_pages(self):
+    def test_empty_fund_does_not_request_more_pages(self):
         with mock.patch.object(self.spider, "request_with_requests") as fetch:
             self.assertEqual(list(self.spider.parse(self.response([]))), [])
         fetch.assert_not_called()
@@ -239,6 +333,8 @@ class FundPortfolioTest(unittest.TestCase):
             self.assertEqual(rules[rule_id].severity, "BLOCKER")
         self.assertIn("GROUP BY ts_code, ann_date, end_date, symbol", rules["dwd_single_open_version"].issue_count_sql)
         self.assertIn("end_date > ann_date", rules["fund_portfolio_report_dates"].issue_count_sql)
+        self.assertNotIn("toLastDayOfMonth", rules["fund_portfolio_report_dates"].issue_count_sql)
+        self.assertNotIn("toMonth(end_date)", rules["fund_portfolio_report_dates"].issue_count_sql)
         self.assertIn(
             "available_trade_date <= ann_date", rules["fund_portfolio_strict_next_trade_visibility"].issue_count_sql
         )

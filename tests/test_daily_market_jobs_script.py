@@ -31,6 +31,20 @@ class DailyMarketJobsScriptTest(unittest.TestCase):
     def test_daily_script_uses_shared_runner(self):
         self.assertIn('source "$SCRIPT_DIR/lib/market_job_runner.sh"', self.script)
 
+    def test_fund_portfolio_collection_and_dwd_sync_are_full_only(self):
+        self.assertRegex(
+            self.script,
+            r'if \[\[ "\$UPDATE_TYPE" == "full" \]\]; then\s+'
+            r'jobs\+=\(\s+"tushare-job-\$\{UPDATE_TYPE\}-fund-portfolio\|'
+            r'\$IMAGE_DEFAULT\|fund/portfolio\|full"\s+\)\s+fi',
+        )
+        self.assertRegex(
+            self.script,
+            r'if \[\[ "\$UPDATE_TYPE" == "full" \]\]; then\s+'
+            r'dwd_sync_tasks\+=\(\s+"tushare-dwd-sync-fund-portfolio\|'
+            r'\$DWD_SYNC_IMAGE\|dwd_fund_portfolio"\s+\)\s+fi',
+        )
+
     def test_stock_factor_wide_v2_is_scheduled_between_wide_and_matrix(self):
         old_wide = self.script.index("dws_stock_factor_wide\"")
         v2_wide = self.script.index("dws_stock_factor_wide_v2\"")

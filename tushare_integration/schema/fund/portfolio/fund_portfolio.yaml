@@ -1,7 +1,7 @@
 id: 121
 api_name: fund_portfolio
 name: fund_portfolio
-comment: 公募基金季度股票持仓（Tushare doc_id=121）
+comment: 公募基金股票持仓（Tushare doc_id=121，包含首期非自然季末快照）
 dependencies: []
 primary_key:
   - ts_code

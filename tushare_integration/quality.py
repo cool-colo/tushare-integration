@@ -1423,10 +1423,9 @@ class QualityManager:
             ),
             (
                 "fund_portfolio_report_dates",
-                "Fund holdings must have a valid quarter end no later than the announcement",
+                "Fund holdings must have a valid report date no later than the announcement",
                 "end_date <= toDate32('1971-01-01') OR ann_date <= toDate32('1971-01-01') "
-                "OR end_date > ann_date OR end_date != toLastDayOfMonth(end_date) "
-                "OR toMonth(end_date) NOT IN (3, 6, 9, 12) OR event_date != end_date",
+                "OR end_date > ann_date OR event_date != end_date",
             ),
             (
                 "fund_portfolio_strict_next_trade_visibility",

@@ -15,7 +15,13 @@ main() {
     "tushare-job-${UPDATE_TYPE}-index-basic|$IMAGE_DEFAULT|index/basic|full"
     "tushare-job-${UPDATE_TYPE}-future-basic|$IMAGE_DEFAULT|future/basic|full"
     "tushare-job-${UPDATE_TYPE}-financial|$IMAGE_DEFAULT|stock/financial"
-    "tushare-job-${UPDATE_TYPE}-fund-portfolio|$IMAGE_DEFAULT|fund/portfolio|full"
+  )
+  if [[ "$UPDATE_TYPE" == "full" ]]; then
+    jobs+=(
+      "tushare-job-${UPDATE_TYPE}-fund-portfolio|$IMAGE_DEFAULT|fund/portfolio|full"
+    )
+  fi
+  jobs+=(
     "tushare-job-${UPDATE_TYPE}-fund-basic|$IMAGE_DEFAULT|fund/basic|full"
     "tushare-job-${UPDATE_TYPE}-fund-quotes|$IMAGE_DEFAULT|fund/quotes"
     "tushare-job-${UPDATE_TYPE}-margin|$IMAGE_DEFAULT|stock/margin"
@@ -55,7 +61,13 @@ main() {
     "tushare-dwd-sync-stock-chip-distribution|$DWD_SYNC_IMAGE|dwd_stock_chip_distribution"
     "tushare-dwd-sync-stock-share-float|$DWD_SYNC_IMAGE|dwd_stock_share_float"
     "tushare-dwd-sync-stock-research-report|$DWD_SYNC_IMAGE|dwd_stock_research_report"
-    "tushare-dwd-sync-fund-portfolio|$DWD_SYNC_IMAGE|dwd_fund_portfolio"
+  )
+  if [[ "$UPDATE_TYPE" == "full" ]]; then
+    dwd_sync_tasks+=(
+      "tushare-dwd-sync-fund-portfolio|$DWD_SYNC_IMAGE|dwd_fund_portfolio"
+    )
+  fi
+  dwd_sync_tasks+=(
     "tushare-dwd-sync-dc-concept|$DWD_SYNC_IMAGE|dwd_dc_concept"
     "tushare-dwd-sync-dc-concept-cons|$DWD_SYNC_IMAGE|dwd_dc_concept_cons"
     "tushare-dwd-sync-dc-index|$DWD_SYNC_IMAGE|dwd_dc_index"

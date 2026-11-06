@@ -99,21 +99,23 @@ class TushareSpider(scrapy.Spider):
 
     def parse_response(self, response, **kwargs):
         resp = json.loads(response.text)
+        api_name = getattr(response, "meta", {}).get("api_name", self.get_api_name())
+        fields = getattr(response, "meta", {}).get("fields") or self.load_fields()
 
         if resp["code"] != 0:
             msg = resp.get("msg", "")
             if self.is_empty_data_response(resp):
                 logging.info(
-                    f"Request {self.get_api_name()} returned no data: {msg}, "
+                    f"Request {api_name} returned no data: {msg}, "
                     f"params: {getattr(response, 'meta', {}).get('params', {})}"
                 )
-                return self.build_empty_item()
+                return self.build_empty_item(fields=fields)
 
-            logging.error(f"Request {self.get_api_name()} failed: {msg}")
+            logging.error(f"Request {api_name} failed: {msg}")
             raise RuntimeError(msg)
 
         data = resp.get("data") or {}
-        fields = data.get("fields") or self.load_fields().split(",")
+        fields = data.get("fields") or fields.split(",")
         items = data.get("items") or []
 
         return TushareIntegrationItem(data=pd.DataFrame(data=items, columns=fields))
@@ -123,40 +125,52 @@ class TushareSpider(scrapy.Spider):
         msg = str(resp.get("msg", ""))
         return any(fragment in msg for fragment in TUSHARE_EMPTY_DATA_MESSAGE_FRAGMENTS)
 
-    def build_empty_item(self):
-        return TushareIntegrationItem(data=pd.DataFrame(columns=self.load_fields().split(",")))
+    def build_empty_item(self, fields: str | None = None):
+        return TushareIntegrationItem(data=pd.DataFrame(columns=(fields or self.load_fields()).split(",")))
 
     def get_db_engine(self):
         return self.db_engine
 
-    def get_scrapy_request(self, params: dict | None = None, meta: dict | None = None):
+    def get_scrapy_request(
+        self,
+        params: dict | None = None,
+        meta: dict | None = None,
+        *,
+        api_name: str | None = None,
+        fields: str | None = None,
+        callback=None,
+    ):
         if not params:
             params = {}
 
         if not meta:
             meta = {}
 
-        logging.info(f"Requesting {self.get_api_name()} with params: {params}")
+        api_name = api_name or self.get_api_name()
+        fields = fields or self.load_fields()
+        logging.info(f"Requesting {api_name} with params: {params}")
 
         return scrapy.Request(
             url=self.spider_settings.tushare_url,
             method="POST",
             body=json.dumps(
                 {
-                    "api_name": self.get_api_name(),
+                    "api_name": api_name,
                     "token": self.spider_settings.tushare_token,
                     "params": params,
-                    "fields": self.load_fields(),
+                    "fields": fields,
                 }
             ),
             headers={
                 "Content-Type": "application/json",
             },
             meta={
-                'api_name': self.get_api_name(),
+                'api_name': api_name,
                 'params': params,
+                'fields': fields,
             }
             | meta,
+            callback=callback,
         )
 
     def wait_for_rate_limit(self):
