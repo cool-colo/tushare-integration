@@ -1,0 +1,5 @@
+from ricequant_integration.commands import main
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

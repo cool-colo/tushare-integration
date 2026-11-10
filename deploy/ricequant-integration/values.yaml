@@ -1,0 +1,28 @@
+image:
+  repository: zhangbc/tushare-integration
+  tag: "0.1.7"
+  pullPolicy: IfNotPresent
+
+schedule: "30 18 * * 1-5"
+timeZone: Asia/Shanghai
+configMapName: ricequant-integration
+createConfigMap: true
+config:
+  database:
+    host: clickhouse
+    port: 8123
+    user: default
+    db_name: default
+  history_start_date: "1990-01-01"
+  financial_start_date: "2015-01-01"
+  financial_batch_size: 20
+  financial_rescan_days: 1100
+  tick_lookback_calendar_days: 31
+  daily_data_ready_time: "18:00"
+  quota_min_reserve_bytes: 268435456
+  quota_estimate_multiplier: 1.5
+secretName: ricequant-credentials
+ttlSecondsAfterFinished: 86400
+backoffLimit: 1
+resources: {}
+

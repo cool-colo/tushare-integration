@@ -3,3 +3,5 @@
 logs
 __pycache__
 config.yaml
+ricequant.yaml
+ricequant.env

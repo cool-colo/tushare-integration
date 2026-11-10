@@ -1,0 +1,7 @@
+apiVersion: v2
+name: ricequant-integration
+description: Independent scheduled RQData ingestion
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+

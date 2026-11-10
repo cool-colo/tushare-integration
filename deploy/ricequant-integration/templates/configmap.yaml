@@ -1,0 +1,10 @@
+{{- if .Values.createConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMapName }}
+  namespace: {{ .Release.Namespace }}
+data:
+  ricequant.yaml: |
+{{ toYaml .Values.config | indent 4 }}
+{{- end }}

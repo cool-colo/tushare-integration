@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ricequant-integration-daily
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: {{ .Values.schedule | quote }}
+  timeZone: {{ .Values.timeZone | quote }}
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.backoffLimit }}
+      ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
+      template:
+        spec:
+          restartPolicy: Never
+          volumes:
+            - name: ricequant-config
+              configMap:
+                name: {{ .Values.configMapName }}
+          containers:
+            - name: ricequant
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: ["python", "-m", "ricequant_integration"]
+              args: ["--config", "/code/app/ricequant.yaml", "incremental"]
+              envFrom:
+                - secretRef:
+                    name: {{ .Values.secretName }}
+              volumeMounts:
+                - name: ricequant-config
+                  mountPath: /code/app/ricequant.yaml
+                  subPath: ricequant.yaml
+                  readOnly: true
+              resources:
+                {{- toYaml .Values.resources | nindent 16 }}
+

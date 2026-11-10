@@ -11,6 +11,7 @@ nav:
   - fund_portfolio.md
   - settings.md
   - develop.md
+  - ricequant_integration_design.md
   - quality_rules_report_zh.md
   - dqc_design.md
   - prd/dws_stock_factor_wide_matrix_adjustment_policy.md

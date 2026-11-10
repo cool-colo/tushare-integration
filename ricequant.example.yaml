@@ -1,0 +1,37 @@
+database:
+  # Docker + crontab deployment uses --net=host, so a ClickHouse container
+  # published on the host is normally reached through 127.0.0.1.
+  host: 127.0.0.1
+  port: 8123
+  user: default
+  password: ""
+  db_name: default
+
+# The RQData credential is deliberately not stored here. Set RQDATA_TOKEN to
+# the complete opaque RiceQuant/RQSDK license string supplied by RiceQuant.
+history_start_date: "1990-01-01"
+# Independent of history_start_date and indexes: index_weights_ex uses the
+# source-supported index set and starts from this date.
+index_weights_ex_start_date: "2015-01-01"
+stock_daily_start_date: "2015-01-01"
+stock_minute_start_date: "2020-01-01"
+factor_start_date: "1990-01-01"
+financial_start_date: "2015-01-01"
+concept_start_date: "2015-01-01"
+stock_daily_batch_size: 1000
+stock_minute_batch_size: 200
+financial_batch_size: 20
+# Incremental jobs re-query report periods in this calendar-day window so
+# later comparative disclosures and corrections are retained.
+financial_rescan_days: 1100
+classification_lookback_calendar_days: 7
+tick_lookback_calendar_days: 31
+daily_data_ready_time: "18:00"
+quota_min_reserve_bytes: 268435456
+quota_estimate_multiplier: 1.5
+lock_file: /tmp/ricequant-integration.lock
+batch_rows: 200000
+
+# Defaults to the ten core indexes documented in docs/ricequant_integration_design.md.
+# indexes:
+#   - 000300.XSHG
