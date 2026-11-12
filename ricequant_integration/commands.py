@@ -4,9 +4,11 @@ import argparse
 import fcntl
 import json
 import logging
+import signal
 from contextlib import contextmanager
 from datetime import date
 from pathlib import Path
+from types import FrameType
 from typing import Any, Iterator
 
 from ricequant_integration.client import RqDataClient
@@ -14,6 +16,31 @@ from ricequant_integration.quota import QuotaSnapshot
 from ricequant_integration.runner import RiceQuantRunner
 from ricequant_integration.settings import RiceQuantSettings
 from ricequant_integration.storage import RiceQuantStorage
+
+
+SHUTDOWN_SIGNALS = (
+    signal.SIGINT,
+    signal.SIGTERM,
+    signal.SIGHUP,
+    signal.SIGQUIT,
+)
+
+
+def _shutdown_on_signal(signum: int, _frame: FrameType | None) -> None:
+    """Turn process stop signals into normal stack unwinding.
+
+    Ignoring follow-up stop signals protects the ClickHouse lock cleanup from
+    an impatient second Ctrl+C. SIGKILL cannot be handled by any process.
+    """
+
+    for shutdown_signal in SHUTDOWN_SIGNALS:
+        signal.signal(shutdown_signal, signal.SIG_IGN)
+    raise SystemExit(128 + signum)
+
+
+def install_shutdown_signal_handlers() -> None:
+    for shutdown_signal in SHUTDOWN_SIGNALS:
+        signal.signal(shutdown_signal, _shutdown_on_signal)
 
 
 @contextmanager
@@ -99,6 +126,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    install_shutdown_signal_handlers()
     args = build_parser().parse_args(argv)
     logging.basicConfig(
         level=getattr(logging, args.log_level.upper()),

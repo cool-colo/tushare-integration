@@ -58,15 +58,27 @@ if [[ "$MODE" == "quota" ]]; then
   # active. A per-process name also permits simultaneous operator queries.
   CONTAINER_NAME="ricequant-quota-$$"
 fi
-cleanup() {
+cleanup_stale_container() {
   docker_cmd rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
 }
-trap cleanup INT TERM
+
+# Let the Python process unwind its context managers and drop the distributed
+# ClickHouse lock. Never force-remove a live runner from an INT/TERM trap.
+forward_signal() {
+  local signal_name="$1"
+  docker_cmd kill --signal="$signal_name" "$CONTAINER_NAME" >/dev/null 2>&1 || true
+}
+
+trap 'forward_signal INT' INT
+trap 'forward_signal TERM' TERM
+trap 'forward_signal HUP' HUP
+trap 'forward_signal QUIT' QUIT
 
 # A stale container can remain after a host or scheduler crash. The host lock
 # above ensures this never removes a currently managed RiceQuant run.
-cleanup
+cleanup_stale_container
 echo "[$(date '+%F %T')] Starting RiceQuant mode=$MODE image=$IMAGE log=$RUN_LOG"
+set +e
 docker_cmd run --rm \
   --name "$CONTAINER_NAME" \
   --net=host \
@@ -74,5 +86,13 @@ docker_cmd run --rm \
   -v "$CONFIG_FILE:/code/app/ricequant.yaml:ro" \
   "$IMAGE" \
   python -m ricequant_integration --config /code/app/ricequant.yaml "$MODE" "$@"
+status=$?
+set -e
+
+if (( status != 0 )); then
+  echo "[$(date '+%F %T')] RiceQuant mode=$MODE stopped or failed. exit_code=$status"
+  exit "$status"
+fi
+
 echo "[$(date '+%F %T')] RiceQuant mode=$MODE finished"
 
