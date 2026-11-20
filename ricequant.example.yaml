@@ -15,11 +15,13 @@ history_start_date: "1990-01-01"
 index_weights_ex_start_date: "2015-01-01"
 stock_daily_start_date: "2015-01-01"
 stock_minute_start_date: "2020-01-01"
+option_start_date: "2019-01-01"
 factor_start_date: "1990-01-01"
 financial_start_date: "2015-01-01"
 concept_start_date: "2015-01-01"
 stock_daily_batch_size: 1000
 stock_minute_batch_size: 200
+option_batch_size: 500
 financial_batch_size: 20
 # Incremental jobs re-query report periods in this calendar-day window so
 # later comparative disclosures and corrections are retained.

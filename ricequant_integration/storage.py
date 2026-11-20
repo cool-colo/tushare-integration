@@ -250,6 +250,10 @@ class RiceQuantStorage:
         )
         return stage, existed
 
+    def discard_daily_stage(self, spec: DatasetSpec, trading_date: date) -> None:
+        stage = f"{spec.table}_stage_{trading_date:%Y%m%d}"
+        self.client.command(f"DROP TABLE IF EXISTS {self.db}.`{stage}`")
+
     def replace_daily_stage_batch(
         self,
         spec: DatasetSpec,

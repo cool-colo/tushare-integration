@@ -3,13 +3,15 @@
 ## 1. 范围与不变量
 
 本实现是独立的 `ricequant_integration` 包、CLI、配置、状态表和 CronJob。它与现有 Tushare
-任务可以并行运行，但同一时刻只允许一个 RiceQuant runner。现有 Tushare Spider、Pipeline、表模板和
+任务可以并行运行，但同一时刻只允许一个 RiceQuant 历史下载 runner。
+[实时分钟订阅程序](ricequant_realtime.md) 使用独立锁，可以与下载任务并行运行。现有 Tushare Spider、Pipeline、表模板和
 Job 均未改变。
 
 已接入数据包括核心指数行情/成份/权重、全 A 股 Tick、从 2015 年开始的未复权日线、从 2020 年开始的
 未复权 1 分钟线、独立复权/拆分因子，以及最近一周的概念和行业快照；交易日历和按交易日的证券快照
 作为依赖一并采集。财务数据通过 `get_pit_financials_ex` 按官方字段组拆成利润表、资产负债表、现金流量表
-和独立财务指标四张表。所有物理表以 `ricequant_` 开头。不同来源之间不做字段回退、
+和独立财务指标四张表。期权从 2019 年开始采集全部境内合约快照和日线行情，ETF 期权另存每日动态
+合约属性。所有物理表以 `ricequant_` 开头。不同来源之间不做字段回退、
 `coalesce` 或自动优先级选择。尤其深证成指、创业板指、中小板指的成交量/成交额口径可能与其他来源
 不同，使用时必须保留来源并单独核对。
 
@@ -66,6 +68,9 @@ DWD/DWS 血缘。
 | --- | --- | --- |
 | `ricequant_trading_calendar` | `calendar_date` | 年 |
 | `ricequant_instrument` | `snapshot_date, order_book_id` | 快照日 |
+| `ricequant_option_instrument` | `observation_date, snapshot_date, order_book_id` | 观察日、源快照日 |
+| `ricequant_option_contract_property` | `trading_date, order_book_id` | 交易日 |
+| `ricequant_option_daily` | `trading_date, order_book_id` | 交易日 |
 | `ricequant_index_daily` | `order_book_id, trading_date` | 指数、月 |
 | `ricequant_index_component` | `index_id, trading_date, component_id` | 指数、月 |
 | `ricequant_index_weight` | `index_id, snapshot_date, component_id` | 指数、月 |
@@ -113,6 +118,13 @@ Tick 是特殊的两级提交：一个交易日只有一张持久 staging 表；
 也不会跨来源补值。表按股票分区，一批 API 返回按股票拆分后，用报告期范围原子替换；已完成股票在相同
 bootstrap 范围内直接跳过。四类财务数据的统一历史起点为 `2015-01-01`；显式请求更早日期也会被该边界
 限制。进程若在请求后、发布前崩溃，最多重拉当前小批次，不会重复最终表记录。
+
+期权使用三条独立链路，不扩展股票 `ricequant_instrument`。`option_instruments` 调用
+`all_instruments(type='Option', date=...)`，保留源快照日期和本系统观察时间；米筐说明该接口的合约详情
+可能是最新状态，因此历史 ETF 行权价和乘数必须以 `options.get_contract_property` 为准。动态属性表只
+包含该接口支持的交易所 ETF 期权；期权日线通过 `get_price(frequency='1d', adjust_type='none')` 覆盖
+ETF、股指和商品期权。行情和属性按月规划、按合约游标续传、按交易日原子发布，统一历史下限为
+`2019-01-01`。已完成月份在重复 backfill 时跳过，未完成月份从持久 staging 和最后合约代码恢复。
 
 ## 4. 配额、断点与每日增量
 
@@ -184,6 +196,7 @@ docker build -t tushare-integration:ricequant-v1 .
 scripts/run_ricequant_jobs.sh init-db
 scripts/run_ricequant_jobs.sh bootstrap --dataset index_daily --dataset index_components --dataset index_weights
 scripts/run_ricequant_jobs.sh bootstrap --dataset tick
+scripts/run_ricequant_jobs.sh backfill --dataset option_instruments --dataset option_contract_property --dataset option_daily --start 2019-01-01 --end "$(date +%F)"
 scripts/run_ricequant_jobs.sh bootstrap --dataset financial_income --dataset financial_balance --dataset financial_cashflow --dataset financial_metric
 scripts/run_ricequant_jobs.sh backfill --dataset financial_income --instrument 000001.XSHE --start 2024-01-01 --end 2024-12-31
 scripts/run_ricequant_incremental.sh
@@ -196,7 +209,7 @@ scripts/run_ricequant_incremental.sh
 ```
 
 `run_ricequant_incremental.sh` 显式调度当前已经实现的全部增量数据集，包括股票日线、分钟线、复权/拆股、
-指数、概念、行业、板块、四类财务数据和 Tick；交易日历及证券列表由依赖解析自动加入。Tick 默认开启且可能消耗较多
+指数、期权合约/动态属性/日线、概念、行业、板块、四类财务数据和 Tick；交易日历及证券列表由依赖解析自动加入。Tick 默认开启且可能消耗较多
 额度；若不需要每日 Tick，可在 crontab 命令前设置 `RICEQUANT_INCLUDE_TICK=0`，其余数据集不受影响。
 wrapper 的标准输出、错误堆栈和最终退出码写入
 `logs/ricequant-incremental-cron-YYYYMMDD.log`；底层任务仍保留自己的

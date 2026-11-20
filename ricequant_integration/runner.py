@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import calendar
+import hashlib
 import logging
 import uuid
 from dataclasses import dataclass
@@ -45,6 +46,9 @@ from ricequant_integration.transform import (
     index_weights_ex_frame,
     index_weights_frame,
     instruments_frame,
+    option_contract_property_frame,
+    option_daily_frame,
+    option_instruments_frame,
     sector_snapshot_frame,
     shenwan_industry_snapshot_frame,
     split_frame,
@@ -61,6 +65,9 @@ T = TypeVar("T")
 DEFAULT_ESTIMATES = {
     "trading_calendar": 2 * 1024 * 1024,
     "instruments": 4 * 1024 * 1024,
+    "option_instruments": 8 * 1024 * 1024,
+    "option_contract_property": 16 * 1024 * 1024,
+    "option_daily": 32 * 1024 * 1024,
     "index_daily": 2 * 1024 * 1024,
     "index_components": 8 * 1024 * 1024,
     "index_weights": 4 * 1024 * 1024,
@@ -213,6 +220,16 @@ class RiceQuantRunner:
                     self._sync_index_weights(mode, trading_dates, start, end)
                 if "index_weights_ex" in selected:
                     self._sync_index_weights_ex(mode, trading_dates, start, end)
+                if "option_instruments" in selected:
+                    self._sync_option_instruments(mode, trading_dates, start, end)
+                if "option_contract_property" in selected:
+                    self._sync_option_series(
+                        "option_contract_property", mode, trading_dates, start, end
+                    )
+                if "option_daily" in selected:
+                    self._sync_option_series(
+                        "option_daily", mode, trading_dates, start, end
+                    )
                 if "stock_daily" in selected:
                     self._sync_stock_bars(
                         "stock_daily", mode, trading_dates, start, end
@@ -330,6 +347,12 @@ class RiceQuantRunner:
             return date.fromisoformat(self.settings.stock_daily_start_date)
         if dataset == "stock_minute":
             return date.fromisoformat(self.settings.stock_minute_start_date)
+        if dataset in {
+            "option_instruments",
+            "option_contract_property",
+            "option_daily",
+        }:
+            return date.fromisoformat(self.settings.option_start_date)
         if dataset in {"stock_ex_factor", "stock_split"}:
             return date.fromisoformat(self.settings.factor_start_date)
         if dataset in FINANCIAL_DATASETS:
@@ -394,6 +417,9 @@ class RiceQuantRunner:
         order = [
             "trading_calendar",
             "instruments",
+            "option_instruments",
+            "option_contract_property",
+            "option_daily",
             "index_daily",
             "index_components",
             "index_weights",
@@ -1956,6 +1982,361 @@ class RiceQuantRunner:
             monotonic() - started,
         )
         return frame
+
+    def _sync_option_instruments(
+        self,
+        mode: str,
+        trading_dates: list[date],
+        start: date | None,
+        end: date | None,
+    ) -> None:
+        spec = DATASET_SPECS["option_instruments"]
+        bounds = self._date_bounds(mode, trading_dates, start, end, spec.name, "")
+        if not bounds:
+            return
+        snapshot_dates = [
+            value for value in trading_dates if bounds[0] <= value <= bounds[1]
+        ]
+        observation_date = datetime.now(ZoneInfo("Asia/Shanghai")).date()
+        dataset_started = monotonic()
+        LOGGER.info(
+            "dataset_started dataset=%s mode=%s range=%s..%s trading_days=%d",
+            spec.name,
+            mode,
+            bounds[0],
+            bounds[1],
+            len(snapshot_dates),
+        )
+        for position, snapshot_date in enumerate(snapshot_dates, start=1):
+            slice_key = str(snapshot_date)
+            latest = self.state.latest(spec.name, slice_key)
+            if latest and latest.status == "complete":
+                LOGGER.info(
+                    "snapshot_skipped dataset=%s date=%s day=%d/%d reason=complete",
+                    spec.name,
+                    snapshot_date,
+                    position,
+                    len(snapshot_dates),
+                )
+                continue
+            raw, consumed = self._fetch(
+                spec.name,
+                slice_key,
+                lambda value=snapshot_date: self.client.option_instruments(value),
+            )
+            observed_at = datetime.now(ZoneInfo("Asia/Shanghai"))
+            frame = option_instruments_frame(
+                raw,
+                snapshot_date,
+                observation_date,
+                observed_at,
+                self.run_id,
+            )
+            if not frame.empty:
+                frame = frame.drop_duplicates(list(spec.primary_key))
+            partition = (
+                f"tuple(toDate({quote_string(str(observation_date))}), "
+                f"toDate({quote_string(str(snapshot_date))}))"
+            )
+            result = self.storage.publish_partition(spec, partition, frame)
+            self.state.coverage_event(
+                spec,
+                slice_key,
+                "complete",
+                range_start=str(snapshot_date),
+                range_end=str(snapshot_date),
+                partition_value=partition,
+                row_count=result.row_count,
+                content_hash=result.content_hash,
+                quota_bytes_used=consumed,
+            )
+            if position == 1 or position % 20 == 0 or position == len(snapshot_dates):
+                LOGGER.info(
+                    "snapshot_progress dataset=%s date=%s day=%d/%d rows=%d quota_bytes=%d elapsed_seconds=%.1f",
+                    spec.name,
+                    snapshot_date,
+                    position,
+                    len(snapshot_dates),
+                    result.row_count,
+                    consumed,
+                    monotonic() - dataset_started,
+                )
+        LOGGER.info(
+            "dataset_complete dataset=%s trading_days=%d elapsed_seconds=%.1f",
+            spec.name,
+            len(snapshot_dates),
+            monotonic() - dataset_started,
+        )
+
+    def _option_month_universe(
+        self, start: date, end: date, *, etf_only: bool
+    ) -> list[str]:
+        frame = self.storage.client.query_df(
+            f"""
+            SELECT order_book_id,
+                   argMax(underlying_symbol, tuple(observed_at, _ingest_time)) AS underlying_symbol
+            FROM {self.storage.db}.`ricequant_option_instrument`
+            WHERE snapshot_date BETWEEN toDate({quote_string(str(start))})
+                                    AND toDate({quote_string(str(end))})
+            GROUP BY order_book_id
+            ORDER BY order_book_id
+            """
+        )
+        if frame.empty:
+            return []
+        if etf_only:
+            underlying = frame["underlying_symbol"].fillna("").astype(str)
+            frame = frame[underlying.str.endswith((".XSHG", ".XSHE"))]
+        return sorted(set(frame["order_book_id"].dropna().astype(str)))
+
+    def _sync_option_series(
+        self,
+        dataset: str,
+        mode: str,
+        trading_dates: list[date],
+        start: date | None,
+        end: date | None,
+    ) -> None:
+        spec = DATASET_SPECS[dataset]
+        bounds = self._date_bounds(mode, trading_dates, start, end, dataset, "")
+        if not bounds:
+            return
+        dates = [value for value in trading_dates if bounds[0] <= value <= bounds[1]]
+        month_groups: dict[tuple[int, int], list[date]] = {}
+        for trading_date in dates:
+            month_groups.setdefault((trading_date.year, trading_date.month), []).append(
+                trading_date
+            )
+        slices = [
+            DateSlice(values[0], values[-1], f"{year:04d}-{month:02d}")
+            for (year, month), values in sorted(month_groups.items())
+        ]
+        complete = self.state.completed_slice_ranges(dataset)
+        dataset_started = monotonic()
+        LOGGER.info(
+            "dataset_started dataset=%s mode=%s range=%s..%s months=%d batch_size=%d",
+            dataset,
+            mode,
+            bounds[0],
+            bounds[1],
+            len(slices),
+            self.settings.option_batch_size,
+        )
+        for month_position, slice_ in enumerate(slices, start=1):
+            if mode in {"bootstrap", "backfill"} and self._completed_slice_covers(
+                complete, slice_
+            ):
+                LOGGER.info(
+                    "option_month_skipped dataset=%s month=%s reason=complete",
+                    dataset,
+                    slice_.slice_key,
+                )
+                continue
+            latest = self.state.latest(dataset, slice_.slice_key)
+            if mode == "incremental" and latest and latest.status in {"partial", "quota_paused"}:
+                saved_start = date.fromisoformat(latest.cursor["range_start"])
+                saved_end = date.fromisoformat(latest.cursor["range_end"])
+                if (
+                    saved_start.strftime("%Y-%m") == slice_.slice_key
+                    and saved_end.strftime("%Y-%m") == slice_.slice_key
+                    and trading_dates[0] <= saved_start <= saved_end <= slice_.end
+                    and (start is None or saved_start == slice_.start)
+                ):
+                    # Finish the durable interval before introducing new dates or
+                    # contracts. Incremental bounds can also move backwards when
+                    # this month's partial event hides its previous completion.
+                    extension = [value for value in dates if saved_end < value <= slice_.end]
+                    if extension:
+                        slices.insert(
+                            month_position,
+                            DateSlice(extension[0], extension[-1], slice_.slice_key),
+                        )
+                    slice_ = DateSlice(saved_start, saved_end, slice_.slice_key)
+            month_dates = [
+                value for value in trading_dates if slice_.start <= value <= slice_.end
+            ]
+            universe = self._option_month_universe(
+                slice_.start,
+                slice_.end,
+                etf_only=dataset == "option_contract_property",
+            )
+            resume_requested = bool(
+                latest
+                and latest.status in {"partial", "quota_paused"}
+                and latest.cursor.get("range_start") == str(slice_.start)
+                and latest.cursor.get("range_end") == str(slice_.end)
+            )
+            stages: dict[date, str] = {}
+            all_existed = True
+            for trading_date in month_dates:
+                stage, existed = self.storage.prepare_daily_stage(spec, trading_date)
+                stages[trading_date] = stage
+                all_existed = all_existed and existed
+            resume = resume_requested and all_existed
+            if not resume:
+                for trading_date in month_dates:
+                    self.storage.discard_daily_stage(spec, trading_date)
+                    stages[trading_date] = self.storage.prepare_daily_stage(
+                        spec, trading_date
+                    )[0]
+            last_id = (
+                str(latest.cursor.get("last_order_book_id", ""))
+                if resume and latest
+                else ""
+            )
+            pending = [value for value in universe if value > last_id]
+            batches = list(self._batches(pending, self.settings.option_batch_size))
+            month_started = monotonic()
+            quota_bytes = 0
+            downloaded_rows = 0
+            LOGGER.info(
+                "option_month_started dataset=%s month=%s month_position=%d/%d range=%s..%s universe=%d resumed=%d pending=%d batches=%d",
+                dataset,
+                slice_.slice_key,
+                month_position,
+                len(slices),
+                slice_.start,
+                slice_.end,
+                len(universe),
+                len(universe) - len(pending),
+                len(pending),
+                len(batches),
+            )
+            if not universe:
+                raise ValueError(
+                    f"no option instruments found for {dataset} {slice_.start}..{slice_.end}"
+                )
+            for batch_position, order_book_ids in enumerate(batches, start=1):
+                try:
+                    if dataset == "option_contract_property":
+                        raw, consumed = self._fetch(
+                            dataset,
+                            f"{slice_.slice_key}:{order_book_ids[0]}-{order_book_ids[-1]}",
+                            lambda ids=order_book_ids, value=slice_: self.client.option_contract_property(
+                                ids, value.start, value.end
+                            ),
+                        )
+                        frame = option_contract_property_frame(raw, self.run_id)
+                    else:
+                        raw, consumed = self._fetch(
+                            dataset,
+                            f"{slice_.slice_key}:{order_book_ids[0]}-{order_book_ids[-1]}",
+                            lambda ids=order_book_ids, value=slice_: self.client.option_daily(
+                                ids, value.start, value.end
+                            ),
+                        )
+                        frame = option_daily_frame(raw, self.run_id)
+                except QuotaPaused:
+                    self.state.coverage_event(
+                        spec,
+                        slice_.slice_key,
+                        "quota_paused",
+                        range_start=str(slice_.start),
+                        range_end=str(slice_.end),
+                        cursor={
+                            "last_order_book_id": last_id,
+                            "universe_size": len(universe),
+                            "range_start": str(slice_.start),
+                            "range_end": str(slice_.end),
+                        },
+                        message="resume the same option month on the next quota day",
+                    )
+                    LOGGER.warning(
+                        "option_month_quota_paused dataset=%s month=%s processed=%d/%d last=%s rows=%d elapsed_seconds=%.1f",
+                        dataset,
+                        slice_.slice_key,
+                        len(universe) - len(pending) + (batch_position - 1) * self.settings.option_batch_size,
+                        len(universe),
+                        last_id or "none",
+                        downloaded_rows,
+                        monotonic() - month_started,
+                    )
+                    raise
+                returned_dates = set(frame["trading_date"].dropna()) if not frame.empty else set()
+                unexpected_dates = returned_dates - set(month_dates)
+                if unexpected_dates:
+                    raise ValueError(
+                        f"RQData {dataset} returned dates outside requested month: {sorted(unexpected_dates)[:5]}"
+                    )
+                for trading_date in month_dates:
+                    day_frame = frame[frame["trading_date"] == trading_date].copy()
+                    self.storage.replace_daily_stage_batch(
+                        spec, stages[trading_date], order_book_ids, day_frame
+                    )
+                last_id = order_book_ids[-1]
+                downloaded_rows += len(frame)
+                quota_bytes += consumed
+                self.state.coverage_event(
+                    spec,
+                    slice_.slice_key,
+                    "partial",
+                    range_start=str(slice_.start),
+                    range_end=str(slice_.end),
+                    cursor={
+                        "last_order_book_id": last_id,
+                        "universe_size": len(universe),
+                        "range_start": str(slice_.start),
+                        "range_end": str(slice_.end),
+                    },
+                )
+                if (
+                    batch_position == 1
+                    or batch_position % 5 == 0
+                    or batch_position == len(batches)
+                ):
+                    LOGGER.info(
+                        "option_month_progress dataset=%s month=%s batch=%d/%d last=%s rows=%d quota_bytes=%d elapsed_seconds=%.1f",
+                        dataset,
+                        slice_.slice_key,
+                        batch_position,
+                        len(batches),
+                        last_id,
+                        downloaded_rows,
+                        quota_bytes,
+                        monotonic() - month_started,
+                    )
+            results = [
+                self.storage.publish_daily_stage(spec, stages[value], value)
+                for value in month_dates
+            ]
+            content_hash = hashlib.md5(
+                "".join(result.content_hash for result in results).encode(),
+                usedforsecurity=False,
+            ).hexdigest()
+            row_count = sum(result.row_count for result in results)
+            self.state.coverage_event(
+                spec,
+                slice_.slice_key,
+                "complete",
+                range_start=str(slice_.start),
+                range_end=str(slice_.end),
+                partition_value=f"{slice_.start}..{slice_.end}",
+                cursor={
+                    "last_order_book_id": last_id,
+                    "universe_size": len(universe),
+                    "range_start": str(slice_.start),
+                    "range_end": str(slice_.end),
+                },
+                row_count=row_count,
+                content_hash=content_hash,
+                quota_bytes_used=quota_bytes,
+                mutable_until=slice_.end + timedelta(days=spec.mutable_days),
+            )
+            LOGGER.info(
+                "option_month_complete dataset=%s month=%s days=%d rows=%d quota_bytes=%d elapsed_seconds=%.1f",
+                dataset,
+                slice_.slice_key,
+                len(month_dates),
+                row_count,
+                quota_bytes,
+                monotonic() - month_started,
+            )
+        LOGGER.info(
+            "dataset_complete dataset=%s months=%d elapsed_seconds=%.1f",
+            dataset,
+            len(slices),
+            monotonic() - dataset_started,
+        )
 
     def _sync_tick(
         self, mode: str, trading_dates: list[date], start: date | None, end: date | None

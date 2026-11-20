@@ -31,7 +31,6 @@ class DailyMarketJobsScriptTest(unittest.TestCase):
     def test_daily_script_uses_shared_runner(self):
         self.assertIn('source "$SCRIPT_DIR/lib/market_job_runner.sh"', self.script)
 
-<<<<<<< Updated upstream
     def test_fund_portfolio_collection_and_dwd_sync_are_full_only(self):
         self.assertRegex(
             self.script,
@@ -45,8 +44,6 @@ class DailyMarketJobsScriptTest(unittest.TestCase):
             r'dwd_sync_tasks\+=\(\s+"tushare-dwd-sync-fund-portfolio\|'
             r'\$DWD_SYNC_IMAGE\|dwd_fund_portfolio"\s+\)\s+fi',
         )
-=======
->>>>>>> Stashed changes
     def test_shared_runner_sends_concise_dqc_dingtalk_report(self):
         runner_path = self.root_dir / "scripts" / "lib" / "market_job_runner.sh"
         runner = runner_path.read_text(encoding="utf-8")

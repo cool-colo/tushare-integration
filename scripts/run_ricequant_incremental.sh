@@ -29,6 +29,9 @@ case "$INCLUDE_TICK" in
 esac
 
 datasets=(
+  option_instruments
+  option_contract_property
+  option_daily
   index_daily
   index_components
   index_weights

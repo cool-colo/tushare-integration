@@ -24,7 +24,9 @@ class RqDataClient:
                 self.rq = importlib.import_module("rqdatac")
             except ImportError as exc:
                 raise RuntimeError(
-                    "rqdatac is required; install project dependencies first"
+                    f"Cannot import rqdatac (dependency: {exc.name or 'rqdatac'}). "
+                    "In this Python environment run: "
+                    "python -m pip install 'rqdatac[subscribe]==3.8.1'"
                 ) from exc
         # RiceQuant issues an opaque RQSDK license rather than a username and
         # password. rqdatac reads that license from RQDATAC_CONF. Keep URI
@@ -216,6 +218,61 @@ class RqDataClient:
 
     def instruments(self, snapshot_date: date) -> pd.DataFrame:
         return self._as_frame(self.rq.all_instruments(type="CS", date=snapshot_date))
+
+    def option_instruments(self, snapshot_date: date) -> pd.DataFrame:
+        return self._as_frame(
+            self.rq.all_instruments(type="Option", date=snapshot_date, market="cn")
+        )
+
+    def option_contract_property(
+        self, order_book_ids: list[str], start: date, end: date
+    ) -> pd.DataFrame:
+        return self._as_frame(
+            self.rq.options.get_contract_property(
+                order_book_ids,
+                start_date=start,
+                end_date=end,
+                fields=[
+                    "product_name",
+                    "symbol",
+                    "contract_multiplier",
+                    "strike_price",
+                ],
+                market="cn",
+            )
+        )
+
+    def option_daily(
+        self, order_book_ids: list[str], start: date, end: date
+    ) -> pd.DataFrame:
+        return self._as_frame(
+            self.rq.get_price(
+                order_book_ids,
+                start_date=start,
+                end_date=end,
+                frequency="1d",
+                fields=[
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "prev_close",
+                    "volume",
+                    "total_turnover",
+                    "open_interest",
+                    "strike_price",
+                    "contract_multiplier",
+                    "prev_settlement",
+                    "settlement",
+                    "limit_up",
+                    "limit_down",
+                    "day_session_open",
+                ],
+                adjust_type="none",
+                expect_df=True,
+                market="cn",
+            )
+        )
 
     def tick(self, order_book_id: str, trading_date: date) -> pd.DataFrame:
         return self._as_frame(

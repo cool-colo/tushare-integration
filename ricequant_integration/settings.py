@@ -29,11 +29,13 @@ class RiceQuantSettings:
     index_weights_ex_start_date: str = "2015-01-01"
     stock_daily_start_date: str = "2015-01-01"
     stock_minute_start_date: str = "2020-01-01"
+    option_start_date: str = "2019-01-01"
     factor_start_date: str = "1990-01-01"
     financial_start_date: str = "2015-01-01"
     concept_start_date: str = "2015-01-01"
     stock_daily_batch_size: int = 1000
     stock_minute_batch_size: int = 200
+    option_batch_size: int = 500
     financial_batch_size: int = 20
     financial_rescan_days: int = 1100
     classification_lookback_calendar_days: int = 7
@@ -78,11 +80,13 @@ class RiceQuantSettings:
             "index_weights_ex_start_date",
             "stock_daily_start_date",
             "stock_minute_start_date",
+            "option_start_date",
             "factor_start_date",
             "financial_start_date",
             "concept_start_date",
             "stock_daily_batch_size",
             "stock_minute_batch_size",
+            "option_batch_size",
             "financial_batch_size",
             "financial_rescan_days",
             "classification_lookback_calendar_days",
@@ -107,6 +111,7 @@ class RiceQuantSettings:
             stock_minute_start_date=str(
                 raw.get("stock_minute_start_date", "2020-01-01")
             ),
+            option_start_date=str(raw.get("option_start_date", "2019-01-01")),
             factor_start_date=str(raw.get("factor_start_date", "1990-01-01")),
             financial_start_date=str(
                 raw.get("financial_start_date", "2015-01-01")
@@ -118,6 +123,7 @@ class RiceQuantSettings:
             stock_minute_batch_size=max(
                 1, int(raw.get("stock_minute_batch_size", 200))
             ),
+            option_batch_size=max(1, int(raw.get("option_batch_size", 500))),
             financial_batch_size=max(1, int(raw.get("financial_batch_size", 20))),
             financial_rescan_days=max(
                 1, int(raw.get("financial_rescan_days", 1100))

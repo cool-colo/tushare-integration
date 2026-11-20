@@ -5,3 +5,5 @@ __pycache__
 config.yaml
 ricequant.yaml
 ricequant.env
+data/ricequant-realtime/
+data/ricequant-realtime-csi2000/

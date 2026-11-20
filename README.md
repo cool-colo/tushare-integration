@@ -2,6 +2,9 @@
 
 > TusharePro接口数据集成工具
 
+米筐沪深 A 股与中证 2000 独立实时分钟订阅、ClickHouse 最近 7 个交易日分区保留与常驻部署：
+[使用说明](docs/ricequant_realtime.md)。
+
 完整文档地址：[https://zhangbc97.github.io/tushare-integration/](https://zhangbc97.github.io/tushare-integration/)
 
 ## 项目背景

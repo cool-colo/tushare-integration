@@ -775,6 +775,150 @@ def instruments_frame(
     )
 
 
+OPTION_INSTRUMENT_COLUMNS = [
+    "observation_date",
+    "observed_at",
+    "snapshot_date",
+    "order_book_id",
+    "symbol",
+    "abbrev_symbol",
+    "type",
+    "exchange",
+    "listed_date",
+    "de_listed_date",
+    "status",
+    "underlying_symbol",
+    "underlying_order_book_id",
+    "option_type",
+    "maturity_date",
+    "strike_price",
+    "contract_multiplier",
+    *METADATA,
+]
+
+
+def option_instruments_frame(
+    raw: pd.DataFrame,
+    snapshot_date: date,
+    observation_date: date,
+    observed_at: datetime,
+    batch_id: str,
+) -> pd.DataFrame:
+    result = _normalise_index(raw)
+    identifier = _find_column(result, ("order_book_id", "instrument"))
+    if not result.empty and identifier is None:
+        raise ValueError("RQData option instruments response has no order_book_id")
+    if identifier and identifier != "order_book_id":
+        result = result.rename(columns={identifier: "order_book_id"})
+    result["snapshot_date"] = snapshot_date
+    result["observation_date"] = observation_date
+    result["observed_at"] = observed_at
+    result["type"] = "Option"
+    for column in ("listed_date", "de_listed_date", "maturity_date"):
+        if column in result:
+            result[column] = pd.to_datetime(
+                result[column], format="ISO8601", errors="coerce"
+            ).dt.date
+    for column in ("strike_price", "contract_multiplier"):
+        if column in result:
+            result[column] = pd.to_numeric(result[column], errors="coerce")
+    return conform(
+        add_metadata(result, "all_instruments", batch_id),
+        OPTION_INSTRUMENT_COLUMNS,
+    )
+
+
+OPTION_CONTRACT_PROPERTY_VALUE_COLUMNS = [
+    "product_name",
+    "symbol",
+    "contract_multiplier",
+    "strike_price",
+]
+OPTION_CONTRACT_PROPERTY_COLUMNS = [
+    "trading_date",
+    "order_book_id",
+    *OPTION_CONTRACT_PROPERTY_VALUE_COLUMNS,
+    *METADATA,
+]
+
+
+def option_contract_property_frame(
+    raw: pd.DataFrame, batch_id: str
+) -> pd.DataFrame:
+    result = _normalise_index(raw)
+    if result.empty:
+        return conform(
+            add_metadata(result, "options.get_contract_property", batch_id),
+            OPTION_CONTRACT_PROPERTY_COLUMNS,
+        )
+    identifier = _find_column(result, ("order_book_id", "instrument"))
+    date_column = _find_column(result, ("trading_date", "date", "datetime"))
+    if identifier is None or date_column is None:
+        raise ValueError(
+            "RQData option contract property response lacks order_book_id or trading_date"
+        )
+    result = result.rename(
+        columns={identifier: "order_book_id", date_column: "trading_date"}
+    )
+    result["trading_date"] = pd.to_datetime(
+        result["trading_date"], format="ISO8601", errors="coerce"
+    ).dt.date
+    result["order_book_id"] = result["order_book_id"].astype(str)
+    for column in ("contract_multiplier", "strike_price"):
+        if column in result:
+            result[column] = pd.to_numeric(result[column], errors="coerce")
+    return conform(
+        add_metadata(result, "options.get_contract_property", batch_id),
+        OPTION_CONTRACT_PROPERTY_COLUMNS,
+    )
+
+
+OPTION_DAILY_VALUE_COLUMNS = [
+    "open",
+    "high",
+    "low",
+    "close",
+    "prev_close",
+    "volume",
+    "total_turnover",
+    "open_interest",
+    "strike_price",
+    "contract_multiplier",
+    "prev_settlement",
+    "settlement",
+    "limit_up",
+    "limit_down",
+    "day_session_open",
+]
+OPTION_DAILY_COLUMNS = [
+    "trading_date",
+    "order_book_id",
+    *OPTION_DAILY_VALUE_COLUMNS,
+    *METADATA,
+]
+
+
+def option_daily_frame(raw: pd.DataFrame, batch_id: str) -> pd.DataFrame:
+    result = _normalise_index(raw)
+    if result.empty:
+        return conform(add_metadata(result, "get_price", batch_id), OPTION_DAILY_COLUMNS)
+    identifier = _find_column(result, ("order_book_id", "instrument"))
+    date_column = _find_column(result, ("trading_date", "date", "datetime"))
+    if identifier is None or date_column is None:
+        raise ValueError("RQData option daily response lacks order_book_id or date")
+    result = result.rename(
+        columns={identifier: "order_book_id", date_column: "trading_date"}
+    )
+    result["trading_date"] = pd.to_datetime(
+        result["trading_date"], format="ISO8601", errors="coerce"
+    ).dt.date
+    result["order_book_id"] = result["order_book_id"].astype(str)
+    for column in OPTION_DAILY_VALUE_COLUMNS:
+        if column in result:
+            result[column] = pd.to_numeric(result[column], errors="coerce")
+    return conform(add_metadata(result, "get_price", batch_id), OPTION_DAILY_COLUMNS)
+
+
 TICK_VALUE_COLUMNS = [
     "last",
     "open",
