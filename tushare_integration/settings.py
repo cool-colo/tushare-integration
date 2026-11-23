@@ -154,6 +154,10 @@ class TushareIntegrationSettings(BaseSettings):
         ge=0,
         description='增量采集时从最新已入库日期向前回看的自然日天数',
     )
+    index_priority_codes: Annotated[list[str], env_variable('INDEX_PRIORITY_CODES')] = Field(
+        default_factory=list,
+        description='增量指数采集的代码范围；空列表表示全部指数，full任务补齐全部指数历史缺口',
+    )
     default_min_cal_date: Annotated[str, env_variable('DEFAULT_MIN_CAL_DATE')] = Field(
         default='2010-01-01',
         description='未显式配置MIN_CAL_DATE的日频接口首次采集起始日期',

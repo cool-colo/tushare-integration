@@ -118,6 +118,8 @@ for spider in spiders:
     if group not in data_tmp:
         data_tmp[group] = []
     spider_config = {'name': spider}
+    if spider in ('index/quotes/index_daily', 'index/quotes/index_weight'):
+        spider_config['update_types'] = ['incremental', 'full']
     if spider in ('fund/portfolio/fund_portfolio', 'fund/basic/etf_basic', 'fund/basic/etf_index'):
         spider_config['update_type'] = 'full'
     if spider in DISABLED_SPIDERS:

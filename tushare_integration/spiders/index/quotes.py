@@ -1,7 +1,41 @@
 import datetime
+import logging
+import re
 
 from tushare_integration.spiders.stock.quotes import StockMonthlySpider, StockWeeklySpider
 from tushare_integration.spiders.tushare import DailySpider
+
+
+INDEX_CODE_PATTERN = re.compile(r"^[A-Za-z0-9-]+\.[A-Za-z0-9]+$")
+
+
+def get_incremental_priority_codes(spider) -> list[str] | None:
+    if getattr(spider, "job_update_type", None) != "incremental":
+        return None
+    codes = list(dict.fromkeys(code.strip() for code in spider.spider_settings.index_priority_codes if code.strip()))
+    if not codes:
+        return None
+    invalid_codes = [code for code in codes if not INDEX_CODE_PATTERN.fullmatch(code)]
+    if invalid_codes:
+        raise ValueError(f"Invalid index_priority_codes: {invalid_codes}")
+    return codes
+
+
+def restrict_index_universe(index_list, priority_codes):
+    if priority_codes is None:
+        return index_list
+    missing_codes = set(priority_codes) - set(index_list["ts_code"])
+    if missing_codes:
+        raise ValueError(f"Priority index codes missing from index_basic: {sorted(missing_codes)}")
+    logging.info("Incremental index universe: %s", ",".join(priority_codes))
+    return index_list[index_list["ts_code"].isin(priority_codes)].copy()
+
+
+def get_index_start_date(spider, conn):
+    # Full jobs scan history so a frequently updated index cannot hide gaps in others.
+    if getattr(spider, "job_update_type", None) == "full":
+        return spider.get_min_cal_date()
+    return spider.get_incremental_start_date(conn, "trade_date")
 
 
 class IndexDailySpider(DailySpider):
@@ -31,7 +65,7 @@ class IndexDailySpider(DailySpider):
         conn = self.get_db_engine()
         db_name = self.spider_settings.database.db_name
         table_name = self.get_table_name()
-        start_date = self.get_incremental_start_date(conn, "trade_date")
+        start_date = get_index_start_date(self, conn)
         end_date = self.get_request_end_date()
 
         if start_date > end_date:
@@ -60,6 +94,7 @@ class IndexDailySpider(DailySpider):
                 ORDER BY ts_code
                 """
         )
+        index_list = restrict_index_universe(index_list, get_incremental_priority_codes(self))
         if index_list.empty:
             return
 
@@ -159,7 +194,7 @@ class IndexWeightSpider(DailySpider):
     def start_requests(self):
         conn = self.get_db_engine()
         db_name = self.spider_settings.database.db_name
-        start_date = self.get_incremental_start_date(conn, "trade_date")
+        start_date = get_index_start_date(self, conn)
         end_date = self.get_request_end_date()
 
         index_list = conn.query_df(
@@ -171,6 +206,7 @@ class IndexWeightSpider(DailySpider):
                 """
         )
 
+        index_list = restrict_index_universe(index_list, get_incremental_priority_codes(self))
         if index_list.empty or start_date > end_date:
             return
 

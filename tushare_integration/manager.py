@@ -223,16 +223,17 @@ class CrawlManager(object):
                 return selected_spiders
         raise ValueError(f"Job {job_name} not found")
 
-    def run_spiders_in_sequence(self, spiders: list[str]):
+    def run_spiders_in_sequence(self, spiders: list[str], update_type: str | None = None):
         logging.error(spiders)
 
         if len(spiders) == 0:
             return
 
-        deferred = self.process.crawl(spiders[0])
+        crawl_kwargs = {"job_update_type": update_type} if update_type is not None else {}
+        deferred = self.process.crawl(spiders[0], **crawl_kwargs)
         deferred.addErrback(self._record_crawl_failure, spiders[0])
         if len(spiders) > 1:
-            deferred.addCallback(lambda _: self.run_spiders_in_sequence(spiders[1:]))
+            deferred.addCallback(lambda _: self.run_spiders_in_sequence(spiders[1:], update_type=update_type))
 
     def _record_crawl_failure(self, failure, spider_name):
         # 引擎/下载器启动阶段的失败不会触发spider_error信号，在此显式记录
@@ -241,14 +242,15 @@ class CrawlManager(object):
         self.critical_errors.append(f"spider={spider_name}\n{detail}")
 
     def run_job(self, job_name: str, update_type: str | None = None):
-        spiders = self.get_spiders_by_job(job_name, update_type=update_type)
+        normalized_update_type = self.normalize_update_type(update_type)
+        spiders = self.get_spiders_by_job(job_name, update_type=normalized_update_type)
         all_spiders = self.get_all_spiders(spiders)
 
         if len(all_spiders) == 0:
             logging.info("No spiders matched job=%s update_type=%s; skipping crawl.", job_name, update_type)
             return
 
-        self.run_spiders_in_sequence(all_spiders)
+        self.run_spiders_in_sequence(all_spiders, update_type=normalized_update_type)
         self.process.start()
 
         self.report()

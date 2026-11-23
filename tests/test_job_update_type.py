@@ -1,5 +1,6 @@
 from pathlib import Path
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -146,4 +147,14 @@ class JobUpdateTypeTest(unittest.TestCase):
         ]
 
         self.assertIn("index/quotes/index_daily", incremental_spiders)
-        self.assertNotIn("index/quotes/index_daily", full_spiders)
+        self.assertIn("index/quotes/index_daily", full_spiders)
+        self.assertIn("index/quotes/index_weight", full_spiders)
+
+    def test_run_sequence_passes_update_type_to_each_spider(self):
+        manager = object.__new__(CrawlManager)
+        manager.process = mock.Mock()
+        manager.run_spiders_in_sequence(["first", "second"], update_type="incremental")
+        manager.process.crawl.assert_called_once_with("first", job_update_type="incremental")
+        callback = manager.process.crawl.return_value.addCallback.call_args.args[0]
+        callback(None)
+        self.assertEqual(manager.process.crawl.call_args, mock.call("second", job_update_type="incremental"))

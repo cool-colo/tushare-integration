@@ -40,12 +40,14 @@ cronjob:
     name: index/quotes
     spiders:
       - name: index/quotes/index_daily
+        update_types: [incremental, full]
       - name: index/quotes/daily_info
       - name: index/quotes/index_dailybasic
       - name: index/quotes/index_global
       - name: index/quotes/index_monthly
       - name: index/quotes/index_weekly
       - name: index/quotes/index_weight
+        update_types: [incremental, full]
       - name: index/quotes/sz_daily_info
   - cron_expr: UnSupported
     name: index/sw
