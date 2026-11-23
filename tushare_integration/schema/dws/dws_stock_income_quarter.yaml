@@ -65,7 +65,7 @@ schema:
     - name: fin_exp_int_exp
       data_type: float
       nullable: true
-      comment: 利息支出；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+      comment: 财务费用中的利息费用（元）；来自dwd_stock_income.fin_exp_int_exp，按自身公告PIT选版本；Q1为累计值，Q2-Q4减同年紧邻上一季累计值，缺期或缺值为空
     - name: fin_exp_int_inc
       data_type: float
       nullable: true
@@ -126,6 +126,38 @@ schema:
       data_type: float
       nullable: true
       comment: 利润总额；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: admin_exp
+      data_type: float
+      nullable: true
+      comment: admin_exp；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: asset_disp_income
+      data_type: float
+      nullable: true
+      comment: asset_disp_income；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: assets_impair_loss
+      data_type: float
+      nullable: true
+      comment: assets_impair_loss；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: compr_inc_attr_p
+      data_type: float
+      nullable: true
+      comment: compr_inc_attr_p；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: oth_income
+      data_type: float
+      nullable: true
+      comment: oth_income；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: rd_exp
+      data_type: float
+      nullable: true
+      comment: rd_exp；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: sell_exp
+      data_type: float
+      nullable: true
+      comment: sell_exp；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: t_compr_income
+      data_type: float
+      nullable: true
+      comment: t_compr_income；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
     - name: build_time
       data_type: datetime
       comment: 汇总构建时间

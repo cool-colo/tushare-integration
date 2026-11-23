@@ -1,0 +1,73 @@
+{
+  "dwd_stock_eod_price": [
+    {
+      "checked_at": "2026-11-23 11:45:58",
+      "latest_event_date": "2026-11-20",
+      "target_visible_rows": 5572,
+      "target_visible_instruments": 5572
+    }
+  ],
+  "dwd_stock_daily_basic": [
+    {
+      "checked_at": "2026-11-23 11:45:58",
+      "latest_event_date": "2026-11-20",
+      "target_visible_rows": 5572,
+      "target_visible_instruments": 5572
+    }
+  ],
+  "dwd_stock_adj_factor": [
+    {
+      "checked_at": "2026-11-23 11:45:58",
+      "latest_event_date": "2026-11-23",
+      "target_visible_rows": 5585,
+      "target_visible_instruments": 5585
+    }
+  ],
+  "dwd_stock_eod_quote_metrics": [
+    {
+      "checked_at": "2026-11-23 11:45:58",
+      "latest_event_date": "2026-11-20",
+      "target_visible_rows": 5584,
+      "target_visible_instruments": 5584
+    }
+  ],
+  "dwd_stock_margin_trading": [
+    {
+      "checked_at": "2026-11-23 11:45:58",
+      "latest_event_date": "2026-11-19",
+      "target_visible_rows": 0,
+      "target_visible_instruments": 0
+    }
+  ],
+  "dwd_stock_chip_distribution": [
+    {
+      "checked_at": "2026-11-23 11:45:59",
+      "latest_event_date": "2026-11-20",
+      "target_visible_rows": 5572,
+      "target_visible_instruments": 5572
+    }
+  ],
+  "dwd_index_eod_price": [
+    {
+      "checked_at": "2026-11-23 11:45:59",
+      "latest_event_date": "2026-11-20",
+      "target_visible_rows": 1,
+      "target_visible_instruments": 1
+    }
+  ],
+  "dwd_stock_limit": [
+    {
+      "checked_at": "2026-11-23 11:45:59",
+      "latest_event_date": "2026-11-20",
+      "target_visible_rows": 5657,
+      "target_visible_instruments": 5657
+    }
+  ],
+  "top_list_rebuilt": [
+    {
+      "latest_event_date": "2026-11-20",
+      "target_visible_rows": 73,
+      "target_visible_instruments": 62
+    }
+  ]
+}

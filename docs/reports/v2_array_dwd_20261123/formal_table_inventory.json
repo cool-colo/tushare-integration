@@ -1,0 +1,12 @@
+[
+  {
+    "name": "dwd_fund_portfolio",
+    "engine": "MergeTree",
+    "total_rows": 19147065
+  },
+  {
+    "name": "dwd_stock_research_report",
+    "engine": "MergeTree",
+    "total_rows": 3125256
+  }
+]

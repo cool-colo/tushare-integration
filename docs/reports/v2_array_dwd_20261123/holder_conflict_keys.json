@@ -1,0 +1,1365 @@
+{
+  "dwd_stock_top10_holders": [
+    {
+      "ts_code": "000725.SZ",
+      "end_date": "2013-03-31",
+      "ann_date": "2013-04-25",
+      "holder_name": "北京电子控股有限责任公司",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          277303883.0,
+          2.0508,
+          2.3756,
+          2000000.0,
+          "一般企业"
+        ],
+        [
+          275303883.0,
+          2.036,
+          2.3756,
+          0.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "300598.SZ",
+      "end_date": "2019-09-30",
+      "ann_date": "2019-10-29",
+      "holder_name": "ScentshillCapitalI,Limited",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          831860.0,
+          1.0398,
+          1.7199,
+          null,
+          "一般企业"
+        ],
+        [
+          10173340.0,
+          12.7167,
+          21.0339,
+          -746500.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "300852.SZ",
+      "end_date": "2026-06-30",
+      "ann_date": "2026-08-04",
+      "holder_name": "温一峰",
+      "conflicting_observations": 17,
+      "conflicting_rows": 34,
+      "variants": [
+        [
+          3709894.0,
+          2.3112,
+          0.5985,
+          0.0,
+          "自然人"
+        ],
+        [
+          3709912.0,
+          2.3112,
+          0.5985,
+          18.0,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "360030.SZ",
+      "end_date": "2010-09-30",
+      "ann_date": "2010-10-30",
+      "holder_name": "中央汇金投资有限责任公司",
+      "conflicting_observations": 13,
+      "conflicting_rows": 26,
+      "variants": [
+        [
+          133262144534.0,
+          57.0254,
+          null,
+          null,
+          "投资、咨询公司"
+        ],
+        [
+          133406891989.0,
+          57.0873,
+          1.6083,
+          0.0,
+          "投资公司"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601077.SH",
+      "end_date": "2024-12-31",
+      "ann_date": "2025-03-26",
+      "holder_name": "重庆发展投资有限公司",
+      "conflicting_observations": 14,
+      "conflicting_rows": 28,
+      "variants": [
+        [
+          493814000.0,
+          4.3481,
+          5.3181,
+          36778711.0,
+          "投资公司"
+        ],
+        [
+          470000000.0,
+          4.1384,
+          5.3181,
+          12964711.0,
+          "投资公司"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601107.SH",
+      "end_date": "2010-06-30",
+      "ann_date": "2010-08-20",
+      "holder_name": "全国社会保障基金理事会转持三户",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          30229922.0,
+          0.9885,
+          0.0,
+          0.0,
+          "社保基金、社保机构"
+        ],
+        [
+          19770078.0,
+          0.6465,
+          0.0,
+          null,
+          "社保基金、社保机构"
+        ],
+        [
+          30229922.0,
+          0.9885,
+          0.0,
+          -19770078.0,
+          "社保基金、社保机构"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601600.SH",
+      "end_date": "2025-12-31",
+      "ann_date": "2026-03-28",
+      "holder_name": "中国铝业集团有限公司",
+      "conflicting_observations": 22,
+      "conflicting_rows": 44,
+      "variants": [
+        [
+          5235235416.0,
+          30.5161,
+          39.3926,
+          0.0,
+          "一般企业"
+        ],
+        [
+          5189333416.0,
+          30.2486,
+          39.3926,
+          -45902000.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601666.SH",
+      "end_date": "2009-06-30",
+      "ann_date": "2009-08-25",
+      "holder_name": "平顶山煤业(集团)有限责任公司",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          798070000.0,
+          57.1217,
+          0.0,
+          161543160.0,
+          "一般企业"
+        ],
+        [
+          29414892.0,
+          2.1054,
+          0.0,
+          null,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601939.SH",
+      "end_date": "2010-09-30",
+      "ann_date": "2010-10-30",
+      "holder_name": "中央汇金投资有限责任公司",
+      "conflicting_observations": 12,
+      "conflicting_rows": 24,
+      "variants": [
+        [
+          133262144534.0,
+          57.0254,
+          null,
+          null,
+          "投资、咨询公司"
+        ],
+        [
+          133406891989.0,
+          57.0873,
+          1.6083,
+          0.0,
+          "投资公司"
+        ]
+      ]
+    }
+  ],
+  "dwd_stock_top10_floatholders": [
+    {
+      "ts_code": "000017.SZ",
+      "end_date": "2013-12-31",
+      "ann_date": "2014-04-28",
+      "holder_name": "深圳中华自行车(集团)股份有限公司破产企业财产处置专用账户",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          4230337.0,
+          0.7673,
+          null,
+          null,
+          "其他金融产品"
+        ],
+        [
+          5326807.0,
+          0.9661,
+          1.7582,
+          null,
+          "一般企业"
+        ],
+        [
+          4230337.0,
+          0.7673,
+          null,
+          null,
+          "一般企业"
+        ],
+        [
+          5326807.0,
+          0.9661,
+          1.7582,
+          null,
+          "其他金融产品"
+        ]
+      ]
+    },
+    {
+      "ts_code": "000017.SZ",
+      "end_date": "2014-03-31",
+      "ann_date": "2014-04-28",
+      "holder_name": "深圳中华自行车(集团)股份有限公司破产企业财产处置专用账户",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          4230337.0,
+          0.7673,
+          null,
+          null,
+          "其他金融产品"
+        ],
+        [
+          4230337.0,
+          0.7673,
+          null,
+          null,
+          "一般企业"
+        ],
+        [
+          5326807.0,
+          0.9661,
+          1.7582,
+          0.0,
+          "其他金融产品"
+        ],
+        [
+          5326807.0,
+          0.9661,
+          1.7582,
+          0.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "000017.SZ",
+      "end_date": "2014-06-30",
+      "ann_date": "2014-08-13",
+      "holder_name": "深圳中华自行车(集团)股份有限公司破产企业财产处置专用账户",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          4230337.0,
+          0.7673,
+          null,
+          null,
+          "其他金融产品"
+        ],
+        [
+          4230337.0,
+          0.7673,
+          null,
+          null,
+          "一般企业"
+        ],
+        [
+          5326807.0,
+          0.9661,
+          1.7582,
+          0.0,
+          "其他金融产品"
+        ],
+        [
+          5326807.0,
+          0.9661,
+          1.7582,
+          0.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "000030.SZ",
+      "end_date": "2024-03-31",
+      "ann_date": "2024-04-22",
+      "holder_name": "大成基金-农业银行-大成中证金融资产管理计划",
+      "conflicting_observations": 14,
+      "conflicting_rows": 28,
+      "variants": [
+        [
+          7469200.0,
+          0.4289,
+          0.4414,
+          0.0,
+          "基金专户理财"
+        ],
+        [
+          7543800.0,
+          0.4331,
+          0.4458,
+          74600.0,
+          "基金专户理财"
+        ]
+      ]
+    },
+    {
+      "ts_code": "000031.SZ",
+      "end_date": "2009-12-31",
+      "ann_date": "2010-03-10",
+      "holder_name": "中国银行-易方达深证100交易型开放式指数证券投资基金",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          8120472.0,
+          0.4477,
+          0.4477,
+          null,
+          "开放式投资基金"
+        ],
+        [
+          8273345.0,
+          0.4562,
+          0.4562,
+          null,
+          "开放式投资基金"
+        ]
+      ]
+    },
+    {
+      "ts_code": "000039.SZ",
+      "end_date": "2008-03-31",
+      "ann_date": "2008-04-29",
+      "holder_name": "COSCOContainerIndustriesLimited",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          148320037.0,
+          5.5709,
+          null,
+          null,
+          "一般企业"
+        ],
+        [
+          432171843.0,
+          16.2324,
+          46.3582,
+          290710030.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "000039.SZ",
+      "end_date": "2010-03-31",
+      "ann_date": "2010-04-27",
+      "holder_name": "COSCOContainerIndustriesLimited",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          148320037.0,
+          5.5709,
+          null,
+          null,
+          "一般企业"
+        ],
+        [
+          432171843.0,
+          16.2324,
+          35.099,
+          -148320037.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "002012.SZ",
+      "end_date": "2024-09-30",
+      "ann_date": "2024-10-29",
+      "holder_name": "陈国华",
+      "conflicting_observations": 23,
+      "conflicting_rows": 46,
+      "variants": [
+        [
+          2359100.0,
+          0.5045,
+          0.5057,
+          null,
+          "自然人"
+        ],
+        [
+          2380400.0,
+          0.509,
+          0.5102,
+          null,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "002119.SZ",
+      "end_date": "2007-09-30",
+      "ann_date": "2007-10-23",
+      "holder_name": "林梅英",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          114119.0,
+          0.1175,
+          0.4565,
+          null,
+          "自然人"
+        ],
+        [
+          107400.0,
+          0.1106,
+          0.4296,
+          null,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "002202.SZ",
+      "end_date": "2009-12-31",
+      "ann_date": "2010-03-04",
+      "holder_name": "中国银行—易方达深证100交易型开放式指数证券投资基金",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          5687048.0,
+          0.4062,
+          0.9253,
+          null,
+          "开放式投资基金"
+        ],
+        [
+          6591967.0,
+          0.4709,
+          1.0725,
+          null,
+          "开放式投资基金"
+        ]
+      ]
+    },
+    {
+      "ts_code": "002235.SZ",
+      "end_date": "2010-06-30",
+      "ann_date": "2010-08-21",
+      "holder_name": "中国工商银行-嘉实策略增长混合型证券投资基金",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          4919330.0,
+          2.5227,
+          8.6147,
+          1176462.0,
+          "开放式投资基金"
+        ],
+        [
+          4747722.0,
+          2.4347,
+          8.3141,
+          null,
+          "开放式投资基金"
+        ]
+      ]
+    },
+    {
+      "ts_code": "002593.SZ",
+      "end_date": "2011-06-30",
+      "ann_date": "2011-08-26",
+      "holder_name": "张强",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          131249.0,
+          0.0619,
+          0.3096,
+          null,
+          "自然人"
+        ],
+        [
+          142000.0,
+          0.067,
+          0.3349,
+          null,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "002611.SZ",
+      "end_date": "2025-12-31",
+      "ann_date": "2026-03-24",
+      "holder_name": "唐灼棉",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          96885134.0,
+          7.9591,
+          9.6701,
+          0.0,
+          "自然人"
+        ],
+        [
+          62769292.0,
+          5.1565,
+          6.265,
+          -34115842.0,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "002611.SZ",
+      "end_date": "2025-12-31",
+      "ann_date": "2026-03-24",
+      "holder_name": "唐灼林",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          96885134.0,
+          7.9591,
+          9.6701,
+          34115842.0,
+          "自然人"
+        ],
+        [
+          62769292.0,
+          5.1565,
+          6.265,
+          0.0,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "038006.SZ",
+      "end_date": "2008-03-31",
+      "ann_date": "2008-04-29",
+      "holder_name": "COSCOContainerIndustriesLimited",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          148320037.0,
+          5.5709,
+          null,
+          null,
+          "一般企业"
+        ],
+        [
+          432171843.0,
+          16.2324,
+          46.3582,
+          290710030.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "038006.SZ",
+      "end_date": "2010-03-31",
+      "ann_date": "2010-04-27",
+      "holder_name": "COSCOContainerIndustriesLimited",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          148320037.0,
+          5.5709,
+          null,
+          null,
+          "一般企业"
+        ],
+        [
+          432171843.0,
+          16.2324,
+          35.099,
+          -148320037.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "038006.SZ",
+      "end_date": "2016-06-30",
+      "ann_date": "2016-08-31",
+      "holder_name": "中远集装箱工业有限公司",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          432171843.0,
+          14.5104,
+          34.275,
+          -65099638.0,
+          "一般企业"
+        ],
+        [
+          65099638.0,
+          2.1858,
+          null,
+          null,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "300301.SZ",
+      "end_date": "2014-12-31",
+      "ann_date": "2015-04-07",
+      "holder_name": "王辉宇",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          1578502.0,
+          0.5808,
+          1.733,
+          680202.0,
+          "自然人"
+        ],
+        [
+          1243770.0,
+          0.4576,
+          1.3655,
+          null,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "300497.SZ",
+      "end_date": "2019-12-31",
+      "ann_date": "2020-04-09",
+      "holder_name": "国海创新资本投资管理有限公司-证券行业支持民企发展系列之国海创新1号私募股权投资基金",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          2400000.0,
+          0.8782,
+          1.2393,
+          null,
+          "其他金融产品"
+        ],
+        [
+          2041540.0,
+          0.7471,
+          1.0542,
+          null,
+          "其他金融产品"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600053.SH",
+      "end_date": "2009-06-30",
+      "ann_date": "2009-08-15",
+      "holder_name": "胡衍玲",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          480000.0,
+          0.1329,
+          0.4808,
+          10000.0,
+          "自然人"
+        ],
+        [
+          360000.0,
+          0.0996,
+          0.3606,
+          null,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600090.SH",
+      "end_date": "2008-06-30",
+      "ann_date": "2008-08-25",
+      "holder_name": "邱艾",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          1573370.0,
+          0.4276,
+          0.7292,
+          362300.0,
+          "自然人"
+        ],
+        [
+          922399.0,
+          0.2507,
+          0.4275,
+          null,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600094.SH",
+      "end_date": "2007-09-30",
+      "ann_date": "2007-10-24",
+      "holder_name": "陈伟",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          1005680.0,
+          0.1598,
+          null,
+          null,
+          "自然人"
+        ],
+        [
+          1160000.0,
+          0.1843,
+          null,
+          null,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600727.SH",
+      "end_date": "2007-03-31",
+      "ann_date": "2007-04-28",
+      "holder_name": "王道忠",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          530000.0,
+          0.151,
+          0.2489,
+          null,
+          "自然人"
+        ],
+        [
+          780000.0,
+          0.2222,
+          0.3663,
+          260000.0,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600749.SH",
+      "end_date": "2008-03-31",
+      "ann_date": "2008-04-30",
+      "holder_name": "康安督",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          439300.0,
+          0.3994,
+          0.749,
+          -98300.0,
+          "自然人"
+        ],
+        [
+          136400.0,
+          0.124,
+          0.2326,
+          null,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600805.SH",
+      "end_date": "2007-09-30",
+      "ann_date": "2007-10-23",
+      "holder_name": "徐涌伟",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          574300.0,
+          0.1053,
+          0.1546,
+          null,
+          "自然人"
+        ],
+        [
+          736000.0,
+          0.1349,
+          0.1982,
+          -50000.0,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600817.SH",
+      "end_date": "2026-09-30",
+      "ann_date": "2026-10-15",
+      "holder_name": "宋世河",
+      "conflicting_observations": 7,
+      "conflicting_rows": 14,
+      "variants": [
+        [
+          2580400.0,
+          0.4828,
+          0.4871,
+          90400.0,
+          "自然人"
+        ],
+        [
+          2490000.0,
+          0.4659,
+          0.4701,
+          0.0,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600817.SH",
+      "end_date": "2026-09-30",
+      "ann_date": "2026-10-15",
+      "holder_name": "赵庆东",
+      "conflicting_observations": 7,
+      "conflicting_rows": 14,
+      "variants": [
+        [
+          2490000.0,
+          0.4659,
+          0.4701,
+          250000.0,
+          "自然人"
+        ],
+        [
+          2380000.0,
+          0.4453,
+          0.4493,
+          140000.0,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600817.SH",
+      "end_date": "2026-09-30",
+      "ann_date": "2026-10-15",
+      "holder_name": "尤萍",
+      "conflicting_observations": 7,
+      "conflicting_rows": 14,
+      "variants": [
+        [
+          2071500.0,
+          0.3876,
+          0.3911,
+          0.0,
+          "自然人"
+        ],
+        [
+          2380000.0,
+          0.4453,
+          0.4493,
+          308500.0,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600817.SH",
+      "end_date": "2026-09-30",
+      "ann_date": "2026-10-15",
+      "holder_name": "王坚宏",
+      "conflicting_observations": 7,
+      "conflicting_rows": 14,
+      "variants": [
+        [
+          2580400.0,
+          0.4828,
+          0.4871,
+          0.0,
+          "自然人"
+        ],
+        [
+          2756100.0,
+          0.5157,
+          0.5203,
+          175700.0,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600836.SH",
+      "end_date": "2007-09-30",
+      "ann_date": "2007-10-27",
+      "holder_name": "王文龙",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          184400.0,
+          0.1059,
+          0.2169,
+          null,
+          "自然人"
+        ],
+        [
+          245300.0,
+          0.1408,
+          0.2885,
+          null,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "600855.SH",
+      "end_date": "2007-03-31",
+      "ann_date": "2007-04-28",
+      "holder_name": "国联证券有限责任公司",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          1670488.0,
+          0.5709,
+          0.9005,
+          null,
+          "金融机构—证券公司"
+        ],
+        [
+          6129512.0,
+          2.0948,
+          3.3041,
+          0.0,
+          "金融机构—证券公司"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601528.SH",
+      "end_date": "2025-12-31",
+      "ann_date": "2026-03-27",
+      "holder_name": "浙江柯桥转型升级产业基金有限公司",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          66634959.0,
+          3.396,
+          3.8418,
+          0.0,
+          "一般企业"
+        ],
+        [
+          83124012.0,
+          4.2363,
+          4.7925,
+          16489053.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601528.SH",
+      "end_date": "2025-12-31",
+      "ann_date": "2026-03-27",
+      "holder_name": "弘康人寿保险股份有限公司-自有",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          78487375.0,
+          4.0,
+          4.5252,
+          null,
+          "一般企业"
+        ],
+        [
+          77995868.0,
+          3.975,
+          4.4968,
+          null,
+          "一般企业"
+        ],
+        [
+          78487375.0,
+          4.0,
+          4.5252,
+          null,
+          "金融机构—保险公司"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601528.SH",
+      "end_date": "2025-12-31",
+      "ann_date": "2026-03-27",
+      "holder_name": "香港中央结算有限公司",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          73460896.0,
+          3.7439,
+          4.2354,
+          4749338.0,
+          "一般企业"
+        ],
+        [
+          74933330.0,
+          3.8189,
+          4.3203,
+          6221772.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601528.SH",
+      "end_date": "2025-12-31",
+      "ann_date": "2026-03-27",
+      "holder_name": "浙江华天实业有限公司",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          79467488.0,
+          4.05,
+          4.5817,
+          0.0,
+          "一般企业"
+        ],
+        [
+          78487375.0,
+          4.0,
+          4.5252,
+          -980113.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601528.SH",
+      "end_date": "2025-12-31",
+      "ann_date": "2026-03-27",
+      "holder_name": "浙江永利实业集团有限公司",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          77995868.0,
+          3.975,
+          4.4968,
+          0.0,
+          "一般企业"
+        ],
+        [
+          74933330.0,
+          3.8189,
+          4.3203,
+          -3062538.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601528.SH",
+      "end_date": "2025-12-31",
+      "ann_date": "2026-03-27",
+      "holder_name": "长江精工钢结构(集团)股份有限公司",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          71867488.0,
+          3.6627,
+          4.1435,
+          -1593408.0,
+          "一般企业"
+        ],
+        [
+          73460896.0,
+          3.7439,
+          4.2354,
+          0.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601528.SH",
+      "end_date": "2025-12-31",
+      "ann_date": "2026-03-27",
+      "holder_name": "浙江明牌卡利罗饰品有限公司",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          83124012.0,
+          4.2363,
+          4.7925,
+          0.0,
+          "一般企业"
+        ],
+        [
+          79467488.0,
+          4.05,
+          4.5817,
+          -3656524.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601528.SH",
+      "end_date": "2025-12-31",
+      "ann_date": "2026-03-27",
+      "holder_name": "浙江绍兴华通商贸集团股份有限公司",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          71867488.0,
+          3.6627,
+          4.1435,
+          -1100000.0,
+          "一般企业"
+        ],
+        [
+          66634959.0,
+          3.396,
+          3.8418,
+          -6332529.0,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601608.SH",
+      "end_date": "2024-12-31",
+      "ann_date": "2025-03-15",
+      "holder_name": "UBSAG",
+      "conflicting_observations": 14,
+      "conflicting_rows": 28,
+      "variants": [
+        [
+          26481748.0,
+          0.5783,
+          0.6103,
+          null,
+          "金融机构—银行"
+        ],
+        [
+          684647.0,
+          0.015,
+          0.0158,
+          null,
+          "金融机构—银行"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601666.SH",
+      "end_date": "2009-12-31",
+      "ann_date": "2010-04-20",
+      "holder_name": "平顶山煤业(集团)有限责任公司",
+      "conflicting_observations": 2,
+      "conflicting_rows": 4,
+      "variants": [
+        [
+          29414892.0,
+          2.1054,
+          2.1054,
+          null,
+          "一般企业"
+        ],
+        [
+          798070000.0,
+          57.1217,
+          57.1217,
+          null,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601865.SH",
+      "end_date": "2019-06-30",
+      "ann_date": "2019-08-27",
+      "holder_name": "香港中央结算(代理人)有限公司",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          449782800.0,
+          23.0658,
+          null,
+          1900.0,
+          "一般企业"
+        ],
+        [
+          1200986.0,
+          0.0616,
+          0.8007,
+          null,
+          "一般企业"
+        ]
+      ]
+    },
+    {
+      "ts_code": "601963.SH",
+      "end_date": "2024-12-31",
+      "ann_date": "2025-03-22",
+      "holder_name": "重庆渝富资本运营集团有限公司",
+      "conflicting_observations": 14,
+      "conflicting_rows": 28,
+      "variants": [
+        [
+          496316727.0,
+          14.2843,
+          22.4823,
+          0.0,
+          "资产管理公司"
+        ],
+        [
+          421750727.0,
+          12.1382,
+          22.4823,
+          -74566000.0,
+          "资产管理公司"
+        ]
+      ]
+    },
+    {
+      "ts_code": "603701.SH",
+      "end_date": "2017-03-31",
+      "ann_date": "2017-04-26",
+      "holder_name": "汪洋",
+      "conflicting_observations": 37,
+      "conflicting_rows": 74,
+      "variants": [
+        [
+          66400.0,
+          0.0847,
+          0.3388,
+          null,
+          "自然人"
+        ],
+        [
+          77000.0,
+          0.0982,
+          0.3929,
+          null,
+          "自然人"
+        ]
+      ]
+    },
+    {
+      "ts_code": "603766.SH",
+      "end_date": "2013-03-31",
+      "ann_date": "2013-04-26",
+      "holder_name": "东方证券股份有限公司",
+      "conflicting_observations": 37,
+      "conflicting_rows": 111,
+      "variants": [
+        [
+          1100009.0,
+          0.1375,
+          1.375,
+          null,
+          "金融机构—证券公司"
+        ],
+        [
+          1999951.0,
+          0.25,
+          2.4999,
+          null,
+          "金融机构—证券公司"
+        ],
+        [
+          2100087.0,
+          0.2625,
+          2.6251,
+          null,
+          "金融机构—证券公司"
+        ]
+      ]
+    }
+  ]
+}

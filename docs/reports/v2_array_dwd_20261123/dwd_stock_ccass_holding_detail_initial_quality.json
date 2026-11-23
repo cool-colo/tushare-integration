@@ -1,0 +1,92 @@
+[
+  {
+    "rule": "row_count_nonzero",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "required_columns_exist",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "dwd_pit_dates_not_null",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "dwd_sys_window_order",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 1156
+      }
+    ]
+  },
+  {
+    "rule": "dwd_lineage_not_empty",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "dwd_unknown_disclosure_excluded_from_pit",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "dwd_single_open_version",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "dwd_no_overlapping_versions",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "ccass_detail_identity_and_units",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "ccass_detail_unparsed_values",
+    "severity": "WARN",
+    "result": [
+      {
+        "issue_count": 10
+      }
+    ]
+  }
+]

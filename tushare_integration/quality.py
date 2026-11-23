@@ -964,7 +964,12 @@ class QualityManager:
         db_name = self.settings.database.db_name
         qualified = self._quote_table(db_name, target_table_name)
         validation_filter = self._dwd_validation_filter(table_name)
-        if self._load_dwd_spec(table_name).get("builder", "raw_versioned") == "business_interval":
+        spec = self._load_dwd_spec(table_name)
+        unknown_disclosure = spec.get("availability_mode") == "unknown_disclosure"
+        missing_pit_dates = "event_date IS NULL OR sys_from IS NULL OR sys_to IS NULL"
+        if not unknown_disclosure:
+            missing_pit_dates += " OR available_trade_date IS NULL"
+        if spec.get("builder", "raw_versioned") == "business_interval":
             return self._build_business_interval_dwd_rules(
                 table_name, db_name, target_table_name, qualified, validation_filter
             )
@@ -986,12 +991,12 @@ class QualityManager:
             ),
             ValidationRule(
                 rule_id="dwd_pit_dates_not_null",
-                description="DWD PIT dates must be populated",
+                description="DWD known PIT dates must be populated; unknown-disclosure detail is checked separately",
                 severity="BLOCKER",
                 issue_count_sql=f"""
                     SELECT count() AS issue_count
                     FROM {qualified}
-                    {self._where_sql("event_date IS NULL OR available_trade_date IS NULL OR sys_from IS NULL OR sys_to IS NULL", validation_filter)}
+                    {self._where_sql(missing_pit_dates, validation_filter)}
                 """,
             ),
             ValidationRule(
@@ -1015,6 +1020,15 @@ class QualityManager:
                 """,
             ),
         ]
+        if unknown_disclosure:
+            rules.append(ValidationRule(
+                rule_id="dwd_unknown_disclosure_excluded_from_pit",
+                description="Unknown public disclosure dates must remain NULL and explicitly labelled",
+                severity="BLOCKER",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
+                "available_trade_date IS NOT NULL OR availability_basis IS NULL "
+                "OR availability_basis != 'unknown_disclosure_date'",
+            ))
         rules.extend(self._dwd_open_version_rules(table_name, qualified, validation_filter))
         rules.extend(self._dwd_business_rules(table_name, qualified, validation_filter))
         return rules
@@ -1409,9 +1423,86 @@ class QualityManager:
             rules.extend(self._index_weight_rules(qualified, validation_filter))
         if table_name == "dwd_fund_portfolio":
             rules.extend(self._fund_portfolio_rules(qualified, validation_filter))
+        if table_name in {"dwd_stock_top10_holders", "dwd_stock_top10_floatholders"}:
+            rules.extend(self._top_holder_rules(table_name, qualified))
+        if table_name == "dwd_stock_ccass_holding_detail":
+            rules.extend(self._ccass_detail_rules(qualified))
+        if table_name == "dwd_stock_main_business":
+            rules.append(ValidationRule(
+                rule_id="main_business_identity",
+                description="Main-business detail must retain its category identity and report period",
+                severity="BLOCKER",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
+                "bz_code = '' OR bz_item = '' OR event_date != end_date "
+                "OR instrument_id != concat('stock:', ts_code)",
+            ))
+            rules.append(ValidationRule(
+                rule_id="main_business_unclassified_source_codes",
+                description="Source categories outside documented P/D/I remain unchanged and require review",
+                severity="WARN",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE bz_code NOT IN ('P','D','I')",
+            ))
         if table_name == "dwd_security_master":
             rules.extend(self._security_master_rules(qualified))
         return rules
+
+    def _ccass_detail_rules(self, qualified: str) -> list[ValidationRule]:
+        return [
+            ValidationRule(
+                rule_id="ccass_detail_identity_and_units",
+                description="CCASS detail preserves participants, nonnegative shares and 0..1 ratios",
+                severity="BLOCKER",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
+                "col_participant_id = '' OR event_date != trade_date "
+                "OR instrument_id != concat('stock:', ts_code) "
+                "OR shareholding < 0 OR NOT isFinite(shareholding) "
+                "OR shareholding_percent < 0 OR shareholding_percent > 1 "
+                "OR NOT isFinite(shareholding_percent)",
+            ),
+            ValidationRule(
+                rule_id="ccass_detail_unparsed_values",
+                description="Unparsed nonempty source values remain visible for review, never converted to zero",
+                severity="WARN",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
+                "(shareholding IS NULL AND col_shareholding IS NOT NULL AND trimBoth(col_shareholding) != '') "
+                "OR (shareholding_percent IS NULL AND col_shareholding_percent IS NOT NULL "
+                "AND trimBoth(col_shareholding_percent) != '')",
+            ),
+        ]
+
+    def _top_holder_rules(self, table_name: str, qualified: str) -> list[ValidationRule]:
+        kind = table_name.removeprefix("dwd_stock_")
+        conditions = [
+            (
+                "top_holder_identity",
+                "Top holders retain the stock, holder and source-kind identities",
+                f"ts_code = '' OR holder_name = '' OR instrument_id != concat('stock:', ts_code) "
+                f"OR source_code != ts_code OR source_kind IS NULL OR source_kind != '{kind}'",
+            ),
+            (
+                "top_holder_dates",
+                "Top holders use a valid period and become visible strictly after disclosure",
+                "end_date <= toDate32('1971-01-01') OR ann_date < end_date "
+                "OR event_date != end_date OR available_trade_date <= ann_date",
+            ),
+            (
+                "top_holder_finite_measures",
+                "Known holding amounts and percentage-point ratios remain finite and nonnegative",
+                " OR ".join(
+                    f"({column} < 0 OR NOT isFinite({column}))"
+                    for column in ("hold_amount", "hold_ratio", "hold_float_ratio")
+                ),
+            ),
+        ]
+        return [
+            ValidationRule(
+                rule_id=rule_id,
+                description=description,
+                severity="BLOCKER",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE {condition}",
+            )
+            for rule_id, description, condition in conditions
+        ]
 
     def _fund_portfolio_rules(self, qualified: str, validation_filter: str | None = None) -> list[ValidationRule]:
         conditions = [
@@ -1439,6 +1530,11 @@ class QualityManager:
                     f"({column} < 0 OR NOT isFinite({column}))"
                     for column in ("mkv", "amount", "stk_mkv_ratio", "stk_float_ratio")
                 ),
+            ),
+            (
+                "fund_portfolio_completeness_unknown",
+                "Source data cannot establish complete portfolio disclosure",
+                "is_complete_holdings IS NOT NULL",
             ),
         ]
         return [

@@ -12,15 +12,16 @@ class StockFactorWideV2Test(unittest.TestCase):
     def setUp(self):
         self.manager = DWSManager()
 
-    def test_v2_catalog_expands_only_existing_families(self):
+    def test_v2_catalog_includes_requested_scalar_extensions(self):
         columns = {column for _, _, _, column in V2_FINANCIAL_FEATURE_COLUMNS}
-        self.assertEqual(len(columns), 1595)
+        self.assertEqual(len(columns), 1782)
         self.assertEqual(len(V2_CALCULATED_FACTOR_COLUMNS), 28)
         self.assertTrue({f"interestdebt_mrq_{i}" for i in range(9)} <= columns)
         self.assertTrue({f"interestdebt_ttm_{i}" for i in range(9)} <= columns)
         self.assertTrue({f"interestdebt_lyr_{i}" for i in range(5)} <= columns)
         self.assertNotIn("interestdebt_lf", columns)
-        self.assertNotIn("non_cur_liab_due_1y_mrq_0", columns)
+        self.assertIn("non_cur_liab_due_1y_mrq_0", columns)
+        self.assertNotIn("non_cur_liab_due_1y_mrq_8", columns)
 
     def test_v2_schema_keeps_raw_tushare_ttm_fields_and_groups_prefixes(self):
         spec = self.manager.load_spec("dws_stock_factor_wide_v2")
@@ -52,7 +53,7 @@ class StockFactorWideV2Test(unittest.TestCase):
             "addMonths(addDays(toStartOfQuarter(addDays(available_trade_date, 1)), -1)",
             sql,
         )
-        self.assertIn("ARRAY JOIN range(12) AS report_offset", sql)
+        self.assertIn("ARRAY JOIN range(16) AS report_offset", sql)
         self.assertIn("countIf(report_offset >= 0 AND report_offset < 4 AND report_exists = 1) = 4", sql)
         self.assertIn("countIf(report_offset >= 0 AND report_offset < 4 AND `revenue` IS NOT NULL)", sql)
         self.assertIn("/ countIf(report_offset >= 0 AND report_offset < 4 AND `revenue` IS NOT NULL) * 4", sql)
@@ -111,7 +112,7 @@ class StockFactorWideV2Test(unittest.TestCase):
         self.assertIn("FROM balance_sheet_quarter_reports\n    UNION DISTINCT", sql)
         self.assertIn("min(p.available_trade_date) AS available_trade_date", sql)
         self.assertIn("FROM default.dwd_stock_eod_price", sql)
-        self.assertIn("SETTINGS max_insert_threads = 4", sql)
+        self.assertIn("SETTINGS max_insert_threads = 1, max_compress_block_size = 65536", sql)
 
 
 if __name__ == "__main__":

@@ -61,6 +61,12 @@ main() {
     "tushare-dwd-sync-stock-chip-distribution|$DWD_SYNC_IMAGE|dwd_stock_chip_distribution"
     "tushare-dwd-sync-stock-share-float|$DWD_SYNC_IMAGE|dwd_stock_share_float"
     "tushare-dwd-sync-stock-research-report|$DWD_SYNC_IMAGE|dwd_stock_research_report"
+    "tushare-dwd-sync-stock-holder-number|$DWD_SYNC_IMAGE|dwd_stock_holder_number"
+    "tushare-dwd-sync-stock-top-list|$DWD_SYNC_IMAGE|dwd_stock_top_list"
+    "tushare-dwd-sync-stock-top10-holders|$DWD_SYNC_IMAGE|dwd_stock_top10_holders"
+    "tushare-dwd-sync-stock-top10-floatholders|$DWD_SYNC_IMAGE|dwd_stock_top10_floatholders"
+    "tushare-dwd-sync-stock-ccass-holding-detail|$DWD_SYNC_IMAGE|dwd_stock_ccass_holding_detail"
+    "tushare-dwd-sync-stock-main-business|$DWD_SYNC_IMAGE|dwd_stock_main_business"
   )
   if [[ "$UPDATE_TYPE" == "full" ]]; then
     dwd_sync_tasks+=(

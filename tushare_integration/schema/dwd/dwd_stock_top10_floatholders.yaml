@@ -1,0 +1,38 @@
+id: 2037
+name: dwd_stock_top10_floatholders
+comment: 前十大流通股东逐主体PIT明细（流通股东口径）
+builder: raw_versioned
+quarantine_same_time_conflicts: true
+source:
+  table_name: top10_floatholders_raw
+  schema_name: stock/market/top10_floatholders
+business_key:
+  - ts_code
+  - end_date
+  - ann_date
+  - holder_name
+source_filters:
+  - "src.ts_code != '' AND src.holder_name != ''"
+  - "src.end_date > toDate32('1971-01-01') AND src.ann_date >= src.end_date"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', src.ts_code)"
+source_code_expr: src.ts_code
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.ts_code)), 2)"
+event_date_expr: src.end_date
+calendar_date_expr: src.ann_date
+available_trade_date_expr: "addDays(assumeNotNull(calendar_map.next_trade_date), throwIf(isNull(calendar_map.next_trade_date), 'Missing SSE next trading day for float holder announcement'))"
+extra_columns:
+  - name: source_kind
+    data_type: str
+    comment: 持仓来源口径；不与总股东明细自动合并
+    expr: "'top10_floatholders'"
+partition_key:
+  - toYear(event_date)
+indexes:
+  - name: dwd_stock_top10_floatholders_idx
+    columns:
+      - instrument_id
+      - end_date
+      - ann_date
+      - holder_name
+      - sys_from

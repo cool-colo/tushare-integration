@@ -1,0 +1,12 @@
+[
+  {
+    "database": "v2_scalar_rebuild_20261120",
+    "table": "dws_stock_factor_wide_v2_sample",
+    "columns": 1968
+  },
+  {
+    "database": "v2_scalar_rebuild_latest_20261120",
+    "table": "dws_stock_factor_wide_v2_latest",
+    "columns": 1968
+  }
+]

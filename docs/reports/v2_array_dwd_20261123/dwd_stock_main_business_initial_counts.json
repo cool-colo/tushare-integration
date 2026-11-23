@@ -1,0 +1,11 @@
+[
+  {
+    "rows": 700833,
+    "instruments": 6655,
+    "first_event": "2010-03-31",
+    "last_event": "2026-09-30",
+    "first_available": null,
+    "last_available": null,
+    "unknown_availability": 700833
+  }
+]

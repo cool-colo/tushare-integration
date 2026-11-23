@@ -1,0 +1,521 @@
+{
+  "report_rc_raw": {
+    "columns": [
+      [
+        "ts_code",
+        "Nullable(String)"
+      ],
+      [
+        "name",
+        "Nullable(String)"
+      ],
+      [
+        "report_date",
+        "Nullable(Date32)"
+      ],
+      [
+        "report_title",
+        "Nullable(String)"
+      ],
+      [
+        "report_type",
+        "Nullable(String)"
+      ],
+      [
+        "classify",
+        "Nullable(String)"
+      ],
+      [
+        "org_name",
+        "Nullable(String)"
+      ],
+      [
+        "author_name",
+        "Nullable(String)"
+      ],
+      [
+        "quarter",
+        "Nullable(String)"
+      ],
+      [
+        "op_rt",
+        "Nullable(Float64)"
+      ],
+      [
+        "op_pr",
+        "Nullable(Float64)"
+      ],
+      [
+        "tp",
+        "Nullable(Float64)"
+      ],
+      [
+        "np",
+        "Nullable(Float64)"
+      ],
+      [
+        "eps",
+        "Nullable(Float64)"
+      ],
+      [
+        "pe",
+        "Nullable(Float64)"
+      ],
+      [
+        "rd",
+        "Nullable(Float64)"
+      ],
+      [
+        "roe",
+        "Nullable(Float64)"
+      ],
+      [
+        "ev_ebitda",
+        "Nullable(Float64)"
+      ],
+      [
+        "rating",
+        "Nullable(String)"
+      ],
+      [
+        "max_price",
+        "Nullable(Float64)"
+      ],
+      [
+        "min_price",
+        "Nullable(Float64)"
+      ],
+      [
+        "imp_dg",
+        "Nullable(String)"
+      ],
+      [
+        "create_time",
+        "Nullable(DateTime64(3))"
+      ],
+      [
+        "_source",
+        "String"
+      ],
+      [
+        "_api_name",
+        "String"
+      ],
+      [
+        "_batch_id",
+        "String"
+      ],
+      [
+        "_ingest_time",
+        "DateTime64(3)"
+      ],
+      [
+        "_record_hash",
+        "String"
+      ],
+      [
+        "_raw_json",
+        "String"
+      ]
+    ],
+    "summary": [
+      {
+        "rows": 103746297,
+        "earliest_event": "2006-01-01",
+        "latest_event": "2026-11-20",
+        "first_ingest": "2026-05-06 20:58:18.499000",
+        "last_ingest": "2026-11-21 21:45:49.853000"
+      }
+    ]
+  },
+  "fund_portfolio_raw": {
+    "columns": [
+      [
+        "ts_code",
+        "Nullable(String)"
+      ],
+      [
+        "ann_date",
+        "Nullable(Date32)"
+      ],
+      [
+        "end_date",
+        "Nullable(Date32)"
+      ],
+      [
+        "symbol",
+        "Nullable(String)"
+      ],
+      [
+        "mkv",
+        "Nullable(Float64)"
+      ],
+      [
+        "amount",
+        "Nullable(Float64)"
+      ],
+      [
+        "stk_mkv_ratio",
+        "Nullable(Float64)"
+      ],
+      [
+        "stk_float_ratio",
+        "Nullable(Float64)"
+      ],
+      [
+        "_source",
+        "String"
+      ],
+      [
+        "_api_name",
+        "String"
+      ],
+      [
+        "_batch_id",
+        "String"
+      ],
+      [
+        "_ingest_time",
+        "DateTime64(3)"
+      ],
+      [
+        "_record_hash",
+        "String"
+      ],
+      [
+        "_raw_json",
+        "String"
+      ]
+    ],
+    "summary": [
+      {
+        "rows": 481865382,
+        "earliest_event": "2010-01-26",
+        "latest_event": "2026-09-30",
+        "first_ingest": "2026-10-13 19:58:06.483000",
+        "last_ingest": "2026-11-21 17:14:20.314000",
+        "invalid_announcements": 0
+      }
+    ]
+  },
+  "ccass_hold_detail_raw": {
+    "columns": [
+      [
+        "trade_date",
+        "Nullable(Date32)"
+      ],
+      [
+        "ts_code",
+        "Nullable(String)"
+      ],
+      [
+        "name",
+        "Nullable(String)"
+      ],
+      [
+        "col_participant_id",
+        "Nullable(String)"
+      ],
+      [
+        "col_participant_name",
+        "Nullable(String)"
+      ],
+      [
+        "col_shareholding",
+        "Nullable(String)"
+      ],
+      [
+        "col_shareholding_percent",
+        "Nullable(String)"
+      ],
+      [
+        "_source",
+        "String"
+      ],
+      [
+        "_api_name",
+        "String"
+      ],
+      [
+        "_batch_id",
+        "String"
+      ],
+      [
+        "_ingest_time",
+        "DateTime64(3)"
+      ],
+      [
+        "_record_hash",
+        "String"
+      ],
+      [
+        "_raw_json",
+        "String"
+      ]
+    ],
+    "summary": [
+      {
+        "rows": 16328077,
+        "earliest_event": "2016-12-05",
+        "latest_event": "2026-11-19",
+        "first_ingest": "2026-05-06 22:01:21.608000",
+        "last_ingest": "2026-11-20 21:34:40.515000",
+        "amount_examples": [
+          "3465",
+          "190900",
+          "5862",
+          "311",
+          "38684",
+          "176312",
+          "3919",
+          "200",
+          "13900",
+          "10000",
+          "1500",
+          "1000",
+          "223728",
+          "10951",
+          "4000"
+        ],
+        "percent_examples": [
+          "0.0",
+          "0.01",
+          "0.06",
+          "0.1",
+          "0.02",
+          "0.08",
+          "0.09",
+          "0.15",
+          "0.11",
+          "0.03",
+          "0.07",
+          "0.17",
+          "0.04",
+          "0.18",
+          "0.12"
+        ]
+      }
+    ]
+  },
+  "fina_mainbz_raw": {
+    "columns": [
+      [
+        "ts_code",
+        "Nullable(String)"
+      ],
+      [
+        "end_date",
+        "Nullable(Date32)"
+      ],
+      [
+        "bz_item",
+        "Nullable(String)"
+      ],
+      [
+        "bz_code",
+        "Nullable(String)"
+      ],
+      [
+        "bz_sales",
+        "Nullable(Float64)"
+      ],
+      [
+        "bz_profit",
+        "Nullable(Float64)"
+      ],
+      [
+        "bz_cost",
+        "Nullable(Float64)"
+      ],
+      [
+        "curr_type",
+        "Nullable(String)"
+      ],
+      [
+        "update_flag",
+        "Nullable(String)"
+      ],
+      [
+        "_source",
+        "String"
+      ],
+      [
+        "_api_name",
+        "String"
+      ],
+      [
+        "_batch_id",
+        "String"
+      ],
+      [
+        "_ingest_time",
+        "DateTime64(3)"
+      ],
+      [
+        "_record_hash",
+        "String"
+      ],
+      [
+        "_raw_json",
+        "String"
+      ]
+    ],
+    "summary": [
+      {
+        "rows": 7007847,
+        "earliest_event": "2010-03-31",
+        "latest_event": "2026-09-30",
+        "first_ingest": "2026-07-24 23:11:35.118000",
+        "last_ingest": "2026-11-21 14:28:48.917000"
+      }
+    ]
+  },
+  "top10_holders_raw": {
+    "columns": [
+      [
+        "ts_code",
+        "Nullable(String)"
+      ],
+      [
+        "ann_date",
+        "Nullable(Date32)"
+      ],
+      [
+        "end_date",
+        "Nullable(Date32)"
+      ],
+      [
+        "holder_name",
+        "Nullable(String)"
+      ],
+      [
+        "hold_amount",
+        "Nullable(Float64)"
+      ],
+      [
+        "hold_ratio",
+        "Nullable(Float64)"
+      ],
+      [
+        "hold_float_ratio",
+        "Nullable(Float64)"
+      ],
+      [
+        "hold_change",
+        "Nullable(Float64)"
+      ],
+      [
+        "holder_type",
+        "Nullable(String)"
+      ],
+      [
+        "_source",
+        "String"
+      ],
+      [
+        "_api_name",
+        "String"
+      ],
+      [
+        "_batch_id",
+        "String"
+      ],
+      [
+        "_ingest_time",
+        "DateTime64(3)"
+      ],
+      [
+        "_record_hash",
+        "String"
+      ],
+      [
+        "_raw_json",
+        "String"
+      ]
+    ],
+    "summary": [
+      {
+        "rows": 13366896,
+        "earliest_event": "2005-03-31",
+        "latest_event": "2026-09-30",
+        "first_ingest": "2026-05-06 11:13:28.246000",
+        "last_ingest": "2026-11-21 17:15:07.784000",
+        "invalid_announcements": 2014
+      }
+    ]
+  },
+  "top10_floatholders_raw": {
+    "columns": [
+      [
+        "ts_code",
+        "Nullable(String)"
+      ],
+      [
+        "ann_date",
+        "Nullable(Date32)"
+      ],
+      [
+        "end_date",
+        "Nullable(Date32)"
+      ],
+      [
+        "holder_name",
+        "Nullable(String)"
+      ],
+      [
+        "hold_amount",
+        "Nullable(Float64)"
+      ],
+      [
+        "hold_ratio",
+        "Nullable(Float64)"
+      ],
+      [
+        "hold_float_ratio",
+        "Nullable(Float64)"
+      ],
+      [
+        "hold_change",
+        "Nullable(Float64)"
+      ],
+      [
+        "holder_type",
+        "Nullable(String)"
+      ],
+      [
+        "_source",
+        "String"
+      ],
+      [
+        "_api_name",
+        "String"
+      ],
+      [
+        "_batch_id",
+        "String"
+      ],
+      [
+        "_ingest_time",
+        "DateTime64(3)"
+      ],
+      [
+        "_record_hash",
+        "String"
+      ],
+      [
+        "_raw_json",
+        "String"
+      ]
+    ],
+    "summary": [
+      {
+        "rows": 14708915,
+        "earliest_event": "2005-03-31",
+        "latest_event": "2026-09-30",
+        "first_ingest": "2026-05-06 14:08:56.983000",
+        "last_ingest": "2026-11-21 17:15:37.542000",
+        "invalid_announcements": 0
+      }
+    ]
+  }
+}

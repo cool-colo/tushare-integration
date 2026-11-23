@@ -78,6 +78,38 @@ schema:
       data_type: float
       nullable: true
       comment: 资产减值准备；单季值=Q1当期值，Q2-Q4为当期累计值减上一季度累计值
+    - name: c_fr_sale_sg
+      data_type: float
+      nullable: true
+      comment: c_fr_sale_sg；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: c_paid_to_for_empl
+      data_type: float
+      nullable: true
+      comment: c_paid_to_for_empl；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: c_pay_acq_const_fiolta
+      data_type: float
+      nullable: true
+      comment: c_pay_acq_const_fiolta；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: decr_def_inc_tax_assets
+      data_type: float
+      nullable: true
+      comment: decr_def_inc_tax_assets；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: incr_def_inc_tax_liab
+      data_type: float
+      nullable: true
+      comment: incr_def_inc_tax_liab；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: n_recp_disp_fiolta
+      data_type: float
+      nullable: true
+      comment: n_recp_disp_fiolta；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: stot_out_inv_act
+      data_type: float
+      nullable: true
+      comment: stot_out_inv_act；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
+    - name: deferred_income_tax
+      data_type: float
+      nullable: true
+      comment: deferred_income_tax；单季值，复用累计差分及修订传播；递延所得税先合成两项累计值
     - name: build_time
       data_type: datetime
       comment: 汇总构建时间

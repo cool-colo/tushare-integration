@@ -1,0 +1,22 @@
+{
+  "total_new_columns": 227,
+  "nonempty_columns": 213,
+  "placeholder_nonnull": {
+    "share_action_factor": 0,
+    "fund_report_hold_shares_total": 0,
+    "fund_report_holder_count": 0,
+    "national_team_hold_shares": 0,
+    "national_team_free_hold_shares": 0,
+    "national_team_hold_shares_prev_report": 0,
+    "national_team_report_close": 0,
+    "national_team_report_close_prev_report": 0,
+    "national_team_report_free_float_mv": 0,
+    "national_team_hold_free_share_ratio": 0,
+    "national_team_hold_free_share_ratio_prev_report": 0,
+    "company_province": 0,
+    "company_city": 0
+  },
+  "implemented_all_null": [
+    "deferred_income_tax_ttm_0"
+  ]
+}

@@ -1,0 +1,46 @@
+id: 2038
+name: dwd_stock_ccass_holding_detail
+comment: CCASS逐参与者持仓明细（历史披露日未知，禁止纳入公开日期PIT）
+builder: raw_versioned
+quarantine_same_time_conflicts: true
+availability_mode: unknown_disclosure
+source:
+  table_name: ccass_hold_detail_raw
+  schema_name: stock/special/ccass_hold_detail
+business_key:
+  - ts_code
+  - trade_date
+  - col_participant_id
+source_filters:
+  - "src.ts_code != '' AND src.col_participant_id != ''"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', src.ts_code)"
+source_code_expr: src.ts_code
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.ts_code)), 2)"
+event_date_expr: src.trade_date
+# trade_date is a holding date, not a disclosure date. No calendar inference.
+available_trade_date_expr: "CAST(NULL, 'Nullable(Date32)')"
+extra_columns:
+  - name: availability_basis
+    data_type: str
+    comment: 历史披露日期依据；unknown_disclosure_date表示不可用于公开日期PIT
+    expr: "'unknown_disclosure_date'"
+  - name: shareholding
+    data_type: float
+    nullable: true
+    comment: 持股数量（股）；规范千分位后转换，缺失或非法格式保留NULL，原文另存
+    expr: "if(match(trimBoth(ifNull(src.col_shareholding, '')), '^([0-9]+|[0-9]{1,3}(,[0-9]{3})+)([.][0-9]+)?$'), toFloat64OrNull(replaceAll(trimBoth(src.col_shareholding), ',', '')), CAST(NULL, 'Nullable(Float64)'))"
+  - name: shareholding_percent
+    data_type: float
+    nullable: true
+    comment: 持股比例（0到1）；源百分数除以100，缺失或非法格式保留NULL，原文另存
+    expr: "if(match(trimBoth(ifNull(src.col_shareholding_percent, '')), '^[0-9]+([.][0-9]+)?[ ]*%?$'), toFloat64OrNull(trimBoth(replaceAll(src.col_shareholding_percent, '%', ''))) / 100, CAST(NULL, 'Nullable(Float64)'))"
+partition_key:
+  - toYear(event_date)
+indexes:
+  - name: dwd_stock_ccass_holding_detail_idx
+    columns:
+      - instrument_id
+      - event_date
+      - col_participant_id
+      - sys_from

@@ -1,0 +1,42 @@
+id: 2039
+name: dwd_stock_main_business
+comment: 主营业务逐分类明细（历史披露日未知，禁止纳入公开日期PIT）
+builder: raw_versioned
+quarantine_same_time_conflicts: true
+availability_mode: unknown_disclosure
+source:
+  table_name: fina_mainbz_raw
+  schema_name: stock/financial/fina_mainbz
+business_key:
+  - ts_code
+  - end_date
+  - bz_code
+  - bz_item
+  - curr_type
+nullable_business_key:
+  - curr_type
+source_filters:
+  - "src.ts_code != '' AND src.bz_item != ''"
+  - "src.end_date > toDate32('1971-01-01')"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', src.ts_code)"
+source_code_expr: src.ts_code
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.ts_code)), 2)"
+event_date_expr: src.end_date
+# Neither end_date nor update_flag proves historical disclosure availability.
+available_trade_date_expr: "CAST(NULL, 'Nullable(Date32)')"
+extra_columns:
+  - name: availability_basis
+    data_type: str
+    comment: 历史披露日期依据；unknown_disclosure_date表示不可用于公开日期PIT
+    expr: "'unknown_disclosure_date'"
+partition_key:
+  - toYear(event_date)
+indexes:
+  - name: dwd_stock_main_business_idx
+    columns:
+      - instrument_id
+      - end_date
+      - bz_code
+      - bz_item
+      - sys_from

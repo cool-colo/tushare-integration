@@ -1,0 +1,17 @@
+[
+  {
+    "source": "benchmark_000985.CSI",
+    "last_event": "2026-11-19",
+    "rows_20261120": 0
+  },
+  {
+    "source": "top_list_rebuilt",
+    "last_event": "2026-11-19",
+    "rows_20261120": 0
+  },
+  {
+    "source": "stock_limit",
+    "last_event": "2026-11-19",
+    "rows_20261120": 0
+  }
+]

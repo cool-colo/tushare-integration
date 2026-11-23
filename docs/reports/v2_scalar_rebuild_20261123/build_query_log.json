@@ -1,0 +1,67 @@
+[
+  {
+    "query_id": "16f276e7-9220-4bcc-9e46-f7f75213da98",
+    "type": "QueryFinish",
+    "event_time": "2026-11-23 11:39:19",
+    "query_duration_ms": 933,
+    "read_rows": 580412,
+    "read_bytes": 64955360,
+    "written_rows": 434890,
+    "memory_usage": 382020622,
+    "exception_code": 0,
+    "exception": "",
+    "log_comment": "v2_scalar_rebuild_20261123:build_dwd_stock_holder_number"
+  },
+  {
+    "query_id": "7696cdb8-cd3b-4c28-9c52-c7a2ced6e6bc",
+    "type": "QueryFinish",
+    "event_time": "2026-11-23 11:39:20",
+    "query_duration_ms": 760,
+    "read_rows": 344186,
+    "read_bytes": 77920686,
+    "written_rows": 241293,
+    "memory_usage": 543727852,
+    "exception_code": 0,
+    "exception": "",
+    "log_comment": "v2_scalar_rebuild_20261123:build_dwd_stock_top_list"
+  },
+  {
+    "query_id": "abc8dede-9b16-4d14-a572-473b40273b45",
+    "type": "QueryFinish",
+    "event_time": "2026-11-23 11:39:29",
+    "query_duration_ms": 8667,
+    "read_rows": 9937904,
+    "read_bytes": 2350037361,
+    "written_rows": 728895,
+    "memory_usage": 2713973470,
+    "exception_code": 0,
+    "exception": "",
+    "log_comment": "v2_scalar_rebuild_20261123:build_dws_stock_income_quarter"
+  },
+  {
+    "query_id": "4807def8-c9b9-4673-89f5-64806726cc1e",
+    "type": "QueryFinish",
+    "event_time": "2026-11-23 11:39:35",
+    "query_duration_ms": 5723,
+    "read_rows": 8117056,
+    "read_bytes": 1583790948,
+    "written_rows": 601018,
+    "memory_usage": 1527278159,
+    "exception_code": 0,
+    "exception": "",
+    "log_comment": "v2_scalar_rebuild_20261123:build_dws_stock_cashflow_quarter"
+  },
+  {
+    "query_id": "d7fd92a8-14e9-412a-898e-528c6c9fca23",
+    "type": "QueryFinish",
+    "event_time": "2026-11-23 11:54:59",
+    "query_duration_ms": 699445,
+    "read_rows": 325115949,
+    "read_bytes": 29796323385,
+    "written_rows": 5572,
+    "memory_usage": 37508303423,
+    "exception_code": 0,
+    "exception": "",
+    "log_comment": "v2_scalar_rebuild_20261123:build_v2_available_20261123"
+  }
+]

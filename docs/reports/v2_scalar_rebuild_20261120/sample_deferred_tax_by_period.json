@@ -1,0 +1,22 @@
+[
+  {
+    "report_month": 3,
+    "reports": 271,
+    "both_nonnull": 0
+  },
+  {
+    "report_month": 6,
+    "reports": 301,
+    "both_nonnull": 120
+  },
+  {
+    "report_month": 9,
+    "reports": 281,
+    "both_nonnull": 0
+  },
+  {
+    "report_month": 12,
+    "reports": 355,
+    "both_nonnull": 146
+  }
+]

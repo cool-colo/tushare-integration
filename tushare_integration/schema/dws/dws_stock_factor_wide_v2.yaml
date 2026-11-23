@@ -730,6 +730,14 @@ schema:
     data_type: float
     nullable: true
     comment: 货币资金lyr_4（固定报告期索引）
+  - name: non_cur_liab_due_1y_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.non_cur_liab_due_1y；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: non_cur_liab_due_1y_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.non_cur_liab_due_1y；mrq_4；沿用V2固定自然期间及TTM缺值规则
   - name: non_cur_liab_due_1y_ttm_0
     data_type: float
     nullable: true
@@ -786,6 +794,14 @@ schema:
     data_type: float
     nullable: true
     comment: 一年内到期的非流动负债lyr_4（固定报告期索引）
+  - name: notes_payable_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.notes_payable；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: notes_payable_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.notes_payable；mrq_4；沿用V2固定自然期间及TTM缺值规则
   - name: notes_payable_ttm_0
     data_type: float
     nullable: true
@@ -842,6 +858,18 @@ schema:
     data_type: float
     nullable: true
     comment: 应付票据lyr_4（固定报告期索引）
+  - name: st_borr_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.st_borr；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: st_borr_mrq_1
+    data_type: float
+    nullable: true
+    comment: balancesheet.st_borr；mrq_1；沿用V2固定自然期间及TTM缺值规则
+  - name: st_borr_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.st_borr；mrq_4；沿用V2固定自然期间及TTM缺值规则
   - name: st_borr_ttm_0
     data_type: float
     nullable: true
@@ -1973,7 +2001,7 @@ schema:
   - name: fin_exp_int_exp_ttm_0
     data_type: float
     nullable: true
-    comment: 利息支出ttm_0（固定报告期索引）
+    comment: 财务费用中的利息费用TTM（元）；income自身公告PIT可见累计值转单季，固定季度槽0至3；四个报告期须齐全，沿用非空季度均值乘4
   - name: fin_exp_int_exp_ttm_1
     data_type: float
     nullable: true
@@ -1989,7 +2017,7 @@ schema:
   - name: fin_exp_int_exp_ttm_4
     data_type: float
     nullable: true
-    comment: 利息支出ttm_4（固定报告期索引）
+    comment: 上年同季财务费用中的利息费用TTM（元）；income自身公告PIT可见累计值转单季，固定季度槽4至7；缺报告期不跳期，不与折旧对齐披露日
   - name: fin_exp_int_exp_ttm_5
     data_type: float
     nullable: true
@@ -2194,6 +2222,14 @@ schema:
     data_type: float
     nullable: true
     comment: 利息收入lyr_4（固定报告期索引）
+  - name: n_income_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.n_income；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_mrq_4
+    data_type: float
+    nullable: true
+    comment: income.n_income；mrq_4；沿用V2固定自然期间及TTM缺值规则
   - name: n_income_ttm_0
     data_type: float
     nullable: true
@@ -2250,6 +2286,58 @@ schema:
     data_type: float
     nullable: true
     comment: 净利润(含少数股东损益lyr_4（固定报告期索引）
+  - name: n_income_attr_p_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_1
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_1；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_2
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_2；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_3
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_3；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_4
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_5
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_5；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_6
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_6；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_7
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_7；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_8
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_8；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_9
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_9；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_10
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_10；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_11
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_11；沿用V2固定自然期间及TTM缺值规则
+  - name: n_income_attr_p_mrq_12
+    data_type: float
+    nullable: true
+    comment: income.n_income_attr_p；mrq_12；沿用V2固定自然期间及TTM缺值规则
   - name: n_income_attr_p_ttm_0
     data_type: float
     nullable: true
@@ -2362,6 +2450,58 @@ schema:
     data_type: float
     nullable: true
     comment: 营业利润lyr_4（固定报告期索引）
+  - name: revenue_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_1
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_1；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_2
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_2；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_3
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_3；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_4
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_5
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_5；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_6
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_6；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_7
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_7；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_8
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_8；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_9
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_9；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_10
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_10；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_11
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_11；沿用V2固定自然期间及TTM缺值规则
+  - name: revenue_mrq_12
+    data_type: float
+    nullable: true
+    comment: income.revenue；mrq_12；沿用V2固定自然期间及TTM缺值规则
   - name: revenue_ttm_0
     data_type: float
     nullable: true
@@ -2398,6 +2538,10 @@ schema:
     data_type: float
     nullable: true
     comment: 营业收入ttm_8（固定报告期索引）
+  - name: revenue_ttm_12
+    data_type: float
+    nullable: true
+    comment: income.revenue；ttm_12；沿用V2固定自然期间及TTM缺值规则
   - name: revenue_lyr_0
     data_type: float
     nullable: true
@@ -2474,6 +2618,14 @@ schema:
     data_type: float
     nullable: true
     comment: 营业总成本lyr_4（固定报告期索引）
+  - name: total_profit_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.total_profit；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: total_profit_mrq_4
+    data_type: float
+    nullable: true
+    comment: income.total_profit；mrq_4；沿用V2固定自然期间及TTM缺值规则
   - name: total_profit_ttm_0
     data_type: float
     nullable: true
@@ -2530,6 +2682,58 @@ schema:
     data_type: float
     nullable: true
     comment: 利润总额lyr_4（固定报告期索引）
+  - name: basic_eps_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_1
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_1；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_2
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_2；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_3
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_3；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_4
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_5
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_5；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_6
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_6；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_7
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_7；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_8
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_8；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_9
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_9；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_10
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_10；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_11
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_11；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_mrq_12
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；mrq_12；沿用V2固定自然期间及TTM缺值规则
   - name: basic_eps_ttm_0
     data_type: float
     nullable: true
@@ -2586,6 +2790,38 @@ schema:
     data_type: float
     nullable: true
     comment: 基本每股收益lyr_4（固定报告期索引）
+  - name: basic_eps_lyr_5
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；lyr_5；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_lyr_6
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；lyr_6；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_lyr_7
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；lyr_7；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_lyr_8
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；lyr_8；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_lyr_9
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；lyr_9；沿用V2固定自然期间及TTM缺值规则
+  - name: basic_eps_lyr_10
+    data_type: float
+    nullable: true
+    comment: income.basic_eps；lyr_10；沿用V2固定自然期间及TTM缺值规则
+  - name: oper_cost_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.oper_cost；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: oper_cost_mrq_4
+    data_type: float
+    nullable: true
+    comment: income.oper_cost；mrq_4；沿用V2固定自然期间及TTM缺值规则
   - name: oper_cost_ttm_0
     data_type: float
     nullable: true
@@ -2754,6 +2990,14 @@ schema:
     data_type: float
     nullable: true
     comment: 公允价值变动收益lyr_4（固定报告期索引）
+  - name: fin_exp_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.fin_exp；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: fin_exp_mrq_4
+    data_type: float
+    nullable: true
+    comment: income.fin_exp；mrq_4；沿用V2固定自然期间及TTM缺值规则
   - name: fin_exp_ttm_0
     data_type: float
     nullable: true
@@ -3458,6 +3702,10 @@ schema:
     data_type: float
     nullable: true
     comment: 应收账款（TTM）mrq_8（固定报告期索引）
+  - name: accounts_receiv_mrq_9
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_receiv；mrq_9；沿用V2固定自然期间及TTM缺值规则
   - name: accounts_receiv_ttm_0
     data_type: float
     nullable: true
@@ -3642,6 +3890,10 @@ schema:
     data_type: float
     nullable: true
     comment: 应收票据mrq_8（固定报告期索引）
+  - name: notes_receiv_mrq_9
+    data_type: float
+    nullable: true
+    comment: balancesheet.notes_receiv；mrq_9；沿用V2固定自然期间及TTM缺值规则
   - name: notes_receiv_ttm_0
     data_type: float
     nullable: true
@@ -4286,6 +4538,10 @@ schema:
     data_type: float
     nullable: true
     comment: 本期年报披露存货mrq_8（固定报告期索引）
+  - name: inventories_mrq_9
+    data_type: float
+    nullable: true
+    comment: balancesheet.inventories；mrq_9；沿用V2固定自然期间及TTM缺值规则
   - name: inventories_ttm_0
     data_type: float
     nullable: true
@@ -4930,6 +5186,10 @@ schema:
     data_type: float
     nullable: true
     comment: 预付账款mrq_8（固定报告期索引）
+  - name: prepayment_mrq_9
+    data_type: float
+    nullable: true
+    comment: balancesheet.prepayment；mrq_9；沿用V2固定自然期间及TTM缺值规则
   - name: prepayment_ttm_0
     data_type: float
     nullable: true
@@ -5446,6 +5706,14 @@ schema:
     data_type: float
     nullable: true
     comment: 在建工程合计（LYR，滞后0期）lyr_4（固定报告期索引）
+  - name: fix_assets_total_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.fix_assets_total；mrq_0；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
+  - name: fix_assets_total_mrq_1
+    data_type: float
+    nullable: true
+    comment: balancesheet.fix_assets_total；mrq_1；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
   - name: fix_assets_total_ttm_0
     data_type: float
     nullable: true
@@ -6742,6 +7010,486 @@ schema:
     data_type: float
     nullable: true
     comment: 总资产周转率（最近年报）lyr_4（固定报告期索引）
+  - name: accounts_pay_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_pay；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: accounts_pay_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_pay；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: accounts_receiv_bill_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_receiv_bill；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: accounts_receiv_bill_mrq_1
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_receiv_bill；mrq_1；沿用V2固定自然期间及TTM缺值规则
+  - name: accounts_receiv_bill_mrq_2
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_receiv_bill；mrq_2；沿用V2固定自然期间及TTM缺值规则
+  - name: accounts_receiv_bill_mrq_3
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_receiv_bill；mrq_3；沿用V2固定自然期间及TTM缺值规则
+  - name: accounts_receiv_bill_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_receiv_bill；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: accounts_receiv_bill_mrq_5
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_receiv_bill；mrq_5；沿用V2固定自然期间及TTM缺值规则
+  - name: accounts_receiv_bill_mrq_6
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_receiv_bill；mrq_6；沿用V2固定自然期间及TTM缺值规则
+  - name: accounts_receiv_bill_mrq_7
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_receiv_bill；mrq_7；沿用V2固定自然期间及TTM缺值规则
+  - name: accounts_receiv_bill_mrq_8
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_receiv_bill；mrq_8；沿用V2固定自然期间及TTM缺值规则
+  - name: accounts_receiv_bill_mrq_9
+    data_type: float
+    nullable: true
+    comment: balancesheet.accounts_receiv_bill；mrq_9；沿用V2固定自然期间及TTM缺值规则
+  - name: debt_invest_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.debt_invest；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: debt_invest_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.debt_invest；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: defer_tax_assets_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.defer_tax_assets；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: fa_avail_for_sale_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.fa_avail_for_sale；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: fa_avail_for_sale_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.fa_avail_for_sale；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: htm_invest_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.htm_invest；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: htm_invest_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.htm_invest；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: intan_assets_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.intan_assets；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: lt_amor_exp_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.lt_amor_exp；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: lt_eqt_invest_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.lt_eqt_invest；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: lt_eqt_invest_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.lt_eqt_invest；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: oth_debt_invest_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.oth_debt_invest；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: oth_debt_invest_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.oth_debt_invest；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: oth_eq_invest_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.oth_eq_invest；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: oth_eq_invest_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.oth_eq_invest；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: oth_eq_ppbond_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.oth_eq_ppbond；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: oth_eq_ppbond_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.oth_eq_ppbond；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: oth_eqt_tools_p_shr_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.oth_eqt_tools_p_shr；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: oth_eqt_tools_p_shr_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.oth_eqt_tools_p_shr；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: r_and_d_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.r_and_d；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: total_share_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.total_share；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: total_share_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.total_share；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: trading_fl_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.trading_fl；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: trading_fl_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.trading_fl；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: contract_liab_mrq_0
+    data_type: float
+    nullable: true
+    comment: balancesheet.contract_liab；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: contract_liab_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.contract_liab；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: oth_comp_income_mrq_4
+    data_type: float
+    nullable: true
+    comment: balancesheet.oth_comp_income；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: assets_impair_loss_ttm_0
+    data_type: float
+    nullable: true
+    comment: income.assets_impair_loss；ttm_0；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_mrq_4
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_ttm_0
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；ttm_0；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_lyr_0
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；lyr_0；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_lyr_1
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；lyr_1；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_lyr_2
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；lyr_2；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_lyr_3
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；lyr_3；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_lyr_4
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；lyr_4；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_lyr_5
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；lyr_5；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_lyr_6
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；lyr_6；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_lyr_7
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；lyr_7；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_lyr_8
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；lyr_8；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_lyr_9
+    data_type: float
+    nullable: true
+    comment: income.rd_exp；lyr_9；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_mrq_4
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_ttm_0
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；ttm_0；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_lyr_0
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；lyr_0；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_lyr_1
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；lyr_1；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_lyr_2
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；lyr_2；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_lyr_3
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；lyr_3；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_lyr_4
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；lyr_4；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_lyr_5
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；lyr_5；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_lyr_6
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；lyr_6；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_lyr_7
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；lyr_7；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_lyr_8
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；lyr_8；沿用V2固定自然期间及TTM缺值规则
+  - name: sell_exp_lyr_9
+    data_type: float
+    nullable: true
+    comment: income.sell_exp；lyr_9；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_mrq_4
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_ttm_0
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；ttm_0；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_lyr_0
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；lyr_0；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_lyr_1
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；lyr_1；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_lyr_2
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；lyr_2；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_lyr_3
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；lyr_3；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_lyr_4
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；lyr_4；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_lyr_5
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；lyr_5；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_lyr_6
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；lyr_6；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_lyr_7
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；lyr_7；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_lyr_8
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；lyr_8；沿用V2固定自然期间及TTM缺值规则
+  - name: admin_exp_lyr_9
+    data_type: float
+    nullable: true
+    comment: income.admin_exp；lyr_9；沿用V2固定自然期间及TTM缺值规则
+  - name: rd_exp_indicator_lyr_0
+    data_type: float
+    nullable: true
+    comment: fina_indicator.rd_exp；lyr_0；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
+  - name: rd_exp_indicator_lyr_1
+    data_type: float
+    nullable: true
+    comment: fina_indicator.rd_exp；lyr_1；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
+  - name: rd_exp_indicator_lyr_2
+    data_type: float
+    nullable: true
+    comment: fina_indicator.rd_exp；lyr_2；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
+  - name: rd_exp_indicator_lyr_3
+    data_type: float
+    nullable: true
+    comment: fina_indicator.rd_exp；lyr_3；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
+  - name: rd_exp_indicator_lyr_4
+    data_type: float
+    nullable: true
+    comment: fina_indicator.rd_exp；lyr_4；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
+  - name: rd_exp_indicator_lyr_5
+    data_type: float
+    nullable: true
+    comment: fina_indicator.rd_exp；lyr_5；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
+  - name: rd_exp_indicator_lyr_6
+    data_type: float
+    nullable: true
+    comment: fina_indicator.rd_exp；lyr_6；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
+  - name: rd_exp_indicator_lyr_7
+    data_type: float
+    nullable: true
+    comment: fina_indicator.rd_exp；lyr_7；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
+  - name: rd_exp_indicator_lyr_8
+    data_type: float
+    nullable: true
+    comment: fina_indicator.rd_exp；lyr_8；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
+  - name: rd_exp_indicator_lyr_9
+    data_type: float
+    nullable: true
+    comment: fina_indicator.rd_exp；lyr_9；沿用V2固定自然期间及TTM缺值规则；按源原义提供，不声明与文档候选业务含义等价；不跨源替代
+  - name: c_fr_sale_sg_mrq_0
+    data_type: float
+    nullable: true
+    comment: cashflow.c_fr_sale_sg；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: c_fr_sale_sg_mrq_1
+    data_type: float
+    nullable: true
+    comment: cashflow.c_fr_sale_sg；mrq_1；沿用V2固定自然期间及TTM缺值规则
+  - name: c_fr_sale_sg_mrq_2
+    data_type: float
+    nullable: true
+    comment: cashflow.c_fr_sale_sg；mrq_2；沿用V2固定自然期间及TTM缺值规则
+  - name: c_fr_sale_sg_mrq_3
+    data_type: float
+    nullable: true
+    comment: cashflow.c_fr_sale_sg；mrq_3；沿用V2固定自然期间及TTM缺值规则
+  - name: c_fr_sale_sg_mrq_4
+    data_type: float
+    nullable: true
+    comment: cashflow.c_fr_sale_sg；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: c_fr_sale_sg_mrq_5
+    data_type: float
+    nullable: true
+    comment: cashflow.c_fr_sale_sg；mrq_5；沿用V2固定自然期间及TTM缺值规则
+  - name: c_fr_sale_sg_mrq_6
+    data_type: float
+    nullable: true
+    comment: cashflow.c_fr_sale_sg；mrq_6；沿用V2固定自然期间及TTM缺值规则
+  - name: c_fr_sale_sg_mrq_7
+    data_type: float
+    nullable: true
+    comment: cashflow.c_fr_sale_sg；mrq_7；沿用V2固定自然期间及TTM缺值规则
+  - name: c_fr_sale_sg_mrq_8
+    data_type: float
+    nullable: true
+    comment: cashflow.c_fr_sale_sg；mrq_8；沿用V2固定自然期间及TTM缺值规则
+  - name: c_fr_sale_sg_mrq_9
+    data_type: float
+    nullable: true
+    comment: cashflow.c_fr_sale_sg；mrq_9；沿用V2固定自然期间及TTM缺值规则
+  - name: c_pay_acq_const_fiolta_mrq_0
+    data_type: float
+    nullable: true
+    comment: cashflow.c_pay_acq_const_fiolta；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: c_pay_acq_const_fiolta_mrq_4
+    data_type: float
+    nullable: true
+    comment: cashflow.c_pay_acq_const_fiolta；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: c_pay_acq_const_fiolta_ttm_0
+    data_type: float
+    nullable: true
+    comment: cashflow.c_pay_acq_const_fiolta；ttm_0；沿用V2固定自然期间及TTM缺值规则
+  - name: c_pay_acq_const_fiolta_ttm_4
+    data_type: float
+    nullable: true
+    comment: cashflow.c_pay_acq_const_fiolta；ttm_4；沿用V2固定自然期间及TTM缺值规则
+  - name: c_pay_acq_const_fiolta_ttm_8
+    data_type: float
+    nullable: true
+    comment: cashflow.c_pay_acq_const_fiolta；ttm_8；沿用V2固定自然期间及TTM缺值规则
+  - name: c_pay_acq_const_fiolta_ttm_12
+    data_type: float
+    nullable: true
+    comment: cashflow.c_pay_acq_const_fiolta；ttm_12；沿用V2固定自然期间及TTM缺值规则
+  - name: n_recp_disp_fiolta_mrq_0
+    data_type: float
+    nullable: true
+    comment: cashflow.n_recp_disp_fiolta；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: n_recp_disp_fiolta_mrq_4
+    data_type: float
+    nullable: true
+    comment: cashflow.n_recp_disp_fiolta；mrq_4；沿用V2固定自然期间及TTM缺值规则
+  - name: n_recp_disp_fiolta_ttm_0
+    data_type: float
+    nullable: true
+    comment: cashflow.n_recp_disp_fiolta；ttm_0；沿用V2固定自然期间及TTM缺值规则
+  - name: n_recp_disp_fiolta_ttm_4
+    data_type: float
+    nullable: true
+    comment: cashflow.n_recp_disp_fiolta；ttm_4；沿用V2固定自然期间及TTM缺值规则
+  - name: n_recp_disp_fiolta_ttm_8
+    data_type: float
+    nullable: true
+    comment: cashflow.n_recp_disp_fiolta；ttm_8；沿用V2固定自然期间及TTM缺值规则
+  - name: n_recp_disp_fiolta_ttm_12
+    data_type: float
+    nullable: true
+    comment: cashflow.n_recp_disp_fiolta；ttm_12；沿用V2固定自然期间及TTM缺值规则
+  - name: stot_out_inv_act_mrq_0
+    data_type: float
+    nullable: true
+    comment: cashflow.stot_out_inv_act；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: compr_inc_attr_p_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.compr_inc_attr_p；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: t_compr_income_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.t_compr_income；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: oth_income_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.oth_income；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: asset_disp_income_mrq_0
+    data_type: float
+    nullable: true
+    comment: income.asset_disp_income；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: c_paid_to_for_empl_mrq_0
+    data_type: float
+    nullable: true
+    comment: cashflow.c_paid_to_for_empl；mrq_0；沿用V2固定自然期间及TTM缺值规则
+  - name: use_right_asset_dep_lyr_0
+    data_type: float
+    nullable: true
+    comment: cashflow.use_right_asset_dep；lyr_0；沿用V2固定自然期间及TTM缺值规则
+  - name: use_right_asset_dep_lyr_1
+    data_type: float
+    nullable: true
+    comment: cashflow.use_right_asset_dep；lyr_1；沿用V2固定自然期间及TTM缺值规则
+  - name: deferred_income_tax_ttm_0
+    data_type: float
+    nullable: true
+    comment: cashflow.deferred_income_tax；ttm_0；沿用V2固定自然期间及TTM缺值规则
   - name: ev_ttm_0
     data_type: float
     nullable: true
@@ -6954,6 +7702,166 @@ schema:
     data_type: float
     nullable: true
     comment: 加权平均成本
+  - name: bench_ret
+    data_type: float
+    nullable: true
+    comment: 中证全指日收益率
+  - name: share_action_factor
+    data_type: float
+    nullable: true
+    comment: 股数尺度累计调整因子（送转、拆合股）；NULL占位：缺少完整且可按历史可用日验证的拆合股数据；不接入米筐
+  - name: diluted_weighted_share_mrq_0
+    data_type: float
+    nullable: true
+    comment: 最新报告期稀释加权平均股本；期末总股本代理；不是已披露稀释加权平均股本
+  - name: diluted_weighted_share_mrq_4
+    data_type: float
+    nullable: true
+    comment: 去年同报告期稀释加权平均股本；期末总股本代理；不是已披露稀释加权平均股本
+  - name: up_limit
+    data_type: float
+    nullable: true
+    comment: 当日未复权涨停价
+  - name: down_limit
+    data_type: float
+    nullable: true
+    comment: 当日未复权跌停价
+  - name: top_list_flag
+    data_type: int
+    nullable: true
+    comment: 对应交易日龙虎榜入榜标记（盘后披露后方可用）
+  - name: sw_l1_code
+    data_type: str
+    nullable: true
+    comment: 计算时点已生效且已可见的申万一级行业代码
+  - name: list_date
+    data_type: date
+    nullable: true
+    comment: 股票上市日期
+  - name: holder_num_mrq_0
+    data_type: int
+    nullable: true
+    comment: 最新可见定期报告季度的股东户数
+  - name: holder_num_mrq_1
+    data_type: int
+    nullable: true
+    comment: 上一自然季度定期报告的股东户数（缺期置空）
+  - name: northbound_hold_shares
+    data_type: float
+    nullable: true
+    comment: 计算时点最近已披露的陆股通持股数
+  - name: fund_report_hold_shares_total
+    data_type: float
+    nullable: true
+    comment: 最近已完整披露半年报或年报的公募基金持股合计数（仅基金代理）；NULL占位：缺少基金完整披露标记
+  - name: fund_report_holder_count
+    data_type: int
+    nullable: true
+    comment: 最近已完整披露半年报或年报持有该股的公募基金数（仅基金代理）；NULL占位：缺少基金完整披露标记
+  - name: national_team_hold_shares
+    data_type: float
+    nullable: true
+    comment: 最近可见报告期国家队持股数合计；NULL占位：缺少经确认的国家队主体名单
+  - name: national_team_free_hold_shares
+    data_type: float
+    nullable: true
+    comment: 最近已可见报告期国家队非限售持股数合计；NULL占位：缺少经确认的国家队主体名单
+  - name: national_team_hold_shares_prev_report
+    data_type: float
+    nullable: true
+    comment: 上一自然季度报告期国家队持股数合计；NULL占位：缺少经确认的国家队主体名单
+  - name: national_team_report_close
+    data_type: float
+    nullable: true
+    comment: 最近可见国家队持仓报告期末最近交易日收盘价；NULL占位：缺少经确认的国家队主体名单
+  - name: national_team_report_close_prev_report
+    data_type: float
+    nullable: true
+    comment: 上一自然季度报告期末最近交易日收盘价；NULL占位：缺少经确认的国家队主体名单
+  - name: national_team_report_free_float_mv
+    data_type: float
+    nullable: true
+    comment: 最近可见国家队持仓报告期末自由流通市值（元）；NULL占位：缺少经确认的国家队主体名单
+  - name: national_team_hold_free_share_ratio
+    data_type: float
+    nullable: true
+    comment: 最近可见报告期国家队持股数／同期自由流通股本；NULL占位：缺少经确认的国家队主体名单
+  - name: national_team_hold_free_share_ratio_prev_report
+    data_type: float
+    nullable: true
+    comment: 上一自然季度国家队持股数／同期自由流通股本；NULL占位：缺少经确认的国家队主体名单
+  - name: halfyear_depreciation
+    data_type: float
+    nullable: true
+    comment: 最近有效半年度折旧金额
+  - name: company_province
+    data_type: str
+    nullable: true
+    comment: 公司所在省份；NULL占位：缺少公司地址历史生效日
+  - name: company_city
+    data_type: str
+    nullable: true
+    comment: 公司所在城市；NULL占位：缺少公司地址历史生效日
+  - name: csi800_member
+    data_type: int
+    nullable: true
+    comment: 当日中证 800 成分资格
+  - name: implemented_cash_dividend_12m_cny
+    data_type: float
+    nullable: true
+    comment: 过去 12 个月已实施现金分红总额
+  - name: analyst_np_consensus_fy0
+    data_type: float
+    nullable: true
+    comment: FY0 一致预期归母净利润（已披露年报时用实际值）；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_np_consensus_fy1
+    data_type: float
+    nullable: true
+    comment: FY1 一致预期归母净利润；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_np_consensus_fy2
+    data_type: float
+    nullable: true
+    comment: FY2 一致预期归母净利润；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_np_consensus_fy3
+    data_type: float
+    nullable: true
+    comment: FY3 一致预期归母净利润；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_bv_consensus_fy1
+    data_type: float
+    nullable: true
+    comment: FY1 预期归母净资产；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_forward_pe_12m
+    data_type: float
+    nullable: true
+    comment: 未来 12 个月一致预期市盈率；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_np_mean_active_180d_cny
+    data_type: float
+    nullable: true
+    comment: 近 180 日有效预测财年机构净利润均值（元）；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_eps_mean_active_90d
+    data_type: float
+    nullable: true
+    comment: 近 90 日有效预测财年机构 EPS 均值；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_eps_dispersion_active_90d
+    data_type: float
+    nullable: true
+    comment: 近 90 日机构 EPS 预测分歧度；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_eps_dispersion_active_91d
+    data_type: float
+    nullable: true
+    comment: 近 91 日机构 EPS 预测分歧度；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_org_coverage_90d
+    data_type: int
+    nullable: true
+    comment: 近 90 日覆盖机构数；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_org_year_pair_count_90d
+    data_type: int
+    nullable: true
+    comment: 近 90 日机构—预测年度去重配对数；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
+  - name: analyst_target_price_mean_90d
+    data_type: float
+    nullable: true
+    comment: 近 90 日各机构最新目标价均值；按约定文档公式；np源仅称预测净利润，归母含义未经核实；年度预测只取Q4
   - name: build_time
     data_type: datetime
     comment: 汇总构建时间

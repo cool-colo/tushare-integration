@@ -1,0 +1,110 @@
+[
+  {
+    "name": "dwd_fund_portfolio",
+    "engine": "MergeTree",
+    "total_rows": 19138288,
+    "total_bytes": 1180086995
+  },
+  {
+    "name": "dwd_fund_portfolio_quarantine",
+    "engine": "MergeTree",
+    "total_rows": 8777,
+    "total_bytes": 87118
+  },
+  {
+    "name": "dwd_stock_ccass_holding_detail",
+    "engine": "MergeTree",
+    "total_rows": 16288002,
+    "total_bytes": 899932888
+  },
+  {
+    "name": "dwd_stock_ccass_holding_detail_quarantine",
+    "engine": "MergeTree",
+    "total_rows": 2312,
+    "total_bytes": 144514
+  },
+  {
+    "name": "dwd_stock_ccass_holding_detail_unresolved",
+    "engine": "MergeTree",
+    "total_rows": 16290314,
+    "total_bytes": 901845163
+  },
+  {
+    "name": "dwd_stock_main_business",
+    "engine": "MergeTree",
+    "total_rows": 700833,
+    "total_bytes": 43441999
+  },
+  {
+    "name": "dwd_stock_main_business_quarantine",
+    "engine": "MergeTree",
+    "total_rows": 0,
+    "total_bytes": 0
+  },
+  {
+    "name": "dwd_stock_main_business_unresolved",
+    "engine": "MergeTree",
+    "total_rows": 700833,
+    "total_bytes": 43441999
+  },
+  {
+    "name": "dwd_stock_research_report",
+    "engine": "MergeTree",
+    "total_rows": 3116193,
+    "total_bytes": 288354796
+  },
+  {
+    "name": "dwd_stock_research_report_quarantine",
+    "engine": "MergeTree",
+    "total_rows": 9063,
+    "total_bytes": 203872
+  },
+  {
+    "name": "dwd_stock_research_report_unresolved",
+    "engine": "MergeTree",
+    "total_rows": 3125256,
+    "total_bytes": 297084075
+  },
+  {
+    "name": "dwd_stock_top10_floatholders",
+    "engine": "MergeTree",
+    "total_rows": 588551,
+    "total_bytes": 37987517
+  },
+  {
+    "name": "dwd_stock_top10_floatholders_quarantine",
+    "engine": "MergeTree",
+    "total_rows": 1983,
+    "total_bytes": 62801
+  },
+  {
+    "name": "dwd_stock_top10_floatholders_unresolved",
+    "engine": "MergeTree",
+    "total_rows": 590534,
+    "total_bytes": 38024545
+  },
+  {
+    "name": "dwd_stock_top10_holders",
+    "engine": "MergeTree",
+    "total_rows": 499941,
+    "total_bytes": 30612875
+  },
+  {
+    "name": "dwd_stock_top10_holders_quarantine",
+    "engine": "MergeTree",
+    "total_rows": 387,
+    "total_bytes": 25253
+  },
+  {
+    "name": "dwd_stock_top10_holders_unresolved",
+    "engine": "MergeTree",
+    "total_rows": 500328,
+    "total_bytes": 30621432
+  },
+  {
+    "name": "fund_portfolio_source_sharded",
+    "engine": "MergeTree",
+    "total_rows": 481865382,
+    "total_bytes": 6196329496
+  }
+]

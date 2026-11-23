@@ -1,0 +1,18 @@
+[
+  {
+    "table": "dwd_fund_portfolio",
+    "rows": 19138288,
+    "stocks": 7454,
+    "funds": 21300,
+    "fabricated_completeness": 0,
+    "known_availability": 19138288
+  },
+  {
+    "table": "dwd_fund_portfolio_quarantine",
+    "rows": 8777,
+    "stocks": 128,
+    "funds": 40,
+    "fabricated_completeness": 0,
+    "known_availability": 0
+  }
+]

@@ -1,0 +1,466 @@
+{
+  "database": "v2_array_dwd_rebuild_20261123",
+  "normal_rows": 40331808,
+  "quarantine_rows": 22522,
+  "quarantine_keys": 1611,
+  "blockers": 0,
+  "tables": {
+    "dwd_stock_research_report": {
+      "normal": {
+        "rows": 3116193,
+        "instruments": 5663,
+        "first_event": "2006-01-01",
+        "last_event": "2026-11-20",
+        "first_available": "2022-05-05",
+        "last_available": "2026-11-23",
+        "unknown_availability": 0
+      },
+      "quarantine": {
+        "rows": 9063,
+        "business_keys": 224,
+        "improperly_visible": 0
+      },
+      "normal_quarantine_key_overlap": 0,
+      "calendar_check": {
+        "groups_checked": 1325,
+        "rows_checked": 3116193,
+        "invalid": []
+      },
+      "quality": [
+        {
+          "rule": "row_count_nonzero",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "required_columns_exist",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_pit_dates_not_null",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_sys_window_order",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_lineage_not_empty",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_single_open_version",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_no_overlapping_versions",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "research_report_no_placeholder_dates",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "research_report_strict_next_trade_visibility",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "research_report_target_price_range",
+          "severity": "WARN",
+          "issues": 3
+        },
+        {
+          "rule": "research_report_quarter_format",
+          "severity": "WARN",
+          "issues": 10089
+        }
+      ]
+    },
+    "dwd_stock_top10_holders": {
+      "normal": {
+        "rows": 499941,
+        "instruments": 5840,
+        "first_event": "2005-03-31",
+        "last_event": "2026-09-30",
+        "first_available": "2005-04-04",
+        "last_available": "2026-10-26",
+        "unknown_availability": 0
+      },
+      "quarantine": {
+        "rows": 387,
+        "business_keys": 9,
+        "improperly_visible": 0
+      },
+      "normal_quarantine_key_overlap": 0,
+      "calendar_check": {
+        "groups_checked": 3177,
+        "rows_checked": 499941,
+        "invalid": []
+      },
+      "quality": [
+        {
+          "rule": "row_count_nonzero",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "required_columns_exist",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_pit_dates_not_null",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_sys_window_order",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_lineage_not_empty",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_single_open_version",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_no_overlapping_versions",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "top_holder_identity",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "top_holder_dates",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "top_holder_finite_measures",
+          "severity": "BLOCKER",
+          "issues": 0
+        }
+      ]
+    },
+    "dwd_stock_top10_floatholders": {
+      "normal": {
+        "rows": 588551,
+        "instruments": 5431,
+        "first_event": "2005-03-31",
+        "last_event": "2026-09-30",
+        "first_available": "2005-04-04",
+        "last_available": "2026-10-26",
+        "unknown_availability": 0
+      },
+      "quarantine": {
+        "rows": 1983,
+        "business_keys": 45,
+        "improperly_visible": 0
+      },
+      "normal_quarantine_key_overlap": 0,
+      "calendar_check": {
+        "groups_checked": 2347,
+        "rows_checked": 588551,
+        "invalid": []
+      },
+      "quality": [
+        {
+          "rule": "row_count_nonzero",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "required_columns_exist",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_pit_dates_not_null",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_sys_window_order",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_lineage_not_empty",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_single_open_version",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_no_overlapping_versions",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "top_holder_identity",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "top_holder_dates",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "top_holder_finite_measures",
+          "severity": "BLOCKER",
+          "issues": 0
+        }
+      ]
+    },
+    "dwd_stock_ccass_holding_detail": {
+      "normal": {
+        "rows": 16288002,
+        "instruments": 11132,
+        "first_event": "2016-12-05",
+        "last_event": "2026-11-19",
+        "first_available": null,
+        "last_available": null,
+        "unknown_availability": 16288002
+      },
+      "quarantine": {
+        "rows": 2312,
+        "business_keys": 1156,
+        "improperly_visible": 0
+      },
+      "normal_quarantine_key_overlap": 0,
+      "calendar_check": {
+        "eligible_for_public_date_pit": false,
+        "reason": "unknown_disclosure_date"
+      },
+      "quality": [
+        {
+          "rule": "row_count_nonzero",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "required_columns_exist",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_pit_dates_not_null",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_sys_window_order",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_lineage_not_empty",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_unknown_disclosure_excluded_from_pit",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_single_open_version",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_no_overlapping_versions",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "ccass_detail_identity_and_units",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "ccass_detail_unparsed_values",
+          "severity": "WARN",
+          "issues": 10
+        }
+      ]
+    },
+    "dwd_stock_main_business": {
+      "normal": {
+        "rows": 700833,
+        "instruments": 6655,
+        "first_event": "2010-03-31",
+        "last_event": "2026-09-30",
+        "first_available": null,
+        "last_available": null,
+        "unknown_availability": 700833
+      },
+      "quarantine": {
+        "rows": 0,
+        "business_keys": 0,
+        "improperly_visible": 0
+      },
+      "normal_quarantine_key_overlap": 0,
+      "calendar_check": {
+        "eligible_for_public_date_pit": false,
+        "reason": "unknown_disclosure_date"
+      },
+      "quality": [
+        {
+          "rule": "row_count_nonzero",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "required_columns_exist",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_pit_dates_not_null",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_sys_window_order",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_lineage_not_empty",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_unknown_disclosure_excluded_from_pit",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_single_open_version",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_no_overlapping_versions",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "main_business_identity",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "main_business_unclassified_source_codes",
+          "severity": "WARN",
+          "issues": 2789
+        }
+      ]
+    },
+    "dwd_fund_portfolio": {
+      "normal": {
+        "rows": 19138288,
+        "instruments": 7454,
+        "first_event": "2010-01-26",
+        "last_event": "2026-09-30",
+        "first_available": "2010-01-29",
+        "last_available": "2026-10-28",
+        "unknown_availability": 0
+      },
+      "quarantine": {
+        "rows": 8777,
+        "business_keys": 177,
+        "improperly_visible": 0
+      },
+      "normal_quarantine_key_overlap": 0,
+      "calendar_check": {
+        "groups_checked": 1506,
+        "rows_checked": 19138288,
+        "invalid": []
+      },
+      "quality": [
+        {
+          "rule": "row_count_nonzero",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "required_columns_exist",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_pit_dates_not_null",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_sys_window_order",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_lineage_not_empty",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_single_open_version",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "dwd_no_overlapping_versions",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "fund_portfolio_identity_present",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "fund_portfolio_report_dates",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "fund_portfolio_strict_next_trade_visibility",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "fund_portfolio_nonnegative_finite_measures",
+          "severity": "BLOCKER",
+          "issues": 0
+        },
+        {
+          "rule": "fund_portfolio_completeness_unknown",
+          "severity": "BLOCKER",
+          "issues": 0
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "normal": {
+    "rows": 588551,
+    "instruments": 5431,
+    "first_event": "2005-03-31",
+    "last_event": "2026-09-30",
+    "first_available": "2005-04-04",
+    "last_available": "2026-10-26",
+    "unknown_availability": 0
+  },
+  "quarantine": {
+    "rows": 1983,
+    "business_keys": 45,
+    "improperly_visible": 0
+  },
+  "normal_quarantine_key_overlap": 0,
+  "calendar_check": {
+    "groups_checked": 2347,
+    "rows_checked": 588551,
+    "invalid": []
+  },
+  "quality": [
+    {
+      "rule": "row_count_nonzero",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "required_columns_exist",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_pit_dates_not_null",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_sys_window_order",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_lineage_not_empty",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_single_open_version",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_no_overlapping_versions",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "top_holder_identity",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "top_holder_dates",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "top_holder_finite_measures",
+      "severity": "BLOCKER",
+      "issues": 0
+    }
+  ]
+}

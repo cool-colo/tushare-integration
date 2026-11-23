@@ -1,0 +1,37 @@
+[
+  {
+    "database": "v2_scalar_rebuild_20261123",
+    "name": "dwd_stock_holder_number_rebuilt",
+    "engine": "MergeTree",
+    "total_rows": 434890,
+    "total_bytes": 22829967
+  },
+  {
+    "database": "v2_scalar_rebuild_20261123",
+    "name": "dwd_stock_top_list_rebuilt",
+    "engine": "MergeTree",
+    "total_rows": 241293,
+    "total_bytes": 28316488
+  },
+  {
+    "database": "v2_scalar_rebuild_20261123",
+    "name": "dws_stock_cashflow_quarter_rebuilt",
+    "engine": "MergeTree",
+    "total_rows": 601018,
+    "total_bytes": 60292384
+  },
+  {
+    "database": "v2_scalar_rebuild_20261123",
+    "name": "dws_stock_factor_wide_v2_available_20261123",
+    "engine": "MergeTree",
+    "total_rows": 5572,
+    "total_bytes": 65463149
+  },
+  {
+    "database": "v2_scalar_rebuild_20261123",
+    "name": "dws_stock_income_quarter_rebuilt",
+    "engine": "MergeTree",
+    "total_rows": 728895,
+    "total_bytes": 135318271
+  }
+]

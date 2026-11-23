@@ -1,0 +1,18 @@
+{
+  "database": "v2_scalar_rebuild_20261123",
+  "target": "dws_stock_factor_wide_v2_available_20261123",
+  "trade_date": "2026-11-20",
+  "available_trade_date": "2026-11-23",
+  "sql_sha256": "0195dede6742460e75727b908d6fe022ff0d4f12d7595f73c129c9c0ebaa0ade",
+  "sql_bytes": 744459,
+  "settings": {
+    "max_query_size": 2097152,
+    "max_ast_elements": 500000,
+    "max_expanded_ast_elements": 500000,
+    "max_threads": 4,
+    "max_memory_usage": 68719476736,
+    "max_bytes_before_external_group_by": 2147483648,
+    "max_bytes_before_external_sort": 2147483648,
+    "max_execution_time": 1200
+  }
+}

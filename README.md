@@ -2,6 +2,10 @@
 
 > TusharePro接口数据集成工具
 
+Tushare v2 标量字段扩展：[字段血缘](docs/v2_scalar_extensions_lineage.md)、[重建验收说明](docs/v2_scalar_extensions_rebuild.md)与[真实数据试建报告](docs/reports/v2_scalar_rebuild_20261120.md)。
+
+数组相关 DWD：[字段、PIT 与任务清单](docs/v2_array_dwd_pit.md)，覆盖研报、基金持仓、CCASS、主营业务及两类十大股东，并保留版本冲突明细。
+
 米筐沪深 A 股与中证 2000 独立实时分钟订阅、ClickHouse 最近 7 个交易日分区保留与常驻部署：
 [使用说明](docs/ricequant_realtime.md)。
 

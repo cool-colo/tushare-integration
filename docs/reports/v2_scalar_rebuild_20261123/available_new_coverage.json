@@ -1,0 +1,910 @@
+[
+  {
+    "field": "accounts_pay_mrq_0",
+    "non_null_rows": 4771
+  },
+  {
+    "field": "accounts_pay_mrq_4",
+    "non_null_rows": 5411
+  },
+  {
+    "field": "accounts_receiv_bill_mrq_0",
+    "non_null_rows": 4765
+  },
+  {
+    "field": "accounts_receiv_bill_mrq_4",
+    "non_null_rows": 5398
+  },
+  {
+    "field": "bench_ret",
+    "non_null_rows": 5572
+  },
+  {
+    "field": "debt_invest_mrq_0",
+    "non_null_rows": 416
+  },
+  {
+    "field": "debt_invest_mrq_4",
+    "non_null_rows": 494
+  },
+  {
+    "field": "defer_tax_assets_mrq_0",
+    "non_null_rows": 4719
+  },
+  {
+    "field": "fa_avail_for_sale_mrq_0",
+    "non_null_rows": 0
+  },
+  {
+    "field": "fa_avail_for_sale_mrq_4",
+    "non_null_rows": 0
+  },
+  {
+    "field": "fix_assets_total_mrq_0",
+    "non_null_rows": 4824
+  },
+  {
+    "field": "fix_assets_total_mrq_1",
+    "non_null_rows": 4382
+  },
+  {
+    "field": "htm_invest_mrq_0",
+    "non_null_rows": 0
+  },
+  {
+    "field": "htm_invest_mrq_4",
+    "non_null_rows": 0
+  },
+  {
+    "field": "intan_assets_mrq_0",
+    "non_null_rows": 4806
+  },
+  {
+    "field": "lt_amor_exp_mrq_0",
+    "non_null_rows": 4353
+  },
+  {
+    "field": "lt_eqt_invest_mrq_0",
+    "non_null_rows": 3303
+  },
+  {
+    "field": "lt_eqt_invest_mrq_4",
+    "non_null_rows": 3713
+  },
+  {
+    "field": "non_cur_liab_due_1y_mrq_0",
+    "non_null_rows": 4445
+  },
+  {
+    "field": "non_cur_liab_due_1y_mrq_4",
+    "non_null_rows": 5021
+  },
+  {
+    "field": "notes_payable_mrq_0",
+    "non_null_rows": 3293
+  },
+  {
+    "field": "notes_payable_mrq_4",
+    "non_null_rows": 3724
+  },
+  {
+    "field": "oth_debt_invest_mrq_0",
+    "non_null_rows": 270
+  },
+  {
+    "field": "oth_debt_invest_mrq_4",
+    "non_null_rows": 319
+  },
+  {
+    "field": "oth_eq_invest_mrq_0",
+    "non_null_rows": 2396
+  },
+  {
+    "field": "oth_eq_invest_mrq_4",
+    "non_null_rows": 2678
+  },
+  {
+    "field": "oth_eq_ppbond_mrq_0",
+    "non_null_rows": 213
+  },
+  {
+    "field": "oth_eq_ppbond_mrq_4",
+    "non_null_rows": 138
+  },
+  {
+    "field": "oth_eqt_tools_p_shr_mrq_0",
+    "non_null_rows": 133
+  },
+  {
+    "field": "oth_eqt_tools_p_shr_mrq_4",
+    "non_null_rows": 22
+  },
+  {
+    "field": "r_and_d_mrq_0",
+    "non_null_rows": 955
+  },
+  {
+    "field": "st_borr_mrq_0",
+    "non_null_rows": 3785
+  },
+  {
+    "field": "st_borr_mrq_1",
+    "non_null_rows": 3417
+  },
+  {
+    "field": "st_borr_mrq_4",
+    "non_null_rows": 4307
+  },
+  {
+    "field": "total_share_mrq_0",
+    "non_null_rows": 4430
+  },
+  {
+    "field": "total_share_mrq_4",
+    "non_null_rows": 5509
+  },
+  {
+    "field": "trading_fl_mrq_0",
+    "non_null_rows": 557
+  },
+  {
+    "field": "trading_fl_mrq_4",
+    "non_null_rows": 600
+  },
+  {
+    "field": "share_action_factor",
+    "non_null_rows": 0
+  },
+  {
+    "field": "diluted_weighted_share_mrq_0",
+    "non_null_rows": 4430
+  },
+  {
+    "field": "diluted_weighted_share_mrq_4",
+    "non_null_rows": 5509
+  },
+  {
+    "field": "contract_liab_mrq_0",
+    "non_null_rows": 4764
+  },
+  {
+    "field": "contract_liab_mrq_4",
+    "non_null_rows": 5413
+  },
+  {
+    "field": "oth_comp_income_mrq_4",
+    "non_null_rows": 4002
+  },
+  {
+    "field": "assets_impair_loss_ttm_0",
+    "non_null_rows": 4810
+  },
+  {
+    "field": "rd_exp_ttm_0",
+    "non_null_rows": 5073
+  },
+  {
+    "field": "sell_exp_ttm_0",
+    "non_null_rows": 5228
+  },
+  {
+    "field": "admin_exp_ttm_0",
+    "non_null_rows": 5371
+  },
+  {
+    "field": "rd_exp_lyr_0",
+    "non_null_rows": 5245
+  },
+  {
+    "field": "rd_exp_indicator_lyr_0",
+    "non_null_rows": 5253
+  },
+  {
+    "field": "sell_exp_lyr_0",
+    "non_null_rows": 5414
+  },
+  {
+    "field": "admin_exp_lyr_0",
+    "non_null_rows": 5572
+  },
+  {
+    "field": "c_fr_sale_sg_mrq_0",
+    "non_null_rows": 3866
+  },
+  {
+    "field": "c_fr_sale_sg_mrq_1",
+    "non_null_rows": 3464
+  },
+  {
+    "field": "c_fr_sale_sg_mrq_2",
+    "non_null_rows": 4758
+  },
+  {
+    "field": "c_fr_sale_sg_mrq_3",
+    "non_null_rows": 5034
+  },
+  {
+    "field": "c_fr_sale_sg_mrq_4",
+    "non_null_rows": 5251
+  },
+  {
+    "field": "c_fr_sale_sg_mrq_5",
+    "non_null_rows": 5114
+  },
+  {
+    "field": "c_fr_sale_sg_mrq_6",
+    "non_null_rows": 5294
+  },
+  {
+    "field": "c_fr_sale_sg_mrq_7",
+    "non_null_rows": 4879
+  },
+  {
+    "field": "c_fr_sale_sg_mrq_8",
+    "non_null_rows": 4845
+  },
+  {
+    "field": "c_fr_sale_sg_mrq_9",
+    "non_null_rows": 5152
+  },
+  {
+    "field": "c_pay_acq_const_fiolta_mrq_0",
+    "non_null_rows": 3901
+  },
+  {
+    "field": "c_pay_acq_const_fiolta_mrq_4",
+    "non_null_rows": 5332
+  },
+  {
+    "field": "n_recp_disp_fiolta_mrq_0",
+    "non_null_rows": 3127
+  },
+  {
+    "field": "n_recp_disp_fiolta_mrq_4",
+    "non_null_rows": 4259
+  },
+  {
+    "field": "revenue_ttm_12",
+    "non_null_rows": 5257
+  },
+  {
+    "field": "c_pay_acq_const_fiolta_ttm_0",
+    "non_null_rows": 3371
+  },
+  {
+    "field": "c_pay_acq_const_fiolta_ttm_4",
+    "non_null_rows": 5218
+  },
+  {
+    "field": "c_pay_acq_const_fiolta_ttm_8",
+    "non_null_rows": 4893
+  },
+  {
+    "field": "c_pay_acq_const_fiolta_ttm_12",
+    "non_null_rows": 4781
+  },
+  {
+    "field": "n_recp_disp_fiolta_ttm_0",
+    "non_null_rows": 3126
+  },
+  {
+    "field": "n_recp_disp_fiolta_ttm_4",
+    "non_null_rows": 4742
+  },
+  {
+    "field": "n_recp_disp_fiolta_ttm_8",
+    "non_null_rows": 4464
+  },
+  {
+    "field": "n_recp_disp_fiolta_ttm_12",
+    "non_null_rows": 4315
+  },
+  {
+    "field": "stot_out_inv_act_mrq_0",
+    "non_null_rows": 3907
+  },
+  {
+    "field": "n_income_mrq_0",
+    "non_null_rows": 5376
+  },
+  {
+    "field": "n_income_mrq_4",
+    "non_null_rows": 5572
+  },
+  {
+    "field": "total_profit_mrq_0",
+    "non_null_rows": 5376
+  },
+  {
+    "field": "total_profit_mrq_4",
+    "non_null_rows": 5572
+  },
+  {
+    "field": "oper_cost_mrq_0",
+    "non_null_rows": 5276
+  },
+  {
+    "field": "oper_cost_mrq_4",
+    "non_null_rows": 5460
+  },
+  {
+    "field": "sell_exp_mrq_0",
+    "non_null_rows": 5220
+  },
+  {
+    "field": "sell_exp_mrq_4",
+    "non_null_rows": 5396
+  },
+  {
+    "field": "admin_exp_mrq_0",
+    "non_null_rows": 5368
+  },
+  {
+    "field": "admin_exp_mrq_4",
+    "non_null_rows": 5560
+  },
+  {
+    "field": "fin_exp_mrq_0",
+    "non_null_rows": 5277
+  },
+  {
+    "field": "fin_exp_mrq_4",
+    "non_null_rows": 5461
+  },
+  {
+    "field": "rd_exp_mrq_0",
+    "non_null_rows": 5041
+  },
+  {
+    "field": "rd_exp_mrq_4",
+    "non_null_rows": 5202
+  },
+  {
+    "field": "compr_inc_attr_p_mrq_0",
+    "non_null_rows": 5362
+  },
+  {
+    "field": "t_compr_income_mrq_0",
+    "non_null_rows": 5363
+  },
+  {
+    "field": "oth_income_mrq_0",
+    "non_null_rows": 5355
+  },
+  {
+    "field": "asset_disp_income_mrq_0",
+    "non_null_rows": 4391
+  },
+  {
+    "field": "c_paid_to_for_empl_mrq_0",
+    "non_null_rows": 3912
+  },
+  {
+    "field": "use_right_asset_dep_lyr_0",
+    "non_null_rows": 4417
+  },
+  {
+    "field": "use_right_asset_dep_lyr_1",
+    "non_null_rows": 4711
+  },
+  {
+    "field": "basic_eps_mrq_0",
+    "non_null_rows": 5362
+  },
+  {
+    "field": "basic_eps_mrq_1",
+    "non_null_rows": 5349
+  },
+  {
+    "field": "basic_eps_mrq_2",
+    "non_null_rows": 5535
+  },
+  {
+    "field": "basic_eps_mrq_3",
+    "non_null_rows": 5570
+  },
+  {
+    "field": "basic_eps_mrq_4",
+    "non_null_rows": 5554
+  },
+  {
+    "field": "basic_eps_mrq_5",
+    "non_null_rows": 5521
+  },
+  {
+    "field": "basic_eps_mrq_6",
+    "non_null_rows": 5529
+  },
+  {
+    "field": "basic_eps_mrq_7",
+    "non_null_rows": 5446
+  },
+  {
+    "field": "basic_eps_mrq_8",
+    "non_null_rows": 5419
+  },
+  {
+    "field": "basic_eps_mrq_9",
+    "non_null_rows": 5436
+  },
+  {
+    "field": "basic_eps_mrq_10",
+    "non_null_rows": 5439
+  },
+  {
+    "field": "basic_eps_mrq_11",
+    "non_null_rows": 5303
+  },
+  {
+    "field": "basic_eps_mrq_12",
+    "non_null_rows": 5287
+  },
+  {
+    "field": "basic_eps_lyr_5",
+    "non_null_rows": 4673
+  },
+  {
+    "field": "basic_eps_lyr_6",
+    "non_null_rows": 4703
+  },
+  {
+    "field": "basic_eps_lyr_7",
+    "non_null_rows": 4859
+  },
+  {
+    "field": "basic_eps_lyr_8",
+    "non_null_rows": 4708
+  },
+  {
+    "field": "basic_eps_lyr_9",
+    "non_null_rows": 4415
+  },
+  {
+    "field": "basic_eps_lyr_10",
+    "non_null_rows": 4175
+  },
+  {
+    "field": "revenue_mrq_0",
+    "non_null_rows": 5374
+  },
+  {
+    "field": "revenue_mrq_1",
+    "non_null_rows": 5370
+  },
+  {
+    "field": "revenue_mrq_2",
+    "non_null_rows": 5564
+  },
+  {
+    "field": "revenue_mrq_3",
+    "non_null_rows": 5570
+  },
+  {
+    "field": "revenue_mrq_4",
+    "non_null_rows": 5571
+  },
+  {
+    "field": "revenue_mrq_5",
+    "non_null_rows": 5568
+  },
+  {
+    "field": "revenue_mrq_6",
+    "non_null_rows": 5568
+  },
+  {
+    "field": "revenue_mrq_7",
+    "non_null_rows": 5478
+  },
+  {
+    "field": "revenue_mrq_8",
+    "non_null_rows": 5448
+  },
+  {
+    "field": "revenue_mrq_9",
+    "non_null_rows": 5455
+  },
+  {
+    "field": "revenue_mrq_10",
+    "non_null_rows": 5456
+  },
+  {
+    "field": "revenue_mrq_11",
+    "non_null_rows": 5330
+  },
+  {
+    "field": "revenue_mrq_12",
+    "non_null_rows": 5309
+  },
+  {
+    "field": "n_income_attr_p_mrq_0",
+    "non_null_rows": 5376
+  },
+  {
+    "field": "n_income_attr_p_mrq_1",
+    "non_null_rows": 5372
+  },
+  {
+    "field": "n_income_attr_p_mrq_2",
+    "non_null_rows": 5565
+  },
+  {
+    "field": "n_income_attr_p_mrq_3",
+    "non_null_rows": 5572
+  },
+  {
+    "field": "n_income_attr_p_mrq_4",
+    "non_null_rows": 5572
+  },
+  {
+    "field": "n_income_attr_p_mrq_5",
+    "non_null_rows": 5568
+  },
+  {
+    "field": "n_income_attr_p_mrq_6",
+    "non_null_rows": 5568
+  },
+  {
+    "field": "n_income_attr_p_mrq_7",
+    "non_null_rows": 5478
+  },
+  {
+    "field": "n_income_attr_p_mrq_8",
+    "non_null_rows": 5448
+  },
+  {
+    "field": "n_income_attr_p_mrq_9",
+    "non_null_rows": 5456
+  },
+  {
+    "field": "n_income_attr_p_mrq_10",
+    "non_null_rows": 5457
+  },
+  {
+    "field": "n_income_attr_p_mrq_11",
+    "non_null_rows": 5331
+  },
+  {
+    "field": "n_income_attr_p_mrq_12",
+    "non_null_rows": 5310
+  },
+  {
+    "field": "accounts_receiv_bill_mrq_1",
+    "non_null_rows": 4334
+  },
+  {
+    "field": "accounts_receiv_bill_mrq_2",
+    "non_null_rows": 5420
+  },
+  {
+    "field": "accounts_receiv_bill_mrq_3",
+    "non_null_rows": 5460
+  },
+  {
+    "field": "accounts_receiv_bill_mrq_5",
+    "non_null_rows": 5452
+  },
+  {
+    "field": "accounts_receiv_bill_mrq_6",
+    "non_null_rows": 5292
+  },
+  {
+    "field": "accounts_receiv_bill_mrq_7",
+    "non_null_rows": 5443
+  },
+  {
+    "field": "accounts_receiv_bill_mrq_8",
+    "non_null_rows": 5215
+  },
+  {
+    "field": "accounts_receiv_bill_mrq_9",
+    "non_null_rows": 5178
+  },
+  {
+    "field": "accounts_receiv_mrq_9",
+    "non_null_rows": 5242
+  },
+  {
+    "field": "notes_receiv_mrq_9",
+    "non_null_rows": 3790
+  },
+  {
+    "field": "inventories_mrq_9",
+    "non_null_rows": 5194
+  },
+  {
+    "field": "prepayment_mrq_9",
+    "non_null_rows": 5246
+  },
+  {
+    "field": "rd_exp_lyr_1",
+    "non_null_rows": 5244
+  },
+  {
+    "field": "rd_exp_lyr_2",
+    "non_null_rows": 5235
+  },
+  {
+    "field": "rd_exp_lyr_3",
+    "non_null_rows": 5038
+  },
+  {
+    "field": "rd_exp_lyr_4",
+    "non_null_rows": 4765
+  },
+  {
+    "field": "rd_exp_lyr_5",
+    "non_null_rows": 4265
+  },
+  {
+    "field": "rd_exp_lyr_6",
+    "non_null_rows": 4304
+  },
+  {
+    "field": "rd_exp_lyr_7",
+    "non_null_rows": 4534
+  },
+  {
+    "field": "rd_exp_lyr_8",
+    "non_null_rows": 4249
+  },
+  {
+    "field": "rd_exp_lyr_9",
+    "non_null_rows": 650
+  },
+  {
+    "field": "rd_exp_indicator_lyr_1",
+    "non_null_rows": 5247
+  },
+  {
+    "field": "rd_exp_indicator_lyr_2",
+    "non_null_rows": 5236
+  },
+  {
+    "field": "rd_exp_indicator_lyr_3",
+    "non_null_rows": 5096
+  },
+  {
+    "field": "rd_exp_indicator_lyr_4",
+    "non_null_rows": 5076
+  },
+  {
+    "field": "rd_exp_indicator_lyr_5",
+    "non_null_rows": 5039
+  },
+  {
+    "field": "rd_exp_indicator_lyr_6",
+    "non_null_rows": 4949
+  },
+  {
+    "field": "rd_exp_indicator_lyr_7",
+    "non_null_rows": 4745
+  },
+  {
+    "field": "rd_exp_indicator_lyr_8",
+    "non_null_rows": 4352
+  },
+  {
+    "field": "rd_exp_indicator_lyr_9",
+    "non_null_rows": 3986
+  },
+  {
+    "field": "sell_exp_lyr_1",
+    "non_null_rows": 5412
+  },
+  {
+    "field": "sell_exp_lyr_2",
+    "non_null_rows": 5408
+  },
+  {
+    "field": "sell_exp_lyr_3",
+    "non_null_rows": 5221
+  },
+  {
+    "field": "sell_exp_lyr_4",
+    "non_null_rows": 4981
+  },
+  {
+    "field": "sell_exp_lyr_5",
+    "non_null_rows": 4505
+  },
+  {
+    "field": "sell_exp_lyr_6",
+    "non_null_rows": 4573
+  },
+  {
+    "field": "sell_exp_lyr_7",
+    "non_null_rows": 4875
+  },
+  {
+    "field": "sell_exp_lyr_8",
+    "non_null_rows": 4707
+  },
+  {
+    "field": "sell_exp_lyr_9",
+    "non_null_rows": 4394
+  },
+  {
+    "field": "admin_exp_lyr_1",
+    "non_null_rows": 5572
+  },
+  {
+    "field": "admin_exp_lyr_2",
+    "non_null_rows": 5572
+  },
+  {
+    "field": "admin_exp_lyr_3",
+    "non_null_rows": 5390
+  },
+  {
+    "field": "admin_exp_lyr_4",
+    "non_null_rows": 5153
+  },
+  {
+    "field": "admin_exp_lyr_5",
+    "non_null_rows": 4673
+  },
+  {
+    "field": "admin_exp_lyr_6",
+    "non_null_rows": 4744
+  },
+  {
+    "field": "admin_exp_lyr_7",
+    "non_null_rows": 5059
+  },
+  {
+    "field": "admin_exp_lyr_8",
+    "non_null_rows": 4881
+  },
+  {
+    "field": "admin_exp_lyr_9",
+    "non_null_rows": 4570
+  },
+  {
+    "field": "up_limit",
+    "non_null_rows": 5572
+  },
+  {
+    "field": "down_limit",
+    "non_null_rows": 5572
+  },
+  {
+    "field": "top_list_flag",
+    "non_null_rows": 61
+  },
+  {
+    "field": "sw_l1_code",
+    "non_null_rows": 5560
+  },
+  {
+    "field": "list_date",
+    "non_null_rows": 5572
+  },
+  {
+    "field": "holder_num_mrq_0",
+    "non_null_rows": 4617
+  },
+  {
+    "field": "holder_num_mrq_1",
+    "non_null_rows": 4382
+  },
+  {
+    "field": "northbound_hold_shares",
+    "non_null_rows": 3688
+  },
+  {
+    "field": "fund_report_hold_shares_total",
+    "non_null_rows": 0
+  },
+  {
+    "field": "fund_report_holder_count",
+    "non_null_rows": 0
+  },
+  {
+    "field": "national_team_hold_shares",
+    "non_null_rows": 0
+  },
+  {
+    "field": "national_team_free_hold_shares",
+    "non_null_rows": 0
+  },
+  {
+    "field": "national_team_hold_shares_prev_report",
+    "non_null_rows": 0
+  },
+  {
+    "field": "national_team_report_close",
+    "non_null_rows": 0
+  },
+  {
+    "field": "national_team_report_close_prev_report",
+    "non_null_rows": 0
+  },
+  {
+    "field": "national_team_report_free_float_mv",
+    "non_null_rows": 0
+  },
+  {
+    "field": "national_team_hold_free_share_ratio",
+    "non_null_rows": 0
+  },
+  {
+    "field": "national_team_hold_free_share_ratio_prev_report",
+    "non_null_rows": 0
+  },
+  {
+    "field": "halfyear_depreciation",
+    "non_null_rows": 5407
+  },
+  {
+    "field": "company_province",
+    "non_null_rows": 0
+  },
+  {
+    "field": "company_city",
+    "non_null_rows": 0
+  },
+  {
+    "field": "csi800_member",
+    "non_null_rows": 800
+  },
+  {
+    "field": "implemented_cash_dividend_12m_cny",
+    "non_null_rows": 3721
+  },
+  {
+    "field": "deferred_income_tax_ttm_0",
+    "non_null_rows": 4
+  },
+  {
+    "field": "analyst_np_consensus_fy0",
+    "non_null_rows": 3836
+  },
+  {
+    "field": "analyst_np_consensus_fy1",
+    "non_null_rows": 3554
+  },
+  {
+    "field": "analyst_np_consensus_fy2",
+    "non_null_rows": 2974
+  },
+  {
+    "field": "analyst_np_consensus_fy3",
+    "non_null_rows": 27
+  },
+  {
+    "field": "analyst_bv_consensus_fy1",
+    "non_null_rows": 3021
+  },
+  {
+    "field": "analyst_forward_pe_12m",
+    "non_null_rows": 3503
+  },
+  {
+    "field": "analyst_np_mean_active_180d_cny",
+    "non_null_rows": 1555
+  },
+  {
+    "field": "analyst_eps_mean_active_90d",
+    "non_null_rows": 2342
+  },
+  {
+    "field": "analyst_eps_dispersion_active_90d",
+    "non_null_rows": 772
+  },
+  {
+    "field": "analyst_eps_dispersion_active_91d",
+    "non_null_rows": 787
+  },
+  {
+    "field": "analyst_org_coverage_90d",
+    "non_null_rows": 2475
+  },
+  {
+    "field": "analyst_org_year_pair_count_90d",
+    "non_null_rows": 2475
+  },
+  {
+    "field": "analyst_target_price_mean_90d",
+    "non_null_rows": 1457
+  }
+]

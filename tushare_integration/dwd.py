@@ -8,6 +8,7 @@ import yaml
 from tushare_integration.db_engine import DatabaseEngineFactory
 from tushare_integration.quality import QualityManager, ValidationMode
 from tushare_integration.settings import TushareIntegrationSettings
+from tushare_integration.storage import build_raw_schema
 
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -19,6 +20,18 @@ FAR_FUTURE_DATE_SQL = "toDate32('2299-12-31')"
 CALENDAR_SOURCE_TABLE = "trade_cal"
 MIN_LAYER_TRADE_DATE = "2010-01-01"
 MIN_LAYER_TRADE_DATE_SQL = f"toDate32('{MIN_LAYER_TRADE_DATE}')"
+DWD_CLICKHOUSE_SEND_RECEIVE_TIMEOUT = 3600
+DWD_CLICKHOUSE_QUERY_SETTINGS = {
+    "max_threads": 4,
+    "max_memory_usage": 64 * 1024**3,
+    "max_bytes_before_external_sort": 2 * 1024**3,
+    "max_bytes_before_external_group_by": 2 * 1024**3,
+    "max_block_size": 8192,
+    "preferred_block_size_bytes": 1024**2,
+    "max_insert_threads": 1,
+    "max_compress_block_size": 65536,
+    "max_execution_time": 3000,
+}
 
 
 COMMON_DWD_COLUMNS = [
@@ -86,7 +99,11 @@ class DWDManager:
 
     def get_db_engine(self):
         if self.db_engine is None:
-            self.db_engine = DatabaseEngineFactory.create(self.settings)
+            self.db_engine = DatabaseEngineFactory.create(
+                self.settings,
+                clickhouse_send_receive_timeout=DWD_CLICKHOUSE_SEND_RECEIVE_TIMEOUT,
+                clickhouse_query_settings=DWD_CLICKHOUSE_QUERY_SETTINGS,
+            )
         return self.db_engine
 
     def list_tables(self) -> list[str]:
@@ -107,9 +124,15 @@ class DWDManager:
         return _load_yaml(ODS_SCHEMA_DIR / f"{schema_name}.yaml")
 
     def _build_common_columns(self, spec: dict[str, Any]) -> list[dict[str, Any]]:
-        common_columns = (
+        common_columns = deepcopy(
             COMMON_DWD_COLUMNS if spec.get("with_instrument", True) else COMMON_DWD_COLUMNS_NO_INSTRUMENT
         )
+        if spec.get("availability_mode") == "unknown_disclosure":
+            # Preserve detail without inventing a public visibility date. Consumers
+            # must require a populated available_trade_date before PIT selection.
+            for column in common_columns:
+                if column["name"] == "available_trade_date":
+                    column["nullable"] = True
         extra_columns = [_nullable_copy(column) for column in spec.get("extra_columns", [])]
         return common_columns + extra_columns
 
@@ -148,6 +171,58 @@ class DWDManager:
             "columns": source_columns + common_columns,
         }
 
+    def build_quarantine_schema(self, spec: dict[str, Any]) -> dict[str, Any]:
+        if not spec.get("quarantine_same_time_conflicts"):
+            raise ValueError(f"{spec['name']} does not define version-conflict quarantine")
+        schema = deepcopy(self.build_schema(spec))
+        schema["comment"] += "；同一观察时刻版本冲突隔离，不可用于PIT"
+        schema["partition_key"] = ["toYear(event_date)"]
+        for column in schema["columns"]:
+            if column["name"] in {"available_trade_date", "sys_to"}:
+                column["nullable"] = True
+        schema["columns"].append({
+            "name": "quarantine_reason", "data_type": "str",
+            "comment": "隔离原因；保留整个冲突业务键的所有已观察版本，不择值",
+        })
+        return schema
+
+    def build_sharded_source_schema(self, spec: dict[str, Any]) -> dict[str, Any]:
+        source = self.load_source_schema(spec["source"]["schema_name"])
+        keys = spec.get("business_key") or source["primary_key"]
+        shard_key = spec["sync_shard_key"]
+        if shard_key not in keys or spec.get("nullable_business_key"):
+            raise ValueError("Sharded DWD staging requires a non-null business-key component")
+        schema = build_raw_schema(source)
+        schema["columns"] = [c for c in schema["columns"] if c["name"] not in {"_raw_json", "_api_name"}]
+        for column in schema["columns"]:
+            if column["name"] in keys:
+                column.pop("nullable", None)
+        schema["partition_key"] = [f"cityHash64(`{shard_key}`) % {int(spec['sync_shards'])}"]
+        schema["indexes"] = [{"name": "dwd_source_shard_idx", "columns": keys + ["_ingest_time", "_batch_id", "_record_hash"]}]
+        return schema
+
+    def render_sharded_source_sql(self, spec: dict[str, Any], target_table_name: str) -> str:
+        source = self.load_source_schema(spec["source"]["schema_name"])
+        keys = spec.get("business_key") or source["primary_key"]
+        columns = self.build_sharded_source_schema(spec)["columns"]
+        filters = [f"src.`{key}` IS NOT NULL" for key in keys]
+        filters.extend(f"({f})" for f in spec.get("source_filters", []))
+        if _schema_has_column(source, "trade_date"):
+            filters.append(f"src.trade_date >= {MIN_LAYER_TRADE_DATE_SQL}")
+        return (f"INSERT INTO {self.settings.database.db_name}.{target_table_name} SELECT "
+                + ",".join(f"src.`{c['name']}`" for c in columns)
+                + f" FROM {self.settings.database.db_name}.{spec['source']['table_name']} src WHERE "
+                + " AND ".join(filters))
+
+    def sharded_source_spec(self, spec: dict[str, Any], source_table: str, shard: int) -> dict[str, Any]:
+        result = deepcopy(spec)
+        result["lineage_source_table"] = spec["source"]["table_name"]
+        result["source"]["table_name"] = source_table
+        result.setdefault("source_filters", []).append(
+            f"cityHash64(src.`{spec['sync_shard_key']}`) % {int(spec['sync_shards'])} = {shard}"
+        )
+        return result
+
     def _calendar_map_sql(self) -> str:
         db_name = self.settings.database.db_name
         return f"""
@@ -175,7 +250,9 @@ calendar_map AS (
     )
 )"""
 
-    def _render_generic_sync_sql(self, spec: dict[str, Any], target_table_name: str) -> str:
+    def _render_generic_sync_sql(
+        self, spec: dict[str, Any], target_table_name: str, *, quarantine: bool = False
+    ) -> str:
         db_name = self.settings.database.db_name
         source_alias = spec.get("source_alias", "src")
         source_schema = self.load_source_schema(spec["source"]["schema_name"])
@@ -183,6 +260,9 @@ calendar_map AS (
         if not business_key:
             raise ValueError(f"{spec['name']} requires business_key or source primary_key")
         nullable_business_key = set(spec.get("nullable_business_key", []))
+        detect_conflicts = spec.get("quarantine_same_time_conflicts", False)
+        if quarantine and not detect_conflicts:
+            raise ValueError(f"{spec['name']} does not define version-conflict quarantine")
 
         source_column_excludes = set(spec.get("source_column_excludes", []))
         source_columns = [
@@ -217,14 +297,16 @@ calendar_map AS (
                 ]
             )
 
+        availability_expr = "CAST(NULL, 'Nullable(Date32)')" if quarantine else spec['available_trade_date_expr']
         derived_selects.extend(
             [
                 f"{spec['event_date_expr']} AS `event_date`",
-                f"{spec['available_trade_date_expr']} AS `available_trade_date`",
+                f"{availability_expr} AS `available_trade_date`",
                 f"{source_alias}._ingest_time AS `sys_from`",
-                f"{source_alias}._next_sys_from AS `sys_to`",
+                ("CAST(NULL, 'Nullable(DateTime64(3))') AS `sys_to`" if quarantine
+                 else f"{source_alias}._next_sys_from AS `sys_to`"),
                 f"{source_alias}._source AS `source`",
-                f"'{spec['source']['table_name']}' AS `source_table`",
+                f"'{spec.get('lineage_source_table', spec['source']['table_name'])}' AS `source_table`",
                 f"{source_alias}._batch_id AS `source_batch_id`",
                 f"{source_alias}._record_hash AS `source_record_hash`",
             ]
@@ -232,6 +314,8 @@ calendar_map AS (
 
         for column in spec.get("extra_columns", []):
             derived_selects.append(f"{column['expr']} AS `{column['name']}`")
+        if quarantine:
+            derived_selects.append("'ambiguous_same_time_versions' AS `quarantine_reason`")
 
         derived_column_select = ",\n    ".join(derived_selects)
         with_items = []
@@ -248,6 +332,21 @@ calendar_map AS (
         calendar_lookup_select = (
             f",\n        {spec['calendar_date_expr']} AS _calendar_lookup_date" if spec.get("calendar_date_expr") else ""
         )
+        conflict_select = ""
+        previous_time_select = ""
+        conflict_filter = ""
+        if detect_conflicts:
+            window = f"""PARTITION BY {business_key_partition}
+                ORDER BY _ingest_time, _batch_id, _record_hash
+                ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING"""
+            previous_time_select = f", lagInFrame(_ingest_time) OVER ({window}) AS _prev_ingest_time"
+            # Equal observation timestamps provide no chronology for different
+            # payloads. Quarantine the entire identity, including earlier/later
+            # observations, rather than extend a stale value through uncertainty.
+            conflict_select = f""", max(toUInt8(ifNull(
+                _prev_ingest_time = _ingest_time AND _prev_record_hash != _record_hash, 0
+            ))) OVER ({window}) AS _key_conflict"""
+            conflict_filter = f"WHERE {source_alias}._key_conflict = {1 if quarantine else 0}"
 
         return f"""
 INSERT INTO {db_name}.{target_table_name}
@@ -263,6 +362,7 @@ FROM (
             ORDER BY _ingest_time, _batch_id, _record_hash
             ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
         ) AS _next_sys_from
+        {conflict_select}
         {calendar_lookup_select}
     FROM (
         SELECT
@@ -272,12 +372,14 @@ FROM (
                 ORDER BY _ingest_time, _batch_id, _record_hash
                 ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
             ) AS _prev_record_hash
+            {previous_time_select}
         FROM {db_name}.{spec['source']['table_name']} {source_alias}
         WHERE {source_filter_sql}
     ) {source_alias}
     WHERE {source_alias}._prev_record_hash IS NULL OR {source_alias}._prev_record_hash != {source_alias}._record_hash
 ) {source_alias}
 {calendar_join}
+{conflict_filter}
 """
 
     def _render_security_master_sync_sql(self, spec: dict[str, Any], target_table_name: str) -> str:
@@ -579,6 +681,12 @@ FROM dedup d
             return self._render_business_interval_sync_sql(spec, target_table_name)
         return self._render_generic_sync_sql(spec, target_table_name)
 
+    def render_quarantine_sql(self, table_name: str, target_table_name: str | None = None) -> str:
+        spec = self.load_spec(table_name)
+        return self._render_generic_sync_sql(
+            spec, target_table_name or f"{table_name}_quarantine", quarantine=True
+        )
+
     def get_required_source_tables(self, spec: dict[str, Any]) -> list[str]:
         builder = spec.get("builder", "raw_versioned")
         if builder == "security_master":
@@ -663,7 +771,32 @@ FROM dedup d
         db_engine = self.get_db_engine()
         db_engine.query(f"DROP TABLE IF EXISTS {db_name}.{tmp_table}")
         db_engine.create_table(tmp_table, tmp_schema)
-        db_engine.query(self.render_sync_sql(table_name, target_table_name=tmp_table))
+        source_tmp = None
+        build_specs = [spec]
+        if spec.get("sync_shards"):
+            source_tmp = f"{target_table}_source_tmp"
+            db_engine.query(f"DROP TABLE IF EXISTS {db_name}.{source_tmp}")
+            db_engine.create_table(source_tmp, self.build_sharded_source_schema(spec))
+            # One materialization freezes the input used by all shards and by
+            # both clean/quarantine outputs. Every fund's full history stays in
+            # one shard, so no version chain is split at a time boundary.
+            db_engine.query(self.render_sharded_source_sql(spec, source_tmp))
+            build_specs = [self.sharded_source_spec(spec, source_tmp, i) for i in range(int(spec["sync_shards"]))]
+        for build_spec in build_specs:
+            if source_tmp is None:
+                db_engine.query(self.render_sync_sql(table_name, target_table_name=tmp_table))
+            else:
+                db_engine.query(self._render_generic_sync_sql(build_spec, tmp_table))
+
+        quarantine_table = None
+        quarantine_tmp = None
+        if spec.get("quarantine_same_time_conflicts"):
+            quarantine_table = f"{target_table}_quarantine"
+            quarantine_tmp = f"{quarantine_table}_tmp"
+            db_engine.query(f"DROP TABLE IF EXISTS {db_name}.{quarantine_tmp}")
+            db_engine.create_table(quarantine_tmp, self.build_quarantine_schema(spec))
+            for build_spec in build_specs:
+                db_engine.query(self._render_generic_sync_sql(build_spec, quarantine_tmp, quarantine=True))
 
         QualityManager(settings=self.settings, db_engine=db_engine).validate_publish(
             layer="dwd",
@@ -675,13 +808,27 @@ FROM dedup d
         )
 
         if self.settings.database.db_type == "clickhouse":
+            if quarantine_table is not None:
+                # Publish the retained evidence first; validation above must
+                # succeed before either member of the pair can be replaced.
+                self._replace_clickhouse_table_from_tmp(quarantine_table, quarantine_tmp)
             self._replace_clickhouse_table_from_tmp(target_table, tmp_table)
+            if source_tmp is not None:
+                db_engine.query(f"DROP TABLE IF EXISTS {db_name}.{source_tmp}")
             return
+
+        if quarantine_table is not None:
+            db_engine.create_table(quarantine_table, self.build_quarantine_schema(spec))
+            db_engine.query(f"TRUNCATE TABLE {db_name}.{quarantine_table}")
+            db_engine.query(f"INSERT INTO {db_name}.{quarantine_table} SELECT * FROM {db_name}.{quarantine_tmp}")
+            db_engine.query(f"DROP TABLE IF EXISTS {db_name}.{quarantine_tmp}")
 
         db_engine.create_table(target_table, schema)
         db_engine.query(f"TRUNCATE TABLE {db_name}.{target_table}")
         db_engine.query(f"INSERT INTO {db_name}.{target_table} SELECT * FROM {db_name}.{tmp_table}")
         db_engine.query(f"DROP TABLE IF EXISTS {db_name}.{tmp_table}")
+        if source_tmp is not None:
+            db_engine.query(f"DROP TABLE IF EXISTS {db_name}.{source_tmp}")
 
     def sync_all(
         self,

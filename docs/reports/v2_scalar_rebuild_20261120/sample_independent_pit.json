@@ -1,0 +1,50 @@
+{
+  "rows": 33047,
+  "checks": 396564,
+  "field_checks": {
+    "accounts_pay_mrq_0": 33047,
+    "total_share_mrq_0": 33047,
+    "accounts_receiv_bill_mrq_9": 33047,
+    "rd_exp_mrq_0": 33047,
+    "rd_exp_ttm_0": 33047,
+    "rd_exp_lyr_0": 33047,
+    "basic_eps_lyr_10": 33047,
+    "deferred_income_tax_ttm_0": 33047,
+    "holder_num_mrq_0": 33047,
+    "holder_num_mrq_1": 33047,
+    "bench_ret": 33047,
+    "northbound_hold_shares": 33047
+  },
+  "source_nonnull": {
+    "accounts_pay_mrq_0": 9760,
+    "total_share_mrq_0": 15723,
+    "accounts_receiv_bill_mrq_9": 19459,
+    "rd_exp_mrq_0": 5792,
+    "rd_exp_ttm_0": 5773,
+    "rd_exp_lyr_0": 9255,
+    "basic_eps_lyr_10": 16565,
+    "deferred_income_tax_ttm_0": 0,
+    "holder_num_mrq_0": 12653,
+    "holder_num_mrq_1": 24721,
+    "bench_ret": 33038,
+    "northbound_hold_shares": 18817
+  },
+  "mismatch_count": 0,
+  "mismatches_by_field": {},
+  "mismatches": [],
+  "max_absolute_difference": {
+    "bench_ret": 0.0,
+    "total_share_mrq_0": 0.0,
+    "holder_num_mrq_0": 0.0,
+    "holder_num_mrq_1": 0.0,
+    "basic_eps_lyr_10": 0.0,
+    "northbound_hold_shares": 0.0,
+    "accounts_receiv_bill_mrq_9": 0.0,
+    "accounts_pay_mrq_0": 0.0,
+    "rd_exp_mrq_0": 0.0,
+    "rd_exp_ttm_0": 5.960464477539063e-08,
+    "rd_exp_lyr_0": 0.0
+  },
+  "float_relative_tolerance": 1e-12,
+  "float_absolute_tolerance": 1e-08
+}

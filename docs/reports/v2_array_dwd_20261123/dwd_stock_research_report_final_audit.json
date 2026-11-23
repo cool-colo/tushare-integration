@@ -1,0 +1,79 @@
+{
+  "normal": {
+    "rows": 3116193,
+    "instruments": 5663,
+    "first_event": "2006-01-01",
+    "last_event": "2026-11-20",
+    "first_available": "2022-05-05",
+    "last_available": "2026-11-23",
+    "unknown_availability": 0
+  },
+  "quarantine": {
+    "rows": 9063,
+    "business_keys": 224,
+    "improperly_visible": 0
+  },
+  "normal_quarantine_key_overlap": 0,
+  "calendar_check": {
+    "groups_checked": 1325,
+    "rows_checked": 3116193,
+    "invalid": []
+  },
+  "quality": [
+    {
+      "rule": "row_count_nonzero",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "required_columns_exist",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_pit_dates_not_null",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_sys_window_order",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_lineage_not_empty",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_single_open_version",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_no_overlapping_versions",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "research_report_no_placeholder_dates",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "research_report_strict_next_trade_visibility",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "research_report_target_price_range",
+      "severity": "WARN",
+      "issues": 3
+    },
+    {
+      "rule": "research_report_quarter_format",
+      "severity": "WARN",
+      "issues": 10089
+    }
+  ]
+}

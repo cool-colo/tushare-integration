@@ -1,0 +1,73 @@
+{
+  "normal": {
+    "rows": 16288002,
+    "instruments": 11132,
+    "first_event": "2016-12-05",
+    "last_event": "2026-11-19",
+    "first_available": null,
+    "last_available": null,
+    "unknown_availability": 16288002
+  },
+  "quarantine": {
+    "rows": 2312,
+    "business_keys": 1156,
+    "improperly_visible": 0
+  },
+  "normal_quarantine_key_overlap": 0,
+  "calendar_check": {
+    "eligible_for_public_date_pit": false,
+    "reason": "unknown_disclosure_date"
+  },
+  "quality": [
+    {
+      "rule": "row_count_nonzero",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "required_columns_exist",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_pit_dates_not_null",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_sys_window_order",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_lineage_not_empty",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_unknown_disclosure_excluded_from_pit",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_single_open_version",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_no_overlapping_versions",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "ccass_detail_identity_and_units",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "ccass_detail_unparsed_values",
+      "severity": "WARN",
+      "issues": 10
+    }
+  ]
+}

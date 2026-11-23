@@ -1,0 +1,106 @@
+{
+  "dwd_stock_top10_floatholders": {
+    "rows": 588551,
+    "business_keys": 551821,
+    "known_availability": 588551
+  },
+  "dwd_stock_top10_floatholders_quarantine": {
+    "rows": 1983,
+    "business_keys": 45,
+    "known_availability": 0
+  },
+  "original_rows": 590534,
+  "partition_preserves_all_rows": true,
+  "quality": [
+    {
+      "rule": "row_count_nonzero",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "required_columns_exist",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "dwd_pit_dates_not_null",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "dwd_sys_window_order",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "dwd_lineage_not_empty",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "dwd_single_open_version",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "dwd_no_overlapping_versions",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "top_holder_identity",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "top_holder_dates",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "top_holder_finite_measures",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    }
+  ]
+}

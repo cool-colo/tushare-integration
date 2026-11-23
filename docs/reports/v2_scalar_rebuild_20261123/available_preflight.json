@@ -1,0 +1,17 @@
+{
+  "source": [
+    {
+      "event_date": "2026-11-20",
+      "available_trade_date": "2026-11-23",
+      "rows": 5572,
+      "stocks": 5572
+    }
+  ],
+  "production_v2": [
+    {
+      "trade_date": "2026-11-20",
+      "available_trade_date": "2026-11-23",
+      "rows": 5572
+    }
+  ]
+}

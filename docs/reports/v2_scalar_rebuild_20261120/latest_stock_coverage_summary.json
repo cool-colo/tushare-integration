@@ -1,0 +1,13 @@
+{
+  "stocks": 5573,
+  "two_day_stocks": 5572,
+  "one_day_stocks": [
+    {
+      "source_code": "002122.SZ",
+      "rows": 1,
+      "first": "2026-11-19",
+      "last": "2026-11-19"
+    }
+  ],
+  "beijing_stocks": 356
+}

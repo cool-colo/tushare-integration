@@ -8,6 +8,7 @@ from typing import Any
 
 import yaml
 
+from tushare_integration import v2_scalar_extensions as v2_ext
 from tushare_integration.db_engine import DatabaseEngineFactory
 from tushare_integration.dwd import FAR_FUTURE_TS_SQL, MIN_LAYER_TRADE_DATE_SQL
 from tushare_integration.factor_mapping import (
@@ -72,6 +73,7 @@ STOCK_FACTOR_WIDE_V2_SOURCES = [
     "dwd_stock_northbound_holding",
     "dwd_stock_margin_trading",
     "dwd_stock_chip_distribution",
+    *v2_ext.SOURCES,
 ]
 STOCK_FACTOR_WIDE_MATRIX_UDF = "dws_stock_factor_rows"
 STOCK_FACTOR_WIDE_MATRIX_PREFIX_COLUMNS = [
@@ -120,6 +122,14 @@ STOCK_FINANCIAL_INDICATOR_QUARTER_YTD_DIFF_FIELDS = {
 }
 STOCK_INCOME_QUARTER_SOURCE = "dwd_stock_income"
 STOCK_INCOME_QUARTER_FIELDS = [
+    "admin_exp",
+    "asset_disp_income",
+    "assets_impair_loss",
+    "compr_inc_attr_p",
+    "oth_income",
+    "rd_exp",
+    "sell_exp",
+    "t_compr_income",
     "ass_invest_income",
     "basic_eps",
     "biz_tax_surchg",
@@ -145,6 +155,14 @@ STOCK_INCOME_QUARTER_FIELDS = [
 STOCK_INCOME_QUARTER_YTD_DIFF_FIELDS = set(STOCK_INCOME_QUARTER_FIELDS)
 STOCK_CASHFLOW_QUARTER_SOURCE = "dwd_stock_cashflow"
 STOCK_CASHFLOW_QUARTER_FIELDS = [
+    "c_fr_sale_sg",
+    "c_paid_to_for_empl",
+    "c_pay_acq_const_fiolta",
+    "decr_def_inc_tax_assets",
+    "incr_def_inc_tax_liab",
+    "n_recp_disp_fiolta",
+    "stot_out_inv_act",
+    "deferred_income_tax",
     "amort_intang_assets",
     "depr_fa_coga_dpba",
     "eff_fx_flu_cash",
@@ -605,7 +623,7 @@ def _build_v2_financial_feature_columns() -> list[tuple[str, str, str, str]]:
             for index in range(max_index + 1):
                 suffix = f"{kind}_{index}"
                 expanded.append((api, field, suffix, f"{prefix}_{suffix}"))
-    return expanded
+    return v2_ext.extend_financial_catalog(expanded)
 
 
 V2_FINANCIAL_FEATURE_COLUMNS = _build_v2_financial_feature_columns()
@@ -1924,11 +1942,15 @@ FROM wide_candidates
         v2_spec = self.load_spec("dws_stock_factor_wide_v2")
         v2_financial_columns = {column for _, _, _, column in V2_FINANCIAL_FEATURE_COLUMNS}
         v2_calculated_columns = {column for column, _ in V2_CALCULATED_FACTOR_COLUMNS}
+        supplemental = {name: f"extension.`{name}`" for name in v2_ext.supplemental_expressions()}
+        extension_calculated = v2_ext.calculated_expressions()
         base_columns = [
             column["name"]
             for column in v2_spec["schema"]["columns"]
             if column["name"] not in v2_financial_columns
             and column["name"] not in v2_calculated_columns
+            and column["name"] not in supplemental
+            and column["name"] not in extension_calculated
         ]
 
         financial_feature_ctes = self._render_financial_feature_ctes_v2(db_name)
@@ -1943,6 +1965,8 @@ FROM wide_candidates
             "source_record_hash",
             V2_FINANCIAL_FEATURE_JOIN_ALIASES,
         )
+        batch_lineage += ", '|', ifNull(extension.source_batch_id, '')"
+        hash_lineage += ", '|', ifNull(extension.source_record_hash, '')"
         source_table_sql = ",".join(STOCK_FACTOR_WIDE_V2_SOURCES)
 
         candidate_selects = []
@@ -1970,10 +1994,12 @@ FROM wide_candidates
             feature_group = "annual" if self._financial_feature_kind(suffix) == "lyr" else "quarter"
             alias = f"{V2_FINANCIAL_FEATURE_SOURCE_CONFIG[api]['sql_alias']}_{feature_group}_features"
             candidate_selects.append(f"{alias}.`{column}` AS `{column}`")
+        candidate_selects.extend(f"{expr} AS `{name}`" for name, expr in supplemental.items())
         candidate_select_sql = ",\n        ".join(candidate_selects)
 
         calculated = dict(V2_CALCULATED_FACTOR_COLUMNS)
-        candidate_columns = set(base_columns) | {
+        calculated.update(extension_calculated)
+        candidate_columns = set(base_columns) | set(supplemental) | {
             column for _, _, _, column in V2_FINANCIAL_FEATURE_COLUMNS
         }
         output_selects = []
@@ -1994,16 +2020,22 @@ price AS (
     {base_sql}
 ),
 {financial_feature_ctes},
+{v2_ext.render_ctes(db_name)},
+{v2_ext.render_features_cte(db_name)},
 wide_candidates AS (
     SELECT
         {candidate_select_sql}
     FROM price
 {financial_feature_joins}
+LEFT JOIN v2_extra_features extension
+    ON price.instrument_id = extension.instrument_id AND price.trade_date = extension.trade_date
 )
 SELECT
     {output_select_sql}
 FROM wide_candidates
-SETTINGS max_insert_threads = 4
+-- Thousands of nullable column streams otherwise allocate MiB compression
+-- buffers per column, partition and concurrent writer during history rebuilds.
+SETTINGS max_insert_threads = 1, max_compress_block_size = 65536
 """
 
     def _stock_factor_matrix_source_fields(self) -> list[tuple[str, str]]:
@@ -2121,6 +2153,20 @@ FROM factor_rows
         report_types: tuple[str, ...] | None = None,
     ) -> str:
         db_name = self.settings.database.db_name
+        # Compose the two nullable YTD terms before differencing. Independent
+        # TTM estimates could use different non-null quarters and are invalid.
+        source_extra_projection = (
+            ", src.decr_def_inc_tax_assets + src.incr_def_inc_tax_liab AS deferred_income_tax"
+            if "deferred_income_tax" in fields
+            else ""
+        )
+        insert_columns = ", ".join(
+            f"`{name}`" for name in [
+                "instrument_id", "instrument_type", "exchange", "source_code", "event_date",
+                "fiscal_year", "fiscal_quarter", "available_trade_date", *fields,
+                "build_time", "source", "source_table", "source_batch_id", "source_record_hash",
+            ]
+        )
         curr_selects = ",\n        ".join([f"curr.`{field}` AS `{field}`" for field in fields])
         report_field_selects = ",\n        ".join([f"`{field}`" for field in fields])
         candidate_field_selects = ",\n        ".join([f"r.`{field}` AS `{field}`" for field in fields])
@@ -2175,7 +2221,7 @@ FROM factor_rows
             )
 
         return f"""
-INSERT INTO {db_name}.{target_table_name}
+INSERT INTO {db_name}.{target_table_name} ({insert_columns})
 WITH
 reports AS (
     SELECT
@@ -2193,7 +2239,7 @@ reports AS (
         {report_field_selects}
     FROM (
         SELECT
-            src.*,
+            src.*{source_extra_projection},
             row_number() OVER (
                 PARTITION BY src.instrument_id, src.event_date, src.available_trade_date
                 ORDER BY

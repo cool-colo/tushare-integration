@@ -1,0 +1,26 @@
+{
+  "available_trade_date": "2026-11-23",
+  "checked_table": "default.dws_stock_factor_wide_v2",
+  "sample_selection": "cityHash64(instrument_id)%100=0 plus 9 named representative stocks",
+  "stocks": 55,
+  "comparisons": 220,
+  "source_rows": {
+    "dwd_stock_income": 1233,
+    "dwd_stock_cashflow": 1006
+  },
+  "nonnull": {
+    "fin_exp_int_exp_ttm_0": 51,
+    "fin_exp_int_exp_ttm_4": 52,
+    "depr_fa_coga_dpba_ttm_0": 0,
+    "depr_fa_coga_dpba_ttm_4": 0
+  },
+  "mismatch_count": 0,
+  "mismatches": [],
+  "rules": [
+    "Independent Python recomputation from PIT-visible DWD report types 1/4",
+    "Fixed calendar quarter slots, exact same-year preceding-quarter YTD subtraction",
+    "TTM requires all four reports; existing non-null-quarter mean times four",
+    "Income and cashflow each use their own available_trade_date"
+  ],
+  "checked_at": "2026-11-23T14:29:34.277403"
+}

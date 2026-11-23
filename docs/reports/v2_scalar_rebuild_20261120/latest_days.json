@@ -1,0 +1,14 @@
+[
+  {
+    "trade_date": "2026-11-19",
+    "rows": 5573,
+    "stocks": 5573,
+    "beijing_rows": 356
+  },
+  {
+    "trade_date": "2026-11-20",
+    "rows": 5572,
+    "stocks": 5572,
+    "beijing_rows": 356
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "row_count": 5572,
+  "old_columns_compared": 1736,
+  "old_field_mismatches": 0,
+  "implemented_fields": 214,
+  "implemented_fields_with_values": 210,
+  "implemented_fields_all_null": [
+    "fa_avail_for_sale_mrq_0",
+    "fa_avail_for_sale_mrq_4",
+    "htm_invest_mrq_0",
+    "htm_invest_mrq_4"
+  ],
+  "placeholder_fields": 13,
+  "placeholder_nonnull_rows": 0
+}

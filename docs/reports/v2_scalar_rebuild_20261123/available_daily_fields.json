@@ -1,0 +1,15 @@
+[
+  {
+    "rows": 5572,
+    "benchmark_rows": 5572,
+    "benchmark_return_min": -0.027073999999999997,
+    "benchmark_return_max": -0.027073999999999997,
+    "up_limit_rows": 5572,
+    "down_limit_rows": 5572,
+    "top_list_rows": 61,
+    "top_list_positive_rows": 61,
+    "industry_rows": 5560,
+    "csi800_rows": 800,
+    "listing_date_rows": 5572
+  }
+]

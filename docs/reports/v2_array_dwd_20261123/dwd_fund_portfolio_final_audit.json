@@ -1,0 +1,84 @@
+{
+  "normal": {
+    "rows": 19138288,
+    "instruments": 7454,
+    "first_event": "2010-01-26",
+    "last_event": "2026-09-30",
+    "first_available": "2010-01-29",
+    "last_available": "2026-10-28",
+    "unknown_availability": 0
+  },
+  "quarantine": {
+    "rows": 8777,
+    "business_keys": 177,
+    "improperly_visible": 0
+  },
+  "normal_quarantine_key_overlap": 0,
+  "calendar_check": {
+    "groups_checked": 1506,
+    "rows_checked": 19138288,
+    "invalid": []
+  },
+  "quality": [
+    {
+      "rule": "row_count_nonzero",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "required_columns_exist",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_pit_dates_not_null",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_sys_window_order",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_lineage_not_empty",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_single_open_version",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "dwd_no_overlapping_versions",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "fund_portfolio_identity_present",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "fund_portfolio_report_dates",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "fund_portfolio_strict_next_trade_visibility",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "fund_portfolio_nonnegative_finite_measures",
+      "severity": "BLOCKER",
+      "issues": 0
+    },
+    {
+      "rule": "fund_portfolio_completeness_unknown",
+      "severity": "BLOCKER",
+      "issues": 0
+    }
+  ]
+}

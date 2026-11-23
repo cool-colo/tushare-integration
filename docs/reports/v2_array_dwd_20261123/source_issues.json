@@ -1,0 +1,141 @@
+{
+  "main_business_classes": [
+    {
+      "bz_code": "455006000",
+      "rows": 2317,
+      "item_examples": [
+        "亚马逊",
+        "Shopify",
+        "其他业务(销售模式)",
+        "其他电商平台"
+      ]
+    },
+    {
+      "bz_code": "D",
+      "rows": 264214,
+      "item_examples": [
+        "上海区域",
+        "中国大陆",
+        "内部抵销(地区)",
+        "中西部区域"
+      ]
+    },
+    {
+      "bz_code": "F",
+      "rows": 472,
+      "item_examples": [
+        "个人寿险:首年期缴",
+        "个人寿险:首年趸缴",
+        "个人寿险:短期意健险",
+        "个人寿险:续期业务"
+      ]
+    },
+    {
+      "bz_code": "I",
+      "rows": 125804,
+      "item_examples": [
+        "利息收入:其他",
+        "利息收入:金融投资利息收入",
+        "存放中央银行款项",
+        "代理委托业务"
+      ]
+    },
+    {
+      "bz_code": "P",
+      "rows": 308026,
+      "item_examples": [
+        "非利息收入:手续费及佣金收入:代理委托业务(产品)",
+        "利息收入:发放贷款及垫款:公司贷款业务(产品)",
+        "利息收入:金融企业往来(产品)",
+        "利息收入:发放贷款及垫款:个人贷款业务(产品)"
+      ]
+    }
+  ],
+  "main_business_bad_identity": [
+    {
+      "empty_item": 0,
+      "bad_date": 0,
+      "bad_instrument": 0
+    }
+  ],
+  "ccass_conflicts": [
+    {
+      "groups": 1156,
+      "zero_windows": 1156,
+      "keys": 1156
+    }
+  ],
+  "ccass_unparsed": [
+    {
+      "col_shareholding": "421033",
+      "col_shareholding_percent": "nan",
+      "shareholding": 421033.0,
+      "shareholding_percent": null,
+      "rows": 1
+    },
+    {
+      "col_shareholding": "2522850",
+      "col_shareholding_percent": "nan",
+      "shareholding": 2522850.0,
+      "shareholding_percent": null,
+      "rows": 1
+    },
+    {
+      "col_shareholding": "1303823",
+      "col_shareholding_percent": "nan",
+      "shareholding": 1303823.0,
+      "shareholding_percent": null,
+      "rows": 1
+    },
+    {
+      "col_shareholding": "62",
+      "col_shareholding_percent": "nan",
+      "shareholding": 62.0,
+      "shareholding_percent": null,
+      "rows": 1
+    },
+    {
+      "col_shareholding": "382",
+      "col_shareholding_percent": "nan",
+      "shareholding": 382.0,
+      "shareholding_percent": null,
+      "rows": 1
+    },
+    {
+      "col_shareholding": "154902",
+      "col_shareholding_percent": "nan",
+      "shareholding": 154902.0,
+      "shareholding_percent": null,
+      "rows": 1
+    },
+    {
+      "col_shareholding": "20641",
+      "col_shareholding_percent": "nan",
+      "shareholding": 20641.0,
+      "shareholding_percent": null,
+      "rows": 1
+    },
+    {
+      "col_shareholding": "7\r\n111000\r\n6",
+      "col_shareholding_percent": "5\r\n0.00%\r\n6",
+      "shareholding": null,
+      "shareholding_percent": null,
+      "rows": 1
+    },
+    {
+      "col_shareholding": "7980303",
+      "col_shareholding_percent": "nan",
+      "shareholding": 7980303.0,
+      "shareholding_percent": null,
+      "rows": 1
+    },
+    {
+      "col_shareholding": "1146",
+      "col_shareholding_percent": "nan",
+      "shareholding": 1146.0,
+      "shareholding_percent": null,
+      "rows": 1
+    }
+  ],
+  "progress": []
+}

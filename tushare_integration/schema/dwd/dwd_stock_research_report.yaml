@@ -2,6 +2,7 @@ id: 2028
 name: dwd_stock_research_report
 comment: 卖方盈利预测研报标准层
 builder: raw_versioned
+quarantine_same_time_conflicts: true
 source:
   table_name: report_rc_raw
   schema_name: stock/special/report_rc
@@ -21,7 +22,7 @@ event_date_expr: src.report_date
 # create_time is Tushare's source update timestamp. A report must not become
 # visible before either its stated report date or that source timestamp.
 calendar_date_expr: greatest(src.report_date, toDate(src.create_time))
-available_trade_date_expr: coalesce(calendar_map.next_trade_date, greatest(src.report_date, toDate(src.create_time)))
+available_trade_date_expr: "addDays(assumeNotNull(calendar_map.next_trade_date), throwIf(isNull(calendar_map.next_trade_date), 'Missing SSE next trading day for research report'))"
 extra_columns:
   - name: forecast_period_end
     data_type: date

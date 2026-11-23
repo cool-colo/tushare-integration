@@ -1,0 +1,110 @@
+[
+  {
+    "rule": "row_count_nonzero",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "required_columns_exist",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "dwd_pit_dates_not_null",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "dwd_sys_window_order",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "dwd_lineage_not_empty",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "dwd_single_open_version",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "dwd_no_overlapping_versions",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "fund_portfolio_identity_present",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "fund_portfolio_report_dates",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "fund_portfolio_strict_next_trade_visibility",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "fund_portfolio_nonnegative_finite_measures",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  },
+  {
+    "rule": "fund_portfolio_completeness_unknown",
+    "severity": "BLOCKER",
+    "result": [
+      {
+        "issue_count": 0
+      }
+    ]
+  }
+]

@@ -1,0 +1,115 @@
+{
+  "dwd_stock_research_report": {
+    "rows": 3116193,
+    "business_keys": 3116148,
+    "known_availability": 3116193
+  },
+  "dwd_stock_research_report_quarantine": {
+    "rows": 9063,
+    "business_keys": 224,
+    "known_availability": 0
+  },
+  "original_rows": 3125256,
+  "partition_preserves_all_rows": true,
+  "quality": [
+    {
+      "rule": "row_count_nonzero",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "required_columns_exist",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "dwd_pit_dates_not_null",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "dwd_sys_window_order",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "dwd_lineage_not_empty",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "dwd_single_open_version",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "dwd_no_overlapping_versions",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "research_report_no_placeholder_dates",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "research_report_strict_next_trade_visibility",
+      "severity": "BLOCKER",
+      "result": [
+        {
+          "issue_count": 0
+        }
+      ]
+    },
+    {
+      "rule": "research_report_target_price_range",
+      "severity": "WARN",
+      "result": [
+        {
+          "issue_count": 3
+        }
+      ]
+    },
+    {
+      "rule": "research_report_quarter_format",
+      "severity": "WARN",
+      "result": [
+        {
+          "issue_count": 10089
+        }
+      ]
+    }
+  ]
+}

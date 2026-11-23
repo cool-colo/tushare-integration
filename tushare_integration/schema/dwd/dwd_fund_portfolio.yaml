@@ -2,6 +2,9 @@ id: 2029
 name: dwd_fund_portfolio
 comment: 公募基金股票持仓标准层（包含首期非自然季末快照）
 builder: raw_versioned
+quarantine_same_time_conflicts: true
+sync_shard_key: ts_code
+sync_shards: 16
 source:
   table_name: fund_portfolio_raw
   schema_name: fund/portfolio/fund_portfolio
@@ -25,6 +28,11 @@ extra_columns:
     length: 64
     comment: 持仓基金ID（fund前缀加TS基金代码）
     expr: "concat('fund:', src.ts_code)"
+  - name: is_complete_holdings
+    data_type: int
+    nullable: true
+    comment: 完整持仓标记；源无可靠证据，保持NULL，不按报告期推断
+    expr: "CAST(NULL, 'Nullable(Int64)')"
 partition_key:
   - toYear(event_date)
 indexes:
