@@ -681,12 +681,12 @@ class TushareResponseTest(unittest.TestCase):
         self.assertEqual(post.call_count, 2)
         sleep.assert_called_once_with(60)
 
-    def test_cyq_chips_uses_latest_trade_date_by_default(self):
+    def test_cyq_chips_skips_only_confirmed_completed_windows(self):
         spider = CyqChipsSpider()
         spider.spider_settings = DummySpiderSettings(database=SimpleNamespace(db_name="default"))
         fake_db = DummyDB(
             [
-                pd.DataFrame({"latest_trade_date": [pd.Timestamp("2026-05-08")]}),
+                pd.DataFrame({"start_date": [pd.Timestamp("2018-01-02")], "end_date": [pd.Timestamp("2026-05-08")]}),
                 pd.DataFrame({"trade_date": pd.to_datetime(["2026-05-11"])}),
             ]
         )
@@ -694,7 +694,7 @@ class TushareResponseTest(unittest.TestCase):
         trade_dates = spider.get_missing_trade_dates(fake_db, "000565.SZ")
 
         self.assertEqual(trade_dates["trade_date"].dt.strftime("%Y%m%d").tolist(), ["20260511"])
-        self.assertIn("trade_date > '2026-05-08'", fake_db.queries[-1])
+        self.assertIn("trade_date <= '2026-05-08'", fake_db.queries[-1])
         self.assertNotIn("NOT IN", fake_db.queries[-1])
 
     def test_cyq_chips_can_opt_into_gap_backfill(self):
@@ -706,14 +706,14 @@ class TushareResponseTest(unittest.TestCase):
         trade_dates = spider.get_missing_trade_dates(fake_db, "000565.SZ")
 
         self.assertEqual(trade_dates["trade_date"].dt.strftime("%Y%m%d").tolist(), ["20220524"])
-        self.assertIn("NOT IN", fake_db.queries[-1])
+        self.assertNotIn("AND NOT", fake_db.queries[-1])
 
     def test_cyq_chips_bounds_missing_dates_to_listing_window(self):
         spider = CyqChipsSpider()
         spider.spider_settings = DummySpiderSettings(database=SimpleNamespace(db_name="default"))
         fake_db = DummyDB(
             [
-                pd.DataFrame({"latest_trade_date": [pd.NaT]}),
+                pd.DataFrame(columns=["start_date", "end_date"]),
                 pd.DataFrame({"trade_date": pd.to_datetime(["2021-12-15"])}),
             ]
         )
@@ -741,7 +741,7 @@ class TushareResponseTest(unittest.TestCase):
                         "delist_date": [pd.NaT],
                     }
                 ),
-                pd.DataFrame({"latest_trade_date": [pd.Timestamp("2026-05-08")]}),
+                pd.DataFrame({"start_date": [pd.Timestamp("2018-01-02")], "end_date": [pd.Timestamp("2026-05-08")]}),
                 pd.DataFrame({"trade_date": pd.to_datetime(["2026-05-11"])}),
             ]
         )
@@ -752,7 +752,7 @@ class TushareResponseTest(unittest.TestCase):
         request_params = [json.loads(request.body.decode("utf-8"))["params"] for request in requests]
         self.assertEqual(
             request_params,
-            [{"ts_code": "000001.SZ", "start_date": "20260511", "end_date": "20260511"}],
+            [{"ts_code": "000001.SZ", "start_date": "20260511", "end_date": "20260511", "limit": 6000, "offset": 0}],
         )
 
     def test_cyq_chips_chunks_trade_dates_into_range_requests(self):
@@ -770,7 +770,7 @@ class TushareResponseTest(unittest.TestCase):
                         "delist_date": [pd.NaT],
                     }
                 ),
-                pd.DataFrame({"latest_trade_date": [pd.Timestamp("2026-05-08")]}),
+                pd.DataFrame({"start_date": [pd.Timestamp("2018-01-02")], "end_date": [pd.Timestamp("2026-05-08")]}),
                 pd.DataFrame(
                     {"trade_date": pd.to_datetime(["2026-05-11", "2026-05-12", "2026-05-13"])}
                 ),
@@ -784,8 +784,7 @@ class TushareResponseTest(unittest.TestCase):
         self.assertEqual(
             request_params,
             [
-                {"ts_code": "000001.SZ", "start_date": "20260511", "end_date": "20260512"},
-                {"ts_code": "000001.SZ", "start_date": "20260513", "end_date": "20260513"},
+                {"ts_code": "000001.SZ", "start_date": "20260511", "end_date": "20260512", "limit": 6000, "offset": 0},
             ],
         )
 
@@ -805,7 +804,7 @@ class TushareResponseTest(unittest.TestCase):
                         "delist_date": [pd.NaT],
                     }
                 ),
-                pd.DataFrame({"latest_trade_date": [pd.Timestamp("2026-05-08")]}),
+                pd.DataFrame({"start_date": [pd.Timestamp("2018-01-02")], "end_date": [pd.Timestamp("2026-05-08")]}),
                 pd.DataFrame({"trade_date": pd.to_datetime(["2026-05-11", "2026-05-12"])}),
             ]
         )
@@ -816,7 +815,7 @@ class TushareResponseTest(unittest.TestCase):
         request_params = [json.loads(request.body.decode("utf-8"))["params"] for request in requests]
         self.assertEqual(
             request_params,
-            [{"ts_code": "000001.SZ", "start_date": "20260511", "end_date": "20260511"}],
+            [{"ts_code": "000001.SZ", "start_date": "20260511", "end_date": "20260511", "limit": 6000, "offset": 0}],
         )
 
     def test_cyq_chips_primary_key_preserves_price_buckets(self):

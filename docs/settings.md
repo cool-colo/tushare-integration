@@ -54,6 +54,7 @@ python main.py run job stock/quotes --update-type full
 | `tushare_max_concurrent_requests` | ``              | `int` | 基于积分计算            | 基于积分自动计算最大每分钟并行请求数，如果指定则会跳过计算 |
 | `tushare_rate_limit_ratio`        | `TUSHARE_RATE_LIMIT_RATIO` | `float` | 0.9          | 自动计算频次时使用的安全系数，避免贴近官方分钟频次上限     |
 | `cyq_chips_request_chunk_trade_days` | `CYQ_CHIPS_REQUEST_CHUNK_TRADE_DAYS` | `int` | 25 | 筹码分布接口每个请求最多覆盖的交易日数量 |
+| `index_priority_codes` | `INDEX_PRIORITY_CODES` | `list[str]` | `[]` | 指数 incremental 采集代码范围；空列表采全部指数，full 始终处理全部指数 |
 | `cyq_chips_max_requests_per_run`  | `CYQ_CHIPS_MAX_REQUESTS_PER_RUN` | `int` | 50000 | 筹码分布接口单次运行最多请求数，0表示不限制 |
 
 #### 任务相关
@@ -100,3 +101,29 @@ reporters可选值
 | `retry_enabled`       |          | `bool` | true                  | 是否开启请求失败重试   |
 | `retry_delay`         |          | `int`  | 10                    | 重试延迟时间(秒)       |
 | `retry_times`         |          | `int`  | 6                     | 最大重试次数           |
+
+
+### 指数历史补数
+
+`index/quotes` 的 `index_daily` 和 `index_weight` 同时参加 incremental 和 full 任务。
+代码范围只由任务类型决定，不判断星期几；直接运行 spider 保持全部指数范围。
+`index_priority_codes` 可在配置文件中设置，也可用 `INDEX_PRIORITY_CODES` 环境变量传入 JSON 数组。
+空列表表示采集全部指数；无效代码或基础表中不存在的配置代码会报错。
+
+full 任务从接口历史起点处理所有指数，不使用整表最大日期截断历史。
+日行情跳过已经存在的 `(ts_code, trade_date)`；权重按月重新请求历史数据并按原业务主键入库。
+因此 full 权重任务的请求量会高于原先只查近期月份的任务，适合安排到定期补数批次。
+
+### 筹码分页与恢复
+
+`cyq_chips` 对每个日期窗口使用 `limit=6000` 和递增 `offset`，直到收到明确的成功空页。
+短页也继续分页；错误响应（包括参数错误和“无数据”错误消息）及缺少 `data.items` 的响应不会确认完成。
+所有页通过入库流水线后，窗口才写入 `cyq_chips_completed_windows` 表。
+窗口按顺序处理，请求上限包含初始页、后续页和终止空页；上限耗尽时，未完成窗口留待重跑。
+上限必须足够完成至少一个窗口，只有一条非空页的窗口也至少需要两次请求。
+
+采集日期仅排除已确认完成的窗口，不以已有筹码行的最大交易日或旧空数据截止日期作为完成证据。
+首次启用时，旧数据没有完成窗口记录，会从接口起点（默认 2018-01-02，受上市/退市日期限制）重新核查并补齐；
+重跑产生的原始采集记录继续保留，最新表按现有业务主键处理。
+设置 `BACKFILL_GAPS=True` 会忽略窗口完成记录并重新核查历史，包括此前源端成功返回空数据的窗口。
+这允许源端延迟提供数据时显式重新采集。

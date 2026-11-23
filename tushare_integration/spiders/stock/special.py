@@ -1,5 +1,13 @@
 import datetime
+import hashlib
+import json
 
+import pandas as pd
+from scrapy import signals
+from twisted.python.failure import Failure
+
+from tushare_integration.cyq_chips_progress import CyqChipsProgressStore
+from tushare_integration.items import TushareIntegrationItem
 from tushare_integration.spiders.tushare import DailySpider, TSCodeSpider, TushareSpider
 
 
@@ -28,6 +36,37 @@ class CyqChipsSpider(TushareSpider):
         "MAX_REQUESTS_PER_RUN": 50000,
     }
 
+    PAGE_LIMIT = 6000
+    MAX_PAGES_PER_WINDOW = 1000
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.window_progress = {}
+        self.request_count = 0
+
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super().from_crawler(crawler, *args, **kwargs)
+        crawler.signals.connect(spider.on_item_scraped, signal=signals.item_scraped)
+        return spider
+
+    def create_table(self):
+        super().create_table()
+        self.get_progress_store().ensure_table(self.db_engine)
+
+    def get_progress_store(self):
+        if not hasattr(self, "progress_store"):
+            self.progress_store = CyqChipsProgressStore(self.spider_settings)
+        return self.progress_store
+
+    def get_page_request(self, params):
+        cap = self.get_max_requests_per_run()
+        if cap and self.request_count >= cap:
+            self.logger.warning("Reached cyq_chips request cap (%s); incomplete windows will be replayed.", cap)
+            return None
+        self.request_count += 1
+        return self.get_scrapy_request(params)
+
     @staticmethod
     def _format_trade_date(value):
         parsed = DailySpider.parse_date_value(value)
@@ -52,43 +91,30 @@ class CyqChipsSpider(TushareSpider):
             return None
         return parsed_delist_date
 
-    def get_latest_trade_date(self, conn, ts_code: str):
-        latest_trade_date = conn.query_df(
-            f"""
-                SELECT max(trade_date) AS latest_trade_date
-                FROM {self.spider_settings.database.db_name}.{self.get_table_name()}
-                WHERE ts_code = '{ts_code}'
-            """
-        )
-        if latest_trade_date.empty:
-            return None
-        return self._format_trade_date(latest_trade_date["latest_trade_date"].iloc[0])
-
     def get_missing_trade_dates(self, conn, ts_code: str, list_date=None, delist_date=None):
         db_name = self.spider_settings.database.db_name
         min_trade_date = self._format_trade_date(self._get_min_trade_date(list_date))
         max_trade_date = self._format_trade_date(self._get_delist_date(delist_date))
         delist_condition = f"AND trade_date <= '{max_trade_date}'" if max_trade_date else ""
 
-        if self.custom_settings.get("BACKFILL_GAPS", False):
-            incremental_condition = f"""
-                AND trade_date NOT IN (
-                    SELECT DISTINCT trade_date FROM {db_name}.{self.get_table_name()}
-                    WHERE ts_code = '{ts_code}'
-                )
-            """
-        else:
-            latest_trade_date = self.get_latest_trade_date(conn, ts_code)
-            incremental_condition = f"AND trade_date > '{latest_trade_date}'" if latest_trade_date else ""
-
+        # Existing business rows do not prove that all price buckets were fetched.
+        # Only successful windows may exclude dates, including empty source windows.
+        completed_windows = []
+        if not self.custom_settings.get("BACKFILL_GAPS", False):
+            completed_windows = self.get_progress_store().get_completed_windows(conn, ts_code)
+        exclusions = " OR ".join(
+            f"(trade_date >= '{start}' AND trade_date <= '{end}')"
+            for start, end in completed_windows
+        )
+        completed_condition = f"AND NOT ({exclusions})" if exclusions else ""
         return conn.query_df(
             f"""
                 SELECT DISTINCT trade_date
                 FROM {db_name}.daily
-                WHERE ts_code = '{ts_code}'
+                WHERE ts_code = {CyqChipsProgressStore._quote_string(ts_code)}
                 AND trade_date >= '{min_trade_date}'
                 {delist_condition}
-                {incremental_condition}
+                {completed_condition}
                 ORDER BY trade_date
             """
         )
@@ -121,34 +147,117 @@ class CyqChipsSpider(TushareSpider):
             yield chunk[0].strftime("%Y%m%d"), chunk[-1].strftime("%Y%m%d")
 
     def start_requests(self):
+        self.pending_windows = self.iter_window_params()
+        request = self.next_window_request()
+        if request is not None:
+            yield request
+
+    def next_window_request(self):
+        params = next(getattr(self, "pending_windows", iter(())), None)
+        return self.get_page_request(params) if params is not None else None
+
+    def iter_window_params(self):
         conn = self.get_db_engine()
-        max_requests = self.get_max_requests_per_run()
-        request_count = 0
         stock_basic = conn.query_df(
             f"""
-                SELECT ts_code, list_date, delist_date
+                SELECT DISTINCT ts_code, list_date, delist_date
                 FROM {self.spider_settings.database.db_name}.{self.custom_settings.get("BASIC_TABLE")}
                 WHERE ts_code != ''
+                ORDER BY ts_code
             """
         )
         for row in stock_basic.itertuples(index=False):
             trade_dates = self.get_missing_trade_dates(conn, row.ts_code, row.list_date, row.delist_date)
-
-            if trade_dates.empty:
-                continue
-
             for start_date, end_date in self.iter_trade_date_ranges(trade_dates["trade_date"]):
-                if max_requests and request_count >= max_requests:
-                    self.logger.warning(
-                        "Reached cyq_chips request cap (%s); remaining backlog will continue in the next run.",
-                        max_requests,
-                    )
-                    return
+                yield {
+                    "ts_code": row.ts_code,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "limit": self.PAGE_LIMIT,
+                    "offset": 0,
+                }
 
-                request_count += 1
-                yield self.get_scrapy_request(
-                    {"ts_code": row.ts_code, "start_date": start_date, "end_date": end_date}
-                )
+    @staticmethod
+    def _window_key(params):
+        return params["ts_code"], params["start_date"], params["end_date"]
+
+    def _maybe_complete_window(self, key):
+        progress = self.window_progress[key]
+        if not progress["finished"] or progress["persisted_pages"] != progress["pages"]:
+            return
+        ts_code, start, end = key
+        self.get_progress_store().complete_window(
+            self.get_db_engine(),
+            ts_code,
+            DailySpider.parse_date_value(start),
+            DailySpider.parse_date_value(end),
+        )
+        del self.window_progress[key]
+        self.logger.info("Completed and persisted cyq_chips window: %s", key)
+        # Finish the current window before spending the run budget on another.
+        return self.next_window_request()
+
+    def on_item_scraped(self, item, response, spider):
+        # item_scraped fires only after every pipeline has succeeded.
+        key = self._window_key(response.meta["params"])
+        progress = self.window_progress[key]
+        progress["persisted_pages"] += 1
+        try:
+            request = self._maybe_complete_window(key)
+            if request is not None:
+                self.crawler.engine.crawl(request)
+        except Exception:
+            # Exceptions in signal handlers alone do not reach CrawlManager.
+            self.crawler.signals.send_catch_log(
+                signal=signals.spider_error, failure=Failure(), response=response, spider=self,
+            )
+
+    def parse(self, response, **kwargs):
+        payload = json.loads(response.text)
+        # Parameter errors and malformed success responses are not empty-source evidence.
+        if payload.get("code") != 0:
+            raise RuntimeError(f"cyq_chips request failed: {payload.get('msg', payload)}")
+        if not isinstance(payload.get("data"), dict) or not isinstance(payload["data"].get("items"), list):
+            raise RuntimeError("cyq_chips returned malformed data; window is incomplete")
+        data = self.parse_response(response, **kwargs)["data"]
+        params = dict(response.meta["params"])
+        ts_code = params["ts_code"]
+        start_date = DailySpider.parse_date_value(params["start_date"])
+        end_date = DailySpider.parse_date_value(params["end_date"])
+        offset = int(params.get("offset", 0))
+        limit = int(params.get("limit", self.PAGE_LIMIT))
+        key = self._window_key(params)
+        progress = self.window_progress.setdefault(
+            key, {"page_hashes": set(), "pages": 0, "persisted_pages": 0, "finished": False}
+        )
+        if len(data) > limit:
+            raise RuntimeError(f"cyq_chips exceeded requested page limit: {key} offset={offset}")
+        if data.empty:
+            progress["finished"] = True
+            request = self._maybe_complete_window(key)
+            if request is not None:
+                yield request
+            return
+        if "ts_code" not in data or data["ts_code"].isna().any() or not data["ts_code"].eq(ts_code).all():
+            raise RuntimeError(f"cyq_chips returned a different stock code: {key} offset={offset}")
+        trade_dates = pd.to_datetime(data["trade_date"], format="mixed", errors="coerce")
+        if trade_dates.isna().any():
+            raise RuntimeError(f"cyq_chips returned invalid trade_date: {key} offset={offset}")
+        if ((trade_dates.dt.date < start_date) | (trade_dates.dt.date > end_date)).any():
+            raise RuntimeError(f"cyq_chips returned trade_date outside requested window: {key} offset={offset}")
+        if progress["pages"] >= self.MAX_PAGES_PER_WINDOW:
+            raise RuntimeError(f"cyq_chips exceeded page safety limit: {key}; window is incomplete")
+        page_rows = sorted(json.dumps(row, sort_keys=True, default=str) for row in data.to_dict("records"))
+        page_hash = hashlib.sha256("\n".join(page_rows).encode("utf-8")).hexdigest()
+        if page_hash in progress["page_hashes"]:
+            raise RuntimeError(f"cyq_chips repeated a source page: {key}; the source may be ignoring offset")
+        progress["page_hashes"].add(page_hash)
+        progress["pages"] += 1
+        yield TushareIntegrationItem(data=data)
+        params["offset"] = offset + len(data)
+        request = self.get_page_request(params)
+        if request is not None:
+            yield request
 
 
 class StkFactorSpider(DailySpider):

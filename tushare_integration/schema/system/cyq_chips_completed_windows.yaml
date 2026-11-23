@@ -1,0 +1,18 @@
+name: cyq_chips_completed_windows
+comment: 筹码分布已完成分页且成功入库的查询窗口
+primary_key: [ts_code, start_date, end_date]
+indexes: []
+columns:
+- name: ts_code
+  data_type: str
+  length: 16
+  comment: 股票代码
+- name: start_date
+  data_type: date
+  comment: 已完成窗口起始日期
+- name: end_date
+  data_type: date
+  comment: 已完成窗口截止日期
+- name: completed_at
+  data_type: datetime
+  comment: 窗口确认完成时间
