@@ -14,7 +14,7 @@ class StockFactorWideV2Test(unittest.TestCase):
 
     def test_v2_catalog_includes_requested_scalar_extensions(self):
         columns = {column for _, _, _, column in V2_FINANCIAL_FEATURE_COLUMNS}
-        self.assertEqual(len(columns), 1782)
+        self.assertEqual(len(columns), 1784)
         self.assertEqual(len(V2_CALCULATED_FACTOR_COLUMNS), 28)
         self.assertTrue({f"interestdebt_mrq_{i}" for i in range(9)} <= columns)
         self.assertTrue({f"interestdebt_ttm_{i}" for i in range(9)} <= columns)
@@ -22,6 +22,8 @@ class StockFactorWideV2Test(unittest.TestCase):
         self.assertNotIn("interestdebt_lf", columns)
         self.assertIn("non_cur_liab_due_1y_mrq_0", columns)
         self.assertNotIn("non_cur_liab_due_1y_mrq_8", columns)
+        self.assertTrue({"fin_exp_int_exp_mrq_0", "fin_exp_int_exp_mrq_4"} <= columns)
+        self.assertNotIn("fin_exp_int_exp_mrq_1", columns)
 
     def test_v2_schema_keeps_raw_tushare_ttm_fields_and_groups_prefixes(self):
         spec = self.manager.load_spec("dws_stock_factor_wide_v2")
@@ -113,6 +115,58 @@ class StockFactorWideV2Test(unittest.TestCase):
         self.assertIn("min(p.available_trade_date) AS available_trade_date", sql)
         self.assertIn("FROM default.dwd_stock_eod_price", sql)
         self.assertIn("SETTINGS max_insert_threads = 1, max_compress_block_size = 65536", sql)
+
+    def test_build_resource_limits_apply_only_to_v2_including_tmp_targets(self):
+        limits = {
+            "max_local_read_bandwidth": 100 * 1024 * 1024,
+            "max_local_write_bandwidth": 100 * 1024 * 1024,
+            "max_bytes_before_external_group_by": 2 * 1024**3,
+            "max_bytes_before_external_sort": 2 * 1024**3,
+        }
+        for table_name in self.manager.list_tables():
+            with self.subTest(table=table_name):
+                sql = self.manager.render_sync_sql(table_name)
+                if table_name == "dws_stock_factor_wide_v2":
+                    settings_sql = sql.rsplit("\nSETTINGS ", 1)[1]
+                    self.assertNotIn("max_threads", settings_sql)
+                    self.assertNotIn("max_memory_usage", settings_sql)
+                    for setting, value in limits.items():
+                        self.assertIn(f"{setting} = {value}", settings_sql)
+                else:
+                    for setting in limits:
+                        self.assertNotIn(setting, sql)
+
+        tmp_sql = self.manager.render_sync_sql(
+            "dws_stock_factor_wide_v2", target_table_name="dws_stock_factor_wide_v2_tmp"
+        )
+        self.assertIn("INSERT INTO default.dws_stock_factor_wide_v2_tmp", tmp_sql)
+        self.assertNotIn("max_threads", tmp_sql.rsplit("\nSETTINGS ", 1)[1])
+        self.assertNotIn("max_memory_usage", tmp_sql.rsplit("\nSETTINGS ", 1)[1])
+        for setting, value in limits.items():
+            self.assertIn(f"{setting} = {value}", tmp_sql.rsplit("\nSETTINGS ", 1)[1])
+
+    def test_v2_trial_scopes_stock_history_and_preserves_full_index_snapshots(self):
+        sql = self.manager.render_sync_sql(
+            "dws_stock_factor_wide_v2", instrument_ids=["stock:000001.SZ", "stock:600519.SH"]
+        )
+        self.assertIn("FROM v2_scope_dwd_stock_eod_price", sql)
+        self.assertIn("FROM v2_scope_dwd_stock_research_report r", sql)
+        self.assertIn("FROM v2_scope_dwd_stock_income src", sql)
+        self.assertIn("FROM v2_scope_dws_stock_income_quarter src", sql)
+        self.assertIn("WHERE instrument_id IN ('stock:000001.SZ', 'stock:600519.SH')", sql)
+        self.assertIn("WHERE concat('stock:', ts_code) IN ('stock:000001.SZ', 'stock:600519.SH')", sql)
+        self.assertIn("FROM default.dwd_index_weight WHERE index_code = '000906.SH'", sql)
+        self.assertNotIn("v2_scope_dwd_index_weight", sql)
+        self.assertNotIn("v2_scope_dwd_index_eod_price", sql)
+        self.assertNotIn("SELECT *", sql)
+        # Source lineage must still name the original physical inputs.
+        self.assertIn("default.dwd_stock_research_report", sql)
+
+    def test_trial_scopes_are_rejected_for_other_builders_or_when_empty(self):
+        with self.assertRaisesRegex(ValueError, "only for dws_stock_factor_wide_v2"):
+            self.manager.render_sync_sql("dws_stock_income_quarter", instrument_ids=["stock:000001.SZ"])
+        with self.assertRaisesRegex(ValueError, "at least one instrument"):
+            self.manager.render_sync_sql("dws_stock_factor_wide_v2", instrument_ids=[])
 
 
 if __name__ == "__main__":

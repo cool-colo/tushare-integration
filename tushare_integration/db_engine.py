@@ -233,7 +233,9 @@ class ClickhouseEngine(DBEngine):
     def query_df(self, sql: str) -> pd.DataFrame:
         return self.client.query_df(sql)
 
-    def query(self, sql: str):
+    def query(self, sql: str, *, settings: dict[str, object] | None = None):
+        if settings is not None:
+            return self.client.query(sql, settings=settings)
         return self.client.query(sql)
 
 

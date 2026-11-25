@@ -17,17 +17,18 @@ def identifier(value):
     return value
 
 
-def render(database, old_table, new_table):
+def render(database, old_table, new_table, *, all_business_fields=False):
     manifest = json.loads((ROOT / "tushare_integration/schema/dws/v2_scalar_extensions.json").read_text())
     columns = yaml.safe_load((ROOT / "tushare_integration/schema/dws/dws_stock_factor_wide_v2.yaml").read_text())[
         "schema"
     ]["columns"]
     additions = {item["name"] for item in manifest if item["status"] != "excluded"}
     audit = {"source", "source_table", "source_batch_id", "source_record_hash", "build_time"}
-    old_names = [c["name"] for c in columns if c["name"] not in additions | audit]
+    excluded = audit if all_business_fields else additions | audit
+    old_names = [c["name"] for c in columns if c["name"] not in excluded]
     old, new = f"`{database}`.`{old_table}`", f"`{database}`.`{new_table}`"
     expected = ",".join("'" + c["name"] + "'" for c in columns)
-    # Avoid holding all 1,736 value columns and their aggregate inputs at once.
+    # Compare bounded column chunks to keep wide-table buffers manageable.
     comparisons = []
     for offset in range(0, len(old_names), 128):
         checks = ",\n    ".join(
@@ -41,8 +42,9 @@ def render(database, old_table, new_table):
 ) WHERE diff.2 > 0;""")
     comparison_sql = "\n\n".join(comparisons)
     null_counts = ",\n    ".join(f"tuple('{name}', countIf(`{name}` IS NOT NULL))" for name in sorted(additions))
-    return f"""-- Generated from the checked-in v2 schema and 236-item manifest; read-only.
--- Expected: 1968 schema columns, no missing/extra names.
+    placeholder_count = sum(item["status"] == "placeholder" for item in manifest)
+    return f"""-- Generated from the checked-in v2 schema and {len(manifest)}-item manifest; read-only.
+-- Expected: {len(columns)} schema columns, no missing/extra names.
 SELECT arrayFilter(x -> NOT has(actual,x), [{expected}]) AS missing,
        arrayFilter(x -> NOT has([{expected}],x), actual) AS unexpected
 FROM (SELECT groupArray(name) AS actual FROM system.columns
@@ -57,7 +59,7 @@ FROM {old} o FULL OUTER JOIN {new} n ON o.instrument_id=n.instrument_id AND o.tr
 -- Exact NULL-safe comparison of every pre-existing value column.
 {comparison_sql}
 
--- Review non-null counts. The 13 documented placeholders must remain zero.
+-- Review non-null counts. The {placeholder_count} documented placeholders must remain zero.
 SELECT metric.1 AS column_name,metric.2 AS non_null_rows FROM (
  SELECT arrayJoin([
     {null_counts}
@@ -68,11 +70,12 @@ SELECT metric.1 AS column_name,metric.2 AS non_null_rows FROM (
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--all-business-fields", action="store_true", help="Compare new and old business fields; exclude only audit columns")
     parser.add_argument("--database", type=identifier, default="default")
     parser.add_argument("--old-table", type=identifier, default="dws_stock_factor_wide_v2")
     parser.add_argument("--new-table", type=identifier, default="dws_stock_factor_wide_v2_candidate")
     args = parser.parse_args()
-    print(render(args.database, args.old_table, args.new_table))
+    print(render(args.database, args.old_table, args.new_table, all_business_fields=args.all_business_fields))
 
 
 if __name__ == "__main__":

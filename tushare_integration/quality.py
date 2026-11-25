@@ -3134,7 +3134,19 @@ class DqcManager:
         source_table: str,
         value_fields: list[str] | None = None,
     ) -> str:
-        value_select = "".join([f",\n        `{field}`" for field in value_fields or []])
+        value_selects = []
+        for field in value_fields or []:
+            expression = f"src.`{field}`"
+            if source_table == "dwd_stock_cashflow" and field == "deferred_income_tax":
+                # This derived field exists only in DWS. Compose the selected
+                # report's cumulative terms before quarterly differencing;
+                # either missing term must keep the result NULL.
+                expression = (
+                    "src.`decr_def_inc_tax_assets` + src.`incr_def_inc_tax_liab` "
+                    "AS `deferred_income_tax`"
+                )
+            value_selects.append(f",\n        {expression}")
+        value_select = "".join(value_selects)
         return f"""
 reports AS (
     SELECT

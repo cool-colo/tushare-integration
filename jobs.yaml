@@ -217,7 +217,7 @@ cronjob:
       - name: stock/special/report_rc
         update_type: full
       - name: stock/special/cyq_perf
-      - name: stock/special/cyq_chips
+      # - name: stock/special/cyq_chips
       - name: stock/special/stk_factor
       - name: stock/special/ccass_hold
       - name: stock/special/ccass_hold_detail

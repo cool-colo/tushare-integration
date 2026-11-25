@@ -199,10 +199,15 @@ run_dwd_sync() {
 run_dws_sync() {
   local container="$1" image="$2" table="$3"
   local container_id exit_code logs_pid
+  local mounts=(-v "$CONFIG_FILE:/code/app/config.yaml:ro")
+  if [[ "$table" == "dws_stock_factor_wide_v2" ]]; then
+    # Keep V2 timing/source/validation evidence after the container exits.
+    mounts+=(-v "$LOG_DIR:/code/app/logs:rw")
+  fi
 
   echo "[$(date '+%F %T')] Starting DWS sync $table with $image as $container"
   docker_cmd rm -f "$container" >/dev/null 2>&1 || true
-  container_id="$(docker_cmd run -d --name "$container" --net=host -v "$CONFIG_FILE:/code/app/config.yaml:ro" "$image" python main.py dws sync "$table")"
+  container_id="$(docker_cmd run -d --name "$container" --net=host "${mounts[@]}" "$image" python main.py dws sync "$table")"
   echo "[$(date '+%F %T')] Container started: $container_id"
   ACTIVE_CONTAINER="$container"
   docker_cmd logs -f "$container" &

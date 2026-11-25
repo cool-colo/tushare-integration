@@ -1,6 +1,6 @@
 # V2 Tushare 标量扩展字段血缘
 
-本次原清单 236 项：实现 214 个标量、13 个 NULL 占位、排除 4 个米筐字段及 5 个数组。合计新增 227 列，V2 总列数 1968。
+原清单 236 项；2026-11-25 另加 2 个利息费用 MRQ 字段，四个高频字段改为只建列的 NULL 占位。当前清单 238 项：实现 216 个标量、17 个 NULL 占位、排除 5 个数组。合计扩展 233 列，V2 总列数 1974。
 
 本表“数组排除”指不写入 v2 宽表。后续需求的六张数组相关 DWD 明细及日期/版本限制见 [数组 DWD 说明](v2_array_dwd_pit.md)。
 
@@ -200,14 +200,16 @@
 | `admin_exp_lyr_7` | 实现 | 元 | income.admin_exp / lyr_7； |
 | `admin_exp_lyr_8` | 实现 | 元 | income.admin_exp / lyr_8； |
 | `admin_exp_lyr_9` | 实现 | 元 | income.admin_exp / lyr_9； |
+| `fin_exp_int_exp_mrq_0` | 实现 | 元 | dwd_stock_income.fin_exp_int_exp → dws_stock_income_quarter；累计转单季，固定自然季度槽0，按自身公告PIT，缺期或NULL不补齐 |
+| `fin_exp_int_exp_mrq_4` | 实现 | 元 | 同上，固定自然季度槽4（上年同季）；不是第四条已披露记录，不用int_exp替代 |
 | `up_limit` | 实现 | 元/股 | 上游明细表（default.dwd_stock_limit.up_limit）； |
 | `down_limit` | 实现 | 元/股 | 上游明细表（default.dwd_stock_limit.down_limit）； |
 | `top_list_flag` | 实现 | 0/1；无法确认缺失时NULL | dwd_stock_top_list ← top_list_raw；对应交易日事件，下一交易日起可用；无记录且缺覆盖证明为NULL； |
 | `sw_l1_code` | 实现 | 文本/代码 | 上游明细表（default.dwd_sw_industry_member.l1_code）； |
-| `hf_std_5m` | 排除 | 元 | 上游明细表加工（default.ricequant_stock_minute：order_book_id、trading_date、datetime、close）；米筐高频字段不在本次范围 |
-| `hf_5m_return_count` | 排除 | 个 | 上游明细表加工（default.ricequant_stock_minute：order_book_id、trading_date、datetime、close）；米筐高频字段不在本次范围 |
-| `hf_5m_return_sum` | 排除 | 元 | 上游明细表加工（default.ricequant_stock_minute：order_book_id、trading_date、datetime、close）；米筐高频字段不在本次范围 |
-| `hf_5m_return_sum_sq` | 排除 | 元 | 上游明细表加工（default.ricequant_stock_minute：order_book_id、trading_date、datetime、close）；米筐高频字段不在本次范围 |
+| `hf_std_5m` | NULL占位 | 无量纲 | Nullable(Float64)；仅建列，未实现21交易日五分钟收益标准差，不读取ricequant_stock_minute |
+| `hf_5m_return_count` | NULL占位 | 个 | Nullable(Int64)；仅建列，未实现当日有效五分钟收益条数，不读取ricequant_stock_minute |
+| `hf_5m_return_sum` | NULL占位 | 无量纲 | Nullable(Float64)；仅建列，未实现当日对数收益和，不读取ricequant_stock_minute |
+| `hf_5m_return_sum_sq` | NULL占位 | 无量纲 | Nullable(Float64)；仅建列，未实现当日对数收益平方和，不读取ricequant_stock_minute |
 | `list_date` | 实现 | 日期 | dwd_security_master.list_date ← stock_basic；多版本日期冲突则NULL； |
 | `holder_num_mrq_0` | 实现 | 户（A+B股东总户数） | dwd_stock_holder_number.holder_num ← stk_holdernumber_raw；公告下一交易日可用；固定自然季末； |
 | `holder_num_mrq_1` | 实现 | 户（A+B股东总户数） | dwd_stock_holder_number.holder_num ← stk_holdernumber_raw；公告下一交易日可用；固定自然季末； |

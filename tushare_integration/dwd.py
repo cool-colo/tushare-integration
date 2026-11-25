@@ -20,18 +20,6 @@ FAR_FUTURE_DATE_SQL = "toDate32('2299-12-31')"
 CALENDAR_SOURCE_TABLE = "trade_cal"
 MIN_LAYER_TRADE_DATE = "2010-01-01"
 MIN_LAYER_TRADE_DATE_SQL = f"toDate32('{MIN_LAYER_TRADE_DATE}')"
-DWD_CLICKHOUSE_SEND_RECEIVE_TIMEOUT = 3600
-DWD_CLICKHOUSE_QUERY_SETTINGS = {
-    "max_threads": 4,
-    "max_memory_usage": 64 * 1024**3,
-    "max_bytes_before_external_sort": 2 * 1024**3,
-    "max_bytes_before_external_group_by": 2 * 1024**3,
-    "max_block_size": 8192,
-    "preferred_block_size_bytes": 1024**2,
-    "max_insert_threads": 1,
-    "max_compress_block_size": 65536,
-    "max_execution_time": 3000,
-}
 
 
 COMMON_DWD_COLUMNS = [
@@ -99,11 +87,7 @@ class DWDManager:
 
     def get_db_engine(self):
         if self.db_engine is None:
-            self.db_engine = DatabaseEngineFactory.create(
-                self.settings,
-                clickhouse_send_receive_timeout=DWD_CLICKHOUSE_SEND_RECEIVE_TIMEOUT,
-                clickhouse_query_settings=DWD_CLICKHOUSE_QUERY_SETTINGS,
-            )
+            self.db_engine = DatabaseEngineFactory.create(self.settings)
         return self.db_engine
 
     def list_tables(self) -> list[str]:

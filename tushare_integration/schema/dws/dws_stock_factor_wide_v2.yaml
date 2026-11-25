@@ -1998,6 +1998,14 @@ schema:
     data_type: float
     nullable: true
     comment: EBITDAlyr_4（固定报告期索引）
+  - name: fin_exp_int_exp_mrq_0
+    data_type: float
+    nullable: true
+    comment: 财务费用中的利息费用MRQ（元）；来自dwd_stock_income.fin_exp_int_exp经income_quarter累计转单季，固定自然季度槽0，按自身公告PIT选版本；缺期或缺值为空
+  - name: fin_exp_int_exp_mrq_4
+    data_type: float
+    nullable: true
+    comment: 上年同季财务费用中的利息费用MRQ（元）；来自dwd_stock_income.fin_exp_int_exp经income_quarter累计转单季，固定自然季度槽4；缺期不跳期，最新NULL不回填旧值
   - name: fin_exp_int_exp_ttm_0
     data_type: float
     nullable: true
@@ -7734,6 +7742,22 @@ schema:
     data_type: str
     nullable: true
     comment: 计算时点已生效且已可见的申万一级行业代码
+  - name: hf_std_5m
+    data_type: float
+    nullable: true
+    comment: 最近21个交易日五分钟对数收益样本标准差（无量纲）；仅建字段，未实现高频计算，V2同步写NULL
+  - name: hf_5m_return_count
+    data_type: int
+    nullable: true
+    comment: 当日有效五分钟区间对数收益条数（个）；仅建字段，未实现高频计算，V2同步写NULL
+  - name: hf_5m_return_sum
+    data_type: float
+    nullable: true
+    comment: 当日有效五分钟区间对数收益之和（无量纲）；仅建字段，未实现高频计算，V2同步写NULL
+  - name: hf_5m_return_sum_sq
+    data_type: float
+    nullable: true
+    comment: 当日有效五分钟区间对数收益平方和（无量纲）；仅建字段，未实现高频计算，V2同步写NULL
   - name: list_date
     data_type: date
     nullable: true

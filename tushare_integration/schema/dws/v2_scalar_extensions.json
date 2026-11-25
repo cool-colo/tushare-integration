@@ -2511,19 +2511,19 @@
     "description": "最近 21 个交易日五分钟收益标准差",
     "source": "上游明细表加工（default.ricequant_stock_minute：order_book_id、trading_date、datetime、close）",
     "document_rule": "汇集截至计算日连续 21 个交易日的有效日内五分钟收益 `r`，计算合并样本标准差 `sqrt((Σr²-(Σr)²/N)/(N-1))`；不跨午休、缺口或隔夜，`N<2` 置空。",
-    "status": "excluded",
-    "reason": "米筐高频字段不在本次范围",
+    "status": "placeholder",
+    "reason": "仅建可空字段，不实现高频计算；V2同步写NULL，不读取米筐来源",
     "data_type": "float",
-    "unit": "元"
+    "unit": "无量纲"
   },
   {
     "name": "hf_5m_return_count",
     "description": "当日有效五分钟区间收益条数",
     "source": "上游明细表加工（default.ricequant_stock_minute：order_book_id、trading_date、datetime、close）",
     "document_rule": "同一交易时段内以时间相邻且均为正的五分钟收盘价计算 `r=log(P_k/P_{k-1})`，统计当日有效 `r` 条数；不跨午休、缺口或隔夜。",
-    "status": "excluded",
-    "reason": "米筐高频字段不在本次范围",
-    "data_type": "float",
+    "status": "placeholder",
+    "reason": "仅建可空字段，不实现高频计算；V2同步写NULL，不读取米筐来源",
+    "data_type": "int",
     "unit": "个"
   },
   {
@@ -2531,20 +2531,20 @@
     "description": "当日五分钟区间对数收益之和",
     "source": "上游明细表加工（default.ricequant_stock_minute：order_book_id、trading_date、datetime、close）",
     "document_rule": "对 `hf_5m_return_count` 所计的当日收益求 `Σr`；完整数据但无有效区间为 0，源缺档置空。",
-    "status": "excluded",
-    "reason": "米筐高频字段不在本次范围",
+    "status": "placeholder",
+    "reason": "仅建可空字段，不实现高频计算；V2同步写NULL，不读取米筐来源",
     "data_type": "float",
-    "unit": "元"
+    "unit": "无量纲"
   },
   {
     "name": "hf_5m_return_sum_sq",
     "description": "当日五分钟区间对数收益平方和",
     "source": "上游明细表加工（default.ricequant_stock_minute：order_book_id、trading_date、datetime、close）",
     "document_rule": "对 `hf_5m_return_count` 所计的当日收益求 `Σr²`；完整数据但无有效区间为 0，源缺档置空。",
-    "status": "excluded",
-    "reason": "米筐高频字段不在本次范围",
+    "status": "placeholder",
+    "reason": "仅建可空字段，不实现高频计算；V2同步写NULL，不读取米筐来源",
     "data_type": "float",
-    "unit": "元"
+    "unit": "无量纲"
   },
   {
     "name": "list_date",
@@ -2921,6 +2921,32 @@
     "document_rule": "`Array(Tuple(record_id String, report_date Date, available_trade_date Date, source_kind String, holder_name String, holder_type Nullable(String), hold_amount Nullable(Float64), hold_ratio Nullable(Float64), hold_float_ratio Nullable(Float64)))`；股票键=`ts_code`，报告期=`end_date`，ID=`_record_hash`，`source_kind` 取源表名；`ann_date` 无日内时刻时自下一交易日可用，按可见版本及 `(报告期,源表,主体)` 去重，两表同主体留待汇总时去重。",
     "status": "excluded",
     "reason": "按用户确认本次不提供数组",
+    "data_type": "float",
+    "unit": "元"
+  },
+  {
+    "name": "fin_exp_int_exp_mrq_0",
+    "description": "固定自然季度槽0财务费用中的利息费用（单季）",
+    "source": "default.dwd_stock_income.fin_exp_int_exp → default.dws_stock_income_quarter.fin_exp_int_exp",
+    "document_rule": "沿用V2 MRQ固定自然季度槽与PIT：Q1为累计值，Q2-Q4减同年紧邻上一季可见累计值；缺期、缺值或尚未披露为空，不跳期，不用int_exp补齐。",
+    "status": "implemented",
+    "api": "income",
+    "field": "fin_exp_int_exp",
+    "suffix": "mrq_0",
+    "period_policy": "current_v2_fixed_calendar_slots_and_partial_field_ttm",
+    "data_type": "float",
+    "unit": "元"
+  },
+  {
+    "name": "fin_exp_int_exp_mrq_4",
+    "description": "上年同季固定自然季度槽4财务费用中的利息费用（单季）",
+    "source": "default.dwd_stock_income.fin_exp_int_exp → default.dws_stock_income_quarter.fin_exp_int_exp",
+    "document_rule": "沿用V2 MRQ固定自然季度槽与PIT：Q1为累计值，Q2-Q4减同年紧邻上一季可见累计值；缺期、缺值或尚未披露为空，不跳期，不用int_exp补齐。",
+    "status": "implemented",
+    "api": "income",
+    "field": "fin_exp_int_exp",
+    "suffix": "mrq_4",
+    "period_policy": "current_v2_fixed_calendar_slots_and_partial_field_ttm",
     "data_type": "float",
     "unit": "元"
   }

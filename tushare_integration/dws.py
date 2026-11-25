@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -9,8 +10,8 @@ from typing import Any
 import yaml
 
 from tushare_integration import v2_scalar_extensions as v2_ext
-from tushare_integration.db_engine import DatabaseEngineFactory
-from tushare_integration.dwd import FAR_FUTURE_TS_SQL, MIN_LAYER_TRADE_DATE_SQL
+from tushare_integration.db_engine import ClickhouseEngine, DatabaseEngineFactory
+from tushare_integration.dwd import DWDManager, FAR_FUTURE_TS_SQL, MIN_LAYER_TRADE_DATE_SQL
 from tushare_integration.factor_mapping import (
     DEFAULT_FACTOR_MAPPING_CSV,
     FACTOR_MAPPING_CSV_CANDIDATES as DEFAULT_FACTOR_MAPPING_CSV_CANDIDATES,
@@ -1933,6 +1934,7 @@ FROM wide_candidates
     def _render_stock_factor_wide_v2_sync_sql(
         self,
         target_table_name: str,
+        instrument_ids: list[str] | None = None,
     ) -> str:
         db_name = self.settings.database.db_name
         base_sql = STOCK_FACTOR_WIDE_V2_BASE_SQL.read_text(encoding="utf-8").replace(
@@ -2013,7 +2015,7 @@ FROM wide_candidates
                 raise ValueError(f"No v2 stock factor expression for schema column {column}")
         output_select_sql = ",\n    ".join(output_selects)
 
-        return f"""
+        sql = f"""
 INSERT INTO {db_name}.{target_table_name}
 WITH
 price AS (
@@ -2035,8 +2037,62 @@ SELECT
 FROM wide_candidates
 -- Thousands of nullable column streams otherwise allocate MiB compression
 -- buffers per column, partition and concurrent writer during history rebuilds.
-SETTINGS max_insert_threads = 1, max_compress_block_size = 65536
+-- Keep local disk bandwidth limits query-local to this v2 build.
+SETTINGS max_insert_threads = 1, max_compress_block_size = 65536,
+    max_local_read_bandwidth = 104857600,
+    max_local_write_bandwidth = 104857600,
+    max_bytes_before_external_group_by = 2147483648,
+    max_bytes_before_external_sort = 2147483648
 """
+        if instrument_ids is not None:
+            sql = self._scope_stock_factor_wide_v2_sources(sql, instrument_ids)
+        return sql
+
+    def _scope_stock_factor_wide_v2_sources(self, sql: str, instrument_ids: list[str]) -> str:
+        """Bound stock-day joins without truncating any stock's PIT history.
+
+        Index inputs remain complete: membership snapshot dates must be selected
+        from the full index universe before looking up a stock's membership.
+        """
+        if not instrument_ids:
+            raise ValueError("A v2 trial must contain at least one instrument")
+        db_name = self.settings.database.db_name
+        instruments_sql = ", ".join(ClickhouseEngine.quote_string(value) for value in sorted(set(instrument_ids)))
+        dwd = DWDManager()
+        source_ctes = []
+        referenced_columns = set(re.findall(r"[A-Za-z_][A-Za-z_0-9]*", sql))
+        for table in dict.fromkeys(STOCK_FACTOR_WIDE_V2_SOURCES):
+            if table in {"dwd_index_eod_price", "dwd_index_weight"}:
+                continue
+            manager = dwd if table.startswith("dwd_") else self
+            columns = manager.build_schema(manager.load_spec(table))["columns"]
+            column_names = {column["name"] for column in columns}
+            if table == "dwd_sw_industry_member":
+                instrument_expr = "concat('stock:', ts_code)"
+            elif "instrument_id" in column_names:
+                instrument_expr = "instrument_id"
+            else:
+                raise ValueError(f"No instrument scope defined for v2 source {table}")
+            # Avoid requiring unrelated source columns or expanding unused
+            # projections through the repeatedly referenced CTEs.
+            projection = ", ".join(
+                ClickhouseEngine.quote_identifier(column["name"])
+                for column in columns
+                if column["name"] in referenced_columns
+            )
+            cte_name = f"v2_scope_{table}"
+            source_ctes.append(
+                f"{cte_name} AS (\n    SELECT {projection}\n"
+                f"    FROM {db_name}.{table}\n    WHERE {instrument_expr} IN ({instruments_sql})\n)"
+            )
+            # Rewrite only table references, preserving source_table lineage strings.
+            sql = re.sub(
+                rf"\b(FROM|JOIN)\s+{re.escape(db_name + '.' + table)}\b",
+                lambda match: f"{match.group(1)} {cte_name}",
+                sql,
+            )
+        scoped_with = ",\n".join(source_ctes)
+        return sql.replace("\nWITH\n", f"\nWITH\n{scoped_with},\n", 1)
 
     def _stock_factor_matrix_source_fields(self) -> list[tuple[str, str]]:
         wide_spec = self.load_spec("dws_stock_factor_wide")
@@ -2391,13 +2447,17 @@ FROM quarter_candidates
         self,
         table_name: str,
         target_table_name: str | None = None,
+        *,
+        instrument_ids: list[str] | None = None,
     ) -> str:
         spec = self.load_spec(table_name)
         target_table_name = target_table_name or spec["name"]
+        if instrument_ids is not None and spec.get("builder") != "stock_factor_wide_v2":
+            raise ValueError("Instrument-scoped trials are supported only for dws_stock_factor_wide_v2")
         if spec.get("builder") == "stock_factor_wide":
             return self._render_stock_factor_wide_sync_sql(target_table_name)
         if spec.get("builder") == "stock_factor_wide_v2":
-            return self._render_stock_factor_wide_v2_sync_sql(target_table_name)
+            return self._render_stock_factor_wide_v2_sync_sql(target_table_name, instrument_ids=instrument_ids)
         if spec.get("builder") == "stock_factor_wide_matrix":
             return self._render_stock_factor_wide_matrix_sync_sql(target_table_name)
         if spec.get("builder") == "stock_financial_indicator_quarter":
@@ -2407,6 +2467,18 @@ FROM quarter_candidates
         if spec.get("builder") == "stock_cashflow_quarter":
             return self._render_stock_cashflow_quarter_sync_sql(target_table_name)
         raise ValueError(f"Unsupported DWS builder for {table_name}: {spec.get('builder')}")
+
+    def build_v2_candidate(
+        self, target_table_name: str | None = None, *, instrument_ids: list[str] | None = None,
+        report_path: Path | None = None, validation_mode: ValidationMode = "warn_only",
+    ) -> dict:
+        """Build one isolated candidate with a single INSERT SELECT; never publish."""
+        from tushare_integration.v2_build import execute_build
+
+        return execute_build(
+            self, target_table_name, instrument_ids=instrument_ids,
+            report_path=report_path, validation_mode=validation_mode,
+        )
 
     def get_required_source_tables(self, spec: dict[str, Any]) -> list[str]:
         if spec.get("builder") == "stock_factor_wide":
@@ -2505,6 +2577,32 @@ FROM quarter_candidates
         skip_validation: bool = False,
     ) -> None:
         spec = self.load_spec(table_name)
+        single_v2 = spec.get("builder") == "stock_factor_wide_v2" and self.settings.database.db_type == "clickhouse"
+        if single_v2 and (skip_validation or validation_mode not in {None, "strict", "warn_only"}):
+            raise ValueError("V2 sync requires validation in strict or warn_only mode")
+        if single_v2:
+            result = self.build_v2_candidate(validation_mode=validation_mode or "warn_only")
+            target_table = spec["name"]
+            candidate = result["target"]
+            db_name = self.settings.database.db_name
+            db_engine = self.get_db_engine()
+            q = ClickhouseEngine.quote_identifier
+            from tushare_integration.v2_build import save_report
+            exists = self._clickhouse_table_exists(target_table)
+            try:
+                if exists:
+                    db_engine.query(f"EXCHANGE TABLES {q(db_name)}.{q(target_table)} AND {q(db_name)}.{q(candidate)}")
+                else:
+                    db_engine.query(f"RENAME TABLE {q(db_name)}.{q(candidate)} TO {q(db_name)}.{q(target_table)}")
+            except Exception as exc:
+                result["publication"] = {"target": target_table, "status": "failed", "error": repr(exc)}
+                save_report(Path(result["report_path"]), result)
+                raise
+            # The old production remains under the unique candidate name after EXCHANGE.
+            result["publication"] = {"target": target_table, "retained_table": candidate if exists else None, "status": "published"}
+            save_report(Path(result["report_path"]), result)
+            self._run_post_publish_dqc(target_table, db_engine)
+            return
         self.ensure_source_tables(spec)
         self.ensure_required_functions(spec)
         target_table = spec["name"]
