@@ -1,0 +1,34 @@
+# 复制到 client/thsetl-2.3.8-linux/application.yml 后填写登录信息。
+server:
+  address: '127.0.0.1'
+  port: 9888
+
+database:
+  enabled: false
+
+ifind:
+  autoCreateTable: false
+  service:
+    address: 'https://dbpg.51ifind.com:443'
+  login:
+    userId: 'REPLACE_WITH_USER_ID'
+    userCode: 'REPLACE_WITH_CRM_CODE'
+    password: 'REPLACE_WITH_PASSWORD'
+    encrypt: false
+  filePath:
+    enabled: true
+    global:
+      full: '/oss_data/public/transaction/full/{date}/{table}_{date}_{time}_{num}.csv'
+      inc: '/oss_data/public/transaction/inc/{date}/{table}_{date}_{time}_{num}.csv'
+      expireDays: 0 # CSV 文件永久保留
+  # 按新版手册附录 A 显式启用高频行情文件下载。
+  gp:
+    enabled: true
+    baseDir: '/oss_data/public/transaction/gp'
+    dateFormat: 'yyyy-MM-dd'
+    expireDays: -1 # GP 文件不删除；官方脚本注明 0 为不保留
+
+proxy:
+  enabled: false
+standby:
+  enabled: false
