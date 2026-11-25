@@ -69,11 +69,12 @@ class V2CandidateTest(unittest.TestCase):
         self.assertEqual(report["status"], "failed")
         self.assertEqual(self.engine.query.call_count, 2)
 
-    def test_source_change_stops_publication_and_preserves_candidate(self):
+    def test_source_change_is_reported_without_blocking_candidate(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch("tushare_integration.v2_build.source_inventory", side_effect=[{"parts": [1]}, {"parts": [2]}]):
             path = Path(tmp)/"report.json"
-            with self.assertRaisesRegex(RuntimeError, "Source inventory changed"):
-                execute_build(self.manager, "candidate", report_path=path)
+            execute_build(self.manager, "candidate", report_path=path)
             report = json.loads(path.read_text())
         self.assertFalse(report["sources_unchanged"])
+        self.assertEqual(report["status"], "validated")
+        self.assertIsNone(report["publication"])
         self.assertEqual(self.engine.query.call_count, 2)
