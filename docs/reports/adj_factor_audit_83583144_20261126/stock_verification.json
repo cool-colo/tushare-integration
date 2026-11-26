@@ -1,0 +1,69 @@
+{
+  "batch_id": "83583144e99a11f1be9300163e32d8e8",
+  "batch": {
+    "rows": 841,
+    "business_keys": 841,
+    "stocks": 1,
+    "first_date": "2023-06-01",
+    "last_date": "2026-11-23",
+    "first_ingest": "2026-11-26 13:08:46.794",
+    "last_ingest": "2026-11-26 13:10:37.576",
+    "future_timestamps": 0,
+    "checked_at": "2026-11-26 13:21:03.056",
+    "timezone": "UTC"
+  },
+  "planned_dates": 841,
+  "missing_planned_dates": [],
+  "unexpected_dates": [],
+  "batch_invalid_factors": 0,
+  "hash_errors": [],
+  "raw_latest_mismatches": [],
+  "local_history_rows": 1492,
+  "source_history_rows": 1492,
+  "source_duplicate_dates": 0,
+  "history_differences": [],
+  "latest_history_decreases": [],
+  "oct23_26_27": [
+    {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-10-23",
+      "adj_factor": 1.0239,
+      "_source": "tushare",
+      "_api_name": "adj_factor",
+      "_batch_id": "83583144e99a11f1be9300163e32d8e8",
+      "_ingest_time": "2026-11-26 13:10:34.853",
+      "_record_hash": "a06f4c9f289fdb9983e56afedfbabe94"
+    },
+    {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-10-26",
+      "adj_factor": 1.0239,
+      "_source": "tushare",
+      "_api_name": "adj_factor",
+      "_batch_id": "1c008624e99811f1bf1d00163e32d8e8",
+      "_ingest_time": "2026-11-26 12:51:34.363",
+      "_record_hash": "877a0d59c22615eb0eebe6a5c86941d9"
+    },
+    {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-10-27",
+      "adj_factor": 1.0239,
+      "_source": "tushare",
+      "_api_name": "adj_factor",
+      "_batch_id": "83583144e99a11f1be9300163e32d8e8",
+      "_ingest_time": "2026-11-26 13:10:34.991",
+      "_record_hash": "a4f45efdae6352e019e088dc8458d49b"
+    }
+  ],
+  "dwd_oct26": [
+    {
+      "ts_code": "688585.SH",
+      "event_date": "2026-10-26",
+      "adj_factor": 1.187,
+      "sys_from": "2026-10-26 01:22:10.456",
+      "sys_to": "2299-12-31 00:00:00.000",
+      "source_batch_id": "a6720dc6d0db11f1b3ce00163e32d8e8"
+    }
+  ],
+  "dwd_new_batch_rows": 0
+}

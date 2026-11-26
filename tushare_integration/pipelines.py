@@ -221,7 +221,9 @@ class TushareIntegrationDataPipeline(BasePipeline):
         if raw_data.empty:
             return item
 
-        ingest_time = datetime.datetime.now()
+        # The driver serializes the actual instant from a timezone-aware value;
+        # a naive host-local time would shift PIT versions on a UTC server.
+        ingest_time = datetime.datetime.now(datetime.timezone.utc)
         batch_id = spider.settings.get("BATCH_ID", "") or self.settings.batch_id
         record_hashes = raw_data.apply(lambda row: self.build_record_hash(row, self.business_columns), axis=1)
         raw_payloads = raw_data.apply(

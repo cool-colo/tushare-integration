@@ -11,6 +11,10 @@
 | `top_holder_records` | `top10_holders_raw` | `dwd_stock_top10_holders` | 公告日的下一 SSE 交易日；总股东口径 |
 | `top_holder_records` | `top10_floatholders_raw` | `dwd_stock_top10_floatholders` | 公告日的下一 SSE 交易日；流通股东口径 |
 
+主营业务新增 `dws_stock_main_business` 承载普通合并利润表的关联代理日期；原 DWD 的可用日仍为 NULL。
+停复牌新增 `dwd_stock_suspend`，同日停牌和复牌分别保留，可用日为 NULL。
+构建规则、金额匹配与报告期兜底依据见 [分层说明](main_business_suspend_dwd_dws.md)。
+
 所有表都保留源业务列及公共字段：`instrument_id`、`instrument_type`、`exchange`、`source_code`、`event_date`、`available_trade_date`、`sys_from`、`sys_to`、`source`、`source_table`、`source_batch_id`、`source_record_hash`。下游记录 ID 使用 `source_record_hash`，不另造跨源统一 ID。
 
 两类十大股东即使出现相同哈希，也不代表口径相同。合并展示时应保留 `source_kind`，不能跨来源仅按哈希丢弃一方。

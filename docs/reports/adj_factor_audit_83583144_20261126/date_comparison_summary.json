@@ -1,0 +1,690 @@
+[
+  {
+    "trade_date": "2024-06-24",
+    "local_rows": 5389,
+    "source_rows": 5365,
+    "source_pages": [
+      1000,
+      1000,
+      1000,
+      1000,
+      1000,
+      365
+    ],
+    "same_factor": 744,
+    "different_factors": 4621,
+    "only_local": [
+      "300114.SZ",
+      "600069.SH",
+      "600077.SH",
+      "600091.SH",
+      "600122.SH",
+      "600139.SH",
+      "600145.SH",
+      "600242.SH",
+      "600247.SH",
+      "600260.SH",
+      "600290.SH",
+      "600311.SH",
+      "600393.SH",
+      "600401.SH",
+      "600466.SH",
+      "600485.SH",
+      "600656.SH",
+      "600677.SH",
+      "600680.SH",
+      "600823.SH",
+      "600870.SH",
+      "600978.SH",
+      "601258.SH",
+      "603555.SH"
+    ],
+    "only_source": [],
+    "example_differences": [
+      {
+        "ts_code": "000001.SZ",
+        "trade_date": "2024-06-24",
+        "local_factor": 125.0496,
+        "source_factor": 125.05,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "000002.SZ",
+        "trade_date": "2024-06-24",
+        "local_factor": 181.704,
+        "source_factor": 181.7038,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "000004.SZ",
+        "trade_date": "2024-06-24",
+        "local_factor": 4.064,
+        "source_factor": 4.0639,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "000006.SZ",
+        "trade_date": "2024-06-24",
+        "local_factor": 39.74,
+        "source_factor": 39.7397,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "000007.SZ",
+        "trade_date": "2024-06-24",
+        "local_factor": 8.284,
+        "source_factor": 8.2835,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "000008.SZ",
+        "trade_date": "2024-06-24",
+        "local_factor": 22.408,
+        "source_factor": 22.4083,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      }
+    ],
+    "688585": {
+      "ts_code": "688585.SH",
+      "trade_date": "2024-06-24",
+      "local_factor": 1.0136,
+      "source_factor": 1.0136,
+      "both_present": true,
+      "equal": true,
+      "local_batch": "83583144e99a11f1be9300163e32d8e8"
+    }
+  },
+  {
+    "trade_date": "2024-06-25",
+    "local_rows": 5389,
+    "source_rows": 5365,
+    "source_pages": [
+      1000,
+      1000,
+      1000,
+      1000,
+      1000,
+      365
+    ],
+    "same_factor": 5155,
+    "different_factors": 210,
+    "only_local": [
+      "300114.SZ",
+      "600069.SH",
+      "600077.SH",
+      "600091.SH",
+      "600122.SH",
+      "600139.SH",
+      "600145.SH",
+      "600242.SH",
+      "600247.SH",
+      "600260.SH",
+      "600290.SH",
+      "600311.SH",
+      "600393.SH",
+      "600401.SH",
+      "600466.SH",
+      "600485.SH",
+      "600656.SH",
+      "600677.SH",
+      "600680.SH",
+      "600823.SH",
+      "600870.SH",
+      "600978.SH",
+      "601258.SH",
+      "603555.SH"
+    ],
+    "only_source": [],
+    "example_differences": [
+      {
+        "ts_code": "000001.SZ",
+        "trade_date": "2024-06-25",
+        "local_factor": 125.0493,
+        "source_factor": 125.049,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "000717.SZ",
+        "trade_date": "2024-06-25",
+        "local_factor": 5.1827,
+        "source_factor": 5.1826,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "300114.SZ",
+        "trade_date": "2024-06-25",
+        "local_factor": 5.9757,
+        "source_factor": null,
+        "both_present": false,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "600069.SH",
+        "trade_date": "2024-06-25",
+        "local_factor": 0.6604,
+        "source_factor": null,
+        "both_present": false,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "600077.SH",
+        "trade_date": "2024-06-25",
+        "local_factor": 8.414,
+        "source_factor": null,
+        "both_present": false,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "600091.SH",
+        "trade_date": "2024-06-25",
+        "local_factor": 2.575,
+        "source_factor": null,
+        "both_present": false,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      }
+    ],
+    "688585": {
+      "ts_code": "688585.SH",
+      "trade_date": "2024-06-25",
+      "local_factor": 1.0136,
+      "source_factor": 1.0136,
+      "both_present": true,
+      "equal": true,
+      "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+    }
+  },
+  {
+    "trade_date": "2024-06-26",
+    "local_rows": 5390,
+    "source_rows": 5366,
+    "source_pages": [
+      1000,
+      1000,
+      1000,
+      1000,
+      1000,
+      366
+    ],
+    "same_factor": 643,
+    "different_factors": 4723,
+    "only_local": [
+      "300114.SZ",
+      "600069.SH",
+      "600077.SH",
+      "600091.SH",
+      "600122.SH",
+      "600139.SH",
+      "600145.SH",
+      "600242.SH",
+      "600247.SH",
+      "600260.SH",
+      "600290.SH",
+      "600311.SH",
+      "600393.SH",
+      "600401.SH",
+      "600466.SH",
+      "600485.SH",
+      "600656.SH",
+      "600677.SH",
+      "600680.SH",
+      "600823.SH",
+      "600870.SH",
+      "600978.SH",
+      "601258.SH",
+      "603555.SH"
+    ],
+    "only_source": [],
+    "example_differences": [
+      {
+        "ts_code": "000002.SZ",
+        "trade_date": "2024-06-26",
+        "local_factor": 181.704,
+        "source_factor": 181.7038,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "000004.SZ",
+        "trade_date": "2024-06-26",
+        "local_factor": 4.064,
+        "source_factor": 4.0639,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "000006.SZ",
+        "trade_date": "2024-06-26",
+        "local_factor": 39.74,
+        "source_factor": 39.7397,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "000007.SZ",
+        "trade_date": "2024-06-26",
+        "local_factor": 8.284,
+        "source_factor": 8.2835,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "000008.SZ",
+        "trade_date": "2024-06-26",
+        "local_factor": 22.408,
+        "source_factor": 22.4083,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      },
+      {
+        "ts_code": "000010.SZ",
+        "trade_date": "2024-06-26",
+        "local_factor": 10.775,
+        "source_factor": 10.7745,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "728e65ee491411f1a05e00163e32d8e8"
+      }
+    ],
+    "688585": {
+      "ts_code": "688585.SH",
+      "trade_date": "2024-06-26",
+      "local_factor": 1.0136,
+      "source_factor": 1.0136,
+      "both_present": true,
+      "equal": true,
+      "local_batch": "83583144e99a11f1be9300163e32d8e8"
+    }
+  },
+  {
+    "trade_date": "2026-10-23",
+    "local_rows": 5580,
+    "source_rows": 5577,
+    "source_pages": [
+      1000,
+      1000,
+      1000,
+      1000,
+      1000,
+      577
+    ],
+    "same_factor": 841,
+    "different_factors": 4736,
+    "only_local": [
+      "000016.SZ",
+      "601059.SH",
+      "601198.SH"
+    ],
+    "only_source": [],
+    "example_differences": [
+      {
+        "ts_code": "000002.SZ",
+        "trade_date": "2026-10-23",
+        "local_factor": 181.704,
+        "source_factor": 181.7038,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "270b045ace8011f1b58c00163e32d8e8"
+      },
+      {
+        "ts_code": "000006.SZ",
+        "trade_date": "2026-10-23",
+        "local_factor": 39.74,
+        "source_factor": 39.7397,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "270b045ace8011f1b58c00163e32d8e8"
+      },
+      {
+        "ts_code": "000007.SZ",
+        "trade_date": "2026-10-23",
+        "local_factor": 8.284,
+        "source_factor": 8.2835,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "270b045ace8011f1b58c00163e32d8e8"
+      },
+      {
+        "ts_code": "000008.SZ",
+        "trade_date": "2026-10-23",
+        "local_factor": 22.408,
+        "source_factor": 22.4083,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "270b045ace8011f1b58c00163e32d8e8"
+      },
+      {
+        "ts_code": "000009.SZ",
+        "trade_date": "2026-10-23",
+        "local_factor": 9.0428,
+        "source_factor": 9.0427,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "270b045ace8011f1b58c00163e32d8e8"
+      },
+      {
+        "ts_code": "000010.SZ",
+        "trade_date": "2026-10-23",
+        "local_factor": 10.775,
+        "source_factor": 10.7745,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "270b045ace8011f1b58c00163e32d8e8"
+      }
+    ],
+    "688585": {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-10-23",
+      "local_factor": 1.0239,
+      "source_factor": 1.0239,
+      "both_present": true,
+      "equal": true,
+      "local_batch": "83583144e99a11f1be9300163e32d8e8"
+    }
+  },
+  {
+    "trade_date": "2026-10-26",
+    "local_rows": 5580,
+    "source_rows": 5577,
+    "source_pages": [
+      1000,
+      1000,
+      1000,
+      1000,
+      1000,
+      577
+    ],
+    "same_factor": 5577,
+    "different_factors": 0,
+    "only_local": [
+      "000016.SZ",
+      "601059.SH",
+      "601198.SH"
+    ],
+    "only_source": [],
+    "example_differences": [
+      {
+        "ts_code": "000016.SZ",
+        "trade_date": "2026-10-26",
+        "local_factor": 22.375,
+        "source_factor": null,
+        "both_present": false,
+        "equal": false,
+        "local_batch": "a6720dc6d0db11f1b3ce00163e32d8e8"
+      },
+      {
+        "ts_code": "601059.SH",
+        "trade_date": "2026-10-26",
+        "local_factor": 1.0152,
+        "source_factor": null,
+        "both_present": false,
+        "equal": false,
+        "local_batch": "a6720dc6d0db11f1b3ce00163e32d8e8"
+      },
+      {
+        "ts_code": "601198.SH",
+        "trade_date": "2026-10-26",
+        "local_factor": 1.1611,
+        "source_factor": null,
+        "both_present": false,
+        "equal": false,
+        "local_batch": "a6720dc6d0db11f1b3ce00163e32d8e8"
+      }
+    ],
+    "688585": {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-10-26",
+      "local_factor": 1.0239,
+      "source_factor": 1.0239,
+      "both_present": true,
+      "equal": true,
+      "local_batch": "1c008624e99811f1bf1d00163e32d8e8"
+    }
+  },
+  {
+    "trade_date": "2026-10-27",
+    "local_rows": 5580,
+    "source_rows": 5577,
+    "source_pages": [
+      1000,
+      1000,
+      1000,
+      1000,
+      1000,
+      577
+    ],
+    "same_factor": 840,
+    "different_factors": 4737,
+    "only_local": [
+      "000016.SZ",
+      "601059.SH",
+      "601198.SH"
+    ],
+    "only_source": [],
+    "example_differences": [
+      {
+        "ts_code": "000002.SZ",
+        "trade_date": "2026-10-27",
+        "local_factor": 181.704,
+        "source_factor": 181.7038,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "d0acc4c2d1a411f1827b00163e32d8e8"
+      },
+      {
+        "ts_code": "000006.SZ",
+        "trade_date": "2026-10-27",
+        "local_factor": 39.74,
+        "source_factor": 39.7397,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "d0acc4c2d1a411f1827b00163e32d8e8"
+      },
+      {
+        "ts_code": "000007.SZ",
+        "trade_date": "2026-10-27",
+        "local_factor": 8.284,
+        "source_factor": 8.2835,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "d0acc4c2d1a411f1827b00163e32d8e8"
+      },
+      {
+        "ts_code": "000008.SZ",
+        "trade_date": "2026-10-27",
+        "local_factor": 22.408,
+        "source_factor": 22.4083,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "d0acc4c2d1a411f1827b00163e32d8e8"
+      },
+      {
+        "ts_code": "000009.SZ",
+        "trade_date": "2026-10-27",
+        "local_factor": 9.0428,
+        "source_factor": 9.0427,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "d0acc4c2d1a411f1827b00163e32d8e8"
+      },
+      {
+        "ts_code": "000010.SZ",
+        "trade_date": "2026-10-27",
+        "local_factor": 10.775,
+        "source_factor": 10.7745,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "d0acc4c2d1a411f1827b00163e32d8e8"
+      }
+    ],
+    "688585": {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-10-27",
+      "local_factor": 1.0239,
+      "source_factor": 1.0239,
+      "both_present": true,
+      "equal": true,
+      "local_batch": "83583144e99a11f1be9300163e32d8e8"
+    }
+  },
+  {
+    "trade_date": "2026-11-23",
+    "local_rows": 5586,
+    "source_rows": 5586,
+    "source_pages": [
+      1000,
+      1000,
+      1000,
+      1000,
+      1000,
+      586
+    ],
+    "same_factor": 867,
+    "different_factors": 4719,
+    "only_local": [],
+    "only_source": [],
+    "example_differences": [
+      {
+        "ts_code": "000002.SZ",
+        "trade_date": "2026-11-23",
+        "local_factor": 181.704,
+        "source_factor": 181.7038,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "4a2b489ae6dc11f194f900163e32d8e8"
+      },
+      {
+        "ts_code": "000006.SZ",
+        "trade_date": "2026-11-23",
+        "local_factor": 39.74,
+        "source_factor": 39.7397,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "4a2b489ae6dc11f194f900163e32d8e8"
+      },
+      {
+        "ts_code": "000007.SZ",
+        "trade_date": "2026-11-23",
+        "local_factor": 8.284,
+        "source_factor": 8.2835,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "4a2b489ae6dc11f194f900163e32d8e8"
+      },
+      {
+        "ts_code": "000008.SZ",
+        "trade_date": "2026-11-23",
+        "local_factor": 22.408,
+        "source_factor": 22.4083,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "4a2b489ae6dc11f194f900163e32d8e8"
+      },
+      {
+        "ts_code": "000009.SZ",
+        "trade_date": "2026-11-23",
+        "local_factor": 9.0428,
+        "source_factor": 9.0427,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "4a2b489ae6dc11f194f900163e32d8e8"
+      },
+      {
+        "ts_code": "000010.SZ",
+        "trade_date": "2026-11-23",
+        "local_factor": 10.775,
+        "source_factor": 10.7745,
+        "both_present": true,
+        "equal": false,
+        "local_batch": "4a2b489ae6dc11f194f900163e32d8e8"
+      }
+    ],
+    "688585": {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-11-23",
+      "local_factor": 1.0239,
+      "source_factor": 1.0239,
+      "both_present": true,
+      "equal": true,
+      "local_batch": "83583144e99a11f1be9300163e32d8e8"
+    }
+  },
+  {
+    "trade_date": "2026-11-24",
+    "local_rows": 5586,
+    "source_rows": 5586,
+    "source_pages": [
+      1000,
+      1000,
+      1000,
+      1000,
+      1000,
+      586
+    ],
+    "same_factor": 5586,
+    "different_factors": 0,
+    "only_local": [],
+    "only_source": [],
+    "example_differences": [],
+    "688585": {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-11-24",
+      "local_factor": 1.0239,
+      "source_factor": 1.0239,
+      "both_present": true,
+      "equal": true,
+      "local_batch": "74d7d6fce7a511f1b39100163e32d8e8"
+    }
+  },
+  {
+    "trade_date": "2026-11-25",
+    "local_rows": 5586,
+    "source_rows": 5586,
+    "source_pages": [
+      1000,
+      1000,
+      1000,
+      1000,
+      1000,
+      586
+    ],
+    "same_factor": 5586,
+    "different_factors": 0,
+    "only_local": [],
+    "only_source": [],
+    "example_differences": [],
+    "688585": {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-11-25",
+      "local_factor": 1.0239,
+      "source_factor": 1.0239,
+      "both_present": true,
+      "equal": true,
+      "local_batch": "9edc0ca6e86e11f188ab00163e32d8e8"
+    }
+  }
+]

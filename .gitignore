@@ -2,6 +2,7 @@
 .gitignore
 logs
 __pycache__
+.venv/
 config.yaml
 ricequant.yaml
 ricequant.env

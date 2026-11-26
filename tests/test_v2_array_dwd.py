@@ -370,6 +370,44 @@ class ArrayDWDTest(unittest.TestCase):
         )
         self.assertEqual(rows[-1]["eligible"], 0)
 
+    def test_suspend_keeps_same_day_stop_resume_revisions_and_unknown_availability(self):
+        table = "dwd_stock_suspend"
+        records = []
+        for kind, timing, observed, hash_ in [
+            ("S", None, "2026-11-20", "stop"),
+            ("S", None, "2026-11-21", "stop"),
+            ("S", "10:00-10:30", "2026-11-22", "stop-revised"),
+            ("R", None, "2026-11-20", "resume"),
+        ]:
+            records.append(insert("suspend_d_raw", ts_code="000001.SZ", trade_date="2026-11-20",
+                suspend_type=kind, suspend_timing=timing, _source="tushare", _batch_id="a",
+                _record_hash=hash_, _ingest_time=observed + " 18:00:00"))
+        records.append(insert("suspend_d_raw", ts_code="000001.SZ", trade_date="2009-12-31",
+            suspend_type="S", _source="tushare", _batch_id="a", _record_hash="old",
+            _ingest_time="2026-11-20 18:00:00"))
+        rows = self.execute([table], records + [self.manager.render_sync_sql(table) + ";",
+            f"SELECT suspend_type,suspend_timing,available_trade_date FROM {table} "
+            "ORDER BY suspend_type,sys_from FORMAT JSONEachRow;"], calendar=False)
+        self.assertEqual(rows, [
+            {"suspend_type": "R", "suspend_timing": None, "available_trade_date": None},
+            {"suspend_type": "S", "suspend_timing": None, "available_trade_date": None},
+            {"suspend_type": "S", "suspend_timing": "10:00-10:30", "available_trade_date": None},
+        ])
+
+    def test_suspend_same_observation_conflict_does_not_hide_resume(self):
+        table = "dwd_stock_suspend"
+        records = [insert("suspend_d_raw", ts_code="000001.SZ", trade_date="2026-11-20",
+            suspend_type=kind, suspend_timing=timing, _source="tushare", _batch_id="a",
+            _record_hash=hash_, _ingest_time="2026-11-20 18:00:00")
+            for kind, timing, hash_ in [("S", None, "stop"), ("S", "10:00-10:30", "conflict"),
+                                      ("R", None, "resume")]]
+        rows = self.execute([table], records + [self.manager.render_sync_sql(table) + ";",
+            self.manager.render_quarantine_sql(table) + ";",
+            f"SELECT suspend_type,count() AS rows FROM {table} GROUP BY suspend_type FORMAT JSONEachRow;",
+            f"SELECT count() AS quarantined,countIf(available_trade_date IS NOT NULL) AS visible "
+            f"FROM {table}_quarantine FORMAT JSONEachRow;"], calendar=False)
+        self.assertEqual(rows, [{"suspend_type": "R", "rows": 1}, {"quarantined": 2, "visible": 0}])
+
     def test_main_business_preserves_class_currency_and_observed_revisions(self):
         table = "dwd_stock_main_business"
         records = []

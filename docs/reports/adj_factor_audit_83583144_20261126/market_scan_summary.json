@@ -1,0 +1,818 @@
+{
+  "inventory": [
+    {
+      "rows": 19314043,
+      "stocks": 5931,
+      "first_date": "1990-12-19",
+      "last_date": "2026-11-26"
+    }
+  ],
+  "top_by_changes": [
+    {
+      "trade_date": "2026-10-27",
+      "stocks": 5580,
+      "changes": 4738,
+      "decreases": 2310,
+      "jumps_at_least_1pct": 210,
+      "pulses": 6,
+      "pulses_at_least_01pct": 6,
+      "pulses_at_least_1pct": 6
+    },
+    {
+      "trade_date": "2026-10-26",
+      "stocks": 5580,
+      "changes": 4737,
+      "decreases": 2419,
+      "jumps_at_least_1pct": 209,
+      "pulses": 4726,
+      "pulses_at_least_01pct": 207,
+      "pulses_at_least_1pct": 207
+    },
+    {
+      "trade_date": "2026-11-24",
+      "stocks": 5586,
+      "changes": 4720,
+      "decreases": 2406,
+      "jumps_at_least_1pct": 195,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2024-06-26",
+      "stocks": 5390,
+      "changes": 4527,
+      "decreases": 2267,
+      "jumps_at_least_1pct": 59,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2024-06-25",
+      "stocks": 5389,
+      "changes": 4422,
+      "decreases": 2153,
+      "jumps_at_least_1pct": 27,
+      "pulses": 2423,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2021-01-07",
+      "stocks": 4371,
+      "changes": 3444,
+      "decreases": 1701,
+      "jumps_at_least_1pct": 3,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2020-01-02",
+      "stocks": 3953,
+      "changes": 3226,
+      "decreases": 1652,
+      "jumps_at_least_1pct": 2,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2018-08-28",
+      "stocks": 3717,
+      "changes": 3140,
+      "decreases": 1549,
+      "jumps_at_least_1pct": 4,
+      "pulses": 1,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2018-08-16",
+      "stocks": 3720,
+      "changes": 3139,
+      "decreases": 1582,
+      "jumps_at_least_1pct": 8,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2023-06-01",
+      "stocks": 5252,
+      "changes": 2783,
+      "decreases": 1371,
+      "jumps_at_least_1pct": 51,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2022-05-30",
+      "stocks": 4970,
+      "changes": 804,
+      "decreases": 374,
+      "jumps_at_least_1pct": 61,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2026-05-29",
+      "stocks": 5525,
+      "changes": 176,
+      "decreases": 0,
+      "jumps_at_least_1pct": 95,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2025-06-06",
+      "stocks": 5440,
+      "changes": 167,
+      "decreases": 0,
+      "jumps_at_least_1pct": 94,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2024-06-07",
+      "stocks": 5385,
+      "changes": 165,
+      "decreases": 0,
+      "jumps_at_least_1pct": 118,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2025-05-30",
+      "stocks": 5438,
+      "changes": 151,
+      "decreases": 0,
+      "jumps_at_least_1pct": 66,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2025-05-29",
+      "stocks": 5438,
+      "changes": 148,
+      "decreases": 0,
+      "jumps_at_least_1pct": 82,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2023-06-16",
+      "stocks": 5264,
+      "changes": 144,
+      "decreases": 0,
+      "jumps_at_least_1pct": 90,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2024-06-14",
+      "stocks": 5388,
+      "changes": 143,
+      "decreases": 0,
+      "jumps_at_least_1pct": 101,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2026-06-18",
+      "stocks": 5530,
+      "changes": 141,
+      "decreases": 0,
+      "jumps_at_least_1pct": 71,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2025-06-13",
+      "stocks": 5443,
+      "changes": 138,
+      "decreases": 0,
+      "jumps_at_least_1pct": 77,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    }
+  ],
+  "top_by_decreases": [
+    {
+      "trade_date": "2026-10-26",
+      "stocks": 5580,
+      "changes": 4737,
+      "decreases": 2419,
+      "jumps_at_least_1pct": 209,
+      "pulses": 4726,
+      "pulses_at_least_01pct": 207,
+      "pulses_at_least_1pct": 207
+    },
+    {
+      "trade_date": "2026-11-24",
+      "stocks": 5586,
+      "changes": 4720,
+      "decreases": 2406,
+      "jumps_at_least_1pct": 195,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2026-10-27",
+      "stocks": 5580,
+      "changes": 4738,
+      "decreases": 2310,
+      "jumps_at_least_1pct": 210,
+      "pulses": 6,
+      "pulses_at_least_01pct": 6,
+      "pulses_at_least_1pct": 6
+    },
+    {
+      "trade_date": "2024-06-26",
+      "stocks": 5390,
+      "changes": 4527,
+      "decreases": 2267,
+      "jumps_at_least_1pct": 59,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2024-06-25",
+      "stocks": 5389,
+      "changes": 4422,
+      "decreases": 2153,
+      "jumps_at_least_1pct": 27,
+      "pulses": 2423,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2021-01-07",
+      "stocks": 4371,
+      "changes": 3444,
+      "decreases": 1701,
+      "jumps_at_least_1pct": 3,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2020-01-02",
+      "stocks": 3953,
+      "changes": 3226,
+      "decreases": 1652,
+      "jumps_at_least_1pct": 2,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2018-08-16",
+      "stocks": 3720,
+      "changes": 3139,
+      "decreases": 1582,
+      "jumps_at_least_1pct": 8,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2018-08-28",
+      "stocks": 3717,
+      "changes": 3140,
+      "decreases": 1549,
+      "jumps_at_least_1pct": 4,
+      "pulses": 1,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2023-06-01",
+      "stocks": 5252,
+      "changes": 2783,
+      "decreases": 1371,
+      "jumps_at_least_1pct": 51,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2022-05-30",
+      "stocks": 4970,
+      "changes": 804,
+      "decreases": 374,
+      "jumps_at_least_1pct": 61,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "1993-01-04",
+      "stocks": 53,
+      "changes": 13,
+      "decreases": 13,
+      "jumps_at_least_1pct": 13,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2026-10-20",
+      "stocks": 5577,
+      "changes": 30,
+      "decreases": 13,
+      "jumps_at_least_1pct": 6,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2026-10-28",
+      "stocks": 5580,
+      "changes": 17,
+      "decreases": 11,
+      "jumps_at_least_1pct": 14,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "1992-10-05",
+      "stocks": 40,
+      "changes": 9,
+      "decreases": 8,
+      "jumps_at_least_1pct": 3,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2020-07-27",
+      "stocks": 4127,
+      "changes": 16,
+      "decreases": 6,
+      "jumps_at_least_1pct": 11,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2023-07-28",
+      "stocks": 5292,
+      "changes": 28,
+      "decreases": 6,
+      "jumps_at_least_1pct": 19,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "1992-05-04",
+      "stocks": 26,
+      "changes": 6,
+      "decreases": 5,
+      "jumps_at_least_1pct": 6,
+      "pulses": 0,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2022-06-24",
+      "stocks": 4976,
+      "changes": 79,
+      "decreases": 5,
+      "jumps_at_least_1pct": 54,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2023-02-16",
+      "stocks": 5172,
+      "changes": 7,
+      "decreases": 5,
+      "jumps_at_least_1pct": 7,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    }
+  ],
+  "top_by_large_pulses": [
+    {
+      "trade_date": "2026-10-26",
+      "stocks": 5580,
+      "changes": 4737,
+      "decreases": 2419,
+      "jumps_at_least_1pct": 209,
+      "pulses": 4726,
+      "pulses_at_least_01pct": 207,
+      "pulses_at_least_1pct": 207
+    },
+    {
+      "trade_date": "2026-10-27",
+      "stocks": 5580,
+      "changes": 4738,
+      "decreases": 2310,
+      "jumps_at_least_1pct": 210,
+      "pulses": 6,
+      "pulses_at_least_01pct": 6,
+      "pulses_at_least_1pct": 6
+    },
+    {
+      "trade_date": "2023-04-28",
+      "stocks": 5227,
+      "changes": 32,
+      "decreases": 0,
+      "jumps_at_least_1pct": 20,
+      "pulses": 5,
+      "pulses_at_least_01pct": 5,
+      "pulses_at_least_1pct": 5
+    },
+    {
+      "trade_date": "2016-01-27",
+      "stocks": 2893,
+      "changes": 2,
+      "decreases": 1,
+      "jumps_at_least_1pct": 2,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2016-01-28",
+      "stocks": 2893,
+      "changes": 1,
+      "decreases": 0,
+      "jumps_at_least_1pct": 1,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2016-01-29",
+      "stocks": 2894,
+      "changes": 1,
+      "decreases": 1,
+      "jumps_at_least_1pct": 1,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2016-02-01",
+      "stocks": 2894,
+      "changes": 2,
+      "decreases": 0,
+      "jumps_at_least_1pct": 2,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2016-02-04",
+      "stocks": 2897,
+      "changes": 1,
+      "decreases": 0,
+      "jumps_at_least_1pct": 1,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2016-02-05",
+      "stocks": 2898,
+      "changes": 3,
+      "decreases": 1,
+      "jumps_at_least_1pct": 3,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2016-02-18",
+      "stocks": 2901,
+      "changes": 1,
+      "decreases": 1,
+      "jumps_at_least_1pct": 1,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2016-08-09",
+      "stocks": 2999,
+      "changes": 2,
+      "decreases": 1,
+      "jumps_at_least_1pct": 1,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2017-03-27",
+      "stocks": 3294,
+      "changes": 3,
+      "decreases": 0,
+      "jumps_at_least_1pct": 2,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2017-03-28",
+      "stocks": 3297,
+      "changes": 1,
+      "decreases": 1,
+      "jumps_at_least_1pct": 1,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2017-03-31",
+      "stocks": 3304,
+      "changes": 5,
+      "decreases": 1,
+      "jumps_at_least_1pct": 1,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2017-04-07",
+      "stocks": 3310,
+      "changes": 9,
+      "decreases": 1,
+      "jumps_at_least_1pct": 5,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2017-04-21",
+      "stocks": 3337,
+      "changes": 7,
+      "decreases": 1,
+      "jumps_at_least_1pct": 2,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2017-04-26",
+      "stocks": 3343,
+      "changes": 14,
+      "decreases": 1,
+      "jumps_at_least_1pct": 8,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2017-05-02",
+      "stocks": 3347,
+      "changes": 3,
+      "decreases": 1,
+      "jumps_at_least_1pct": 2,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2017-05-26",
+      "stocks": 3385,
+      "changes": 95,
+      "decreases": 1,
+      "jumps_at_least_1pct": 44,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    },
+    {
+      "trade_date": "2017-05-31",
+      "stocks": 3386,
+      "changes": 29,
+      "decreases": 0,
+      "jumps_at_least_1pct": 12,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    }
+  ],
+  "top_by_pulses": [
+    {
+      "trade_date": "2026-10-26",
+      "stocks": 5580,
+      "changes": 4737,
+      "decreases": 2419,
+      "jumps_at_least_1pct": 209,
+      "pulses": 4726,
+      "pulses_at_least_01pct": 207,
+      "pulses_at_least_1pct": 207
+    },
+    {
+      "trade_date": "2024-06-25",
+      "stocks": 5389,
+      "changes": 4422,
+      "decreases": 2153,
+      "jumps_at_least_1pct": 27,
+      "pulses": 2423,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2026-10-27",
+      "stocks": 5580,
+      "changes": 4738,
+      "decreases": 2310,
+      "jumps_at_least_1pct": 210,
+      "pulses": 6,
+      "pulses_at_least_01pct": 6,
+      "pulses_at_least_1pct": 6
+    },
+    {
+      "trade_date": "2023-04-28",
+      "stocks": 5227,
+      "changes": 32,
+      "decreases": 0,
+      "jumps_at_least_1pct": 20,
+      "pulses": 5,
+      "pulses_at_least_01pct": 5,
+      "pulses_at_least_1pct": 5
+    },
+    {
+      "trade_date": "1993-09-17",
+      "stocks": 117,
+      "changes": 1,
+      "decreases": 1,
+      "jumps_at_least_1pct": 0,
+      "pulses": 1,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2014-06-23",
+      "stocks": 2527,
+      "changes": 23,
+      "decreases": 0,
+      "jumps_at_least_1pct": 16,
+      "pulses": 1,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2014-07-03",
+      "stocks": 2533,
+      "changes": 17,
+      "decreases": 1,
+      "jumps_at_least_1pct": 9,
+      "pulses": 1,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2014-07-08",
+      "stocks": 2536,
+      "changes": 22,
+      "decreases": 1,
+      "jumps_at_least_1pct": 7,
+      "pulses": 1,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2014-07-14",
+      "stocks": 2536,
+      "changes": 18,
+      "decreases": 1,
+      "jumps_at_least_1pct": 8,
+      "pulses": 1,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2014-07-22",
+      "stocks": 2537,
+      "changes": 10,
+      "decreases": 1,
+      "jumps_at_least_1pct": 4,
+      "pulses": 1,
+      "pulses_at_least_01pct": 0,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2015-06-30",
+      "stocks": 2815,
+      "changes": 27,
+      "decreases": 1,
+      "jumps_at_least_1pct": 4,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2015-07-03",
+      "stocks": 2820,
+      "changes": 35,
+      "decreases": 1,
+      "jumps_at_least_1pct": 15,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2015-07-14",
+      "stocks": 2821,
+      "changes": 22,
+      "decreases": 1,
+      "jumps_at_least_1pct": 7,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2015-09-09",
+      "stocks": 2833,
+      "changes": 3,
+      "decreases": 1,
+      "jumps_at_least_1pct": 1,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2015-09-23",
+      "stocks": 2834,
+      "changes": 12,
+      "decreases": 1,
+      "jumps_at_least_1pct": 11,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2015-09-29",
+      "stocks": 2836,
+      "changes": 10,
+      "decreases": 1,
+      "jumps_at_least_1pct": 8,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2015-10-16",
+      "stocks": 2840,
+      "changes": 5,
+      "decreases": 1,
+      "jumps_at_least_1pct": 4,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2015-10-23",
+      "stocks": 2841,
+      "changes": 2,
+      "decreases": 1,
+      "jumps_at_least_1pct": 1,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2015-11-27",
+      "stocks": 2845,
+      "changes": 1,
+      "decreases": 1,
+      "jumps_at_least_1pct": 0,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 0
+    },
+    {
+      "trade_date": "2016-01-27",
+      "stocks": 2893,
+      "changes": 2,
+      "decreases": 1,
+      "jumps_at_least_1pct": 2,
+      "pulses": 1,
+      "pulses_at_least_01pct": 1,
+      "pulses_at_least_1pct": 1
+    }
+  ]
+}

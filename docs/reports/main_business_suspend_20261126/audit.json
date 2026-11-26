@@ -1,0 +1,316 @@
+{
+  "database": "default",
+  "tests": {
+    "command": "python -m pytest -q tests/test_main_business_dates.py tests/test_v2_array_dwd.py tests/test_quality_validation.py tests/test_v2_sync.py tests/test_tushare_response.py",
+    "passed": 107
+  },
+  "main_before": {
+    "rows": 700833,
+    "unknown_availability": 700833,
+    "hash_sum": 9647114342531433548
+  },
+  "dwd_stock_suspend": {
+    "publication": "published",
+    "seconds": 1.6,
+    "quality": [
+      {
+        "rule_id": "dwd_lineage_not_empty",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "dwd_no_overlapping_versions",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "dwd_pit_dates_not_null",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "dwd_single_open_version",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "dwd_sys_window_order",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "dwd_unknown_disclosure_excluded_from_pit",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "required_columns_exist",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "row_count_nonzero",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "suspend_event_identity",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      }
+    ],
+    "counts": {
+      "rows": 468952,
+      "populated_availability": 0,
+      "event_keys": 468952,
+      "first_event": "2010-01-04",
+      "last_event": "2026-11-25"
+    },
+    "quarantine": {
+      "rows": 0,
+      "improperly_visible": 0
+    }
+  },
+  "dws_stock_main_business": {
+    "publication": "published",
+    "build_seconds": 10.01,
+    "validation_retry_seconds": 2.98,
+    "previous_attempt": {
+      "publication": "failed",
+      "error": "Validation failed for dws.dws_stock_main_business in strict mode: VALIDATION_SYSTEM_ERROR(1)",
+      "seconds": 10.01
+    },
+    "validation_run_id": "d5e8fefb4847465eb5b42c652d6df4c6",
+    "quality": [
+      {
+        "rule_id": "main_business_latest_eligible_date",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "main_business_preserved_rows",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "main_business_proxy_integrity",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "main_business_selected_income_evidence",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "main_business_summary_evidence",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      },
+      {
+        "rule_id": "row_count_nonzero",
+        "severity": "BLOCKER",
+        "status": "PASS",
+        "issue_count": 0
+      }
+    ],
+    "counts": {
+      "rows": 700833,
+      "unknown_availability": 26048,
+      "improperly_public_pit": 0
+    },
+    "methods": [
+      {
+        "date_match_method": "amount_match",
+        "rows": 191141,
+        "report_periods": 18913
+      },
+      {
+        "date_match_method": "no_valid_report",
+        "rows": 26048,
+        "report_periods": 2951
+      },
+      {
+        "date_match_method": "report_period_latest",
+        "rows": 483644,
+        "report_periods": 78112
+      }
+    ],
+    "sample": [
+      {
+        "ts_code": "603293.SH",
+        "end_date": "2025-12-31",
+        "bz_code": "P",
+        "bz_item": "产品",
+        "update_flag": "0",
+        "date_match_method": "amount_match",
+        "ann_date": "2026-01-23",
+        "f_ann_date": "2026-04-15",
+        "available_trade_date": "2026-04-16",
+        "matching_sales": 3609274308.6,
+        "income_revenue": 3609274308.6,
+        "sales_match_error": 0.0
+      },
+      {
+        "ts_code": "603293.SH",
+        "end_date": "2025-12-31",
+        "bz_code": "P",
+        "bz_item": "其他业务",
+        "update_flag": "1",
+        "date_match_method": "report_period_latest",
+        "ann_date": "2026-01-23",
+        "f_ann_date": "2026-04-15",
+        "available_trade_date": "2026-04-16",
+        "matching_sales": null,
+        "income_revenue": 3609274308.6,
+        "sales_match_error": null
+      },
+      {
+        "ts_code": "603293.SH",
+        "end_date": "2025-12-31",
+        "bz_code": "P",
+        "bz_item": "其他业务",
+        "update_flag": "0",
+        "date_match_method": "amount_match",
+        "ann_date": "2026-01-23",
+        "f_ann_date": "2026-04-15",
+        "available_trade_date": "2026-04-16",
+        "matching_sales": 3609274308.6,
+        "income_revenue": 3609274308.6,
+        "sales_match_error": 0.0
+      },
+      {
+        "ts_code": "603293.SH",
+        "end_date": "2025-12-31",
+        "bz_code": "P",
+        "bz_item": "技术开发",
+        "update_flag": "1",
+        "date_match_method": "report_period_latest",
+        "ann_date": "2026-01-23",
+        "f_ann_date": "2026-04-15",
+        "available_trade_date": "2026-04-16",
+        "matching_sales": null,
+        "income_revenue": 3609274308.6,
+        "sales_match_error": null
+      },
+      {
+        "ts_code": "603293.SH",
+        "end_date": "2025-12-31",
+        "bz_code": "P",
+        "bz_item": "技术开发收入",
+        "update_flag": "0",
+        "date_match_method": "amount_match",
+        "ann_date": "2026-01-23",
+        "f_ann_date": "2026-04-15",
+        "available_trade_date": "2026-04-16",
+        "matching_sales": 3609274308.6,
+        "income_revenue": 3609274308.6,
+        "sales_match_error": 0.0
+      },
+      {
+        "ts_code": "603293.SH",
+        "end_date": "2025-12-31",
+        "bz_code": "P",
+        "bz_item": "汽车电子EMS",
+        "update_flag": "1",
+        "date_match_method": "report_period_latest",
+        "ann_date": "2026-01-23",
+        "f_ann_date": "2026-04-15",
+        "available_trade_date": "2026-04-16",
+        "matching_sales": null,
+        "income_revenue": 3609274308.6,
+        "sales_match_error": null
+      },
+      {
+        "ts_code": "603293.SH",
+        "end_date": "2025-12-31",
+        "bz_code": "P",
+        "bz_item": "汽车电子EMS",
+        "update_flag": "0",
+        "date_match_method": "amount_match",
+        "ann_date": "2026-01-23",
+        "f_ann_date": "2026-04-15",
+        "available_trade_date": "2026-04-16",
+        "matching_sales": 3609274308.6,
+        "income_revenue": 3609274308.6,
+        "sales_match_error": 0.0
+      },
+      {
+        "ts_code": "603293.SH",
+        "end_date": "2025-12-31",
+        "bz_code": "P",
+        "bz_item": "汽车电子产品",
+        "update_flag": "0",
+        "date_match_method": "amount_match",
+        "ann_date": "2026-01-23",
+        "f_ann_date": "2026-04-15",
+        "available_trade_date": "2026-04-16",
+        "matching_sales": 3609274308.6,
+        "income_revenue": 3609274308.6,
+        "sales_match_error": 0.0
+      },
+      {
+        "ts_code": "603293.SH",
+        "end_date": "2025-12-31",
+        "bz_code": "P",
+        "bz_item": "汽车电子类",
+        "update_flag": "1",
+        "date_match_method": "report_period_latest",
+        "ann_date": "2026-01-23",
+        "f_ann_date": "2026-04-15",
+        "available_trade_date": "2026-04-16",
+        "matching_sales": null,
+        "income_revenue": 3609274308.6,
+        "sales_match_error": null
+      }
+    ]
+  },
+  "main_after": {
+    "rows": 700833,
+    "unknown_availability": 700833,
+    "hash_sum": 9647114342531433548
+  },
+  "compatibility": {
+    "server": "25.8",
+    "local_tests_after_fix": 6,
+    "change": "NULL-safe WHERE amount comparisons without JOIN-only isNotDistinctFrom"
+  },
+  "current_validation_mode": {
+    "configured_table_modes": {
+      "dwd_stock_suspend": "warn_only",
+      "dws_stock_main_business": "warn_only"
+    },
+    "runs": [
+      {
+        "table": "dwd_stock_suspend",
+        "mode": "warn_only",
+        "status": "PASS",
+        "run_id": "e873c9b83c5a414aaeddee62a78f3cba",
+        "rules": 9,
+        "issue_count": 0
+      },
+      {
+        "table": "dws_stock_main_business",
+        "mode": "warn_only",
+        "status": "PASS",
+        "run_id": "ef8ca2aabbbd420b93bbb97512ba8962",
+        "rules": 6,
+        "issue_count": 0
+      }
+    ]
+  }
+}

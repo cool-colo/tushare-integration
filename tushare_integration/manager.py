@@ -11,6 +11,7 @@ from scrapy.signalmanager import dispatcher
 
 from tushare_integration.db_engine import DatabaseEngineFactory
 from tushare_integration.reporters import ReporterLoader
+from tushare_integration.replay import DateReplayPlan, make_date_replay_spider
 from tushare_integration.settings import TushareIntegrationSettings
 
 
@@ -267,6 +268,26 @@ class CrawlManager(object):
         self.report()
         # 如果有异常就抛出
         self.raise_for_signal()
+
+    def run_date_replay(self, plan: DateReplayPlan) -> dict:
+        crawler = self.process.create_crawler(make_date_replay_spider(plan))
+        deferred = self.process.crawl(crawler)
+        deferred.addErrback(self._record_crawl_failure, plan.spider_class.name)
+        self.process.start()
+        self.raise_for_signal()
+
+        stats = crawler.stats.get_stats()
+        completed = stats.get('item_scraped_count', 0)
+        if completed != len(plan.trade_dates):
+            raise RuntimeError(
+                f'Replay incomplete: {completed}/{len(plan.trade_dates)} dates written. '
+                'Some dates may already have been written; retry the requested dates after resolving the failure.'
+            )
+        return plan.describe() | {
+            'batch_id': self.batch_id,
+            'completed_dates': completed,
+            'rows_received': stats.get('replay/rows_received', 0),
+        }
 
     def get_all_spiders(self, spiders):
         dependencies = [spiders]

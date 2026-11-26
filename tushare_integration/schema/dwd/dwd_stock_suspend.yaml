@@ -1,0 +1,27 @@
+id: 2040
+name: dwd_stock_suspend
+comment: 股票停复牌事件明细；公开可用时间未知
+builder: raw_versioned
+quarantine_same_time_conflicts: true
+availability_mode: unknown_disclosure
+source:
+  table_name: suspend_d_raw
+  schema_name: stock/quotes/suspend_d
+business_key: [ts_code, trade_date, suspend_type]
+source_filters:
+  - "src.ts_code != '' AND src.suspend_type != ''"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', src.ts_code)"
+source_code_expr: src.ts_code
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.ts_code)), 2)"
+event_date_expr: src.trade_date
+available_trade_date_expr: "CAST(NULL, 'Nullable(Date32)')"
+extra_columns:
+  - name: availability_basis
+    data_type: str
+    comment: 可用时间依据；停复牌发生日不证明公开披露时间
+    expr: "'unknown_disclosure_date'"
+partition_key: [toYear(event_date)]
+indexes:
+  - name: dwd_stock_suspend_idx
+    columns: [instrument_id, event_date, suspend_type, sys_from]

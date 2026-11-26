@@ -1,0 +1,30 @@
+id: 3007
+name: dws_stock_main_business
+comment: 主营业务分类明细；普通合并利润表关联代理日期，非已证实的公开日期PIT
+builder: stock_main_business
+schema_source: dwd_stock_main_business
+partition_key: [toYear(event_date)]
+indexes:
+  - name: dws_stock_main_business_idx
+    columns: [instrument_id, end_date, bz_code, bz_item, sys_from]
+extra_columns:
+  - {name: ann_date, data_type: date, nullable: true, comment: 被选利润表公告日；代理依据}
+  - {name: f_ann_date, data_type: date, nullable: true, comment: 被选利润表实际公告日；代理依据}
+  - {name: build_time, data_type: datetime, comment: 本次DWS构建时间}
+  - {name: date_match_method, data_type: str, comment: amount_match或report_period_latest或no_valid_report}
+  - {name: date_match_fields, data_type: json, comment: 金额匹配字段对的JSON数组；兜底为空数组}
+  - {name: is_public_date_pit_eligible, data_type: int, comment: 固定0；关联金额不能证明主营业务真实披露时间}
+  - {name: date_candidate_count, data_type: int, comment: 有效利润表候选金额及日期组合数}
+  - {name: amount_candidate_count, data_type: int, comment: 金额吻合的候选金额及日期组合数}
+  - {name: matching_sales, data_type: float, nullable: true, comment: 同观察批次唯一主营分类汇总行收入；元}
+  - {name: matching_cost, data_type: float, nullable: true, comment: 同观察批次唯一主营分类汇总行成本；元}
+  - {name: income_revenue, data_type: float, nullable: true, comment: 被选普通合并利润表营业收入；元}
+  - {name: income_oper_cost, data_type: float, nullable: true, comment: 被选普通合并利润表营业成本；元}
+  - {name: sales_match_error, data_type: float, nullable: true, comment: 金额匹配收入绝对误差；元；未参与匹配为NULL}
+  - {name: cost_match_error, data_type: float, nullable: true, comment: 金额匹配成本绝对误差；元；未参与匹配为NULL}
+  - {name: income_source_records, data_type: json, comment: 所选金额日期组合全部利润表观察版本血缘JSON数组}
+  - {name: main_business_summary_records, data_type: json, comment: 同批次分类汇总行血缘JSON数组；缺少唯一依据为空数组}
+  - {name: main_business_source_record_hash, data_type: str, comment: 原主营业务DWD记录哈希}
+  - {name: main_business_source_table, data_type: str, comment: 原主营业务DWD的source_table}
+  - {name: main_business_available_trade_date, data_type: date, nullable: true, comment: 原主营业务DWD可用交易日；当前为NULL}
+  - {name: main_business_availability_basis, data_type: str, nullable: true, comment: 原主营业务DWD可用日依据}

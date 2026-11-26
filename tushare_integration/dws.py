@@ -37,6 +37,7 @@ DWS_TABLE_BUILD_PRIORITY = {
     "dws_stock_financial_indicator_quarter": 0,
     "dws_stock_income_quarter": 0,
     "dws_stock_cashflow_quarter": 0,
+    "dws_stock_main_business": 0,
     "dws_stock_factor_wide": 10,
     "dws_stock_factor_wide_v2": 11,
     "dws_stock_factor_wide_matrix": 20,
@@ -774,6 +775,9 @@ class DWSManager:
         raise ValueError(f"DWS table {table_name} not found")
 
     def build_schema(self, spec: dict[str, Any]) -> dict[str, Any]:
+        if spec.get("builder") == "stock_main_business":
+            from tushare_integration.main_business import build_schema
+            return build_schema(self, spec)
         return deepcopy(spec["schema"])
 
     @staticmethod
@@ -2466,6 +2470,9 @@ FROM quarter_candidates
             return self._render_stock_income_quarter_sync_sql(target_table_name)
         if spec.get("builder") == "stock_cashflow_quarter":
             return self._render_stock_cashflow_quarter_sync_sql(target_table_name)
+        if spec.get("builder") == "stock_main_business":
+            from tushare_integration.main_business import render_sync_sql
+            return render_sync_sql(self, target_table_name)
         raise ValueError(f"Unsupported DWS builder for {table_name}: {spec.get('builder')}")
 
     def build_v2_candidate(
@@ -2493,6 +2500,8 @@ FROM quarter_candidates
             return [STOCK_INCOME_QUARTER_SOURCE]
         if spec.get("builder") == "stock_cashflow_quarter":
             return [STOCK_CASHFLOW_QUARTER_SOURCE]
+        if spec.get("builder") == "stock_main_business":
+            return ["dwd_stock_main_business", "dwd_stock_income", "trade_cal"]
         return []
 
     def ensure_source_tables(self, spec: dict[str, Any]) -> None:

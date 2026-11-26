@@ -178,6 +178,53 @@ UPDATE_TYPE=full scripts/run_daily_market_jobs.sh
 
 `fund/portfolio` 及其 `dwd_fund_portfolio` 同步只在 `UPDATE_TYPE=full` 时调度；工作日的 `UPDATE_TYPE=incremental` 批次不再运行该长任务。
 
+### 按指定日期重新采集
+
+`run replay` 直接请求指定日期，绕过日频采集的最新日期与已有日期检查，用于接收 Tushare 的历史修订。
+支持使用标准 `DailySpider` 请求和解析流程且具有明确完整性规则的接口；需要传精确 spider 名称。
+全市场补采中，`stock/quotes/adj_factor`、`stock/special/stk_factor` 和 `fund/quotes/fund_adj` 使用分页；
+`stock/quotes/daily`、`stock/quotes/daily_basic`、`stock/quotes/stk_limit` 和 `fund/quotes/fund_daily`
+使用接口专属返回条数上限检查。其它标准日频接口仅在业务主键为股票代码＋日期时支持 `--ts-code`
+单证券补采；没有全市场完整性规则或使用自定义采集流程的接口会报错。
+
+先查看请求计划；`--dry-run` 不访问数据接口或数据库：
+
+```shell
+python main.py run replay stock/quotes/adj_factor \
+  --trade-date 2026-10-23 --trade-date 2026-10-26 --trade-date 2026-10-27 --dry-run
+```
+
+执行时去掉 `--dry-run`。按日期请求全市场数据，也可以通过 `--ts-code` 限定单只股票：
+
+```shell
+python main.py run replay stock/quotes/adj_factor --trade-date 20261026 --ts-code 688585.SH
+```
+
+日期支持 `YYYY-MM-DD` 和 `YYYYMMDD`，可重复传入；重复日期会去重并按日期排序，未来日期会报错。
+非交易日或源端没有数据时命令报错并保留已有记录，不自动选择相邻日期。重采采用现有的请求、重试和
+写入管道：追加原始采集记录到 `adj_factor_raw`，更新 `adj_factor`，记录真实入库时间、批次和记录哈希。
+它不删除旧原始版本，不执行其它依赖 spider，不发送外部通知，也不自动重建 DWD/DWS。
+
+全市场分页接口使用 `limit`/`offset` 连续请求；即使源端不返回 `has_more`，满页也会继续请求，直到
+收到短页或成功的空尾页。整个日期收齐并验证后才提交一次写入；重复/重叠页、超出请求页大小、
+分页失败或达到分页安全上限时，该日期不写入。`--dry-run` 显示第一页请求参数，后续页在执行时生成。
+未分页接口的限额分别为 `daily`/`daily_basic` 6000 条、`stk_limit` 5800 条、`fund_daily` 5000 条；
+达到或超过限额就报错并阻止该响应写入，不能将满额响应认作完整修订。需要时使用 `--ts-code` 分证券补采。
+
+空响应、截断响应、字段缺失、日期/指定股票不符、重复业务主键和无效复权因子在写入前报错。
+若多日期任务部分失败，已成功日期的写入会保留；解决失败原因后可以重新执行相同日期。
+成功输出包含批次、完成日期数量及接收行数。反复执行会增加原始采集记录；DWD 构建逻辑合并相邻哈希
+相同的观测，保持有实际变化的版本区间。
+
+完成补采后，可以单独更新复权因子标准层：
+
+```shell
+python main.py dwd sync dwd_stock_adj_factor --validation-mode strict
+```
+
+随后更新实际引用该因子的 DWS 与复权计算结果。补采日期是业务日期，新增版本的系统时间是实际入库
+时间；不能把今天补采的修订标记为历史上已经入库的数据。
+
 ### 股票日线提前批
 
 `pre_job.yaml` 独立维护股票日线行情所需的 `stock_basic`、`trade_cal` 和 `daily` 三个增量 spider。提前批脚本会在采集成功后立即同步 `dwd_stock_eod_price`：

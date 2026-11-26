@@ -1,0 +1,62 @@
+{
+  "source_factor_rows": 1492,
+  "rounded_reference_matches": 1492,
+  "factor_failures": [],
+  "independent_daily_rows": 1478,
+  "daily_close_failures": [],
+  "events": [
+    {
+      "ex_date": "20210527",
+      "previous_date": "20210526",
+      "cash_per_share": "0.08",
+      "previous_close": "10.130",
+      "unrounded_reference": "10.050",
+      "rounded_reference": "10.05",
+      "cum_rounded": "1.0079601990049751243781094527363",
+      "cum_unrounded": "1.0079601990049751243781094527363"
+    },
+    {
+      "ex_date": "20230523",
+      "previous_date": "20230522",
+      "cash_per_share": "0.022",
+      "previous_close": "8.410",
+      "unrounded_reference": "8.388",
+      "rounded_reference": "8.39",
+      "cum_rounded": "1.0103629646760239327794875443995",
+      "cum_unrounded": "1.0106038714391798755388531828221"
+    },
+    {
+      "ex_date": "20240522",
+      "previous_date": "20240521",
+      "cash_per_share": "0.021",
+      "previous_close": "6.260",
+      "unrounded_reference": "6.239",
+      "rounded_reference": "6.24",
+      "cum_rounded": "1.0136013075115240094871141070418",
+      "cum_unrounded": "1.0140054872911149256087868127050"
+    },
+    {
+      "ex_date": "20241024",
+      "previous_date": "20241023",
+      "cash_per_share": "0.039",
+      "previous_close": "6.640",
+      "unrounded_reference": "6.601",
+      "rounded_reference": "6.60",
+      "cum_rounded": "1.0197443457388665792415814652663",
+      "cum_unrounded": "1.0199964301792157409547560121741"
+    },
+    {
+      "ex_date": "20250523",
+      "previous_date": "20250522",
+      "cash_per_share": "0.031",
+      "previous_close": "7.360",
+      "unrounded_reference": "7.329",
+      "rounded_reference": "7.33",
+      "cum_rounded": "1.0239179242343871791566220442510",
+      "cum_unrounded": "1.0243107826605304752936286327741"
+    }
+  ],
+  "unrounded_final": "1.0243107826605304752936286327741",
+  "rounded_final": "1.0239179242343871791566220442510",
+  "scope": "Independent reconstruction under a two-decimal ex-dividend reference price convention; not a statement that every historical discrepancy is an error."
+}

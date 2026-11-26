@@ -1,0 +1,150 @@
+{
+  "sql": "SELECT ts_code,trade_date,adj_factor,_source,_api_name,_batch_id,_ingest_time,_record_hash,_raw_json FROM adj_factor_raw WHERE trade_date IN ('2026-11-23','2026-11-24') AND ts_code IN ('920662.BJ','000002.SZ','000008.SZ','688585.SH') ORDER BY ts_code,trade_date,_ingest_time",
+  "result": {
+    "meta": [
+      {
+        "name": "ts_code",
+        "type": "Nullable(String)"
+      },
+      {
+        "name": "trade_date",
+        "type": "Nullable(Date32)"
+      },
+      {
+        "name": "adj_factor",
+        "type": "Nullable(Float64)"
+      },
+      {
+        "name": "_source",
+        "type": "String"
+      },
+      {
+        "name": "_api_name",
+        "type": "String"
+      },
+      {
+        "name": "_batch_id",
+        "type": "String"
+      },
+      {
+        "name": "_ingest_time",
+        "type": "DateTime64(3)"
+      },
+      {
+        "name": "_record_hash",
+        "type": "String"
+      },
+      {
+        "name": "_raw_json",
+        "type": "String"
+      }
+    ],
+    "data": [
+      {
+        "ts_code": "000002.SZ",
+        "trade_date": "2026-11-23",
+        "adj_factor": 181.704,
+        "_source": "tushare",
+        "_api_name": "adj_factor",
+        "_batch_id": "4a2b489ae6dc11f194f900163e32d8e8",
+        "_ingest_time": "2026-11-23 01:22:10.349",
+        "_record_hash": "1e3d026326306035401c972919814537",
+        "_raw_json": "{\"adj_factor\":181.704,\"trade_date\":\"2026-11-23\",\"ts_code\":\"000002.SZ\"}"
+      },
+      {
+        "ts_code": "000002.SZ",
+        "trade_date": "2026-11-24",
+        "adj_factor": 181.7038,
+        "_source": "tushare",
+        "_api_name": "adj_factor",
+        "_batch_id": "74d7d6fce7a511f1b39100163e32d8e8",
+        "_ingest_time": "2026-11-24 01:22:11.375",
+        "_record_hash": "d96e437caa894b659c875639cc29a069",
+        "_raw_json": "{\"adj_factor\":181.7038,\"trade_date\":\"2026-11-24\",\"ts_code\":\"000002.SZ\"}"
+      },
+      {
+        "ts_code": "000008.SZ",
+        "trade_date": "2026-11-23",
+        "adj_factor": 22.408,
+        "_source": "tushare",
+        "_api_name": "adj_factor",
+        "_batch_id": "4a2b489ae6dc11f194f900163e32d8e8",
+        "_ingest_time": "2026-11-23 01:22:10.349",
+        "_record_hash": "b8593bb75ce0c1b32169aa0467e2f27e",
+        "_raw_json": "{\"adj_factor\":22.408,\"trade_date\":\"2026-11-23\",\"ts_code\":\"000008.SZ\"}"
+      },
+      {
+        "ts_code": "000008.SZ",
+        "trade_date": "2026-11-24",
+        "adj_factor": 22.4083,
+        "_source": "tushare",
+        "_api_name": "adj_factor",
+        "_batch_id": "74d7d6fce7a511f1b39100163e32d8e8",
+        "_ingest_time": "2026-11-24 01:22:11.375",
+        "_record_hash": "3252b1e8d39ae3756af4a54b093988c4",
+        "_raw_json": "{\"adj_factor\":22.4083,\"trade_date\":\"2026-11-24\",\"ts_code\":\"000008.SZ\"}"
+      },
+      {
+        "ts_code": "688585.SH",
+        "trade_date": "2026-11-23",
+        "adj_factor": 1.0243,
+        "_source": "tushare",
+        "_api_name": "adj_factor",
+        "_batch_id": "4a2b489ae6dc11f194f900163e32d8e8",
+        "_ingest_time": "2026-11-23 01:22:10.349",
+        "_record_hash": "a3402e127957f22d4569367e06469c59",
+        "_raw_json": "{\"adj_factor\":1.0243,\"trade_date\":\"2026-11-23\",\"ts_code\":\"688585.SH\"}"
+      },
+      {
+        "ts_code": "688585.SH",
+        "trade_date": "2026-11-23",
+        "adj_factor": 1.0239,
+        "_source": "tushare",
+        "_api_name": "adj_factor",
+        "_batch_id": "83583144e99a11f1be9300163e32d8e8",
+        "_ingest_time": "2026-11-26 13:10:37.576",
+        "_record_hash": "82517237890cf3317dff693d097b1227",
+        "_raw_json": "{\"adj_factor\":1.0239,\"trade_date\":\"2026-11-23\",\"ts_code\":\"688585.SH\"}"
+      },
+      {
+        "ts_code": "688585.SH",
+        "trade_date": "2026-11-24",
+        "adj_factor": 1.0239,
+        "_source": "tushare",
+        "_api_name": "adj_factor",
+        "_batch_id": "74d7d6fce7a511f1b39100163e32d8e8",
+        "_ingest_time": "2026-11-24 01:22:11.375",
+        "_record_hash": "1a31a8c5d9389c12ad6d4d0837e2d14f",
+        "_raw_json": "{\"adj_factor\":1.0239,\"trade_date\":\"2026-11-24\",\"ts_code\":\"688585.SH\"}"
+      },
+      {
+        "ts_code": "920662.BJ",
+        "trade_date": "2026-11-23",
+        "adj_factor": 14.0053,
+        "_source": "tushare",
+        "_api_name": "adj_factor",
+        "_batch_id": "4a2b489ae6dc11f194f900163e32d8e8",
+        "_ingest_time": "2026-11-23 01:22:10.349",
+        "_record_hash": "9bf70595148e021d51dd640e1ddeb2b1",
+        "_raw_json": "{\"adj_factor\":14.0053,\"trade_date\":\"2026-11-23\",\"ts_code\":\"920662.BJ\"}"
+      },
+      {
+        "ts_code": "920662.BJ",
+        "trade_date": "2026-11-24",
+        "adj_factor": 1.064,
+        "_source": "tushare",
+        "_api_name": "adj_factor",
+        "_batch_id": "74d7d6fce7a511f1b39100163e32d8e8",
+        "_ingest_time": "2026-11-24 01:22:11.375",
+        "_record_hash": "0345d3a9137f228ec0b3a0a88ef027e1",
+        "_raw_json": "{\"adj_factor\":1.064,\"trade_date\":\"2026-11-24\",\"ts_code\":\"920662.BJ\"}"
+      }
+    ],
+    "rows": 9,
+    "statistics": {
+      "elapsed": 0.043744489,
+      "rows_read": 19320461,
+      "bytes_read": 100474856
+    }
+  }
+}

@@ -1,0 +1,815 @@
+[
+  {
+    "before_date": "2024-06-24",
+    "after_date": "2024-06-25",
+    "local_changed_stocks": 4422,
+    "source_changed_stocks": 45,
+    "source_changes": [
+      {
+        "ts_code": "000001.SZ",
+        "before": 125.05,
+        "after": 125.049
+      },
+      {
+        "ts_code": "000028.SZ",
+        "before": 5.4861,
+        "after": 5.6022
+      },
+      {
+        "ts_code": "000680.SZ",
+        "before": 5.5495,
+        "after": 5.6418
+      },
+      {
+        "ts_code": "000831.SZ",
+        "before": 4.0116,
+        "after": 4.0247
+      },
+      {
+        "ts_code": "000887.SZ",
+        "before": 7.4212,
+        "after": 7.5433
+      },
+      {
+        "ts_code": "000948.SZ",
+        "before": 2.5456,
+        "after": 2.571
+      },
+      {
+        "ts_code": "000957.SZ",
+        "before": 5.1132,
+        "after": 5.1279
+      },
+      {
+        "ts_code": "002156.SZ",
+        "before": 2.8113,
+        "after": 2.8125
+      },
+      {
+        "ts_code": "002324.SZ",
+        "before": 8.191,
+        "after": 8.239
+      },
+      {
+        "ts_code": "002585.SZ",
+        "before": 3.8715,
+        "after": 3.8952
+      },
+      {
+        "ts_code": "002644.SZ",
+        "before": 5.7018,
+        "after": 5.7287
+      },
+      {
+        "ts_code": "002646.SZ",
+        "before": 1.0943,
+        "after": 1.1083
+      },
+      {
+        "ts_code": "002783.SZ",
+        "before": 4.3154,
+        "after": 4.3768
+      },
+      {
+        "ts_code": "002873.SZ",
+        "before": 3.4448,
+        "after": 3.4744
+      },
+      {
+        "ts_code": "002877.SZ",
+        "before": 2.8019,
+        "after": 2.8178
+      },
+      {
+        "ts_code": "300228.SZ",
+        "before": 6.4735,
+        "after": 6.5207
+      },
+      {
+        "ts_code": "300550.SZ",
+        "before": 2.7737,
+        "after": 2.7828
+      },
+      {
+        "ts_code": "300719.SZ",
+        "before": 1.5913,
+        "after": 1.6106
+      },
+      {
+        "ts_code": "300748.SZ",
+        "before": 2.6346,
+        "after": 2.6884
+      },
+      {
+        "ts_code": "300900.SZ",
+        "before": 1.01,
+        "after": 1.4189
+      },
+      {
+        "ts_code": "300945.SZ",
+        "before": 1.0191,
+        "after": 1.033
+      },
+      {
+        "ts_code": "301056.SZ",
+        "before": 1.0295,
+        "after": 1.0579
+      },
+      {
+        "ts_code": "301057.SZ",
+        "before": 1.0201,
+        "after": 1.049
+      },
+      {
+        "ts_code": "301234.SZ",
+        "before": 1.0175,
+        "after": 1.0377
+      },
+      {
+        "ts_code": "301469.SZ",
+        "before": 1.0,
+        "after": 1.0245
+      },
+      {
+        "ts_code": "600271.SH",
+        "before": 20.0608,
+        "after": 20.1437
+      },
+      {
+        "ts_code": "600350.SH",
+        "before": 2.8391,
+        "after": 2.9781
+      },
+      {
+        "ts_code": "600502.SH",
+        "before": 14.5688,
+        "after": 15.4477
+      },
+      {
+        "ts_code": "600560.SH",
+        "before": 4.6278,
+        "after": 4.6531
+      },
+      {
+        "ts_code": "600731.SH",
+        "before": 8.3674,
+        "after": 8.7409
+      },
+      {
+        "ts_code": "601188.SH",
+        "before": 1.2706,
+        "after": 1.2967
+      },
+      {
+        "ts_code": "603276.SH",
+        "before": 1.0,
+        "after": 1.3124
+      },
+      {
+        "ts_code": "603605.SH",
+        "before": 2.0338,
+        "after": 2.0502
+      },
+      {
+        "ts_code": "603836.SH",
+        "before": 1.0787,
+        "after": 1.0945
+      },
+      {
+        "ts_code": "603916.SH",
+        "before": 1.3158,
+        "after": 1.3459
+      },
+      {
+        "ts_code": "603980.SH",
+        "before": 1.6814,
+        "after": 1.7147
+      },
+      {
+        "ts_code": "605060.SH",
+        "before": 1.0537,
+        "after": 1.0807
+      },
+      {
+        "ts_code": "688230.SH",
+        "before": 1.9908,
+        "after": 2.0231
+      },
+      {
+        "ts_code": "688273.SH",
+        "before": 1.0346,
+        "after": 1.0671
+      },
+      {
+        "ts_code": "688319.SH",
+        "before": 1.0,
+        "after": 1.0042
+      },
+      {
+        "ts_code": "688380.SH",
+        "before": 1.0149,
+        "after": 1.0299
+      },
+      {
+        "ts_code": "688498.SH",
+        "before": 1.4035,
+        "after": 1.4045
+      },
+      {
+        "ts_code": "688573.SH",
+        "before": 1.0,
+        "after": 1.0103
+      },
+      {
+        "ts_code": "688602.SH",
+        "before": 1.0,
+        "after": 1.0087
+      },
+      {
+        "ts_code": "688658.SH",
+        "before": 1.1045,
+        "after": 1.116
+      }
+    ]
+  },
+  {
+    "before_date": "2024-06-25",
+    "after_date": "2024-06-26",
+    "local_changed_stocks": 4527,
+    "source_changed_stocks": 72,
+    "source_changes": [
+      {
+        "ts_code": "000030.SZ",
+        "before": 3.9334,
+        "after": 4.1277
+      },
+      {
+        "ts_code": "000404.SZ",
+        "before": 3.6324,
+        "after": 3.8018
+      },
+      {
+        "ts_code": "000554.SZ",
+        "before": 4.9159,
+        "after": 4.9357
+      },
+      {
+        "ts_code": "000598.SZ",
+        "before": 26.7115,
+        "after": 27.3378
+      },
+      {
+        "ts_code": "000600.SZ",
+        "before": 7.2199,
+        "after": 7.3136
+      },
+      {
+        "ts_code": "000703.SZ",
+        "before": 9.6789,
+        "after": 9.8044
+      },
+      {
+        "ts_code": "000719.SZ",
+        "before": 5.1068,
+        "after": 5.3266
+      },
+      {
+        "ts_code": "000783.SZ",
+        "before": 6.0762,
+        "after": 6.2266
+      },
+      {
+        "ts_code": "000811.SZ",
+        "before": 15.8076,
+        "after": 15.9719
+      },
+      {
+        "ts_code": "001286.SZ",
+        "before": 1.0338,
+        "after": 1.0668
+      },
+      {
+        "ts_code": "002035.SZ",
+        "before": 17.0208,
+        "after": 17.7837
+      },
+      {
+        "ts_code": "002057.SZ",
+        "before": 5.9114,
+        "after": 6.0667
+      },
+      {
+        "ts_code": "002075.SZ",
+        "before": 2.9511,
+        "after": 2.9901
+      },
+      {
+        "ts_code": "002084.SZ",
+        "before": 3.3151,
+        "after": 3.3563
+      },
+      {
+        "ts_code": "002140.SZ",
+        "before": 8.9804,
+        "after": 9.1097
+      },
+      {
+        "ts_code": "002304.SZ",
+        "before": 4.4781,
+        "after": 4.7319
+      },
+      {
+        "ts_code": "002328.SZ",
+        "before": 3.0559,
+        "after": 3.1419
+      },
+      {
+        "ts_code": "002440.SZ",
+        "before": 5.6122,
+        "after": 5.7667
+      },
+      {
+        "ts_code": "002441.SZ",
+        "before": 5.1594,
+        "after": 5.3706
+      },
+      {
+        "ts_code": "002523.SZ",
+        "before": 7.5305,
+        "after": 7.5656
+      },
+      {
+        "ts_code": "002673.SZ",
+        "before": 2.5982,
+        "after": 2.6355
+      },
+      {
+        "ts_code": "002753.SZ",
+        "before": 3.68,
+        "after": 3.7709
+      },
+      {
+        "ts_code": "002942.SZ",
+        "before": 1.4064,
+        "after": 1.43
+      },
+      {
+        "ts_code": "300127.SZ",
+        "before": 2.601,
+        "after": 2.6734
+      },
+      {
+        "ts_code": "300433.SZ",
+        "before": 5.8331,
+        "after": 5.9382
+      },
+      {
+        "ts_code": "300564.SZ",
+        "before": 1.7835,
+        "after": 1.8872
+      },
+      {
+        "ts_code": "300585.SZ",
+        "before": 2.0474,
+        "after": 2.049
+      },
+      {
+        "ts_code": "300755.SZ",
+        "before": 1.8598,
+        "after": 1.8744
+      },
+      {
+        "ts_code": "300996.SZ",
+        "before": 2.2986,
+        "after": 2.3157
+      },
+      {
+        "ts_code": "301033.SZ",
+        "before": 1.0072,
+        "after": 1.0177
+      },
+      {
+        "ts_code": "301063.SZ",
+        "before": 1.0111,
+        "after": 1.0223
+      },
+      {
+        "ts_code": "301225.SZ",
+        "before": 1.0,
+        "after": 1.0148
+      },
+      {
+        "ts_code": "301286.SZ",
+        "before": 1.0036,
+        "after": 1.0054
+      },
+      {
+        "ts_code": "301289.SZ",
+        "before": 1.3139,
+        "after": 1.3271
+      },
+      {
+        "ts_code": "301353.SZ",
+        "before": 1.0,
+        "after": 1.0124
+      },
+      {
+        "ts_code": "301517.SZ",
+        "before": 1.0,
+        "after": 1.0025
+      },
+      {
+        "ts_code": "600190.SH",
+        "before": 2.7232,
+        "after": 2.7627
+      },
+      {
+        "ts_code": "600230.SH",
+        "before": 2.2311,
+        "after": 2.2621
+      },
+      {
+        "ts_code": "600295.SH",
+        "before": 7.6202,
+        "after": 8.2196
+      },
+      {
+        "ts_code": "600415.SH",
+        "before": 41.9935,
+        "after": 43.0928
+      },
+      {
+        "ts_code": "600642.SH",
+        "before": 10.3885,
+        "after": 10.8791
+      },
+      {
+        "ts_code": "600755.SH",
+        "before": 25.8231,
+        "after": 27.6138
+      },
+      {
+        "ts_code": "600797.SH",
+        "before": 12.6719,
+        "after": 12.7853
+      },
+      {
+        "ts_code": "601010.SH",
+        "before": 4.9714,
+        "after": 5.1221
+      },
+      {
+        "ts_code": "601101.SH",
+        "before": 4.3204,
+        "after": 4.4866
+      },
+      {
+        "ts_code": "601330.SH",
+        "before": 1.0708,
+        "after": 1.0985
+      },
+      {
+        "ts_code": "601568.SH",
+        "before": 1.3178,
+        "after": 1.3532
+      },
+      {
+        "ts_code": "601717.SH",
+        "before": 2.6096,
+        "after": 2.7609
+      },
+      {
+        "ts_code": "601825.SH",
+        "before": 1.1544,
+        "after": 1.2224
+      },
+      {
+        "ts_code": "601857.SH",
+        "before": 1.6184,
+        "after": 1.6563
+      },
+      {
+        "ts_code": "601916.SH",
+        "before": 1.2489,
+        "after": 1.3241
+      },
+      {
+        "ts_code": "603060.SH",
+        "before": 3.8466,
+        "after": 3.9194
+      },
+      {
+        "ts_code": "603115.SH",
+        "before": 1.18,
+        "after": 1.2386
+      },
+      {
+        "ts_code": "603230.SH",
+        "before": 1.0168,
+        "after": 1.0572
+      },
+      {
+        "ts_code": "603235.SH",
+        "before": 1.025,
+        "after": 1.0459
+      },
+      {
+        "ts_code": "603259.SH",
+        "before": 2.422,
+        "after": 2.4827
+      },
+      {
+        "ts_code": "603321.SH",
+        "before": 1.0689,
+        "after": 1.0928
+      },
+      {
+        "ts_code": "603327.SH",
+        "before": 1.8382,
+        "after": 2.0699
+      },
+      {
+        "ts_code": "603332.SH",
+        "before": 1.9679,
+        "after": 2.0089
+      },
+      {
+        "ts_code": "603338.SH",
+        "before": 7.1461,
+        "after": 7.2641
+      },
+      {
+        "ts_code": "603588.SH",
+        "before": 6.4414,
+        "after": 6.5404
+      },
+      {
+        "ts_code": "605333.SH",
+        "before": 1.0042,
+        "after": 1.006
+      },
+      {
+        "ts_code": "605588.SH",
+        "before": 1.0064,
+        "after": 1.0081
+      },
+      {
+        "ts_code": "688073.SH",
+        "before": 1.4169,
+        "after": 1.4587
+      },
+      {
+        "ts_code": "688089.SH",
+        "before": 1.4525,
+        "after": 1.4747
+      },
+      {
+        "ts_code": "688267.SH",
+        "before": 1.0176,
+        "after": 1.028
+      },
+      {
+        "ts_code": "688336.SH",
+        "before": 1.0,
+        "after": 1.0024
+      },
+      {
+        "ts_code": "688355.SH",
+        "before": 1.0209,
+        "after": 1.0525
+      },
+      {
+        "ts_code": "920017.BJ",
+        "before": 1.019,
+        "after": 1.0432
+      },
+      {
+        "ts_code": "920821.BJ",
+        "before": 1.0173,
+        "after": 1.4382
+      },
+      {
+        "ts_code": "920906.BJ",
+        "before": 1.0122,
+        "after": 1.021
+      },
+      {
+        "ts_code": "920985.BJ",
+        "before": 1.0247,
+        "after": 1.0674
+      }
+    ]
+  },
+  {
+    "before_date": "2026-10-23",
+    "after_date": "2026-10-26",
+    "local_changed_stocks": 4737,
+    "source_changed_stocks": 6,
+    "source_changes": [
+      {
+        "ts_code": "000630.SZ",
+        "before": 30.6084,
+        "after": 30.9728
+      },
+      {
+        "ts_code": "301217.SZ",
+        "before": 1.0257,
+        "after": 1.0264
+      },
+      {
+        "ts_code": "601088.SH",
+        "before": 2.7526,
+        "after": 2.8074
+      },
+      {
+        "ts_code": "601866.SH",
+        "before": 1.2292,
+        "after": 1.2398
+      },
+      {
+        "ts_code": "601990.SH",
+        "before": 1.3196,
+        "after": 1.3299
+      },
+      {
+        "ts_code": "688379.SH",
+        "before": 1.0473,
+        "after": 1.0497
+      }
+    ]
+  },
+  {
+    "before_date": "2026-10-26",
+    "after_date": "2026-10-27",
+    "local_changed_stocks": 4738,
+    "source_changed_stocks": 6,
+    "source_changes": [
+      {
+        "ts_code": "001399.SZ",
+        "before": 1.0,
+        "after": 1.0053
+      },
+      {
+        "ts_code": "600017.SH",
+        "before": 3.6836,
+        "after": 3.7234
+      },
+      {
+        "ts_code": "600360.SH",
+        "before": 7.9576,
+        "after": 7.9919
+      },
+      {
+        "ts_code": "600479.SH",
+        "before": 16.8732,
+        "after": 17.1581
+      },
+      {
+        "ts_code": "601229.SH",
+        "before": 3.8504,
+        "after": 3.9753
+      },
+      {
+        "ts_code": "688293.SH",
+        "before": 1.4569,
+        "after": 1.462
+      }
+    ]
+  },
+  {
+    "before_date": "2026-11-23",
+    "after_date": "2026-11-24",
+    "local_changed_stocks": 4720,
+    "source_changed_stocks": 6,
+    "source_changes": [
+      {
+        "ts_code": "002827.SZ",
+        "before": 1.7169,
+        "after": 1.7265
+      },
+      {
+        "ts_code": "300373.SZ",
+        "before": 5.5333,
+        "after": 5.5759
+      },
+      {
+        "ts_code": "301128.SZ",
+        "before": 2.0893,
+        "after": 2.0996
+      },
+      {
+        "ts_code": "301550.SZ",
+        "before": 3.1073,
+        "after": 3.1088
+      },
+      {
+        "ts_code": "600369.SH",
+        "before": 5.271,
+        "after": 5.2993
+      },
+      {
+        "ts_code": "600475.SH",
+        "before": 5.3347,
+        "after": 5.384
+      }
+    ]
+  },
+  {
+    "before_date": "2026-11-24",
+    "after_date": "2026-11-25",
+    "local_changed_stocks": 18,
+    "source_changed_stocks": 18,
+    "source_changes": [
+      {
+        "ts_code": "000513.SZ",
+        "before": 10.8309,
+        "after": 11.2907
+      },
+      {
+        "ts_code": "000685.SZ",
+        "before": 18.1027,
+        "after": 18.3798
+      },
+      {
+        "ts_code": "000690.SZ",
+        "before": 51.8999,
+        "after": 52.3717
+      },
+      {
+        "ts_code": "001206.SZ",
+        "before": 2.4143,
+        "after": 2.4393
+      },
+      {
+        "ts_code": "001228.SZ",
+        "before": 1.0863,
+        "after": 1.0967
+      },
+      {
+        "ts_code": "001296.SZ",
+        "before": 1.9621,
+        "after": 1.9743
+      },
+      {
+        "ts_code": "002078.SZ",
+        "before": 9.4942,
+        "after": 9.5636
+      },
+      {
+        "ts_code": "002516.SZ",
+        "before": 9.5501,
+        "after": 9.5888
+      },
+      {
+        "ts_code": "002706.SZ",
+        "before": 13.0506,
+        "after": 13.2162
+      },
+      {
+        "ts_code": "002968.SZ",
+        "before": 3.5505,
+        "after": 3.6475
+      },
+      {
+        "ts_code": "300634.SZ",
+        "before": 1.0424,
+        "after": 1.0442
+      },
+      {
+        "ts_code": "301680.SZ",
+        "before": 1.0037,
+        "after": 1.0098
+      },
+      {
+        "ts_code": "600763.SH",
+        "before": 3.4474,
+        "after": 3.493
+      },
+      {
+        "ts_code": "600908.SH",
+        "before": 1.3762,
+        "after": 1.4024
+      },
+      {
+        "ts_code": "601009.SH",
+        "before": 7.23,
+        "after": 7.4112
+      },
+      {
+        "ts_code": "603073.SH",
+        "before": 1.0624,
+        "after": 1.0769
+      },
+      {
+        "ts_code": "603676.SH",
+        "before": 1.1694,
+        "after": 1.1823
+      },
+      {
+        "ts_code": "920093.BJ",
+        "before": 1.0,
+        "after": 1.0224
+      }
+    ]
+  }
+]

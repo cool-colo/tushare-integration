@@ -11,6 +11,7 @@ from tushare_integration.dws import DWSManager
 from tushare_integration.manager import CrawlManager
 from tushare_integration.quality import DqcManager, DqcValidationError, QualityManager, QualityValidationError, ValidationMode
 from tushare_integration.reporters import DingTalkWebHookReporter
+from tushare_integration.replay import build_date_replay_plan
 
 try:
     from rich import print
@@ -552,3 +553,21 @@ def run_spider(
 ):
     manager = CrawlManager()
     manager.run_spider(spider)
+
+
+@crawl_app.command('replay', help='Re-ingest explicit dates for a standard daily spider', no_args_is_help=True)
+def replay_dates(
+    spider: str = typer.Argument(..., help='Exact spider name, e.g. stock/quotes/adj_factor'),
+    trade_dates: list[str] = typer.Option(..., '--trade-date', help='YYYY-MM-DD or YYYYMMDD; repeat for multiple dates'),
+    ts_code: str | None = typer.Option(None, '--ts-code', help='Optional single security, e.g. 688585.SH'),
+    dry_run: bool = typer.Option(False, '--dry-run', help='Print the request plan without network or database access'),
+):
+    try:
+        plan = build_date_replay_plan(spider, trade_dates, ts_code)
+    except ValueError as error:
+        raise typer.BadParameter(str(error)) from error
+    if dry_run:
+        typer.echo(json.dumps(plan.describe() | {'dry_run': True}, ensure_ascii=False, indent=2))
+        return
+    result = CrawlManager().run_date_replay(plan)
+    typer.echo(json.dumps(result, ensure_ascii=False, indent=2))

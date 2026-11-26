@@ -1145,6 +1145,10 @@ class QualityManager:
         qualified = self._quote_table(db_name, target_table_name)
         validation_filter = self._dws_validation_filter(table_name)
         rules = [self._row_count_rule(qualified, validation_filter)]
+        if table_name == "dws_stock_main_business":
+            from tushare_integration.main_business import validation_rules
+            rules.extend(validation_rules(self, target_table_name))
+            return rules
         if table_name in {"dws_stock_factor_wide", "dws_stock_factor_wide_v2"}:
             rules.extend(
                 [
@@ -1397,6 +1401,13 @@ class QualityManager:
         validation_filter: str | None = None,
     ) -> list[ValidationRule]:
         rules: list[ValidationRule] = []
+        if table_name == "dwd_stock_suspend":
+            rules.append(ValidationRule(
+                rule_id="suspend_event_identity", description="停复牌类型分别保留且事件日期与来源一致",
+                severity="BLOCKER", issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} "
+                "WHERE suspend_type NOT IN ('S','R') OR event_date != trade_date "
+                "OR instrument_id != concat('stock:', ts_code)",
+            ))
         if table_name in {"dwd_stock_eod_price", "dwd_index_eod_price", "dwd_future_eod_price", "dwd_etf_eod_price"}:
             rules.extend(self._market_price_rules(table_name, qualified, validation_filter))
         if table_name == "dwd_stock_daily_basic":

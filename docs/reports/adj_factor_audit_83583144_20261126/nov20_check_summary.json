@@ -1,0 +1,596 @@
+{
+  "calendar": [
+    {
+      "exchange": "SSE",
+      "cal_date": "2026-11-19",
+      "is_open": 1,
+      "pretrade_date": "2026-11-18"
+    },
+    {
+      "exchange": "SSE",
+      "cal_date": "2026-11-20",
+      "is_open": 1,
+      "pretrade_date": "2026-11-19"
+    },
+    {
+      "exchange": "SSE",
+      "cal_date": "2026-11-21",
+      "is_open": 0,
+      "pretrade_date": "2026-11-20"
+    },
+    {
+      "exchange": "SSE",
+      "cal_date": "2026-11-22",
+      "is_open": 0,
+      "pretrade_date": "2026-11-20"
+    },
+    {
+      "exchange": "SSE",
+      "cal_date": "2026-11-23",
+      "is_open": 1,
+      "pretrade_date": "2026-11-20"
+    }
+  ],
+  "comparisons": [
+    {
+      "trade_date": "2026-11-19",
+      "local_rows": 5585,
+      "source_rows": 5580,
+      "source_pages": [
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        580
+      ],
+      "different_factors": 4727,
+      "only_local": [
+        "000016.SZ",
+        "002731.SZ",
+        "301139.SZ",
+        "601059.SH",
+        "601198.SH"
+      ],
+      "only_source": [],
+      "examples": [
+        {
+          "ts_code": "000002.SZ",
+          "trade_date": "2026-11-19",
+          "local_factor": 181.704,
+          "source_factor": 181.7038,
+          "local_batch": "a0bf7fd2e3b711f1941b00163e32d8e8"
+        },
+        {
+          "ts_code": "000008.SZ",
+          "trade_date": "2026-11-19",
+          "local_factor": 22.408,
+          "source_factor": 22.4083,
+          "local_batch": "a0bf7fd2e3b711f1941b00163e32d8e8"
+        },
+        {
+          "ts_code": "688585.SH",
+          "trade_date": "2026-11-19",
+          "local_factor": 1.0239,
+          "source_factor": 1.0239,
+          "local_batch": "83583144e99a11f1be9300163e32d8e8"
+        },
+        {
+          "ts_code": "920662.BJ",
+          "trade_date": "2026-11-19",
+          "local_factor": 14.0053,
+          "source_factor": 1.064,
+          "local_batch": "a0bf7fd2e3b711f1941b00163e32d8e8"
+        }
+      ]
+    },
+    {
+      "trade_date": "2026-11-20",
+      "local_rows": 5585,
+      "source_rows": 5575,
+      "source_pages": [
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        575
+      ],
+      "different_factors": 4720,
+      "only_local": [
+        "000016.SZ",
+        "002731.SZ",
+        "301139.SZ",
+        "600185.SH",
+        "600567.SH",
+        "601059.SH",
+        "601198.SH",
+        "688121.SH",
+        "688496.SH",
+        "688798.SH"
+      ],
+      "only_source": [],
+      "examples": [
+        {
+          "ts_code": "000002.SZ",
+          "trade_date": "2026-11-20",
+          "local_factor": 181.704,
+          "source_factor": 181.7038,
+          "local_batch": "cad735ace48011f184ec00163e32d8e8"
+        },
+        {
+          "ts_code": "000008.SZ",
+          "trade_date": "2026-11-20",
+          "local_factor": 22.408,
+          "source_factor": 22.4083,
+          "local_batch": "cad735ace48011f184ec00163e32d8e8"
+        },
+        {
+          "ts_code": "688585.SH",
+          "trade_date": "2026-11-20",
+          "local_factor": 1.0239,
+          "source_factor": 1.0239,
+          "local_batch": "83583144e99a11f1be9300163e32d8e8"
+        },
+        {
+          "ts_code": "920662.BJ",
+          "trade_date": "2026-11-20",
+          "local_factor": 14.0053,
+          "source_factor": 1.064,
+          "local_batch": "cad735ace48011f184ec00163e32d8e8"
+        }
+      ]
+    },
+    {
+      "trade_date": "2026-11-23",
+      "local_rows": 5586,
+      "source_rows": 5586,
+      "source_pages": [
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        586
+      ],
+      "different_factors": 4719,
+      "only_local": [],
+      "only_source": [],
+      "examples": [
+        {
+          "ts_code": "000002.SZ",
+          "trade_date": "2026-11-23",
+          "local_factor": 181.704,
+          "source_factor": 181.7038,
+          "local_batch": "4a2b489ae6dc11f194f900163e32d8e8"
+        },
+        {
+          "ts_code": "000008.SZ",
+          "trade_date": "2026-11-23",
+          "local_factor": 22.408,
+          "source_factor": 22.4083,
+          "local_batch": "4a2b489ae6dc11f194f900163e32d8e8"
+        },
+        {
+          "ts_code": "688585.SH",
+          "trade_date": "2026-11-23",
+          "local_factor": 1.0239,
+          "source_factor": 1.0239,
+          "local_batch": "83583144e99a11f1be9300163e32d8e8"
+        },
+        {
+          "ts_code": "920662.BJ",
+          "trade_date": "2026-11-23",
+          "local_factor": 14.0053,
+          "source_factor": 1.064,
+          "local_batch": "4a2b489ae6dc11f194f900163e32d8e8"
+        }
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "before_date": "2026-11-19",
+      "after_date": "2026-11-20",
+      "local_common_stocks": 5585,
+      "local_changes": [
+        {
+          "ts_code": "000582.SZ",
+          "before": 5.5657,
+          "after": 5.6216
+        },
+        {
+          "ts_code": "000962.SZ",
+          "before": 3.4014,
+          "after": 3.4088
+        },
+        {
+          "ts_code": "001220.SZ",
+          "before": 1.0143,
+          "after": 1.0567
+        },
+        {
+          "ts_code": "002299.SZ",
+          "before": 2.7283,
+          "after": 2.7785
+        },
+        {
+          "ts_code": "002969.SZ",
+          "before": 1.0933,
+          "after": 1.0959
+        },
+        {
+          "ts_code": "300129.SZ",
+          "before": 6.3625,
+          "after": 6.3734
+        },
+        {
+          "ts_code": "601888.SH",
+          "before": 2.3389,
+          "after": 2.3573
+        },
+        {
+          "ts_code": "601998.SH",
+          "before": 2.106,
+          "after": 2.151
+        },
+        {
+          "ts_code": "603167.SH",
+          "before": 1.7179,
+          "after": 1.7939
+        },
+        {
+          "ts_code": "688179.SH",
+          "before": 3.4871,
+          "after": 3.5055
+        },
+        {
+          "ts_code": "920176.BJ",
+          "before": 1.006,
+          "after": 1.0115
+        },
+        {
+          "ts_code": "920201.BJ",
+          "before": 1,
+          "after": 1.0227
+        }
+      ],
+      "local_changed_stocks": 12,
+      "local_decreases": 0,
+      "local_only_before": [],
+      "local_only_after": [],
+      "source_common_stocks": 5575,
+      "source_changes": [
+        {
+          "ts_code": "000582.SZ",
+          "before": 5.5657,
+          "after": 5.6216
+        },
+        {
+          "ts_code": "000635.SZ",
+          "before": 4.2118,
+          "after": 4.212
+        },
+        {
+          "ts_code": "000962.SZ",
+          "before": 3.401,
+          "after": 3.4084
+        },
+        {
+          "ts_code": "001220.SZ",
+          "before": 1.0143,
+          "after": 1.0567
+        },
+        {
+          "ts_code": "002299.SZ",
+          "before": 2.7281,
+          "after": 2.7783
+        },
+        {
+          "ts_code": "002717.SZ",
+          "before": 13.4861,
+          "after": 13.486
+        },
+        {
+          "ts_code": "002969.SZ",
+          "before": 1.0934,
+          "after": 1.096
+        },
+        {
+          "ts_code": "300129.SZ",
+          "before": 6.3625,
+          "after": 6.3734
+        },
+        {
+          "ts_code": "601888.SH",
+          "before": 2.3384,
+          "after": 2.3568
+        },
+        {
+          "ts_code": "601998.SH",
+          "before": 2.1056,
+          "after": 2.1505
+        },
+        {
+          "ts_code": "603167.SH",
+          "before": 1.7184,
+          "after": 1.7944
+        },
+        {
+          "ts_code": "688179.SH",
+          "before": 3.4876,
+          "after": 3.506
+        },
+        {
+          "ts_code": "920176.BJ",
+          "before": 1.006,
+          "after": 1.0115
+        },
+        {
+          "ts_code": "920201.BJ",
+          "before": 1.0,
+          "after": 1.0227
+        }
+      ],
+      "source_changed_stocks": 14,
+      "source_decreases": 1,
+      "source_only_before": [
+        "600185.SH",
+        "600567.SH",
+        "688121.SH",
+        "688496.SH",
+        "688798.SH"
+      ],
+      "source_only_after": []
+    },
+    {
+      "before_date": "2026-11-20",
+      "after_date": "2026-11-23",
+      "local_common_stocks": 5585,
+      "local_changes": [
+        {
+          "ts_code": "001256.SZ",
+          "before": 1.0451,
+          "after": 1.0551
+        },
+        {
+          "ts_code": "002154.SZ",
+          "before": 15.9457,
+          "after": 16.0454
+        },
+        {
+          "ts_code": "300627.SZ",
+          "before": 6.0046,
+          "after": 6.0507
+        },
+        {
+          "ts_code": "301129.SZ",
+          "before": 1.8937,
+          "after": 1.9013
+        },
+        {
+          "ts_code": "301267.SZ",
+          "before": 1.5573,
+          "after": 1.5688
+        },
+        {
+          "ts_code": "301308.SZ",
+          "before": 1.0137,
+          "after": 1.0255
+        },
+        {
+          "ts_code": "301361.SZ",
+          "before": 1.0168,
+          "after": 1.0219
+        },
+        {
+          "ts_code": "603040.SH",
+          "before": 3.7447,
+          "after": 3.7572
+        },
+        {
+          "ts_code": "920976.BJ",
+          "before": 2.3452,
+          "after": 2.4144
+        }
+      ],
+      "local_changed_stocks": 9,
+      "local_decreases": 0,
+      "local_only_before": [],
+      "local_only_after": [
+        "920067.BJ"
+      ],
+      "source_common_stocks": 5575,
+      "source_changes": [
+        {
+          "ts_code": "001256.SZ",
+          "before": 1.0454,
+          "after": 1.0554
+        },
+        {
+          "ts_code": "002122.SZ",
+          "before": 8.4723,
+          "after": 8.472
+        },
+        {
+          "ts_code": "002154.SZ",
+          "before": 15.9457,
+          "after": 16.0454
+        },
+        {
+          "ts_code": "300627.SZ",
+          "before": 6.0043,
+          "after": 6.0504
+        },
+        {
+          "ts_code": "301129.SZ",
+          "before": 1.8937,
+          "after": 1.9013
+        },
+        {
+          "ts_code": "301267.SZ",
+          "before": 1.5577,
+          "after": 1.5692
+        },
+        {
+          "ts_code": "301308.SZ",
+          "before": 1.0133,
+          "after": 1.0251
+        },
+        {
+          "ts_code": "301361.SZ",
+          "before": 1.0168,
+          "after": 1.0219
+        },
+        {
+          "ts_code": "603040.SH",
+          "before": 3.7446,
+          "after": 3.7571
+        },
+        {
+          "ts_code": "920976.BJ",
+          "before": 1.5352,
+          "after": 1.5805
+        }
+      ],
+      "source_changed_stocks": 10,
+      "source_decreases": 1,
+      "source_only_before": [],
+      "source_only_after": [
+        "000016.SZ",
+        "002731.SZ",
+        "301139.SZ",
+        "600185.SH",
+        "600567.SH",
+        "601059.SH",
+        "601198.SH",
+        "688121.SH",
+        "688496.SH",
+        "688798.SH",
+        "920067.BJ"
+      ]
+    }
+  ],
+  "raw_examples": [
+    {
+      "ts_code": "000002.SZ",
+      "trade_date": "2026-11-19",
+      "adj_factor": 181.704,
+      "_batch_id": "a0bf7fd2e3b711f1941b00163e32d8e8",
+      "_ingest_time": "2026-11-19 01:22:11.910",
+      "_raw_json": "{\"adj_factor\":181.704,\"trade_date\":\"2026-11-19\",\"ts_code\":\"000002.SZ\"}"
+    },
+    {
+      "ts_code": "000002.SZ",
+      "trade_date": "2026-11-20",
+      "adj_factor": 181.704,
+      "_batch_id": "cad735ace48011f184ec00163e32d8e8",
+      "_ingest_time": "2026-11-20 01:22:10.377",
+      "_raw_json": "{\"adj_factor\":181.704,\"trade_date\":\"2026-11-20\",\"ts_code\":\"000002.SZ\"}"
+    },
+    {
+      "ts_code": "000002.SZ",
+      "trade_date": "2026-11-23",
+      "adj_factor": 181.704,
+      "_batch_id": "4a2b489ae6dc11f194f900163e32d8e8",
+      "_ingest_time": "2026-11-23 01:22:10.349",
+      "_raw_json": "{\"adj_factor\":181.704,\"trade_date\":\"2026-11-23\",\"ts_code\":\"000002.SZ\"}"
+    },
+    {
+      "ts_code": "000008.SZ",
+      "trade_date": "2026-11-19",
+      "adj_factor": 22.408,
+      "_batch_id": "a0bf7fd2e3b711f1941b00163e32d8e8",
+      "_ingest_time": "2026-11-19 01:22:11.910",
+      "_raw_json": "{\"adj_factor\":22.408,\"trade_date\":\"2026-11-19\",\"ts_code\":\"000008.SZ\"}"
+    },
+    {
+      "ts_code": "000008.SZ",
+      "trade_date": "2026-11-20",
+      "adj_factor": 22.408,
+      "_batch_id": "cad735ace48011f184ec00163e32d8e8",
+      "_ingest_time": "2026-11-20 01:22:10.377",
+      "_raw_json": "{\"adj_factor\":22.408,\"trade_date\":\"2026-11-20\",\"ts_code\":\"000008.SZ\"}"
+    },
+    {
+      "ts_code": "000008.SZ",
+      "trade_date": "2026-11-23",
+      "adj_factor": 22.408,
+      "_batch_id": "4a2b489ae6dc11f194f900163e32d8e8",
+      "_ingest_time": "2026-11-23 01:22:10.349",
+      "_raw_json": "{\"adj_factor\":22.408,\"trade_date\":\"2026-11-23\",\"ts_code\":\"000008.SZ\"}"
+    },
+    {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-11-19",
+      "adj_factor": 1.0243,
+      "_batch_id": "a0bf7fd2e3b711f1941b00163e32d8e8",
+      "_ingest_time": "2026-11-19 01:22:11.910",
+      "_raw_json": "{\"adj_factor\":1.0243,\"trade_date\":\"2026-11-19\",\"ts_code\":\"688585.SH\"}"
+    },
+    {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-11-19",
+      "adj_factor": 1.0239,
+      "_batch_id": "83583144e99a11f1be9300163e32d8e8",
+      "_ingest_time": "2026-11-26 13:10:37.102",
+      "_raw_json": "{\"adj_factor\":1.0239,\"trade_date\":\"2026-11-19\",\"ts_code\":\"688585.SH\"}"
+    },
+    {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-11-20",
+      "adj_factor": 1.0243,
+      "_batch_id": "cad735ace48011f184ec00163e32d8e8",
+      "_ingest_time": "2026-11-20 01:22:10.377",
+      "_raw_json": "{\"adj_factor\":1.0243,\"trade_date\":\"2026-11-20\",\"ts_code\":\"688585.SH\"}"
+    },
+    {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-11-20",
+      "adj_factor": 1.0239,
+      "_batch_id": "83583144e99a11f1be9300163e32d8e8",
+      "_ingest_time": "2026-11-26 13:10:37.195",
+      "_raw_json": "{\"adj_factor\":1.0239,\"trade_date\":\"2026-11-20\",\"ts_code\":\"688585.SH\"}"
+    },
+    {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-11-23",
+      "adj_factor": 1.0243,
+      "_batch_id": "4a2b489ae6dc11f194f900163e32d8e8",
+      "_ingest_time": "2026-11-23 01:22:10.349",
+      "_raw_json": "{\"adj_factor\":1.0243,\"trade_date\":\"2026-11-23\",\"ts_code\":\"688585.SH\"}"
+    },
+    {
+      "ts_code": "688585.SH",
+      "trade_date": "2026-11-23",
+      "adj_factor": 1.0239,
+      "_batch_id": "83583144e99a11f1be9300163e32d8e8",
+      "_ingest_time": "2026-11-26 13:10:37.576",
+      "_raw_json": "{\"adj_factor\":1.0239,\"trade_date\":\"2026-11-23\",\"ts_code\":\"688585.SH\"}"
+    },
+    {
+      "ts_code": "920662.BJ",
+      "trade_date": "2026-11-19",
+      "adj_factor": 14.0053,
+      "_batch_id": "a0bf7fd2e3b711f1941b00163e32d8e8",
+      "_ingest_time": "2026-11-19 01:22:11.910",
+      "_raw_json": "{\"adj_factor\":14.0053,\"trade_date\":\"2026-11-19\",\"ts_code\":\"920662.BJ\"}"
+    },
+    {
+      "ts_code": "920662.BJ",
+      "trade_date": "2026-11-20",
+      "adj_factor": 14.0053,
+      "_batch_id": "cad735ace48011f184ec00163e32d8e8",
+      "_ingest_time": "2026-11-20 01:22:10.377",
+      "_raw_json": "{\"adj_factor\":14.0053,\"trade_date\":\"2026-11-20\",\"ts_code\":\"920662.BJ\"}"
+    },
+    {
+      "ts_code": "920662.BJ",
+      "trade_date": "2026-11-23",
+      "adj_factor": 14.0053,
+      "_batch_id": "4a2b489ae6dc11f194f900163e32d8e8",
+      "_ingest_time": "2026-11-23 01:22:10.349",
+      "_raw_json": "{\"adj_factor\":14.0053,\"trade_date\":\"2026-11-23\",\"ts_code\":\"920662.BJ\"}"
+    }
+  ]
+}
