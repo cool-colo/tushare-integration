@@ -129,6 +129,43 @@ class RqDataClient:
             )
         )
 
+    def stock_connect_holding_details(
+        self, order_book_ids: list[str], start: date, end: date
+    ) -> pd.DataFrame:
+        return self._as_frame(
+            self.rq.get_stock_connect_holding_details(
+                order_book_ids, start_date=start, end_date=end
+            )
+        )
+
+    def _fund_api(self) -> Any:
+        if not hasattr(self.rq, "fund"):
+            try:
+                importlib.import_module("rqdatac_fund")
+            except ImportError as exc:
+                raise RuntimeError(
+                    "fund.get_holdings requires rqdatac-fund==1.0.44"
+                ) from exc
+        fund = getattr(self.rq, "fund", None)
+        if fund is None:
+            raise RuntimeError("rqdatac_fund did not register rqdatac.fund")
+        return fund
+
+    def fund_instruments(self) -> pd.DataFrame:
+        return self._as_frame(self._fund_api().all_instruments(market="cn"))
+
+    def fund_holdings(
+        self, fund_ids: list[str], start: date, end: date
+    ) -> pd.DataFrame:
+        # rqdatac_fund 1.0.44 supports range kwargs even though the public
+        # signature documents only ``date``. A date query selects a report
+        # period, not a PIT cutoff, so PIT must use returned release_date.
+        return self._as_frame(
+            self._fund_api().get_holdings(
+                fund_ids, start_date=start, end_date=end, market="cn"
+            )
+        )
+
     def pit_financials(
         self,
         order_book_ids: list[str],

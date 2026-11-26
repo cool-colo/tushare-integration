@@ -1,0 +1,34 @@
+id: 3001
+name: dwd_ricequant_stock_connect_holding_detail
+comment: 米筐北向资金席位持仓标准层
+builder: raw_versioned
+source:
+  table_name: ricequant_stock_connect_holding_detail
+  schema_name: ricequant/stock_connect_holding_detail
+business_key:
+  - trade_date
+  - order_book_id
+  - participant_number
+source_filters:
+  - "src.order_book_id != '' AND src.participant_number != ''"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', src.order_book_id)"
+source_code_expr: src.order_book_id
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.order_book_id)), 2)"
+event_date_expr: src.trade_date
+available_trade_date_expr: "addDays(src.trade_date, 1)"
+extra_columns:
+  - name: availability_basis
+    data_type: str
+    length: 64
+    comment: 可用日期推导依据
+    expr: "'trade_date_plus_one'"
+partition_key:
+  - toYear(event_date)
+indexes:
+  - name: dwd_ricequant_stock_connect_holding_detail_idx
+    columns:
+      - instrument_id
+      - event_date
+      - participant_number
+      - sys_from

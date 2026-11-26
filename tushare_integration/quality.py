@@ -51,6 +51,8 @@ DWD_TRADE_RELEVANT_TABLES = {
     "dwd_stock_margin_trading",
     "dwd_stock_northbound_holding",
     "dwd_stock_chip_distribution",
+    "dwd_ricequant_stock_connect_holding_detail",
+    "dwd_ricequant_fund_holding",
     "dwd_index_weight",
     "dwd_dc_index",
     "dwd_dc_member",
@@ -965,9 +967,11 @@ class QualityManager:
         qualified = self._quote_table(db_name, target_table_name)
         validation_filter = self._dwd_validation_filter(table_name)
         spec = self._load_dwd_spec(table_name)
-        unknown_disclosure = spec.get("availability_mode") == "unknown_disclosure"
+        availability_mode = spec.get("availability_mode")
+        unknown_disclosure = availability_mode == "unknown_disclosure"
+        partial_unknown_disclosure = availability_mode == "partial_unknown_disclosure"
         missing_pit_dates = "event_date IS NULL OR sys_from IS NULL OR sys_to IS NULL"
-        if not unknown_disclosure:
+        if not unknown_disclosure and not partial_unknown_disclosure:
             missing_pit_dates += " OR available_trade_date IS NULL"
         if spec.get("builder", "raw_versioned") == "business_interval":
             return self._build_business_interval_dwd_rules(
@@ -1028,6 +1032,19 @@ class QualityManager:
                 issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
                 "available_trade_date IS NOT NULL OR availability_basis IS NULL "
                 "OR availability_basis != 'unknown_disclosure_date'",
+            ))
+        if partial_unknown_disclosure:
+            rules.append(ValidationRule(
+                rule_id="dwd_partial_unknown_disclosure_labelled",
+                description="Rows without a source disclosure date must remain PIT-invisible and labelled",
+                severity="BLOCKER",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
+                "(release_date IS NULL AND (available_trade_date IS NOT NULL "
+                "OR availability_basis != 'missing_release_date')) "
+                "OR (release_date IS NOT NULL AND available_trade_date IS NULL "
+                "AND availability_basis NOT IN ('missing_calendar_date')) "
+                "OR (available_trade_date IS NOT NULL "
+                "AND availability_basis != 'release_date_next_trade_day')",
             ))
         rules.extend(self._dwd_open_version_rules(table_name, qualified, validation_filter))
         rules.extend(self._dwd_business_rules(table_name, qualified, validation_filter))
@@ -1427,6 +1444,10 @@ class QualityManager:
             rules.extend(self._top_holder_rules(table_name, qualified))
         if table_name == "dwd_stock_ccass_holding_detail":
             rules.extend(self._ccass_detail_rules(qualified))
+        if table_name == "dwd_ricequant_stock_connect_holding_detail":
+            rules.extend(self._ricequant_stock_connect_rules(qualified))
+        if table_name == "dwd_ricequant_fund_holding":
+            rules.extend(self._ricequant_fund_holding_rules(qualified))
         if table_name == "dwd_stock_main_business":
             rules.append(ValidationRule(
                 rule_id="main_business_identity",
@@ -1467,6 +1488,56 @@ class QualityManager:
                 "(shareholding IS NULL AND col_shareholding IS NOT NULL AND trimBoth(col_shareholding) != '') "
                 "OR (shareholding_percent IS NULL AND col_shareholding_percent IS NOT NULL "
                 "AND trimBoth(col_shareholding_percent) != '')",
+            ),
+        ]
+
+    def _ricequant_stock_connect_rules(
+        self, qualified: str
+    ) -> list[ValidationRule]:
+        return [
+            ValidationRule(
+                rule_id="ricequant_stock_connect_identity_and_availability",
+                description="RiceQuant stock-connect rows retain participant identity and use trade-date plus one",
+                severity="BLOCKER",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
+                "participant_number = '' OR event_date != trade_date "
+                "OR available_trade_date != addDays(trade_date, 1) "
+                "OR availability_basis != 'trade_date_plus_one' "
+                "OR instrument_id != concat('stock:', order_book_id)",
+            ),
+            ValidationRule(
+                rule_id="ricequant_stock_connect_nonnegative_finite_measures",
+                description="Known source quantities and ratios remain finite and nonnegative without changing scale",
+                severity="BLOCKER",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
+                "shares_holding < 0 OR NOT isFinite(shares_holding) "
+                "OR holding_ratio < 0 OR NOT isFinite(holding_ratio)",
+            ),
+        ]
+
+    def _ricequant_fund_holding_rules(
+        self, qualified: str
+    ) -> list[ValidationRule]:
+        return [
+            ValidationRule(
+                rule_id="ricequant_fund_holding_identity_and_dates",
+                description="RiceQuant fund holdings retain fund/asset identity and source report dates",
+                severity="BLOCKER",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
+                "fund_id = '' OR held_order_book_id = '' "
+                "OR fund_instrument_id != concat('fund:', fund_id) "
+                "OR event_date != report_date "
+                "OR (release_date IS NOT NULL AND release_date < report_date) "
+                "OR (available_trade_date IS NOT NULL AND available_trade_date <= release_date)",
+            ),
+            ValidationRule(
+                rule_id="ricequant_fund_holding_nonnegative_finite_measures",
+                description="Known fund holding measures remain finite and nonnegative without changing source scale",
+                severity="BLOCKER",
+                issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
+                "weight < 0 OR NOT isFinite(weight) "
+                "OR shares < 0 OR NOT isFinite(shares) "
+                "OR market_value < 0 OR NOT isFinite(market_value)",
             ),
         ]
 

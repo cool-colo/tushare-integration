@@ -85,6 +85,131 @@ def conform(frame: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     return result[columns]
 
 
+STOCK_CONNECT_HOLDING_COLUMNS = [
+    "trade_date",
+    "order_book_id",
+    "participant_number",
+    "ccass_name",
+    "shares_holding",
+    "holding_ratio",
+    *METADATA,
+]
+
+
+def stock_connect_holding_frame(
+    raw: pd.DataFrame, trading_date: date, batch_id: str
+) -> pd.DataFrame:
+    result = _normalise_index(raw)
+    if result.empty:
+        return conform(
+            add_metadata(result, "get_stock_connect_holding_details", batch_id),
+            STOCK_CONNECT_HOLDING_COLUMNS,
+        )
+    identifier = _find_column(result, ("order_book_id", "instrument"))
+    date_column = _find_column(result, ("date", "trade_date", "datetime"))
+    participant = _find_column(result, ("participant_number",))
+    if identifier is None or date_column is None or participant is None:
+        raise ValueError(
+            "RQData stock-connect holdings lack order_book_id, date, or participant_number"
+        )
+    result = result.rename(
+        columns={identifier: "order_book_id", date_column: "trade_date"}
+    )
+    result["trade_date"] = pd.to_datetime(
+        result["trade_date"], format="ISO8601", errors="coerce"
+    ).dt.date
+    if result[["order_book_id", "trade_date", "participant_number"]].isna().any().any():
+        raise ValueError("RQData stock-connect holdings contain a missing business key")
+    returned_dates = set(result["trade_date"].dropna())
+    if returned_dates and returned_dates != {trading_date}:
+        raise ValueError(
+            f"RQData stock-connect dates {sorted(returned_dates)} do not match {trading_date}"
+        )
+    result["order_book_id"] = result["order_book_id"].astype(str)
+    result["participant_number"] = result["participant_number"].astype(str)
+    for column in ("shares_holding", "holding_ratio"):
+        if column in result:
+            result[column] = pd.to_numeric(result[column], errors="coerce")
+    return conform(
+        add_metadata(result, "get_stock_connect_holding_details", batch_id),
+        STOCK_CONNECT_HOLDING_COLUMNS,
+    )
+
+
+FUND_HOLDING_COLUMNS = [
+    "fund_id",
+    "report_date",
+    "release_date",
+    "release_date_key",
+    "held_order_book_id",
+    "weight",
+    "shares",
+    "market_value",
+    "symbol",
+    "asset_type",
+    "asset_type_key",
+    "category",
+    "category_key",
+    "region",
+    "region_key",
+    *METADATA,
+]
+
+
+def fund_holding_frame(raw: pd.DataFrame, batch_id: str) -> pd.DataFrame:
+    result = _normalise_index(raw)
+    if result.empty:
+        return conform(
+            add_metadata(result, "fund.get_holdings", batch_id),
+            FUND_HOLDING_COLUMNS,
+        )
+    fund_id = _find_column(result, ("fund_id",))
+    report_date = _find_column(result, ("date", "report_date"))
+    held_id = _find_column(result, ("order_book_id", "held_order_book_id"))
+    if fund_id is None or report_date is None or held_id is None:
+        raise ValueError(
+            "RQData fund holdings lack fund_id, report date, or held order_book_id"
+        )
+    result = result.rename(
+        columns={
+            fund_id: "fund_id",
+            report_date: "report_date",
+            held_id: "held_order_book_id",
+            "type": "asset_type",
+        }
+    )
+    result["report_date"] = pd.to_datetime(
+        result["report_date"], format="ISO8601", errors="coerce"
+    ).dt.date
+    if result[["fund_id", "report_date", "held_order_book_id"]].isna().any().any():
+        raise ValueError("RQData fund holdings contain a missing business key")
+    result["fund_id"] = result["fund_id"].astype(str)
+    result["held_order_book_id"] = result["held_order_book_id"].astype(str)
+    if "release_date" in result:
+        result["release_date"] = pd.to_datetime(
+            result["release_date"], format="ISO8601", errors="coerce"
+        ).dt.date
+    else:
+        result["release_date"] = None
+    result["release_date_key"] = result["release_date"].where(
+        pd.notna(result["release_date"]), date(1970, 1, 1)
+    )
+    for column in ("weight", "shares", "market_value"):
+        if column in result:
+            result[column] = pd.to_numeric(result[column], errors="coerce")
+    for column, key in (
+        ("asset_type", "asset_type_key"),
+        ("category", "category_key"),
+        ("region", "region_key"),
+    ):
+        if column not in result:
+            result[column] = None
+        result[key] = result[column].fillna("").astype(str)
+    return conform(
+        add_metadata(result, "fund.get_holdings", batch_id), FUND_HOLDING_COLUMNS
+    )
+
+
 INDEX_DAILY_COLUMNS = [
     "order_book_id",
     "trading_date",

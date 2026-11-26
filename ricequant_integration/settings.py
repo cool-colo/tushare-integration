@@ -33,10 +33,15 @@ class RiceQuantSettings:
     factor_start_date: str = "1990-01-01"
     financial_start_date: str = "2015-01-01"
     concept_start_date: str = "2015-01-01"
+    stock_connect_holding_start_date: str = "2015-01-01"
+    fund_holding_start_date: str = "2015-01-01"
     stock_daily_batch_size: int = 1000
     stock_minute_batch_size: int = 200
     option_batch_size: int = 500
     financial_batch_size: int = 20
+    stock_connect_holding_batch_size: int = 500
+    fund_holding_batch_size: int = 500
+    fund_holding_rescan_days: int = 365
     financial_rescan_days: int = 1100
     classification_lookback_calendar_days: int = 7
     tick_lookback_calendar_days: int = 31
@@ -84,10 +89,15 @@ class RiceQuantSettings:
             "factor_start_date",
             "financial_start_date",
             "concept_start_date",
+            "stock_connect_holding_start_date",
+            "fund_holding_start_date",
             "stock_daily_batch_size",
             "stock_minute_batch_size",
             "option_batch_size",
             "financial_batch_size",
+            "stock_connect_holding_batch_size",
+            "fund_holding_batch_size",
+            "fund_holding_rescan_days",
             "financial_rescan_days",
             "classification_lookback_calendar_days",
             "tick_lookback_calendar_days",
@@ -117,6 +127,12 @@ class RiceQuantSettings:
                 raw.get("financial_start_date", "2015-01-01")
             ),
             concept_start_date=str(raw.get("concept_start_date", "2015-01-01")),
+            stock_connect_holding_start_date=str(
+                raw.get("stock_connect_holding_start_date", "2015-01-01")
+            ),
+            fund_holding_start_date=str(
+                raw.get("fund_holding_start_date", "2015-01-01")
+            ),
             stock_daily_batch_size=max(
                 1, int(raw.get("stock_daily_batch_size", 1000))
             ),
@@ -125,6 +141,15 @@ class RiceQuantSettings:
             ),
             option_batch_size=max(1, int(raw.get("option_batch_size", 500))),
             financial_batch_size=max(1, int(raw.get("financial_batch_size", 20))),
+            stock_connect_holding_batch_size=max(
+                1, int(raw.get("stock_connect_holding_batch_size", 500))
+            ),
+            fund_holding_batch_size=max(
+                1, int(raw.get("fund_holding_batch_size", 500))
+            ),
+            fund_holding_rescan_days=max(
+                1, int(raw.get("fund_holding_rescan_days", 365))
+            ),
             financial_rescan_days=max(
                 1, int(raw.get("financial_rescan_days", 1100))
             ),

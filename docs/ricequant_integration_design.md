@@ -83,6 +83,8 @@ DWD/DWS 血缘。
 | `ricequant_balance_sheet` | `order_book_id, report_period, source_version_id` | 股票 |
 | `ricequant_cashflow_statement` | `order_book_id, report_period, source_version_id` | 股票 |
 | `ricequant_financial_metric` | `order_book_id, report_period, source_version_id` | 股票 |
+| `ricequant_stock_connect_holding_detail` | `trade_date, order_book_id, participant_number` | 交易日 |
+| `ricequant_fund_holding` | `fund_id, report_date, release_date_key, held_order_book_id, asset_type_key, category_key, region_key` | 报告月 |
 | `ricequant_concept_snapshot` | `observation_date, snapshot_date, concept_name, order_book_id` | 观察日、源快照日 |
 | `ricequant_industry_snapshot` | `observation_date, snapshot_date, source_name, industry_level, order_book_id` | 观察日、源快照日 |
 | `ricequant_sector_snapshot` | `observation_date, sector_code, order_book_id` | 观察日 |
@@ -118,6 +120,26 @@ Tick 是特殊的两级提交：一个交易日只有一张持久 staging 表；
 也不会跨来源补值。表按股票分区，一批 API 返回按股票拆分后，用报告期范围原子替换；已完成股票在相同
 bootstrap 范围内直接跳过。四类财务数据的统一历史起点为 `2015-01-01`；显式请求更早日期也会被该边界
 限制。进程若在请求后、发布前崩溃，最多重拉当前小批次，不会重复最终表记录。
+
+北向席位持股明细调用 `get_stock_connect_holding_details`，从 `2015-01-01` 开始按交易日、股票批次写入
+持久 staging，整日完成后原子发布。源接口只有持仓交易日，没有公告时间或修订版本字段。ODS 只保留
+当前权威值；DWD 按明确约定设置 `event_date=trade_date`、
+`available_trade_date=trade_date+1`，并用 `availability_basis='trade_date_plus_one'` 标明这是本项目的可用
+日规则，而不是米筐返回的 PIT 字段。短窗口重拉只能覆盖窗口内当前值，无法发现窗口外的静默历史修订。
+
+基金持仓调用独立扩展包 `rqdatac-fund==1.0.44` 的 `fund.get_holdings`，从 `2015-01-01` 开始保留股票、
+债券、基金、期货等全部源资产类别。接口的 `date/start_date/end_date` 选择报告期，并非 PIT 截止日；
+PIT 只能使用响应中的 `release_date`。DWD 设置 `event_date=report_date`，并通过
+`ricequant_trading_calendar` 取得公告日之后严格的下一交易日。`release_date` 缺失时
+`available_trade_date` 保持 NULL，禁止进入 PIT 宽表。`availability_basis` 仅是推导血缘标签：
+`release_date_next_trade_day`、`missing_release_date` 或 `missing_calendar_date`，不是源字段。
+
+基金接口没有独立修订版本号，因此 ODS 月分区同样只保存当前权威值，不根据本地抓取时间虚构历史修订。
+增量任务默认回看 365 天的报告期，是为了接住近期报告期的延迟/新增披露；它不保证发现更老报告期的
+静默改值，也不能把当前回拉值声称为历史当时可见值。需要审计更老当前值时必须显式 backfill，并在
+下游血缘中保留这一限制。由于最终表按报告月原子替换，任意历史月的部分日期回补都会扩展为完整自然月；
+当前月最多扩展到运行日，绝不请求未来日期。未完成 staging 的游标同时绑定查询起止日和基金全集哈希；
+范围或全集变化时丢弃该 staging 并重拉整月，防止把不同权威范围拼接后误报 complete。
 
 期权使用三条独立链路，不扩展股票 `ricequant_instrument`。`option_instruments` 调用
 `all_instruments(type='Option', date=...)`，保留源快照日期和本系统观察时间；米筐说明该接口的合约详情
@@ -199,6 +221,8 @@ scripts/run_ricequant_jobs.sh bootstrap --dataset tick
 scripts/run_ricequant_jobs.sh backfill --dataset option_instruments --dataset option_contract_property --dataset option_daily --start 2019-01-01 --end "$(date +%F)"
 scripts/run_ricequant_jobs.sh bootstrap --dataset financial_income --dataset financial_balance --dataset financial_cashflow --dataset financial_metric
 scripts/run_ricequant_jobs.sh backfill --dataset financial_income --instrument 000001.XSHE --start 2024-01-01 --end 2024-12-31
+scripts/run_ricequant_jobs.sh backfill --dataset stock_connect_holding_details --dataset fund_holdings --start 2015-01-01 --end "$(date +%F)"
+scripts/run_ricequant_dwd.sh
 scripts/run_ricequant_incremental.sh
 ```
 
@@ -209,7 +233,8 @@ scripts/run_ricequant_incremental.sh
 ```
 
 `run_ricequant_incremental.sh` 显式调度当前已经实现的全部增量数据集，包括股票日线、分钟线、复权/拆股、
-指数、期权合约/动态属性/日线、概念、行业、板块、四类财务数据和 Tick；交易日历及证券列表由依赖解析自动加入。Tick 默认开启且可能消耗较多
+北向席位持股、基金持仓、指数、期权合约/动态属性/日线、概念、行业、板块、四类财务数据和 Tick；交易日历及证券列表由依赖解析自动加入。ODS 成功后脚本独立执行
+`run_ricequant_dwd.sh`，只构建两张 RiceQuant 持仓 DWD，不进入 Tushare 的 DWD 调度链。Tick 默认开启且可能消耗较多
 额度；若不需要每日 Tick，可在 crontab 命令前设置 `RICEQUANT_INCLUDE_TICK=0`，其余数据集不受影响。
 wrapper 的标准输出、错误堆栈和最终退出码写入
 `logs/ricequant-incremental-cron-YYYYMMDD.log`；底层任务仍保留自己的

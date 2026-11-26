@@ -122,3 +122,33 @@
 - Incremental option runs finish the saved interval before extending to newly
   available trading dates. A growing month must not reset quota-paused stages or
   introduce new-date contracts into the unfinished interval's cursor.
+
+### Stock-connect and fund holdings
+
+- `get_stock_connect_holding_details` is stored in
+  `ricequant_stock_connect_holding_detail` from `2015-01-01`. The source date is a
+  holding/trading date and the API does not expose a disclosure timestamp or a
+  revision-version field. Per the project convention, DWD uses
+  `available_trade_date = trade_date + 1` and labels that local rule with
+  `availability_basis = 'trade_date_plus_one'`.
+- `fund.get_holdings` requires the separately pinned `rqdatac-fund==1.0.44` package.
+  Its `date`/range selects report periods; it is not a PIT query cutoff. Preserve the
+  returned `release_date` and every returned asset class. DWD visibility is the strict
+  next RiceQuant trading day after `release_date`; a missing release date stays NULL
+  and PIT-invisible.
+- `availability_basis` is a DWD lineage label explaining how
+  `available_trade_date` was obtained. It is not a RiceQuant source field and not a
+  second date. Current fund labels are `release_date_next_trade_day`,
+  `missing_release_date`, and `missing_calendar_date`.
+- Both ODS tables represent the source's current authoritative value. Neither API
+  supplies enough source version metadata to reconstruct silent historical revisions,
+  so do not manufacture revision history. The fund 365-day incremental rescan is only
+  a collection window for newly/delayed disclosures in recent report periods; it does
+  not claim to detect arbitrary older silent corrections.
+- Fund holdings are atomically authoritative by report month. A bounded historical
+  request expands its last month to calendar month-end (or today for the current
+  month). A partial stage resumes only when its saved date bounds and fund-universe
+  hash still match; otherwise that stage is discarded and the whole month restarts.
+- RiceQuant DWD jobs are source-separated from the Tushare scheduler. Run
+  `scripts/run_ricequant_dwd.sh`, or use `scripts/run_ricequant_incremental.sh`, which
+  invokes it only after successful RiceQuant ODS ingestion.

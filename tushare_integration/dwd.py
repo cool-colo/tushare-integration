@@ -111,7 +111,10 @@ class DWDManager:
         common_columns = deepcopy(
             COMMON_DWD_COLUMNS if spec.get("with_instrument", True) else COMMON_DWD_COLUMNS_NO_INSTRUMENT
         )
-        if spec.get("availability_mode") == "unknown_disclosure":
+        if spec.get("availability_mode") in {
+            "unknown_disclosure",
+            "partial_unknown_disclosure",
+        }:
             # Preserve detail without inventing a public visibility date. Consumers
             # must require a populated available_trade_date before PIT selection.
             for column in common_columns:
@@ -207,8 +210,23 @@ class DWDManager:
         )
         return result
 
-    def _calendar_map_sql(self) -> str:
+    def _calendar_map_sql(self, source_table: str = CALENDAR_SOURCE_TABLE) -> str:
         db_name = self.settings.database.db_name
+        if source_table == "ricequant_trading_calendar":
+            calendar_source = f"""
+        SELECT
+            calendar_date,
+            max(is_trading_day) AS is_open
+        FROM {db_name}.ricequant_trading_calendar
+        GROUP BY calendar_date"""
+        else:
+            calendar_source = f"""
+        SELECT
+            cal_date AS calendar_date,
+            max(is_open) AS is_open
+        FROM {db_name}.{source_table}
+        WHERE exchange = 'SSE'
+        GROUP BY cal_date"""
         return f"""
 calendar_map AS (
     SELECT
@@ -224,14 +242,7 @@ calendar_map AS (
             ),
             toDate32('1970-01-01')
         ) AS next_trade_date
-    FROM (
-        SELECT
-            cal_date AS calendar_date,
-            max(is_open) AS is_open
-        FROM {db_name}.{CALENDAR_SOURCE_TABLE}
-        WHERE exchange = 'SSE'
-        GROUP BY cal_date
-    )
+    FROM ({calendar_source})
 )"""
 
     def _render_generic_sync_sql(
@@ -275,7 +286,11 @@ calendar_map AS (
             derived_selects.extend(
                 [
                     f"{spec['instrument_id_expr']} AS `instrument_id`",
-                    f"'{spec['instrument_type']}' AS `instrument_type`",
+                    (
+                        f"{spec['instrument_type_expr']} AS `instrument_type`"
+                        if spec.get("instrument_type_expr")
+                        else f"'{spec['instrument_type']}' AS `instrument_type`"
+                    ),
                     f"{spec['exchange_expr']} AS `exchange`",
                     f"{spec['source_code_expr']} AS `source_code`",
                 ]
@@ -304,7 +319,11 @@ calendar_map AS (
         derived_column_select = ",\n    ".join(derived_selects)
         with_items = []
         if spec.get("calendar_date_expr"):
-            with_items.append(self._calendar_map_sql())
+            with_items.append(
+                self._calendar_map_sql(
+                    spec.get("calendar_source_table", CALENDAR_SOURCE_TABLE)
+                )
+            )
 
         with_item_sql = ",\n".join(with_items)
         with_clause = f"WITH\n{with_item_sql}" if with_items else ""
@@ -680,7 +699,9 @@ FROM dedup d
 
         required_tables = [spec["source"]["table_name"]]
         if spec.get("calendar_date_expr"):
-            required_tables.append(CALENDAR_SOURCE_TABLE)
+            required_tables.append(
+                spec.get("calendar_source_table", CALENDAR_SOURCE_TABLE)
+            )
         return sorted(set(required_tables))
 
     def ensure_source_tables(self, spec: dict[str, Any]) -> None:

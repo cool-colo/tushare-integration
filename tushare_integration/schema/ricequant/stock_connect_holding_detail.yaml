@@ -1,0 +1,35 @@
+id: 3001
+api_name: get_stock_connect_holding_details
+name: ricequant_stock_connect_holding_detail
+comment: 米筐北向资金席位持股明细当前权威值
+dependencies: []
+primary_key:
+  - trade_date
+  - order_book_id
+  - participant_number
+indexes: []
+columns:
+  - name: trade_date
+    data_type: date
+    comment: 持仓交易日
+  - name: order_book_id
+    data_type: str
+    length: 32
+    comment: 米筐股票代码
+  - name: participant_number
+    data_type: str
+    length: 64
+    comment: CCASS参与者编号
+  - name: ccass_name
+    data_type: str
+    length: 255
+    nullable: true
+    comment: CCASS参与者名称
+  - name: shares_holding
+    data_type: float
+    nullable: true
+    comment: 持股数量，保持米筐源单位
+  - name: holding_ratio
+    data_type: float
+    nullable: true
+    comment: 持股比例，保持米筐源尺度

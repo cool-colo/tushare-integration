@@ -13,6 +13,7 @@ python-dateutil==2.9.0
 pyyaml==6.0.2
 requests==2.32.3
 rqdatac==3.8.1
+rqdatac-fund==1.0.44
 websockets==15.0.1
 rich==13.9.4
 scrapy==2.12.0

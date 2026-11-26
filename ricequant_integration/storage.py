@@ -250,8 +250,38 @@ class RiceQuantStorage:
         )
         return stage, existed
 
+    def prepare_partition_stage(
+        self, spec: DatasetSpec, stage_suffix: str
+    ) -> tuple[str, bool]:
+        """Create a resumable stage for a non-daily authoritative partition."""
+
+        safe_suffix = "".join(
+            character if character.isalnum() else "_" for character in stage_suffix
+        )
+        stage = f"{spec.table}_stage_{safe_suffix}"
+        existed = bool(
+            self.client.query(
+                "SELECT count() FROM system.tables "
+                f"WHERE database = {quote_string(self.database)} "
+                f"AND name = {quote_string(stage)}"
+            ).first_row[0]
+        )
+        self.client.command(
+            f"CREATE TABLE IF NOT EXISTS {self.db}.`{stage}` AS {self.db}.`{spec.table}`"
+        )
+        return stage, existed
+
     def discard_daily_stage(self, spec: DatasetSpec, trading_date: date) -> None:
         stage = f"{spec.table}_stage_{trading_date:%Y%m%d}"
+        self.client.command(f"DROP TABLE IF EXISTS {self.db}.`{stage}`")
+
+    def discard_partition_stage(self, spec: DatasetSpec, stage_suffix: str) -> None:
+        """Discard an incomplete non-daily stage whose authority bounds changed."""
+
+        safe_suffix = "".join(
+            character if character.isalnum() else "_" for character in stage_suffix
+        )
+        stage = f"{spec.table}_stage_{safe_suffix}"
         self.client.command(f"DROP TABLE IF EXISTS {self.db}.`{stage}`")
 
     def replace_daily_stage_batch(
@@ -285,17 +315,116 @@ class RiceQuantStorage:
         )
         self.insert_frame(stage, frame)
 
+    def replace_partition_stage_batch(
+        self,
+        spec: DatasetSpec,
+        stage: str,
+        key_column: str,
+        requested_values: list[str],
+        frame: pd.DataFrame,
+    ) -> None:
+        """Replace one requested-identifier batch in a persistent stage."""
+
+        if not requested_values:
+            return
+        if key_column not in spec.primary_key:
+            raise ValueError(f"stage batch key must be in primary key: {key_column}")
+        unexpected = (
+            set(frame[key_column].dropna().astype(str)) - set(requested_values)
+            if key_column in frame
+            else set()
+        )
+        if unexpected:
+            raise ValueError(
+                f"source returned {key_column} values outside requested batch: "
+                f"{sorted(unexpected)[:5]}"
+            )
+        if not frame.empty and frame.duplicated(list(spec.primary_key)).any():
+            raise ValueError(
+                f"duplicate primary key detected in source batch for {spec.name}: "
+                f"{spec.primary_key}"
+            )
+        values = ", ".join(quote_string(value) for value in requested_values)
+        self.client.command(
+            f"ALTER TABLE {self.db}.`{stage}` DELETE WHERE `{key_column}` IN ({values}) "
+            "SETTINGS mutations_sync = 2"
+        )
+        self.insert_frame(stage, frame)
+
+    def publish_partition_stage(
+        self,
+        spec: DatasetSpec,
+        stage: str,
+        partition_sql: str,
+        *,
+        allow_empty: bool = True,
+    ) -> PublishResult:
+        """Validate and atomically publish a completed persistent partition stage."""
+
+        schema = TABLE_SCHEMAS[spec.table]
+        self._validate_non_null(stage, spec.primary_key)
+        self._validate_unique(stage, spec.primary_key)
+        wrong_partition = int(
+            self.client.query(
+                f"SELECT count() FROM {self.db}.`{stage}` "
+                f"WHERE {schema.partition_by} != {partition_sql}"
+            ).first_row[0]
+        )
+        if wrong_partition:
+            raise ValueError(
+                f"partition stage {stage} has {wrong_partition} rows outside {partition_sql}"
+            )
+        count = int(
+            self.client.query(f"SELECT count() FROM {self.db}.`{stage}`").first_row[0]
+        )
+        if not count and not allow_empty:
+            raise ValueError(f"refusing to publish empty {spec.name} partition")
+        if count:
+            content = str(
+                self.client.query(
+                    f"SELECT lower(hex(groupBitXor(cityHash64(_record_hash)))) "
+                    f"FROM {self.db}.`{stage}`"
+                ).first_row[0]
+            )
+            self.client.command(
+                f"ALTER TABLE {self.db}.`{spec.table}` REPLACE PARTITION {partition_sql} "
+                f"FROM {self.db}.`{stage}`"
+            )
+        else:
+            content = dataframe_hash(pd.DataFrame(), spec.primary_key)
+            self.client.command(
+                f"ALTER TABLE {self.db}.`{spec.table}` DROP PARTITION {partition_sql}"
+            )
+        self.client.command(f"DROP TABLE {self.db}.`{stage}`")
+        return PublishResult(row_count=count, content_hash=content)
+
     def publish_daily_stage(
-        self, spec: DatasetSpec, stage: str, trading_date: date
+        self,
+        spec: DatasetSpec,
+        stage: str,
+        trading_date: date,
+        *,
+        allow_empty: bool = False,
     ) -> PublishResult:
         """Validate and atomically publish a complete all-market daily partition."""
 
         self._validate_non_null(stage, spec.primary_key)
         self._validate_unique(stage, spec.primary_key)
+        schema = TABLE_SCHEMAS[spec.table]
+        # Daily source tables do not all call their date ``trading_date``.
+        # Their schema contract is a single bare date partition column, so use
+        # it directly instead of guessing a shared source field name.
+        date_column = schema.partition_by
+        if not date_column.isidentifier():
+            raise ValueError(
+                f"daily table {spec.table} must partition by one date column, "
+                f"got {date_column!r}"
+            )
         day = quote_string(str(trading_date))
         wrong_dates = int(
             self.client.query(
-                f"SELECT count() FROM {self.db}.`{stage}` WHERE trading_date != toDate({day})"
+                f"SELECT count() FROM {self.db}.`{stage}` "
+                f"WHERE `{date_column}` != toDate({day})"
             ).first_row[0]
         )
         if wrong_dates:
@@ -305,20 +434,26 @@ class RiceQuantStorage:
         count = int(
             self.client.query(f"SELECT count() FROM {self.db}.`{stage}`").first_row[0]
         )
-        if not count:
+        if not count and not allow_empty:
             raise ValueError(
                 f"refusing to publish empty all-market {spec.name} day: {trading_date}"
             )
-        content = str(
-            self.client.query(
-                f"SELECT lower(hex(groupBitXor(cityHash64(_record_hash)))) "
+        if count:
+            content = str(
+                self.client.query(
+                    f"SELECT lower(hex(groupBitXor(cityHash64(_record_hash)))) "
+                    f"FROM {self.db}.`{stage}`"
+                ).first_row[0]
+            )
+            self.client.command(
+                f"ALTER TABLE {self.db}.`{spec.table}` REPLACE PARTITION {day} "
                 f"FROM {self.db}.`{stage}`"
-            ).first_row[0]
-        )
-        self.client.command(
-            f"ALTER TABLE {self.db}.`{spec.table}` REPLACE PARTITION {day} "
-            f"FROM {self.db}.`{stage}`"
-        )
+            )
+        else:
+            content = dataframe_hash(pd.DataFrame(), spec.primary_key)
+            self.client.command(
+                f"ALTER TABLE {self.db}.`{spec.table}` DROP PARTITION {day}"
+            )
         self.client.command(f"DROP TABLE {self.db}.`{stage}`")
         return PublishResult(row_count=count, content_hash=content)
 

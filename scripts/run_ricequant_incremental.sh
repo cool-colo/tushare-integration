@@ -6,6 +6,7 @@ set -Eeuo pipefail
 # runner automatically, so they must not be scheduled as separate jobs.
 PROJECT_DIR="${PROJECT_DIR:-/data/flc/code/quant/tushare-integration}"
 RUNNER="$PROJECT_DIR/scripts/run_ricequant_jobs.sh"
+DWD_RUNNER="${RICEQUANT_DWD_RUNNER:-$PROJECT_DIR/scripts/run_ricequant_dwd.sh}"
 INCLUDE_TICK="${RICEQUANT_INCLUDE_TICK:-1}"
 LOG_DIR="${RICEQUANT_LOG_DIR:-$PROJECT_DIR/logs}"
 CRON_LOG="${RICEQUANT_CRON_LOG_FILE:-$LOG_DIR/ricequant-incremental-cron-$(date +%Y%m%d).log}"
@@ -40,6 +41,8 @@ datasets=(
   stock_minute
   stock_ex_factor
   stock_split
+  stock_connect_holding_details
+  fund_holdings
   financial_income
   financial_balance
   financial_cashflow
@@ -64,6 +67,12 @@ done
 
 status=0
 "$RUNNER" "${args[@]}" || status=$?
+
+if [[ "$status" == "0" ]]; then
+  "$DWD_RUNNER" || status=$?
+else
+  echo "[$(date '+%F %T')] Skipping RiceQuant DWD sync because ingestion failed."
+fi
 
 echo "[$(date '+%F %T')] RiceQuant incremental cron wrapper finished. exit_code=$status"
 exit "$status"

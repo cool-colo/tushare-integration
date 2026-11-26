@@ -21,6 +21,9 @@ class DailyMarketJobsScriptTest(unittest.TestCase):
         expected_tables = {
             yaml.safe_load(path.read_text(encoding="utf-8"))["name"]
             for path in schema_dir.glob("*.yaml")
+            if not yaml.safe_load(path.read_text(encoding="utf-8"))["name"].startswith(
+                "dwd_ricequant_"
+            )
         }
         scheduled_tables = set(
             re.findall(r'"tushare-dwd-sync-[^"]+\|\$DWD_SYNC_IMAGE\|([^"]+)"', self.script)

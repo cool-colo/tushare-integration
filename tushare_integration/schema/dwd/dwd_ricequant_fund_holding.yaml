@@ -1,0 +1,47 @@
+id: 3002
+name: dwd_ricequant_fund_holding
+comment: 米筐全资产类别基金持仓标准层
+builder: raw_versioned
+availability_mode: partial_unknown_disclosure
+source:
+  table_name: ricequant_fund_holding
+  schema_name: ricequant/fund_holding
+business_key:
+  - fund_id
+  - report_date
+  - release_date_key
+  - held_order_book_id
+  - asset_type_key
+  - category_key
+  - region_key
+source_filters:
+  - "src.fund_id != '' AND src.held_order_book_id != ''"
+instrument_type_expr: "multiIf(src.asset_type_key = 'Stock', 'stock', src.asset_type_key = 'Bond', 'bond', src.asset_type_key = 'Fund', 'fund', src.asset_type_key = 'Warrant', 'warrant', src.asset_type_key = 'Futures', 'futures', 'other')"
+instrument_id_expr: "concat(multiIf(src.asset_type_key = 'Stock', 'stock', src.asset_type_key = 'Bond', 'bond', src.asset_type_key = 'Fund', 'fund', src.asset_type_key = 'Warrant', 'warrant', src.asset_type_key = 'Futures', 'futures', 'other'), ':', src.held_order_book_id)"
+source_code_expr: src.held_order_book_id
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.held_order_book_id)), 2)"
+event_date_expr: src.report_date
+calendar_date_expr: src.release_date
+calendar_source_table: ricequant_trading_calendar
+available_trade_date_expr: "if(isNull(src.release_date), CAST(NULL, 'Nullable(Date32)'), calendar_map.next_trade_date)"
+extra_columns:
+  - name: fund_instrument_id
+    data_type: str
+    length: 64
+    comment: 持仓基金统一ID
+    expr: "concat('fund:', src.fund_id)"
+  - name: availability_basis
+    data_type: str
+    length: 64
+    comment: 公告可用日期依据
+    expr: "multiIf(isNull(src.release_date), 'missing_release_date', isNull(calendar_map.next_trade_date), 'missing_calendar_date', 'release_date_next_trade_day')"
+partition_key:
+  - toYear(event_date)
+indexes:
+  - name: dwd_ricequant_fund_holding_idx
+    columns:
+      - fund_id
+      - event_date
+      - release_date_key
+      - held_order_book_id
+      - sys_from

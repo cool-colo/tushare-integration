@@ -1,0 +1,77 @@
+id: 3002
+api_name: fund.get_holdings
+name: ricequant_fund_holding
+comment: 米筐基金持仓当前权威值及源生公告日期
+dependencies: []
+primary_key:
+  - fund_id
+  - report_date
+  - release_date_key
+  - held_order_book_id
+  - asset_type_key
+  - category_key
+  - region_key
+indexes: []
+columns:
+  - name: fund_id
+    data_type: str
+    length: 32
+    comment: 基金代码
+  - name: report_date
+    data_type: date
+    comment: 持仓报告期
+  - name: release_date
+    data_type: date
+    nullable: true
+    comment: 米筐返回的公告发布日期
+  - name: release_date_key
+    data_type: date
+    comment: 公告日键；缺失时使用1970-01-01，仅用于物理唯一性
+  - name: held_order_book_id
+    data_type: str
+    length: 64
+    comment: 持仓资产代码
+  - name: weight
+    data_type: float
+    nullable: true
+    comment: 持仓比例，保持米筐源尺度
+  - name: shares
+    data_type: float
+    nullable: true
+    comment: 持仓数量，保持米筐源单位
+  - name: market_value
+    data_type: float
+    nullable: true
+    comment: 持仓市值，单位元
+  - name: symbol
+    data_type: str
+    length: 255
+    nullable: true
+    comment: 持仓资产简称
+  - name: asset_type
+    data_type: str
+    length: 32
+    nullable: true
+    comment: 米筐资产大类
+  - name: asset_type_key
+    data_type: str
+    length: 32
+    comment: 资产大类物理键
+  - name: category
+    data_type: str
+    length: 64
+    nullable: true
+    comment: 米筐资产细类
+  - name: category_key
+    data_type: str
+    length: 64
+    comment: 资产细类物理键
+  - name: region
+    data_type: str
+    length: 64
+    nullable: true
+    comment: 米筐资产区域
+  - name: region_key
+    data_type: str
+    length: 64
+    comment: 资产区域物理键

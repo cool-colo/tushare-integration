@@ -39,6 +39,7 @@ from ricequant_integration.transform import (
     citics_industry_snapshot_frame,
     ex_factor_frame,
     financial_statement_frame,
+    fund_holding_frame,
     industry_mapping_frame,
     industry_member_frame,
     index_components_frame,
@@ -52,6 +53,7 @@ from ricequant_integration.transform import (
     sector_snapshot_frame,
     shenwan_industry_snapshot_frame,
     split_frame,
+    stock_connect_holding_frame,
     stock_daily_frame,
     stock_minute_frame,
     tick_frame,
@@ -76,6 +78,8 @@ DEFAULT_ESTIMATES = {
     "stock_minute": 32 * 1024 * 1024,
     "stock_ex_factor": 8 * 1024 * 1024,
     "stock_split": 4 * 1024 * 1024,
+    "stock_connect_holding_details": 16 * 1024 * 1024,
+    "fund_holdings": 16 * 1024 * 1024,
     "financial_income": 32 * 1024 * 1024,
     "financial_balance": 64 * 1024 * 1024,
     "financial_cashflow": 32 * 1024 * 1024,
@@ -203,6 +207,7 @@ class RiceQuantRunner:
                     "stock_minute",
                     "stock_ex_factor",
                     "stock_split",
+                    "stock_connect_holding_details",
                     "industry_snapshot",
                     *FINANCIAL_DATASETS,
                 }
@@ -246,6 +251,12 @@ class RiceQuantRunner:
                     self._sync_stock_factors(
                         "stock_split", mode, trading_dates, start, end
                     )
+                if "stock_connect_holding_details" in selected:
+                    self._sync_stock_connect_holdings(
+                        mode, trading_dates, start, end
+                    )
+                if "fund_holdings" in selected:
+                    self._sync_fund_holdings(mode, start, end)
                 for dataset in FINANCIAL_DATASETS:
                     if dataset in selected:
                         self._sync_financials(dataset, mode, start, end)
@@ -355,6 +366,12 @@ class RiceQuantRunner:
             return date.fromisoformat(self.settings.option_start_date)
         if dataset in {"stock_ex_factor", "stock_split"}:
             return date.fromisoformat(self.settings.factor_start_date)
+        if dataset == "stock_connect_holding_details":
+            return date.fromisoformat(
+                self.settings.stock_connect_holding_start_date
+            )
+        if dataset == "fund_holdings":
+            return date.fromisoformat(self.settings.fund_holding_start_date)
         if dataset in FINANCIAL_DATASETS:
             return date.fromisoformat(self.settings.financial_start_date)
         if dataset in {
@@ -417,6 +434,8 @@ class RiceQuantRunner:
         order = [
             "trading_calendar",
             "instruments",
+            "stock_connect_holding_details",
+            "fund_holdings",
             "option_instruments",
             "option_contract_property",
             "option_daily",
@@ -1665,6 +1684,399 @@ class RiceQuantRunner:
         if not historical.empty:
             identifiers.update(historical["order_book_id"].dropna().astype(str))
         return sorted(identifiers)
+
+    def _sync_stock_connect_holdings(
+        self,
+        mode: str,
+        trading_dates: list[date],
+        start: date | None,
+        end: date | None,
+    ) -> None:
+        spec = DATASET_SPECS["stock_connect_holding_details"]
+        bounds = self._date_bounds(mode, trading_dates, start, end, spec.name, "")
+        if not bounds:
+            return
+        slices = list(
+            daily_slices(
+                value for value in trading_dates if bounds[0] <= value <= bounds[1]
+            )
+        )
+        completed = self.state.completed_slice_ranges(spec.name)
+        dataset_started = monotonic()
+        LOGGER.info(
+            "dataset_started dataset=%s mode=%s range=%s..%s trading_days=%d batch_size=%d",
+            spec.name,
+            mode,
+            bounds[0],
+            bounds[1],
+            len(slices),
+            self.settings.stock_connect_holding_batch_size,
+        )
+        for day_position, slice_ in enumerate(slices, start=1):
+            if mode == "bootstrap" and self._completed_slice_covers(
+                completed, slice_
+            ):
+                LOGGER.info(
+                    "holding_day_skipped dataset=%s date=%s reason=complete",
+                    spec.name,
+                    slice_.start,
+                )
+                continue
+            latest = self.state.latest(spec.name, slice_.slice_key)
+            instruments = self._sync_instruments(slice_.start)
+            universe = self._active_order_book_ids(instruments, slice_.start)
+            stage, stage_existed = self.storage.prepare_daily_stage(
+                spec, slice_.start
+            )
+            last_id = (
+                str((latest.cursor if latest else {}).get("last_order_book_id", ""))
+                if stage_existed and latest and latest.status != "complete"
+                else ""
+            )
+            pending = [value for value in universe if value > last_id]
+            batches = list(
+                self._batches(
+                    pending, self.settings.stock_connect_holding_batch_size
+                )
+            )
+            processed_total = len(universe) - len(pending)
+            day_started = monotonic()
+            rows = 0
+            quota_bytes = 0
+            LOGGER.info(
+                "holding_day_started dataset=%s date=%s day=%d/%d universe=%d resumed=%d batches=%d",
+                spec.name,
+                slice_.start,
+                day_position,
+                len(slices),
+                len(universe),
+                len(universe) - len(pending),
+                len(batches),
+            )
+            for batch_position, order_book_ids in enumerate(batches, start=1):
+                try:
+                    raw, consumed = self._fetch(
+                        spec.name,
+                        f"{slice_.slice_key}:{order_book_ids[0]}-{order_book_ids[-1]}",
+                        lambda ids=order_book_ids, d=slice_.start: self.client.stock_connect_holding_details(
+                            ids, d, d
+                        ),
+                    )
+                except QuotaPaused:
+                    self.state.coverage_event(
+                        spec,
+                        slice_.slice_key,
+                        "quota_paused",
+                        range_start=str(slice_.start),
+                        range_end=str(slice_.end),
+                        partition_value=str(slice_.start),
+                        cursor={
+                            "last_order_book_id": last_id,
+                            "universe_size": len(universe),
+                        },
+                        message="resume the same holding day on the next quota day",
+                    )
+                    raise
+                frame = stock_connect_holding_frame(
+                    raw, slice_.start, self.run_id
+                )
+                self.storage.replace_daily_stage_batch(
+                    spec, stage, order_book_ids, frame
+                )
+                last_id = order_book_ids[-1]
+                processed_total += len(order_book_ids)
+                rows += len(frame)
+                quota_bytes += consumed
+                self.state.coverage_event(
+                    spec,
+                    slice_.slice_key,
+                    "partial",
+                    range_start=str(slice_.start),
+                    range_end=str(slice_.end),
+                    partition_value=str(slice_.start),
+                    cursor={
+                        "last_order_book_id": last_id,
+                        "universe_size": len(universe),
+                    },
+                )
+                if (
+                    batch_position == 1
+                    or batch_position % 5 == 0
+                    or batch_position == len(batches)
+                ):
+                    LOGGER.info(
+                        "holding_day_progress dataset=%s date=%s batch=%d/%d processed=%d/%d rows=%d quota_bytes=%d",
+                        spec.name,
+                        slice_.start,
+                        batch_position,
+                        len(batches),
+                        processed_total,
+                        len(universe),
+                        rows,
+                        quota_bytes,
+                    )
+            result = self.storage.publish_daily_stage(
+                spec, stage, slice_.start, allow_empty=True
+            )
+            self.state.coverage_event(
+                spec,
+                slice_.slice_key,
+                "complete",
+                range_start=str(slice_.start),
+                range_end=str(slice_.end),
+                partition_value=str(slice_.start),
+                cursor={
+                    "last_order_book_id": last_id,
+                    "universe_size": len(universe),
+                },
+                row_count=result.row_count,
+                content_hash=result.content_hash,
+                quota_bytes_used=quota_bytes,
+                mutable_until=slice_.end + timedelta(days=spec.mutable_days),
+            )
+            LOGGER.info(
+                "holding_day_complete dataset=%s date=%s rows=%d quota_bytes=%d elapsed_seconds=%.1f",
+                spec.name,
+                slice_.start,
+                result.row_count,
+                quota_bytes,
+                monotonic() - day_started,
+            )
+        LOGGER.info(
+            "dataset_complete dataset=%s trading_days=%d elapsed_seconds=%.1f",
+            spec.name,
+            len(slices),
+            monotonic() - dataset_started,
+        )
+
+    def _sync_fund_holdings(
+        self, mode: str, start: date | None, end: date | None
+    ) -> None:
+        spec = DATASET_SPECS["fund_holdings"]
+        requested_upper = min(end or self.today, self.today)
+        # The final table is partitioned by report month. A historical request
+        # ending mid-month must therefore refresh the rest of that month too;
+        # publishing a partial stage would delete authoritative later reports.
+        requested_month_end = date(
+            requested_upper.year,
+            requested_upper.month,
+            calendar.monthrange(requested_upper.year, requested_upper.month)[1],
+        )
+        upper = min(requested_month_end, self.today)
+        if start:
+            lower = start
+        elif mode in {"bootstrap", "backfill"}:
+            lower = self._dataset_history_start(spec.name)
+        else:
+            last = self.state.latest_completed_end(spec.name)
+            lower = incremental_start(
+                last,
+                self._dataset_history_start(spec.name),
+                rescan_days=self.settings.fund_holding_rescan_days,
+            )
+        # A monthly partition must always be refreshed from its first day;
+        # otherwise an explicit mid-month start could remove earlier reports.
+        lower = lower.replace(day=1)
+        if lower > upper:
+            return
+        raw_funds, universe_quota = self._fetch(
+            spec.name, "fund-universe", self.client.fund_instruments
+        )
+        if raw_funds.empty or "order_book_id" not in raw_funds:
+            raise ValueError("RQData fund.all_instruments returned no fund universe")
+        universe = sorted(
+            raw_funds["order_book_id"].dropna().astype(str).unique().tolist()
+        )
+        universe_hash = hashlib.md5(
+            "\n".join(universe).encode(), usedforsecurity=False
+        ).hexdigest()
+        completed = self.state.completed_slice_ranges(spec.name)
+        slices = list(month_slices(lower, upper))
+        dataset_started = monotonic()
+        LOGGER.info(
+            "dataset_started dataset=%s mode=%s range=%s..%s funds=%d months=%d batch_size=%d",
+            spec.name,
+            mode,
+            lower,
+            upper,
+            len(universe),
+            len(slices),
+            self.settings.fund_holding_batch_size,
+        )
+        for month_position, slice_ in enumerate(slices, start=1):
+            if mode == "bootstrap" and self._completed_slice_covers(
+                completed, slice_
+            ):
+                LOGGER.info(
+                    "fund_holding_month_skipped month=%s reason=complete",
+                    slice_.slice_key,
+                )
+                continue
+            latest = self.state.latest(spec.name, slice_.slice_key)
+            stage, stage_existed = self.storage.prepare_partition_stage(
+                spec, slice_.slice_key
+            )
+            resume = bool(
+                stage_existed
+                and latest
+                and latest.status in {"partial", "quota_paused"}
+                and latest.cursor.get("range_start") == str(slice_.start)
+                and latest.cursor.get("range_end") == str(slice_.end)
+                and latest.cursor.get("universe_hash") == universe_hash
+            )
+            if stage_existed and not resume:
+                LOGGER.warning(
+                    "fund_holding_stage_restarted month=%s reason=authority_bounds_or_universe_changed",
+                    slice_.slice_key,
+                )
+                self.storage.discard_partition_stage(spec, slice_.slice_key)
+                stage = self.storage.prepare_partition_stage(
+                    spec, slice_.slice_key
+                )[0]
+            last_id = (
+                str(latest.cursor.get("last_fund_id", ""))
+                if resume and latest
+                else ""
+            )
+            pending = [value for value in universe if value > last_id]
+            batches = list(
+                self._batches(pending, self.settings.fund_holding_batch_size)
+            )
+            month_started = monotonic()
+            rows = 0
+            quota_bytes = universe_quota if month_position == 1 else 0
+            LOGGER.info(
+                "fund_holding_month_started month=%s month_number=%d/%d funds=%d resumed=%d batches=%d",
+                slice_.slice_key,
+                month_position,
+                len(slices),
+                len(universe),
+                len(universe) - len(pending),
+                len(batches),
+            )
+            for batch_position, fund_ids in enumerate(batches, start=1):
+                try:
+                    raw, consumed = self._fetch(
+                        spec.name,
+                        f"{slice_.slice_key}:{fund_ids[0]}-{fund_ids[-1]}",
+                        lambda ids=fund_ids, s=slice_.start, e=slice_.end: self.client.fund_holdings(
+                            ids, s, e
+                        ),
+                    )
+                except QuotaPaused:
+                    self.state.coverage_event(
+                        spec,
+                        slice_.slice_key,
+                        "quota_paused",
+                        range_start=str(slice_.start),
+                        range_end=str(slice_.end),
+                        partition_value=str(slice_.start.strftime("%Y%m")),
+                        cursor={
+                            "last_fund_id": last_id,
+                            "universe_size": len(universe),
+                            "universe_hash": universe_hash,
+                            "range_start": str(slice_.start),
+                            "range_end": str(slice_.end),
+                        },
+                        message="resume the same fund-report month on the next quota day",
+                    )
+                    raise
+                frame = fund_holding_frame(raw, self.run_id)
+                if not frame.empty:
+                    outside = frame[
+                        (frame["report_date"] < slice_.start)
+                        | (frame["report_date"] > slice_.end)
+                    ]
+                    if not outside.empty:
+                        raise ValueError(
+                            "fund.get_holdings returned report dates outside requested "
+                            f"month {slice_.slice_key}"
+                        )
+                    duplicate_mask = frame.duplicated(
+                        list(spec.primary_key), keep=False
+                    )
+                    if duplicate_mask.any():
+                        conflicts = (
+                            frame.loc[duplicate_mask]
+                            .groupby(list(spec.primary_key), dropna=False)["_record_hash"]
+                            .nunique()
+                        )
+                        if (conflicts > 1).any():
+                            raise ValueError(
+                                "conflicting fund.get_holdings rows share one business key"
+                            )
+                        frame = frame.drop_duplicates(list(spec.primary_key))
+                self.storage.replace_partition_stage_batch(
+                    spec, stage, "fund_id", fund_ids, frame
+                )
+                last_id = fund_ids[-1]
+                rows += len(frame)
+                quota_bytes += consumed
+                self.state.coverage_event(
+                    spec,
+                    slice_.slice_key,
+                    "partial",
+                    range_start=str(slice_.start),
+                    range_end=str(slice_.end),
+                    partition_value=str(slice_.start.strftime("%Y%m")),
+                    cursor={
+                        "last_fund_id": last_id,
+                        "universe_size": len(universe),
+                        "universe_hash": universe_hash,
+                        "range_start": str(slice_.start),
+                        "range_end": str(slice_.end),
+                    },
+                )
+                if (
+                    batch_position == 1
+                    or batch_position % 5 == 0
+                    or batch_position == len(batches)
+                ):
+                    LOGGER.info(
+                        "fund_holding_month_progress month=%s batch=%d/%d last_fund=%s rows=%d quota_bytes=%d",
+                        slice_.slice_key,
+                        batch_position,
+                        len(batches),
+                        last_id,
+                        rows,
+                        quota_bytes,
+                    )
+            partition = str(slice_.start.year * 100 + slice_.start.month)
+            result = self.storage.publish_partition_stage(
+                spec, stage, partition, allow_empty=True
+            )
+            self.state.coverage_event(
+                spec,
+                slice_.slice_key,
+                "complete",
+                range_start=str(slice_.start),
+                range_end=str(slice_.end),
+                partition_value=partition,
+                cursor={
+                    "last_fund_id": last_id,
+                    "universe_size": len(universe),
+                    "universe_hash": universe_hash,
+                    "range_start": str(slice_.start),
+                    "range_end": str(slice_.end),
+                },
+                row_count=result.row_count,
+                content_hash=result.content_hash,
+                quota_bytes_used=quota_bytes,
+                mutable_until=slice_.end + timedelta(days=spec.mutable_days),
+            )
+            LOGGER.info(
+                "fund_holding_month_complete month=%s rows=%d quota_bytes=%d elapsed_seconds=%.1f",
+                slice_.slice_key,
+                result.row_count,
+                quota_bytes,
+                monotonic() - month_started,
+            )
+        LOGGER.info(
+            "dataset_complete dataset=%s months=%d elapsed_seconds=%.1f",
+            spec.name,
+            len(slices),
+            monotonic() - dataset_started,
+        )
 
     def _sync_stock_factors(
         self,
