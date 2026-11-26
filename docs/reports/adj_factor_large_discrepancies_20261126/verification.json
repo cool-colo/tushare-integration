@@ -1,0 +1,120 @@
+{
+  "raw_endpoint_keys_requested": 69,
+  "raw_endpoint_keys_found": 69,
+  "raw_endpoint_observations": 69,
+  "raw_endpoint_missing": [],
+  "raw_mismatches": [],
+  "histories_unchanged": true,
+  "history_fingerprints": [
+    {
+      "ts_code": "000430.SZ",
+      "dates": 7331,
+      "unchanged": true
+    },
+    {
+      "ts_code": "000545.SZ",
+      "dates": 8008,
+      "unchanged": true
+    },
+    {
+      "ts_code": "000615.SZ",
+      "dates": 7300,
+      "unchanged": true
+    },
+    {
+      "ts_code": "000691.SZ",
+      "dates": 7214,
+      "unchanged": true
+    },
+    {
+      "ts_code": "000697.SZ",
+      "dates": 7197,
+      "unchanged": true
+    },
+    {
+      "ts_code": "000793.SZ",
+      "dates": 7111,
+      "unchanged": true
+    },
+    {
+      "ts_code": "000908.SZ",
+      "dates": 6734,
+      "unchanged": true
+    },
+    {
+      "ts_code": "000998.SZ",
+      "dates": 6293,
+      "unchanged": true
+    },
+    {
+      "ts_code": "001331.SZ",
+      "dates": 1019,
+      "unchanged": true
+    },
+    {
+      "ts_code": "002200.SZ",
+      "dates": 4598,
+      "unchanged": true
+    },
+    {
+      "ts_code": "002713.SZ",
+      "dates": 3106,
+      "unchanged": true
+    },
+    {
+      "ts_code": "002742.SZ",
+      "dates": 2859,
+      "unchanged": true
+    },
+    {
+      "ts_code": "002822.SZ",
+      "dates": 2426,
+      "unchanged": true
+    },
+    {
+      "ts_code": "300091.SZ",
+      "dates": 3988,
+      "unchanged": true
+    },
+    {
+      "ts_code": "300093.SZ",
+      "dates": 3979,
+      "unchanged": true
+    },
+    {
+      "ts_code": "300125.SZ",
+      "dates": 3918,
+      "unchanged": true
+    },
+    {
+      "ts_code": "300159.SZ",
+      "dates": 3857,
+      "unchanged": true
+    },
+    {
+      "ts_code": "300176.SZ",
+      "dates": 3835,
+      "unchanged": true
+    },
+    {
+      "ts_code": "300506.SZ",
+      "dates": 2593,
+      "unchanged": true
+    },
+    {
+      "ts_code": "600165.SH",
+      "dates": 6909,
+      "unchanged": true
+    },
+    {
+      "ts_code": "600610.SH",
+      "dates": 8357,
+      "unchanged": true
+    },
+    {
+      "ts_code": "600717.SH",
+      "dates": 7385,
+      "unchanged": true
+    }
+  ]
+}

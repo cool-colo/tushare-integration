@@ -1537,9 +1537,13 @@ class QualityManager:
                 issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
                 "fund_id = '' OR held_order_book_id = '' "
                 "OR fund_instrument_id != concat('fund:', fund_id) "
+                "OR symbol_key != ifNull(symbol, '') "
                 "OR event_date != report_date "
                 "OR (release_date IS NOT NULL AND release_date < report_date) "
-                "OR (available_trade_date IS NOT NULL AND available_trade_date <= release_date)",
+                "OR (available_trade_date IS NOT NULL AND available_trade_date <= release_date) "
+                "OR instrument_id != concat(instrument_type, ':', held_order_book_id, "
+                "if(position(held_order_book_id, '.') = 0 AND symbol_key != '', "
+                "concat(':', symbol_key), ''))",
             ),
             ValidationRule(
                 rule_id="ricequant_fund_holding_nonnegative_finite_measures",

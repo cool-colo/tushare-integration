@@ -1,0 +1,514 @@
+{
+  "threshold": "abs(local/current_tushare - 1) >= 0.01; abs(local_today/local_previous - 1) >= 0.01 for initial candidates",
+  "candidate_source_check": {
+    "all_candidates_ge_1pct": 449,
+    "within_lifecycle_candidates": 368,
+    "post_delisting_deferred": 81,
+    "source_requests": 735,
+    "source_statuses": {
+      "ok": 720,
+      "source_absent": 15
+    },
+    "classifications": {
+      "current_source_also_jumps_ge_1pct": 317,
+      "no_current_source_ge_1pct_issue": 1,
+      "source_response_unresolved": 15,
+      "local_differs_from_current_source_ge_1pct": 35
+    },
+    "local_source_discrepancy_stocks": 22,
+    "refined_classifications": {
+      "current_source_also_jumps_ge_1pct": 317,
+      "no_current_source_ge_1pct_issue": 1,
+      "source_response_unresolved": 8,
+      "local_differs_from_current_source_ge_1pct": 35,
+      "source_absent_on_verified_delisting_date": 7
+    }
+  },
+  "confirmed_histories": {
+    "stocks": 22,
+    "local_dates_checked": 116017,
+    "source_pages": 126,
+    "independent_endpoint_checks": 70,
+    "differences_ge_1pct": 9595,
+    "source_absent_local_dates": 302,
+    "unresolved_histories": [],
+    "stocks_summary": [
+      {
+        "ts_code": "000430.SZ",
+        "symbol": "张家界",
+        "local_dates_checked": 7331,
+        "current_source_dates": 7331,
+        "source_pages": 8,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 901,
+        "differences_lt_1pct_skipped": 6308,
+        "differences_ge_1pct": 122,
+        "first_difference_date": "2025-12-29",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.13045117743547197,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "000545.SZ",
+        "symbol": "金浦钛业",
+        "local_dates_checked": 8008,
+        "current_source_dates": 7706,
+        "source_pages": 8,
+        "independent_endpoint_checks": 10,
+        "equal_dates": 357,
+        "differences_lt_1pct_skipped": 5453,
+        "differences_ge_1pct": 1896,
+        "first_difference_date": "2013-07-26",
+        "last_difference_date": "2022-05-27",
+        "max_abs_relative_difference": 0.06071226681741104,
+        "source_absent_local_dates": 302,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "000615.SZ",
+        "symbol": "*ST美谷",
+        "local_dates_checked": 7300,
+        "current_source_dates": 7300,
+        "source_pages": 8,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 2931,
+        "differences_lt_1pct_skipped": 4247,
+        "differences_ge_1pct": 122,
+        "first_difference_date": "2025-12-29",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.11240828457323304,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "000691.SZ",
+        "symbol": "亚太实业",
+        "local_dates_checked": 7214,
+        "current_source_dates": 7214,
+        "source_pages": 8,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 343,
+        "differences_lt_1pct_skipped": 6752,
+        "differences_ge_1pct": 119,
+        "first_difference_date": "2026-01-05",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.22516992999898544,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "000697.SZ",
+        "symbol": "炼石航空",
+        "local_dates_checked": 7197,
+        "current_source_dates": 7197,
+        "source_pages": 8,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 359,
+        "differences_lt_1pct_skipped": 6837,
+        "differences_ge_1pct": 1,
+        "first_difference_date": "2025-11-27",
+        "last_difference_date": "2025-11-27",
+        "max_abs_relative_difference": 0.049715638520776206,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "000793.SZ",
+        "symbol": "ST华闻",
+        "local_dates_checked": 7111,
+        "current_source_dates": 7111,
+        "source_pages": 8,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 1404,
+        "differences_lt_1pct_skipped": 5697,
+        "differences_ge_1pct": 10,
+        "first_difference_date": "2026-06-22",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.045615241455083666,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "000908.SZ",
+        "symbol": "石药景峰",
+        "local_dates_checked": 6734,
+        "current_source_dates": 6734,
+        "source_pages": 7,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 541,
+        "differences_lt_1pct_skipped": 6115,
+        "differences_ge_1pct": 78,
+        "first_difference_date": "2026-03-11",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.3154495537118115,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "000998.SZ",
+        "symbol": "隆平高科",
+        "local_dates_checked": 6293,
+        "current_source_dates": 6293,
+        "source_pages": 7,
+        "independent_endpoint_checks": 12,
+        "equal_dates": 850,
+        "differences_lt_1pct_skipped": 2318,
+        "differences_ge_1pct": 3125,
+        "first_difference_date": "2009-07-07",
+        "last_difference_date": "2023-05-31",
+        "max_abs_relative_difference": 0.027201661522485265,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "001331.SZ",
+        "symbol": "胜通能源",
+        "local_dates_checked": 1019,
+        "current_source_dates": 1019,
+        "source_pages": 2,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 182,
+        "differences_lt_1pct_skipped": 835,
+        "differences_ge_1pct": 2,
+        "first_difference_date": "2026-06-26",
+        "last_difference_date": "2026-06-29",
+        "max_abs_relative_difference": 0.3108604557717697,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "002200.SZ",
+        "symbol": "交投生态",
+        "local_dates_checked": 4598,
+        "current_source_dates": 4598,
+        "source_pages": 5,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 597,
+        "differences_lt_1pct_skipped": 3868,
+        "differences_ge_1pct": 133,
+        "first_difference_date": "2025-12-12",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.1124694376528117,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "002713.SZ",
+        "symbol": "东易日盛",
+        "local_dates_checked": 3106,
+        "current_source_dates": 3106,
+        "source_pages": 4,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 565,
+        "differences_lt_1pct_skipped": 2362,
+        "differences_ge_1pct": 179,
+        "first_difference_date": "2025-12-30",
+        "last_difference_date": "2026-09-23",
+        "max_abs_relative_difference": 0.22274554627148035,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "002742.SZ",
+        "symbol": "冀衡医药",
+        "local_dates_checked": 2859,
+        "current_source_dates": 2859,
+        "source_pages": 3,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 800,
+        "differences_lt_1pct_skipped": 1924,
+        "differences_ge_1pct": 135,
+        "first_difference_date": "2025-12-10",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.043256997455470625,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "002822.SZ",
+        "symbol": "ST中装",
+        "local_dates_checked": 2426,
+        "current_source_dates": 2426,
+        "source_pages": 3,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 1108,
+        "differences_lt_1pct_skipped": 1197,
+        "differences_ge_1pct": 121,
+        "first_difference_date": "2025-12-30",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.05650949395839011,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "300091.SZ",
+        "symbol": "*ST金灵",
+        "local_dates_checked": 3988,
+        "current_source_dates": 3988,
+        "source_pages": 4,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 739,
+        "differences_lt_1pct_skipped": 3100,
+        "differences_ge_1pct": 149,
+        "first_difference_date": "2026-02-12",
+        "last_difference_date": "2026-09-23",
+        "max_abs_relative_difference": 0.01900950837228832,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "300093.SZ",
+        "symbol": "金刚光伏",
+        "local_dates_checked": 3979,
+        "current_source_dates": 3979,
+        "source_pages": 4,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 494,
+        "differences_lt_1pct_skipped": 3336,
+        "differences_ge_1pct": 149,
+        "first_difference_date": "2025-11-20",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.11928112469201413,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "300125.SZ",
+        "symbol": "聆达股份",
+        "local_dates_checked": 3918,
+        "current_source_dates": 3918,
+        "source_pages": 4,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 406,
+        "differences_lt_1pct_skipped": 3390,
+        "differences_ge_1pct": 122,
+        "first_difference_date": "2025-12-29",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.20872392680480123,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "300159.SZ",
+        "symbol": "新研股份",
+        "local_dates_checked": 3857,
+        "current_source_dates": 3857,
+        "source_pages": 4,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 331,
+        "differences_lt_1pct_skipped": 3401,
+        "differences_ge_1pct": 125,
+        "first_difference_date": "2025-12-24",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.15044885959154242,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "300176.SZ",
+        "symbol": "鸿特科技",
+        "local_dates_checked": 3835,
+        "current_source_dates": 3835,
+        "source_pages": 4,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 583,
+        "differences_lt_1pct_skipped": 3240,
+        "differences_ge_1pct": 12,
+        "first_difference_date": "2026-08-21",
+        "last_difference_date": "2026-09-07",
+        "max_abs_relative_difference": 0.09747228555704057,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "300506.SZ",
+        "symbol": "名家汇",
+        "local_dates_checked": 2593,
+        "current_source_dates": 2593,
+        "source_pages": 3,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 304,
+        "differences_lt_1pct_skipped": 2162,
+        "differences_ge_1pct": 127,
+        "first_difference_date": "2025-12-22",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.24587050270110378,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "600165.SH",
+        "symbol": "宁科生物",
+        "local_dates_checked": 6909,
+        "current_source_dates": 6909,
+        "source_pages": 7,
+        "independent_endpoint_checks": 4,
+        "equal_dates": 582,
+        "differences_lt_1pct_skipped": 6192,
+        "differences_ge_1pct": 135,
+        "first_difference_date": "2025-12-10",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.26231918894843265,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "600610.SH",
+        "symbol": "中毅达",
+        "local_dates_checked": 8357,
+        "current_source_dates": 8357,
+        "source_pages": 9,
+        "independent_endpoint_checks": 8,
+        "equal_dates": 5635,
+        "differences_lt_1pct_skipped": 0,
+        "differences_ge_1pct": 2722,
+        "first_difference_date": "2015-08-19",
+        "last_difference_date": "2026-11-06",
+        "max_abs_relative_difference": 0.10000554508151271,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      },
+      {
+        "ts_code": "600717.SH",
+        "symbol": "天津港",
+        "local_dates_checked": 7385,
+        "current_source_dates": 7385,
+        "source_pages": 8,
+        "independent_endpoint_checks": 2,
+        "equal_dates": 1066,
+        "differences_lt_1pct_skipped": 6308,
+        "differences_ge_1pct": 11,
+        "first_difference_date": "2026-06-18",
+        "last_difference_date": "2026-07-03",
+        "max_abs_relative_difference": 0.023215471749932104,
+        "source_absent_local_dates": 0,
+        "source_only_dates": 0
+      }
+    ]
+  },
+  "verification": {
+    "raw_endpoint_keys_requested": 69,
+    "raw_endpoint_keys_found": 69,
+    "raw_endpoint_observations": 69,
+    "raw_endpoint_missing": [],
+    "raw_mismatches": [],
+    "histories_unchanged": true,
+    "history_fingerprints": [
+      {
+        "ts_code": "000430.SZ",
+        "dates": 7331,
+        "unchanged": true
+      },
+      {
+        "ts_code": "000545.SZ",
+        "dates": 8008,
+        "unchanged": true
+      },
+      {
+        "ts_code": "000615.SZ",
+        "dates": 7300,
+        "unchanged": true
+      },
+      {
+        "ts_code": "000691.SZ",
+        "dates": 7214,
+        "unchanged": true
+      },
+      {
+        "ts_code": "000697.SZ",
+        "dates": 7197,
+        "unchanged": true
+      },
+      {
+        "ts_code": "000793.SZ",
+        "dates": 7111,
+        "unchanged": true
+      },
+      {
+        "ts_code": "000908.SZ",
+        "dates": 6734,
+        "unchanged": true
+      },
+      {
+        "ts_code": "000998.SZ",
+        "dates": 6293,
+        "unchanged": true
+      },
+      {
+        "ts_code": "001331.SZ",
+        "dates": 1019,
+        "unchanged": true
+      },
+      {
+        "ts_code": "002200.SZ",
+        "dates": 4598,
+        "unchanged": true
+      },
+      {
+        "ts_code": "002713.SZ",
+        "dates": 3106,
+        "unchanged": true
+      },
+      {
+        "ts_code": "002742.SZ",
+        "dates": 2859,
+        "unchanged": true
+      },
+      {
+        "ts_code": "002822.SZ",
+        "dates": 2426,
+        "unchanged": true
+      },
+      {
+        "ts_code": "300091.SZ",
+        "dates": 3988,
+        "unchanged": true
+      },
+      {
+        "ts_code": "300093.SZ",
+        "dates": 3979,
+        "unchanged": true
+      },
+      {
+        "ts_code": "300125.SZ",
+        "dates": 3918,
+        "unchanged": true
+      },
+      {
+        "ts_code": "300159.SZ",
+        "dates": 3857,
+        "unchanged": true
+      },
+      {
+        "ts_code": "300176.SZ",
+        "dates": 3835,
+        "unchanged": true
+      },
+      {
+        "ts_code": "300506.SZ",
+        "dates": 2593,
+        "unchanged": true
+      },
+      {
+        "ts_code": "600165.SH",
+        "dates": 6909,
+        "unchanged": true
+      },
+      {
+        "ts_code": "600610.SH",
+        "dates": 8357,
+        "unchanged": true
+      },
+      {
+        "ts_code": "600717.SH",
+        "dates": 7385,
+        "unchanged": true
+      }
+    ]
+  },
+  "database_writes": false,
+  "dwd_rebuilt": false,
+  "cross_source_substitution": false,
+  "evidence_root": "/home/fanglicheng/.local/state/tushare-integration/audits/adj-factor-large-bugs-20261126"
+}

@@ -60,9 +60,30 @@ class RiceQuantStorage:
     def initialize(self) -> None:
         for schema in TABLE_SCHEMAS.values():
             self.client.command(schema.create_sql(self.database))
+        self._migrate_fund_holding_symbol_key()
         self.client.command(STATE_DDL.format(database=self.database))
         self.client.command(RUN_DDL.format(database=self.database))
         self.client.command(ESTIMATE_DDL.format(database=self.database))
+
+    def _migrate_fund_holding_symbol_key(self) -> None:
+        """Add the source identity discriminator to final and resumable stages.
+
+        RQData can return distinct overseas securities with the same bare ticker
+        and otherwise identical classification fields. Existing partial stages
+        must be upgraded in place so a quota-resumed month remains usable.
+        """
+
+        tables = self.client.query(
+            "SELECT name FROM system.tables "
+            f"WHERE database = {quote_string(self.database)} AND "
+            "(name = 'ricequant_fund_holding' OR "
+            "name LIKE 'ricequant_fund_holding_stage_%')"
+        ).result_rows
+        for (table,) in tables:
+            self.client.command(
+                f"ALTER TABLE {self.db}.`{table}` ADD COLUMN IF NOT EXISTS "
+                "`symbol_key` String DEFAULT ifNull(`symbol`, '') AFTER `symbol`"
+            )
 
     @contextmanager
     def distributed_runner_lock(self, owner: str, stale_after_seconds: int = 86_400):

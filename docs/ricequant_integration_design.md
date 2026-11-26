@@ -84,7 +84,7 @@ DWD/DWS 血缘。
 | `ricequant_cashflow_statement` | `order_book_id, report_period, source_version_id` | 股票 |
 | `ricequant_financial_metric` | `order_book_id, report_period, source_version_id` | 股票 |
 | `ricequant_stock_connect_holding_detail` | `trade_date, order_book_id, participant_number` | 交易日 |
-| `ricequant_fund_holding` | `fund_id, report_date, release_date_key, held_order_book_id, asset_type_key, category_key, region_key` | 报告月 |
+| `ricequant_fund_holding` | `fund_id, report_date, release_date_key, held_order_book_id, asset_type_key, category_key, region_key, symbol_key` | 报告月 |
 | `ricequant_concept_snapshot` | `observation_date, snapshot_date, concept_name, order_book_id` | 观察日、源快照日 |
 | `ricequant_industry_snapshot` | `observation_date, snapshot_date, source_name, industry_level, order_book_id` | 观察日、源快照日 |
 | `ricequant_sector_snapshot` | `observation_date, sector_code, order_book_id` | 观察日 |
@@ -133,6 +133,9 @@ PIT 只能使用响应中的 `release_date`。DWD 设置 `event_date=report_date
 `ricequant_trading_calendar` 取得公告日之后严格的下一交易日。`release_date` 缺失时
 `available_trade_date` 保持 NULL，禁止进入 PIT 宽表。`availability_basis` 仅是推导血缘标签：
 `release_date_next_trade_day`、`missing_release_date` 或 `missing_calendar_date`，不是源字段。
+米筐对部分海外证券会返回相同的裸 ticker，但以不同 `symbol` 表示不同资产，例如 `SAN` 同时代表
+“赛诺菲”和“桑坦德”；因此 `symbol_key` 是业务键的一部分。DWD 对带交易所后缀的标准代码保持原统一
+ID，对无后缀代码追加 `symbol_key`，避免把不同海外证券错误合并。
 
 基金接口没有独立修订版本号，因此 ODS 月分区同样只保存当前权威值，不根据本地抓取时间虚构历史修订。
 增量任务默认回看 365 天的报告期，是为了接住近期报告期的延迟/新增披露；它不保证发现更老报告期的

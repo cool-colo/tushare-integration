@@ -1,0 +1,30 @@
+{
+  "stock_summary.csv": {
+    "bytes": 2383,
+    "sha256": "bc68bfffed9cdd707aff5e7c4327cca036d77f7fd0cff895c0b61778951866b5"
+  },
+  "confirmed_jump_endpoints.csv": {
+    "bytes": 10704,
+    "sha256": "40a4741378275d4e852c157ee722f5d339963716d13ee67e69f8b0d9ed0dcc2e"
+  },
+  "verification.json": {
+    "bytes": 2160,
+    "sha256": "45da9ceac48269745d93c5802513f12bd1c72e47f0619efb31e1ba6985a55f10"
+  },
+  "repair_dates_ge_1pct.csv": {
+    "bytes": 340603,
+    "sha256": "0640e69ff0e91582994a892c0863324663cc2b2afcb610fb61aaa6e02044a7cc"
+  },
+  "candidate_classifications.csv": {
+    "bytes": 109936,
+    "sha256": "42d990b7b091059175c6a5ad09bda4d48853ce8584f37c9d0d8dcf9410837eab"
+  },
+  "summary.json": {
+    "bytes": 16109,
+    "sha256": "8de19cd96a6e21e97d1e0290438849656121dff4d74aa53a3d6ddd02f5685141"
+  },
+  "report.md": {
+    "bytes": 9719,
+    "sha256": "9ac81cce337c1bfcb3ecbec74aa4c063ddc6d354bdd770ae969f836081ae4186"
+  }
+}

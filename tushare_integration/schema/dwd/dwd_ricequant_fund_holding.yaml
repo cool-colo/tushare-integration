@@ -14,10 +14,11 @@ business_key:
   - asset_type_key
   - category_key
   - region_key
+  - symbol_key
 source_filters:
   - "src.fund_id != '' AND src.held_order_book_id != ''"
 instrument_type_expr: "multiIf(src.asset_type_key = 'Stock', 'stock', src.asset_type_key = 'Bond', 'bond', src.asset_type_key = 'Fund', 'fund', src.asset_type_key = 'Warrant', 'warrant', src.asset_type_key = 'Futures', 'futures', 'other')"
-instrument_id_expr: "concat(multiIf(src.asset_type_key = 'Stock', 'stock', src.asset_type_key = 'Bond', 'bond', src.asset_type_key = 'Fund', 'fund', src.asset_type_key = 'Warrant', 'warrant', src.asset_type_key = 'Futures', 'futures', 'other'), ':', src.held_order_book_id)"
+instrument_id_expr: "concat(multiIf(src.asset_type_key = 'Stock', 'stock', src.asset_type_key = 'Bond', 'bond', src.asset_type_key = 'Fund', 'fund', src.asset_type_key = 'Warrant', 'warrant', src.asset_type_key = 'Futures', 'futures', 'other'), ':', src.held_order_book_id, if(position(src.held_order_book_id, '.') = 0 AND src.symbol_key != '', concat(':', src.symbol_key), ''))"
 source_code_expr: src.held_order_book_id
 exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.held_order_book_id)), 2)"
 event_date_expr: src.report_date
@@ -44,4 +45,5 @@ indexes:
       - event_date
       - release_date_key
       - held_order_book_id
+      - symbol_key
       - sys_from

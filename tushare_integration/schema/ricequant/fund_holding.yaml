@@ -11,6 +11,7 @@ primary_key:
   - asset_type_key
   - category_key
   - region_key
+  - symbol_key
 indexes: []
 columns:
   - name: fund_id
@@ -48,6 +49,10 @@ columns:
     length: 255
     nullable: true
     comment: 持仓资产简称
+  - name: symbol_key
+    data_type: str
+    length: 255
+    comment: 持仓资产简称物理键；区分米筐返回的同代码不同海外证券
   - name: asset_type
     data_type: str
     length: 32

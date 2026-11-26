@@ -293,6 +293,7 @@ TABLE_SCHEMAS: dict[str, TableSchema] = {
             `shares` Nullable(Float64),
             `market_value` Nullable(Float64),
             `symbol` Nullable(String),
+            `symbol_key` String,
             `asset_type` Nullable(String),
             `asset_type_key` String,
             `category` Nullable(String),
@@ -310,6 +311,7 @@ TABLE_SCHEMAS: dict[str, TableSchema] = {
             "asset_type_key",
             "category_key",
             "region_key",
+            "symbol_key",
         ),
     ),
     "ricequant_income_statement": TableSchema(

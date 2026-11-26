@@ -1,0 +1,7 @@
+{
+  "all_interval_endpoints_checked_by_python_bisect": 207280,
+  "category_and_stock_counts_match_full_scan": true,
+  "all_categories_recomputed": true,
+  "688585_1491_dates_agree_at_4dp": true,
+  "direct_tushare_endpoint_value_and_batch_checks": 199
+}

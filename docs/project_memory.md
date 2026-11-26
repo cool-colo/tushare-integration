@@ -136,6 +136,10 @@
   returned `release_date` and every returned asset class. DWD visibility is the strict
   next RiceQuant trading day after `release_date`; a missing release date stays NULL
   and PIT-invisible.
+- Some overseas holdings share the same bare source ticker and classification while
+  denoting different securities (observed: `SAN` for both Sanofi and Santander).
+  Preserve `symbol_key` in the business identity; never collapse these rows or select
+  one payload. DWD appends the symbol only for identifiers without an exchange suffix.
 - `availability_basis` is a DWD lineage label explaining how
   `available_trade_date` was obtained. It is not a RiceQuant source field and not a
   second date. Current fund labels are `release_date_next_trade_day`,

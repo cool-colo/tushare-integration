@@ -34,6 +34,7 @@ def test_holding_specs_use_plain_merge_tree_tables_and_explicit_keys():
     )
     assert fund.table == "ricequant_fund_holding"
     assert "release_date_key" in fund.primary_key
+    assert "symbol_key" in fund.primary_key
     assert "ENGINE = MergeTree" in TABLE_SCHEMAS[connect.table].create_sql("default")
     assert "ReplacingMergeTree" not in TABLE_SCHEMAS[fund.table].create_sql("default")
 
@@ -98,7 +99,35 @@ def test_fund_transform_preserves_release_date_and_all_asset_classes():
     assert set(frame["report_date"]) == {date(2019, 9, 30)}
     assert set(frame["release_date"]) == {date(2019, 10, 22)}
     assert set(frame["release_date_key"]) == {date(2019, 10, 22)}
+    assert set(frame["symbol_key"]) == {"浦发银行", "国债"}
     assert frame["weight"].tolist() == [0.05, 0.1]
+
+
+def test_fund_transform_distinguishes_same_overseas_ticker_by_source_symbol():
+    raw = pd.DataFrame(
+        {
+            "order_book_id": ["SAN", "SAN"],
+            "weight": [0.0033, 0.007],
+            "shares": [234.0, 9286.0],
+            "market_value": [138852.9, 296198.01],
+            "type": ["Stock", "Stock"],
+            "category": ["Unknown", "Unknown"],
+            "region": ["西班牙", "西班牙"],
+            "symbol": ["赛诺菲", "桑坦德"],
+            "release_date": [pd.Timestamp("2019-08-24")] * 2,
+        },
+        index=pd.MultiIndex.from_tuples(
+            [("006282", pd.Timestamp("2019-06-30"))] * 2,
+            names=["fund_id", "date"],
+        ),
+    )
+
+    frame = fund_holding_frame(raw, "batch-overseas")
+
+    assert set(frame["symbol_key"]) == {"赛诺菲", "桑坦德"}
+    assert not frame.duplicated(
+        list(DATASET_SPECS["fund_holdings"].primary_key)
+    ).any()
 
 
 def test_fund_transform_keeps_missing_release_date_pit_invisible_key():
@@ -217,6 +246,34 @@ def test_daily_publish_uses_the_table_partition_date_column():
         storage.publish_daily_stage(spec, "stage", date(2024, 6, 28))
 
     assert any("WHERE `trade_date` !=" in sql for sql in storage.client.queries)
+
+
+def test_storage_migrates_fund_final_and_resumable_stages_with_symbol_key():
+    class Result:
+        result_rows = [
+            ("ricequant_fund_holding",),
+            ("ricequant_fund_holding_stage_2019_06",),
+        ]
+
+    class Client:
+        def __init__(self):
+            self.commands = []
+
+        def query(self, _sql):
+            return Result()
+
+        def command(self, sql):
+            self.commands.append(sql)
+
+    storage = object.__new__(RiceQuantStorage)
+    storage.database = "default"
+    storage.client = Client()
+
+    storage._migrate_fund_holding_symbol_key()
+
+    assert len(storage.client.commands) == 2
+    assert all("ADD COLUMN IF NOT EXISTS `symbol_key`" in sql for sql in storage.client.commands)
+    assert any("stage_2019_06" in sql for sql in storage.client.commands)
 
 
 def test_stock_connect_can_atomically_publish_a_legitimate_empty_day():

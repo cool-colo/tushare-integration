@@ -179,6 +179,7 @@ DATASET_SPECS: dict[str, DatasetSpec] = {
             "asset_type_key",
             "category_key",
             "region_key",
+            "symbol_key",
         ),
         partition_expression="toYYYYMM(report_date)",
         cadence="monthly",

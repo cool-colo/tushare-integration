@@ -1,0 +1,307 @@
+{
+  "compared_rows": 18462356,
+  "compared_stocks": 5382,
+  "first_date": "1990-12-19",
+  "last_date": "2026-11-25",
+  "categories": {
+    "exact_equal": 1173522,
+    "difference_lt_01pct": 11411755,
+    "difference_ge_1pct": 2723698,
+    "difference_ge_01pct": 2322371,
+    "equal_at_4dp": 831010
+  },
+  "stocks_agreeing_all_history_at_4dp": 139,
+  "stocks_with_any_difference": 5243,
+  "stocks_with_only_differences_lt_01pct": 3637,
+  "stocks_with_difference_ge_1pct": 557,
+  "comparison_intervals": 103640,
+  "difference_intervals": 89615,
+  "non_event_changes": 39249,
+  "non_event_changed_stocks": 5126,
+  "non_event_changes_ge_01pct": 521,
+  "non_event_changed_stocks_ge_01pct": 310,
+  "top_non_event_dates": [
+    {
+      "trade_date": "2026-10-27",
+      "compared_rows": 5128,
+      "agree_at_4dp_rows": 355,
+      "difference_rows": 4773,
+      "difference_ge_1pct_rows": 360,
+      "changes_without_rq_event": 4506,
+      "changes_without_rq_event_ge_01pct": 1
+    },
+    {
+      "trade_date": "2026-10-26",
+      "compared_rows": 5128,
+      "agree_at_4dp_rows": 1160,
+      "difference_rows": 3968,
+      "difference_ge_1pct_rows": 361,
+      "changes_without_rq_event": 4505,
+      "changes_without_rq_event_ge_01pct": 1
+    },
+    {
+      "trade_date": "2026-11-24",
+      "compared_rows": 5128,
+      "agree_at_4dp_rows": 1160,
+      "difference_rows": 3968,
+      "difference_ge_1pct_rows": 363,
+      "changes_without_rq_event": 4494,
+      "changes_without_rq_event_ge_01pct": 0
+    },
+    {
+      "trade_date": "2024-06-26",
+      "compared_rows": 5090,
+      "agree_at_4dp_rows": 350,
+      "difference_rows": 4740,
+      "difference_ge_1pct_rows": 383,
+      "changes_without_rq_event": 4455,
+      "changes_without_rq_event_ge_01pct": 0
+    },
+    {
+      "trade_date": "2024-06-25",
+      "compared_rows": 5089,
+      "agree_at_4dp_rows": 1273,
+      "difference_rows": 3816,
+      "difference_ge_1pct_rows": 384,
+      "changes_without_rq_event": 4378,
+      "changes_without_rq_event_ge_01pct": 1
+    },
+    {
+      "trade_date": "2021-01-07",
+      "compared_rows": 4138,
+      "agree_at_4dp_rows": 463,
+      "difference_rows": 3675,
+      "difference_ge_1pct_rows": 403,
+      "changes_without_rq_event": 3443,
+      "changes_without_rq_event_ge_01pct": 3
+    },
+    {
+      "trade_date": "2020-01-02",
+      "compared_rows": 3763,
+      "agree_at_4dp_rows": 681,
+      "difference_rows": 3082,
+      "difference_ge_1pct_rows": 402,
+      "changes_without_rq_event": 3225,
+      "changes_without_rq_event_ge_01pct": 3
+    },
+    {
+      "trade_date": "2018-08-28",
+      "compared_rows": 3541,
+      "agree_at_4dp_rows": 178,
+      "difference_rows": 3363,
+      "difference_ge_1pct_rows": 404,
+      "changes_without_rq_event": 3135,
+      "changes_without_rq_event_ge_01pct": 3
+    },
+    {
+      "trade_date": "2018-08-16",
+      "compared_rows": 3540,
+      "agree_at_4dp_rows": 652,
+      "difference_rows": 2888,
+      "difference_ge_1pct_rows": 404,
+      "changes_without_rq_event": 3126,
+      "changes_without_rq_event_ge_01pct": 5
+    },
+    {
+      "trade_date": "2023-06-01",
+      "compared_rows": 4967,
+      "agree_at_4dp_rows": 483,
+      "difference_rows": 4484,
+      "difference_ge_1pct_rows": 385,
+      "changes_without_rq_event": 2705,
+      "changes_without_rq_event_ge_01pct": 2
+    },
+    {
+      "trade_date": "2022-05-30",
+      "compared_rows": 4705,
+      "agree_at_4dp_rows": 549,
+      "difference_rows": 4156,
+      "difference_ge_1pct_rows": 394,
+      "changes_without_rq_event": 728,
+      "changes_without_rq_event_ge_01pct": 1
+    },
+    {
+      "trade_date": "2026-07-06",
+      "compared_rows": 5140,
+      "agree_at_4dp_rows": 351,
+      "difference_rows": 4789,
+      "difference_ge_1pct_rows": 364,
+      "changes_without_rq_event": 15,
+      "changes_without_rq_event_ge_01pct": 15
+    },
+    {
+      "trade_date": "2026-10-20",
+      "compared_rows": 5128,
+      "agree_at_4dp_rows": 354,
+      "difference_rows": 4774,
+      "difference_ge_1pct_rows": 360,
+      "changes_without_rq_event": 13,
+      "changes_without_rq_event_ge_01pct": 0
+    },
+    {
+      "trade_date": "1993-01-04",
+      "compared_rows": 49,
+      "agree_at_4dp_rows": 28,
+      "difference_rows": 21,
+      "difference_ge_1pct_rows": 21,
+      "changes_without_rq_event": 12,
+      "changes_without_rq_event_ge_01pct": 12
+    },
+    {
+      "trade_date": "1992-10-05",
+      "compared_rows": 36,
+      "agree_at_4dp_rows": 18,
+      "difference_rows": 18,
+      "difference_ge_1pct_rows": 14,
+      "changes_without_rq_event": 9,
+      "changes_without_rq_event_ge_01pct": 9
+    }
+  ],
+  "top_large_non_event_dates": [
+    {
+      "trade_date": "2026-07-06",
+      "compared_rows": 5140,
+      "agree_at_4dp_rows": 351,
+      "difference_rows": 4789,
+      "difference_ge_1pct_rows": 364,
+      "changes_without_rq_event": 15,
+      "changes_without_rq_event_ge_01pct": 15
+    },
+    {
+      "trade_date": "1993-01-04",
+      "compared_rows": 49,
+      "agree_at_4dp_rows": 28,
+      "difference_rows": 21,
+      "difference_ge_1pct_rows": 21,
+      "changes_without_rq_event": 12,
+      "changes_without_rq_event_ge_01pct": 12
+    },
+    {
+      "trade_date": "1992-10-05",
+      "compared_rows": 36,
+      "agree_at_4dp_rows": 18,
+      "difference_rows": 18,
+      "difference_ge_1pct_rows": 14,
+      "changes_without_rq_event": 9,
+      "changes_without_rq_event_ge_01pct": 9
+    },
+    {
+      "trade_date": "1992-05-06",
+      "compared_rows": 24,
+      "agree_at_4dp_rows": 12,
+      "difference_rows": 12,
+      "difference_ge_1pct_rows": 9,
+      "changes_without_rq_event": 6,
+      "changes_without_rq_event_ge_01pct": 6
+    },
+    {
+      "trade_date": "2026-09-24",
+      "compared_rows": 5128,
+      "agree_at_4dp_rows": 354,
+      "difference_rows": 4774,
+      "difference_ge_1pct_rows": 360,
+      "changes_without_rq_event": 6,
+      "changes_without_rq_event_ge_01pct": 6
+    },
+    {
+      "trade_date": "1992-05-04",
+      "compared_rows": 24,
+      "agree_at_4dp_rows": 14,
+      "difference_rows": 10,
+      "difference_ge_1pct_rows": 9,
+      "changes_without_rq_event": 5,
+      "changes_without_rq_event_ge_01pct": 5
+    },
+    {
+      "trade_date": "2006-05-16",
+      "compared_rows": 1312,
+      "agree_at_4dp_rows": 79,
+      "difference_rows": 1233,
+      "difference_ge_1pct_rows": 368,
+      "changes_without_rq_event": 5,
+      "changes_without_rq_event_ge_01pct": 5
+    },
+    {
+      "trade_date": "2018-08-16",
+      "compared_rows": 3540,
+      "agree_at_4dp_rows": 652,
+      "difference_rows": 2888,
+      "difference_ge_1pct_rows": 404,
+      "changes_without_rq_event": 3126,
+      "changes_without_rq_event_ge_01pct": 5
+    },
+    {
+      "trade_date": "2022-06-24",
+      "compared_rows": 4709,
+      "agree_at_4dp_rows": 506,
+      "difference_rows": 4203,
+      "difference_ge_1pct_rows": 393,
+      "changes_without_rq_event": 5,
+      "changes_without_rq_event_ge_01pct": 5
+    },
+    {
+      "trade_date": "2022-09-06",
+      "compared_rows": 4769,
+      "agree_at_4dp_rows": 556,
+      "difference_rows": 4213,
+      "difference_ge_1pct_rows": 387,
+      "changes_without_rq_event": 5,
+      "changes_without_rq_event_ge_01pct": 5
+    },
+    {
+      "trade_date": "2023-02-16",
+      "compared_rows": 4891,
+      "agree_at_4dp_rows": 672,
+      "difference_rows": 4219,
+      "difference_ge_1pct_rows": 390,
+      "changes_without_rq_event": 5,
+      "changes_without_rq_event_ge_01pct": 5
+    },
+    {
+      "trade_date": "2023-03-16",
+      "compared_rows": 4910,
+      "agree_at_4dp_rows": 691,
+      "difference_rows": 4219,
+      "difference_ge_1pct_rows": 387,
+      "changes_without_rq_event": 5,
+      "changes_without_rq_event_ge_01pct": 5
+    },
+    {
+      "trade_date": "2023-03-23",
+      "compared_rows": 4914,
+      "agree_at_4dp_rows": 696,
+      "difference_rows": 4218,
+      "difference_ge_1pct_rows": 390,
+      "changes_without_rq_event": 5,
+      "changes_without_rq_event_ge_01pct": 5
+    },
+    {
+      "trade_date": "2023-04-06",
+      "compared_rows": 4923,
+      "agree_at_4dp_rows": 707,
+      "difference_rows": 4216,
+      "difference_ge_1pct_rows": 386,
+      "changes_without_rq_event": 5,
+      "changes_without_rq_event_ge_01pct": 5
+    },
+    {
+      "trade_date": "2023-04-26",
+      "compared_rows": 4945,
+      "agree_at_4dp_rows": 735,
+      "difference_rows": 4210,
+      "difference_ge_1pct_rows": 389,
+      "changes_without_rq_event": 5,
+      "changes_without_rq_event_ge_01pct": 5
+    }
+  ],
+  "rq_only_stocks": [
+    "601313.SH"
+  ],
+  "validation": {
+    "all_interval_endpoints_checked_by_python_bisect": 207280,
+    "category_and_stock_counts_match_full_scan": true,
+    "all_categories_recomputed": true,
+    "688585_1491_dates_agree_at_4dp": true,
+    "direct_tushare_endpoint_value_and_batch_checks": 199
+  }
+}

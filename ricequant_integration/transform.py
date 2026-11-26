@@ -146,6 +146,7 @@ FUND_HOLDING_COLUMNS = [
     "shares",
     "market_value",
     "symbol",
+    "symbol_key",
     "asset_type",
     "asset_type_key",
     "category",
@@ -194,6 +195,9 @@ def fund_holding_frame(raw: pd.DataFrame, batch_id: str) -> pd.DataFrame:
     result["release_date_key"] = result["release_date"].where(
         pd.notna(result["release_date"]), date(1970, 1, 1)
     )
+    if "symbol" not in result:
+        result["symbol"] = None
+    result["symbol_key"] = result["symbol"].fillna("").astype(str)
     for column in ("weight", "shares", "market_value"):
         if column in result:
             result[column] = pd.to_numeric(result[column], errors="coerce")
