@@ -253,6 +253,20 @@ class RqDataClient:
     def sector_members(self, sector_code: str) -> list[str]:
         return list(self.rq.sector(sector_code, market="cn") or [])
 
+    def dividend_instruments(self) -> pd.DataFrame:
+        """Include delisted stocks: date would select only tradable instruments."""
+        return self._as_frame(self.rq.all_instruments(type="CS", market="cn"))
+
+    def stock_dividend_info(
+        self, order_book_ids: list[str], start: date, end: date
+    ) -> pd.DataFrame:
+        """Inclusive effective_date interval, NOT an announcement-date filter."""
+        return self._as_frame(
+            self.rq.get_dividend_info(
+                order_book_ids, start_date=start, end_date=end, market="cn"
+            )
+        )
+
     def instruments(self, snapshot_date: date) -> pd.DataFrame:
         return self._as_frame(self.rq.all_instruments(type="CS", date=snapshot_date))
 

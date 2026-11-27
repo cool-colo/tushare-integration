@@ -33,6 +33,7 @@ docker_cmd() {
 tables=(
   dwd_ricequant_stock_connect_holding_detail
   dwd_ricequant_fund_holding
+  dwd_ricequant_stock_dividend_info
 )
 
 for table in "${tables[@]}"; do

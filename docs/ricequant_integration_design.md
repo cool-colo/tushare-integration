@@ -79,6 +79,7 @@ DWD/DWS 血缘。
 | `ricequant_stock_minute` | `trading_date, order_book_id, datetime` | 交易日 |
 | `ricequant_stock_ex_factor` | `order_book_id, ex_date` | 股票 |
 | `ricequant_stock_split` | `order_book_id, ex_dividend_date, book_closure_date` | 股票 |
+| `ricequant_stock_dividend_info` | `order_book_id, effective_date, sequence_num` | 股票 |
 | `ricequant_income_statement` | `order_book_id, report_period, source_version_id` | 股票 |
 | `ricequant_balance_sheet` | `order_book_id, report_period, source_version_id` | 股票 |
 | `ricequant_cashflow_statement` | `order_book_id, report_period, source_version_id` | 股票 |
@@ -143,6 +144,65 @@ ID，对无后缀代码追加 `symbol_key`，避免把不同海外证券错误�
 下游血缘中保留这一限制。由于最终表按报告月原子替换，任意历史月的部分日期回补都会扩展为完整自然月；
 当前月最多扩展到运行日，绝不请求未来日期。未完成 staging 的游标同时绑定查询起止日和基金全集哈希；
 范围或全集变化时丢弃该 staging 并重拉整月，防止把不同权威范围拼接后误报 complete。
+
+### A 股分红与 DWD
+
+`stock_dividend_info` 调用 `get_dividend_info`，ODS 表为 `ricequant_stock_dividend_info`，DWD 表为
+`dwd_ricequant_stock_dividend_info`。独立配置 `stock_dividend_start_date` 默认 `2015-01-01`，
+`stock_dividend_batch_size` 默认 100。不带日期的 `all_instruments(type='CS', market='cn')` 提供包含
+历史退市股票的目录；排除 200/900 开头的 B 股。`--instrument` 可用于小批量指定 A 股验证。
+
+接口的 `start_date/end_date` 按 **effective_date**（含边界）筛选，不按 `info_date` 筛选：
+常规分红对应所属财政期，特殊分红对应股权登记日，不统一称为报告季度。每日 incremental 从独立起点
+重新查询至数据截止日，历史 coverage complete 不会抑制下一轮更新；显式指定起止日期只替换该区间，
+保留同股票区间外数据。完全相同行可去重，同键不同值、缺失主键或新未映射字段必须报错而不是择值。
+普通 MergeTree 通过股票分区 staging 原子替换保证重拉无重复，失败响应不当空响应发布。
+
+每轮刷新用 coverage 的 `refresh:` 游标保存原区间、cycle_id 和最后成功发布股票；排序股票列表只在
+`universe:<cycle_id>` manifest 中保存一次，避免每只股票的检查点重复写入全市场目录。
+达限/中断后重复同一命令继续剩余股票；跨日恢复先完成旧区间，再开始扩展后的全历史刷新，不把旧游标
+解释成新上界的完整覆盖。发布后、游标前崩溃最多重拉当前小批次，但不会重复业务数据。
+bootstrap 可跳过相同已完成区间；backfill 和 incremental 的新一轮会重新查询。监控实际股票进度
+应排除 `refresh:` 和 `universe:` 的 coverage 行；这两类行只是协调状态，不代表业务分区。
+
+金额与送转比例保持每10股源尺度；NaN 保留 NULL，不补零、不换算为每股或生成复权价格。
+保留 `event_procedure`、`dividend_base`、`proposal_announcement_date`、`if_dividend`、
+`rice_create_tm`；`dividend_base` 单位未核实前不换算。
+DWD 使用 `event_date=effective_date`，`available_trade_date` 为 `info_date` **之后严格下一交易日**。
+缺失公告日期或日历映射时保持 NULL；`availability_basis` 标注 `missing_info_date`、
+`missing_calendar_date` 或 `info_date_next_trade_day`。一次日历请求覆盖分红历史（含未完成轮次）和普通数据集所需范围，
+并延伸至本次数据截止日后14天，用于最新公告的下一交易日映射。其他数据集仍按自身常规窗口消费交易日，
+不会因分红混跑而扩大历史回扫范围或请求未来日期。
+
+预案公告日期不能让当前实施方案提前可见，`rice_create_tm` 是米筐入库时间而非公开可用时间。
+接口未证明提供全部修订版本，ODS/DWD 均只保存源当前权威值，DWD 标注
+`source_history_basis='source_current_disclosure_dated'`，不能宣称完整历史版本 PIT。
+全历史回查能捕获历史期间的源当前值变化，但无法重建源未返回的旧方案；不得跨来源填补或补造版本。
+
+先构建独立候选镜像，再在临时数据库验证4只股票（含退市股）、重复下载、源记录哈希与 DWD 严格校验：
+
+```bash
+sudo docker build --build-arg PIP_SOURCE=https://pypi.tuna.tsinghua.edu.cn/simple \
+  -t tushare-integration:ricequant-dividend .
+sudo docker run --rm --net=host --env-file "$PWD/ricequant.env" \
+  tushare-integration:ricequant-dividend python -m scripts.verify_ricequant_dividends
+```
+
+验证脚本仅创建并删除自己生成的 `rq_dividend_verify_<uuid>` 临时数据库，不写生产表。
+启用候选镜像后的回补命令如下；回补命令本身不调用 DWD，成功后独立运行米筐 DWD 脚本：
+
+```bash
+RICEQUANT_IMAGE=tushare-integration:ricequant-dividend \
+  scripts/run_ricequant_jobs.sh backfill --dataset stock_dividend_info \
+  --start 2015-01-01 --end 2026-11-27
+RICEQUANT_IMAGE=tushare-integration:ricequant-dividend scripts/run_ricequant_dwd.sh
+```
+
+`backfill` 必须同时提供 `--start` 和 `--end`。上述结束日期为示例，启动时填写目标日期；
+达限或中断后重复同一条命令，保持两个边界不变，再由每日 incremental 处理后续新增。
+
+更新每日任务使用的 `RICEQUANT_IMAGE` 后，现有 Docker+crontab 增量脚本会自动调度分红和对应 DWD。
+不要替换正在运行的容器。配置文件挂载生效无需重建，但新增代码必须使用包含此实现的镜像。
 
 期权使用三条独立链路，不扩展股票 `ricequant_instrument`。`option_instruments` 调用
 `all_instruments(type='Option', date=...)`，保留源快照日期和本系统观察时间；米筐说明该接口的合约详情
@@ -236,8 +296,8 @@ scripts/run_ricequant_incremental.sh
 ```
 
 `run_ricequant_incremental.sh` 显式调度当前已经实现的全部增量数据集，包括股票日线、分钟线、复权/拆股、
-北向席位持股、基金持仓、指数、期权合约/动态属性/日线、概念、行业、板块、四类财务数据和 Tick；交易日历及证券列表由依赖解析自动加入。ODS 成功后脚本独立执行
-`run_ricequant_dwd.sh`，只构建两张 RiceQuant 持仓 DWD，不进入 Tushare 的 DWD 调度链。Tick 默认开启且可能消耗较多
+北向席位持股、基金持仓、分红、指数、期权合约/动态属性/日线、概念、行业、板块、四类财务数据和 Tick；交易日历及证券列表由依赖解析自动加入。ODS 成功后脚本独立执行
+`run_ricequant_dwd.sh`，构建 RiceQuant 两张持仓 DWD 和分红 DWD，不进入 Tushare 的 DWD 调度链。Tick 默认开启且可能消耗较多
 额度；若不需要每日 Tick，可在 crontab 命令前设置 `RICEQUANT_INCLUDE_TICK=0`，其余数据集不受影响。
 wrapper 的标准输出、错误堆栈和最终退出码写入
 `logs/ricequant-incremental-cron-YYYYMMDD.log`；底层任务仍保留自己的
@@ -260,6 +320,9 @@ wrapper 的标准输出、错误堆栈和最终退出码写入
    修订、PIT/NULL 时间，以及同一逻辑快照的 `observed_at` 唯一性。
 8. 先在隔离数据库执行小区间 bootstrap/backfill，对源记录数和哈希；再执行两次相同命令确认键重复为
    0；最后运行完整 Tushare 回归测试后才启用独立 CronJob。
+9. 必须实测日期参数筛选的是所属期、公告日还是查询截止日，不能凭参数名判断增量边界。
+   不提供完整历史版本的源，只能标注当前值的公告日推导可用性，不能补造历史方案或用入库日冒充公告日。
+   范围或股票列表可能跨日变化的续传，必须绑定保存的边界/范围，完成旧区间后再扩展。
 
 ## 7. 运维检查
 

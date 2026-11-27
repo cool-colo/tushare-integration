@@ -7,7 +7,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from time import monotonic
-from typing import Callable, Iterable, TypeVar
+from typing import Any, Callable, Iterable, TypeVar
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -37,6 +37,7 @@ from ricequant_integration.transform import (
     concept_snapshot_frame,
     conform,
     citics_industry_snapshot_frame,
+    dividend_frame,
     ex_factor_frame,
     financial_statement_frame,
     fund_holding_frame,
@@ -78,6 +79,7 @@ DEFAULT_ESTIMATES = {
     "stock_minute": 32 * 1024 * 1024,
     "stock_ex_factor": 8 * 1024 * 1024,
     "stock_split": 4 * 1024 * 1024,
+    "stock_dividend_info": 4 * 1024 * 1024,
     "stock_connect_holding_details": 16 * 1024 * 1024,
     "fund_holdings": 16 * 1024 * 1024,
     "financial_income": 32 * 1024 * 1024,
@@ -115,6 +117,20 @@ class RunSummary:
     run_id: str
     status: str
     message: str
+
+
+@dataclass(frozen=True)
+class _DividendRefresh:
+    start: date
+    end: date
+    key: str
+    saved: dict[str, Any] | None
+
+    @property
+    def calendar_start(self) -> date:
+        if self.saved:
+            return min(self.start, date.fromisoformat(self.saved["range_start"]))
+        return self.start
 
 
 class RiceQuantRunner:
@@ -176,7 +192,7 @@ class RiceQuantRunner:
             "tick",
         }.intersection(selected):
             raise ValueError(
-                "--instrument is supported for stock_ex_factor/stock_split only; "
+                "--instrument is supported for stock_ex_factor/stock_split/stock_dividend_info; "
                 "partial-universe bar partitions are not publishable as all-market data"
             )
         run_started = monotonic()
@@ -196,17 +212,34 @@ class RiceQuantRunner:
                 mode, "started", message=f"datasets={','.join(selected)}"
             )
             try:
+                dividend_refresh = (
+                    self._plan_stock_dividend_refresh(mode, start, end)
+                    if "stock_dividend_info" in selected
+                    else None
+                )
                 trading_dates: list[date] = []
                 if "trading_calendar" in selected:
                     calendar_start = self._calendar_start(mode, selected, start)
                     calendar_end = min(end or self.today, self.today)
-                    trading_dates = self._sync_calendar(calendar_start, calendar_end)
+                    if dividend_refresh is not None:
+                        # Public announcements may be later than effective_date.
+                        # Extend the stored calendar without widening other consumers' bounds.
+                        trading_dates = [
+                            day for day in self._sync_calendar(
+                                min(calendar_start, dividend_refresh.calendar_start),
+                                self.today + timedelta(days=14),
+                            )
+                            if calendar_start <= day <= calendar_end
+                        ]
+                    else:
+                        trading_dates = self._sync_calendar(calendar_start, calendar_end)
                 instrument_consumers = {
                     "tick",
                     "stock_daily",
                     "stock_minute",
                     "stock_ex_factor",
                     "stock_split",
+                    "stock_dividend_info",
                     "stock_connect_holding_details",
                     "industry_snapshot",
                     *FINANCIAL_DATASETS,
@@ -255,6 +288,8 @@ class RiceQuantRunner:
                     self._sync_stock_connect_holdings(
                         mode, trading_dates, start, end
                     )
+                if dividend_refresh is not None:
+                    self._sync_stock_dividends(mode, start, end, plan=dividend_refresh)
                 if "fund_holdings" in selected:
                     self._sync_fund_holdings(mode, start, end)
                 for dataset in FINANCIAL_DATASETS:
@@ -312,6 +347,10 @@ class RiceQuantRunner:
     ) -> date:
         if requested_start:
             return requested_start
+        if "stock_dividend_info" in selected:
+            selected = [dataset for dataset in selected if dataset != "stock_dividend_info"]
+            if set(selected) <= {"trading_calendar", "instruments"}:
+                return self._dataset_history_start("stock_dividend_info")
         selected_starts = [
             self._dataset_history_start(dataset)
             for dataset in selected
@@ -372,6 +411,8 @@ class RiceQuantRunner:
             )
         if dataset == "fund_holdings":
             return date.fromisoformat(self.settings.fund_holding_start_date)
+        if dataset == "stock_dividend_info":
+            return date.fromisoformat(self.settings.stock_dividend_start_date)
         if dataset in FINANCIAL_DATASETS:
             return date.fromisoformat(self.settings.financial_start_date)
         if dataset in {
@@ -447,6 +488,7 @@ class RiceQuantRunner:
             "stock_minute",
             "stock_ex_factor",
             "stock_split",
+            "stock_dividend_info",
             "financial_income",
             "financial_balance",
             "financial_cashflow",
@@ -2187,6 +2229,161 @@ class RiceQuantRunner:
             dataset,
             len(pending),
             monotonic() - dataset_started,
+        )
+
+    def _plan_stock_dividend_refresh(
+        self, mode: str, start: date | None, end: date | None
+    ) -> _DividendRefresh:
+        lower = start or self._dataset_history_start("stock_dividend_info")
+        upper = min(end or self.today, self.today)
+        if lower > upper:
+            raise ValueError("stock_dividend_info start is after end")
+        requested_scope = hashlib.sha256(
+            "\n".join(self.requested_order_book_ids).encode()
+        ).hexdigest()[:16]
+        refresh_key = f"refresh:{mode}:{start or 'auto'}:{end or 'auto'}:{requested_scope}"
+        previous = self.state.latest("stock_dividend_info", refresh_key)
+        saved = previous.cursor if previous and previous.status == "partial" else None
+        return _DividendRefresh(lower, upper, refresh_key, saved)
+
+    def _sync_stock_dividends(
+        self, mode: str, start: date | None, end: date | None, *,
+        plan: _DividendRefresh | None = None,
+    ) -> None:
+        """Stock-scoped authoritative ranges, with a durable refresh cursor.
+
+        Completed historical slices do not suppress future refresh cycles.
+        A paused cycle owns its original bounds/universe; extending the end
+        cannot mark unqueried instruments complete.
+        """
+        if plan is None:
+            plan = self._plan_stock_dividend_refresh(mode, start, end)
+            self._sync_calendar(plan.calendar_start, self.today + timedelta(days=14))
+        spec = DATASET_SPECS["stock_dividend_info"]
+        lower, upper = plan.start, plan.end
+        refresh_key, saved = plan.key, plan.saved
+        complete = self.state.completed_slice_ranges(spec.name)
+        desired = (lower, upper)
+        dataset_started = monotonic()
+        while True:
+            if saved:
+                lower = date.fromisoformat(saved["range_start"])
+                upper = date.fromisoformat(saved["range_end"])
+                last_identifier = saved.get("last_instrument", "")
+                cycle_id = str(saved["cycle_id"])
+                universe_state = self.state.latest(spec.name, f"universe:{cycle_id}")
+                if not universe_state or universe_state.status != "manifest":
+                    raise ValueError("stock_dividend_info resume universe manifest is missing")
+                identifiers = list(universe_state.cursor["instruments"])
+                LOGGER.info(
+                    "dividend_resumed range=%s..%s last_instrument=%s cycle_id=%s",
+                    lower, upper, last_identifier, cycle_id,
+                )
+            else:
+                lower, upper = desired
+                cycle_id = uuid.uuid4().hex
+                last_identifier = ""
+                if self.requested_order_book_ids:
+                    identifiers = list(self.requested_order_book_ids)
+                    if any(value.startswith(("200", "900")) for value in identifiers):
+                        raise ValueError("stock_dividend_info supports A shares, not B shares")
+                else:
+                    universe, _ = self._fetch(
+                        spec.name, "all_instruments:CS:including_delisted",
+                        self.client.dividend_instruments,
+                    )
+                    if universe.empty or "order_book_id" not in universe:
+                        raise ValueError("RQData dividend stock universe is missing or empty")
+                    identifiers = sorted(set(
+                        universe["order_book_id"].dropna().astype(str)
+                    ))
+                    # CS also includes mainland B shares; their amounts are not
+                    # the documented A-share RMB-per-ten-share contract.
+                    identifiers = [
+                        value for value in identifiers
+                        if not value.startswith(("200", "900"))
+                    ]
+                    if not identifiers:
+                        raise ValueError("RQData dividend A-share universe is empty")
+                # Persist the full list once. Repeating ~6k IDs in every stock
+                # checkpoint would needlessly inflate the control tables.
+                self.state.coverage_event(
+                    spec, f"universe:{cycle_id}", "manifest",
+                    cursor={"instruments": identifiers},
+                )
+            cursor = {
+                "cycle_id": cycle_id, "range_start": str(lower),
+                "range_end": str(upper),
+                "last_instrument": last_identifier,
+            }
+            pending = [value for value in identifiers if value > last_identifier]
+            if mode == "bootstrap":
+                pending = [
+                    value for value in pending
+                    if not self._completed_slice_covers(
+                        complete, DateSlice(lower, upper, f"{value}:{lower}:{upper}")
+                    )
+                ]
+            self.state.coverage_event(
+                spec, refresh_key, "partial", cursor=cursor,
+                range_start=str(lower), range_end=str(upper),
+            )
+            batches = list(self._batches(pending, self.settings.stock_dividend_batch_size))
+            LOGGER.info(
+                "dataset_started dataset=%s mode=%s range=%s..%s instruments=%d pending=%d batches=%d cycle_id=%s",
+                spec.name, mode, lower, upper, len(identifiers), len(pending),
+                len(batches), cycle_id,
+            )
+            for position, batch in enumerate(batches, start=1):
+                raw, consumed = self._fetch(
+                    spec.name, f"{lower}:{upper}:{batch[0]}-{batch[-1]}",
+                    lambda ids=batch: self.client.stock_dividend_info(ids, lower, upper),
+                )
+                transformed = dividend_frame(raw, self.run_id)
+                unexpected = set(transformed["order_book_id"]) - set(batch)
+                if unexpected:
+                    raise ValueError(f"get_dividend_info returned unexpected instruments: {sorted(unexpected)}")
+                if not transformed.empty and not transformed["effective_date"].between(lower, upper).all():
+                    raise ValueError("get_dividend_info returned dates outside effective_date interval")
+                for identifier in batch:
+                    frame = transformed.loc[transformed["order_book_id"] == identifier].copy()
+                    result = self.storage.publish_partition(
+                        spec, quote_string(identifier), frame,
+                        replace_range=("effective_date", lower, upper),
+                    )
+                    self.state.coverage_event(
+                        spec, f"{identifier}:{lower}:{upper}", "complete",
+                        range_start=str(lower), range_end=str(upper),
+                        partition_value=quote_string(identifier),
+                        row_count=result.row_count, content_hash=result.content_hash,
+                        quota_bytes_used=consumed // max(1, len(batch)),
+                        cursor={"cycle_id": cycle_id},
+                    )
+                    cursor["last_instrument"] = identifier
+                    self.state.coverage_event(
+                        spec, refresh_key, "partial", cursor=cursor.copy(),
+                        range_start=str(lower), range_end=str(upper),
+                    )
+                LOGGER.info(
+                    "dividend_progress dataset=%s batch=%d/%d instruments=%d/%d rows=%d quota_bytes=%d elapsed_seconds=%.1f",
+                    spec.name, position, len(batches),
+                    min(position * self.settings.stock_dividend_batch_size, len(pending)),
+                    len(pending), len(transformed), consumed,
+                    monotonic() - dataset_started,
+                )
+            self.state.coverage_event(
+                spec, refresh_key, "complete", cursor=cursor,
+                range_start=str(lower), range_end=str(upper),
+            )
+            if saved and (lower, upper) != desired:
+                # A fresh full-history cycle also catches revisions on stocks
+                # already processed before the pause; never stretch coverage.
+                saved = None
+                continue
+            break
+        LOGGER.info(
+            "dataset_complete dataset=%s range=%s..%s instruments=%d elapsed_seconds=%.1f",
+            spec.name, lower, upper, len(identifiers), monotonic() - dataset_started,
         )
 
     def _sync_financials(

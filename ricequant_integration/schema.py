@@ -267,6 +267,31 @@ TABLE_SCHEMAS: dict[str, TableSchema] = {
         partition_by="order_book_id",
         order_by=("order_book_id", "ex_dividend_date"),
     ),
+    "ricequant_stock_dividend_info": TableSchema(
+        name="ricequant_stock_dividend_info",
+        columns_sql=f"""
+            `order_book_id` String,
+            `effective_date` Date32,
+            `sequence_num` Int64,
+            `info_date` Nullable(Date32),
+            `ex_dividend_date` Nullable(Date32),
+            `dividend_bonus_share` Nullable(Float64),
+            `dividend_transferred_share` Nullable(Float64),
+            `dividend_cash_before_tax` Nullable(Float64),
+            `dividend_type` Nullable(String),
+            `special_dividend` Nullable(UInt8),
+            `event_procedure` Nullable(String),
+            `dividend_base` Nullable(Float64),
+            `proposal_announcement_date` Nullable(Date32),
+            `if_dividend` Nullable(String),
+            `period` Nullable(String),
+            `payable_date` Nullable(Date32),
+            `rice_create_tm` Nullable(DateTime64(6, 'Asia/Shanghai')),
+            {METADATA_COLUMNS}
+        """,
+        partition_by="order_book_id",
+        order_by=("order_book_id", "effective_date", "sequence_num"),
+    ),
     "ricequant_stock_connect_holding_detail": TableSchema(
         name="ricequant_stock_connect_holding_detail",
         columns_sql=f"""

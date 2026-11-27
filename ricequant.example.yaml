@@ -21,6 +21,10 @@ financial_start_date: "2015-01-01"
 concept_start_date: "2015-01-01"
 stock_connect_holding_start_date: "2015-01-01"
 fund_holding_start_date: "2015-01-01"
+# get_dividend_info filters effective_date, not info_date. Every incremental
+# cycle rechecks all history from this independent start (including delisted A shares).
+stock_dividend_start_date: "2015-01-01"
+stock_dividend_batch_size: 100
 stock_daily_batch_size: 1000
 stock_minute_batch_size: 200
 option_batch_size: 500

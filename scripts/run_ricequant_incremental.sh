@@ -41,6 +41,7 @@ datasets=(
   stock_minute
   stock_ex_factor
   stock_split
+  stock_dividend_info
   stock_connect_holding_details
   fund_holdings
   financial_income

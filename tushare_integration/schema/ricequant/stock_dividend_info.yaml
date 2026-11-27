@@ -1,0 +1,81 @@
+id: 3003
+api_name: get_dividend_info
+name: ricequant_stock_dividend_info
+comment: 米筐A股分红当前权威事件；不提供完整历史修订PIT
+dependencies: []
+primary_key:
+  - order_book_id
+  - effective_date
+  - sequence_num
+indexes: []
+columns:
+  - name: order_book_id
+    data_type: str
+    length: 32
+    comment: 米筐证券代码
+  - name: effective_date
+    data_type: date
+    comment: 常规分红所属财政期；特殊分红股权登记日；API筛选日期
+  - name: sequence_num
+    data_type: int
+    comment: 源分红序号；区分同一所属期的多次分红
+  - name: info_date
+    data_type: date
+    nullable: true
+    comment: 当前事件公布日期；不是完整修订历史
+  - name: ex_dividend_date
+    data_type: date
+    nullable: true
+    comment: 除权除息日
+  - name: dividend_bonus_share
+    data_type: float
+    nullable: true
+    comment: 每10股送股数；源口径10送X
+  - name: dividend_transferred_share
+    data_type: float
+    nullable: true
+    comment: 每10股转增股数；源口径10转X
+  - name: dividend_cash_before_tax
+    data_type: float
+    nullable: true
+    comment: 每10股税前现金分红；人民币元
+  - name: dividend_type
+    data_type: str
+    length: 64
+    nullable: true
+    comment: 源分红类型字符串
+  - name: special_dividend
+    data_type: int
+    nullable: true
+    comment: 源特殊分红布尔标记，0或1；NULL保持缺失
+  - name: event_procedure
+    data_type: str
+    length: 64
+    nullable: true
+    comment: 源方案阶段；不补造预案或实施版本
+  - name: dividend_base
+    data_type: float
+    nullable: true
+    comment: 源分红基数；单位未核实，不进行换算
+  - name: proposal_announcement_date
+    data_type: date
+    nullable: true
+    comment: 源预案公告日；不得用于提前暴露当前实施数据
+  - name: if_dividend
+    data_type: str
+    length: 32
+    nullable: true
+    comment: 源是否分红字符串；不将未分红事件删除
+  - name: period
+    data_type: str
+    length: 64
+    nullable: true
+    comment: 源股息期间；通常仅港股有值
+  - name: payable_date
+    data_type: date
+    nullable: true
+    comment: 源股息应付日；缺失不推导
+  - name: rice_create_tm
+    data_type: datetime
+    nullable: true
+    comment: 米筐入库时间，Asia/Shanghai；不是公开可用日期

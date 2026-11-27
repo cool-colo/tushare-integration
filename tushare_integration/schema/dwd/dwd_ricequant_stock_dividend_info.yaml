@@ -1,0 +1,43 @@
+id: 3003
+name: dwd_ricequant_stock_dividend_info
+comment: 米筐A股分红标准层；源当前值按公告日推导可用性，非完整历史版本PIT
+builder: raw_versioned
+availability_mode: partial_unknown_disclosure
+disclosure_date_column: info_date
+source:
+  table_name: ricequant_stock_dividend_info
+  schema_name: ricequant/stock_dividend_info
+business_key:
+  - order_book_id
+  - effective_date
+  - sequence_num
+source_filters:
+  - "src.order_book_id != ''"
+instrument_type: stock
+instrument_id_expr: "concat('stock:', src.order_book_id)"
+source_code_expr: src.order_book_id
+exchange_expr: "arrayElement(splitByChar('.', assumeNotNull(src.order_book_id)), 2)"
+event_date_expr: src.effective_date
+calendar_date_expr: src.info_date
+calendar_source_table: ricequant_trading_calendar
+available_trade_date_expr: "if(isNull(src.info_date), CAST(NULL, 'Nullable(Date32)'), calendar_map.next_trade_date)"
+extra_columns:
+  - name: availability_basis
+    data_type: str
+    length: 64
+    comment: 公告日可用性推导依据；不代表源提供完整历史版本
+    expr: "multiIf(isNull(src.info_date), 'missing_info_date', isNull(calendar_map.next_trade_date), 'missing_calendar_date', 'info_date_next_trade_day')"
+  - name: source_history_basis
+    data_type: str
+    length: 64
+    comment: 源历史语义；当前权威值，不可还原未提供的旧方案
+    expr: "'source_current_disclosure_dated'"
+partition_key:
+  - toYear(event_date)
+indexes:
+  - name: dwd_ricequant_stock_dividend_info_idx
+    columns:
+      - instrument_id
+      - event_date
+      - sequence_num
+      - sys_from

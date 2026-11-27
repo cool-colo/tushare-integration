@@ -85,6 +85,76 @@ def conform(frame: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     return result[columns]
 
 
+DIVIDEND_COLUMNS = [
+    "order_book_id", "effective_date", "sequence_num", "info_date",
+    "ex_dividend_date", "dividend_bonus_share", "dividend_transferred_share",
+    "dividend_cash_before_tax", "dividend_type", "special_dividend",
+    "event_procedure", "dividend_base", "proposal_announcement_date",
+    "if_dividend", "period", "payable_date", "rice_create_tm", *METADATA,
+]
+
+
+def dividend_frame(raw: pd.DataFrame, batch_id: str) -> pd.DataFrame:
+    """Preserve RQData's current event values and source per-ten-share units."""
+    if raw.empty:
+        return conform(
+            add_metadata(pd.DataFrame(), "get_dividend_info", batch_id),
+            DIVIDEND_COLUMNS,
+        )
+    result = _normalise_index(raw)
+    keys = ["order_book_id", "effective_date", "sequence_num"]
+    if not set(keys).issubset(result):
+        raise ValueError("RQData dividend lacks order_book_id, effective_date, or sequence_num")
+    unknown = set(result) - set(DIVIDEND_COLUMNS)
+    if unknown:
+        raise ValueError(f"RQData dividend has unmapped fields: {sorted(unknown)}")
+    result = conform(result, DIVIDEND_COLUMNS[:-len(METADATA)])
+    for column in (
+        "effective_date", "info_date", "ex_dividend_date",
+        "proposal_announcement_date", "payable_date",
+    ):
+        result[column] = pd.to_datetime(
+            result[column], format="ISO8601", errors="raise"
+        ).dt.date
+    if result[keys].isna().any().any():
+        raise ValueError("RQData dividend contains a missing business key")
+    result["order_book_id"] = result["order_book_id"].astype(str)
+    if result["order_book_id"].str.strip().eq("").any():
+        raise ValueError("RQData dividend contains an empty order_book_id")
+    sequence = pd.to_numeric(result["sequence_num"], errors="raise")
+    if (
+        not np.isfinite(sequence).all() or (sequence % 1 != 0).any()
+        or (sequence < np.iinfo(np.int64).min).any()
+        or (sequence > np.iinfo(np.int64).max).any()
+    ):
+        raise ValueError("RQData dividend sequence_num must be an integer")
+    result["sequence_num"] = sequence.astype("int64")
+    for column in (
+        "dividend_bonus_share", "dividend_transferred_share",
+        "dividend_cash_before_tax", "dividend_base",
+    ):
+        values = pd.to_numeric(result[column], errors="raise").astype("float64")
+        if np.isinf(values).any():
+            raise ValueError(f"RQData dividend has non-finite {column}")
+        result[column] = values
+    for column in ("dividend_type", "event_procedure", "if_dividend", "period"):
+        result[column] = result[column].where(result[column].notna(), None)
+    special = result["special_dividend"]
+    if not special.dropna().isin([True, False, 0, 1]).all():
+        raise ValueError("RQData dividend special_dividend must be boolean")
+    result["special_dividend"] = special.astype("UInt8")
+    source_time = pd.to_datetime(result["rice_create_tm"], format="ISO8601", errors="raise")
+    result["rice_create_tm"] = _shanghai_datetime(source_time)
+    result = add_metadata(result, "get_dividend_info", batch_id)
+    duplicate = result.duplicated(keys, keep=False)
+    if duplicate.any():
+        conflicts = result.loc[duplicate].groupby(keys)["_record_hash"].nunique()
+        if (conflicts > 1).any():
+            raise ValueError("conflicting get_dividend_info rows share one business key")
+        result = result.drop_duplicates(keys)
+    return result.reset_index(drop=True)[DIVIDEND_COLUMNS]
+
+
 STOCK_CONNECT_HOLDING_COLUMNS = [
     "trade_date",
     "order_book_id",

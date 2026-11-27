@@ -157,6 +157,16 @@ DATASET_SPECS: dict[str, DatasetSpec] = {
         mutable_days=550,
         dependencies=("instruments",),
     ),
+    "stock_dividend_info": DatasetSpec(
+        name="stock_dividend_info",
+        table="ricequant_stock_dividend_info",
+        time_semantics=TimeSemantics.EFFECTIVE_DATE,
+        primary_key=("order_book_id", "effective_date", "sequence_num"),
+        partition_expression="order_book_id",
+        cadence="daily",
+        # All configured history is rechecked, not a rolling mutable window.
+        dependencies=("trading_calendar", "instruments"),
+    ),
     "stock_connect_holding_details": DatasetSpec(
         name="stock_connect_holding_details",
         table="ricequant_stock_connect_holding_detail",

@@ -35,6 +35,8 @@ class RiceQuantSettings:
     concept_start_date: str = "2015-01-01"
     stock_connect_holding_start_date: str = "2015-01-01"
     fund_holding_start_date: str = "2015-01-01"
+    stock_dividend_start_date: str = "2015-01-01"
+    stock_dividend_batch_size: int = 100
     stock_daily_batch_size: int = 1000
     stock_minute_batch_size: int = 200
     option_batch_size: int = 500
@@ -91,6 +93,8 @@ class RiceQuantSettings:
             "concept_start_date",
             "stock_connect_holding_start_date",
             "fund_holding_start_date",
+            "stock_dividend_start_date",
+            "stock_dividend_batch_size",
             "stock_daily_batch_size",
             "stock_minute_batch_size",
             "option_batch_size",
@@ -132,6 +136,12 @@ class RiceQuantSettings:
             ),
             fund_holding_start_date=str(
                 raw.get("fund_holding_start_date", "2015-01-01")
+            ),
+            stock_dividend_start_date=str(
+                raw.get("stock_dividend_start_date", "2015-01-01")
+            ),
+            stock_dividend_batch_size=max(
+                1, int(raw.get("stock_dividend_batch_size", 100))
             ),
             stock_daily_batch_size=max(
                 1, int(raw.get("stock_daily_batch_size", 1000))

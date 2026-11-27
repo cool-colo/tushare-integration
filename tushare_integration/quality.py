@@ -1034,17 +1034,23 @@ class QualityManager:
                 "OR availability_basis != 'unknown_disclosure_date'",
             ))
         if partial_unknown_disclosure:
+            # Existing fund specs retain release_date semantics by default.
+            # Other sources (e.g. RiceQuant dividends) name disclosure dates
+            # differently; do not alias or substitute their source columns.
+            disclosure_column = spec.get("disclosure_date_column", "release_date")
+            if not isinstance(disclosure_column, str) or not disclosure_column.isidentifier():
+                raise ValueError("disclosure_date_column must be a column identifier")
             rules.append(ValidationRule(
                 rule_id="dwd_partial_unknown_disclosure_labelled",
                 description="Rows without a source disclosure date must remain PIT-invisible and labelled",
                 severity="BLOCKER",
                 issue_count_sql=f"SELECT count() AS issue_count FROM {qualified} WHERE "
-                "(release_date IS NULL AND (available_trade_date IS NOT NULL "
-                "OR availability_basis != 'missing_release_date')) "
-                "OR (release_date IS NOT NULL AND available_trade_date IS NULL "
+                f"({disclosure_column} IS NULL AND (available_trade_date IS NOT NULL "
+                f"OR availability_basis != 'missing_{disclosure_column}')) "
+                f"OR ({disclosure_column} IS NOT NULL AND available_trade_date IS NULL "
                 "AND availability_basis NOT IN ('missing_calendar_date')) "
                 "OR (available_trade_date IS NOT NULL "
-                "AND availability_basis != 'release_date_next_trade_day')",
+                f"AND availability_basis != '{disclosure_column}_next_trade_day')",
             ))
         rules.extend(self._dwd_open_version_rules(table_name, qualified, validation_filter))
         rules.extend(self._dwd_business_rules(table_name, qualified, validation_filter))
