@@ -3730,6 +3730,8 @@ reports AS (
 
         stats_frames = []
         # Matrix tables have many factor columns; batching avoids ClickHouse max_query_size parser failures.
+        # Cast extrema after aggregation to the Float64 DQC metric type: UNION ALL cannot
+        # infer a common type for Int64 and Float64. Nullable extrema stay nullable.
         for column_chunk in self._chunks(numeric_columns, 40):
             stats_sql = "\nUNION ALL\n".join(
                 [
@@ -3744,8 +3746,8 @@ reports AS (
                             / count(`{column}`)) AS zero_ratio,
                         avg(`{column}`) AS mean,
                         stddevSamp(`{column}`) AS stddev,
-                        min(`{column}`) AS min,
-                        max(`{column}`) AS max,
+                        toFloat64(min(`{column}`)) AS min,
+                        toFloat64(max(`{column}`)) AS max,
                         quantileTDigest(0.01)(`{column}`) AS q01,
                         quantileTDigest(0.05)(`{column}`) AS q05,
                         quantileTDigest(0.50)(`{column}`) AS q50,

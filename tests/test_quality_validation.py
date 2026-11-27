@@ -770,6 +770,25 @@ class QualityValidationTest(unittest.TestCase):
         self.assertEqual(len(stats_queries), 3)
         self.assertLessEqual(max(query.count("UNION ALL") for query in stats_queries), 39)
 
+    def test_dqc_column_stats_normalizes_mixed_numeric_extrema(self):
+        for table_name in ["dws_stock_factor_wide_v2", "dws_stock_factor_wide_matrix"]:
+            with self.subTest(table_name=table_name):
+                db = DqcMetricDB()
+                manager = DqcManager(settings=self._settings(), db_engine=db)
+                with mock.patch.object(manager, "_dws_numeric_columns", return_value=["int_factor", "float_factor"]):
+                    manager._dws_table_metrics(
+                        domain="factor",
+                        suite_name="stock_factor_panel",
+                        table_name=table_name,
+                        as_of_date=pd.Timestamp("2026-05-25").date(),
+                    )
+                stats_sql = db.queries[-1]
+                for column in ["int_factor", "float_factor"]:
+                    self.assertIn(f"toFloat64(min(`{column}`)) AS min", stats_sql)
+                    self.assertIn(f"toFloat64(max(`{column}`)) AS max", stats_sql)
+                    self.assertIn(f"count(`{column}`) AS non_null_count", stats_sql)
+                    self.assertIn(f"avg(`{column}`) AS mean", stats_sql)
+
     def test_factor_reference_evaluator_recomputes_vsumn30(self):
         evaluator = _FactorExpressionReferenceEvaluator(
             "Sum(Greater(Ref($volume, 1)-$volume, 0), 30)/(Sum(Abs($volume-Ref($volume, 1)), 30)+1e-12)"
